@@ -8,7 +8,7 @@ https://cloud.google.com/sdk/docs/
 #### Install Cloud SQL Proxy
 https://cloud.google.com/sql/docs/postgres/sql-proxy
 
-### Virtual environment
+#### Virtual environment
 Requires Python 3.8 https://github.com/pyenv/pyenv
 
 Install requirements with `pip install -r requirements.txt`
