@@ -5,6 +5,7 @@ import './index.css';
 import SignIn from './SignIn';
 import SignUp from './SignUp';
 import Roster from './Roster';
+import Dashboard from './Dashboard';
 import * as serviceWorker from './serviceWorker';
 
 const routing = (
@@ -14,6 +15,7 @@ const routing = (
       <Route path="/SignUp" component={SignUp} />
       <Route path="/SignIn" component={SignIn} />
       <Route path="/Roster" component={Roster} />
+      <Route path="/Dashboard" component={Dashboard} />
     </div>
   </Router>
 )
