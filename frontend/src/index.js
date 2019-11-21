@@ -1,4 +1,4 @@
-import React from 'react';
+/*import React from 'react';
 import ReactDOM from 'react-dom';
 import { Route, Link, BrowserRouter as Router } from 'react-router-dom'
 import './index.css';
@@ -26,3 +26,13 @@ ReactDOM.render(routing, document.getElementById('root'));
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
+*/
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { BrowserRouter } from 'react-router-dom';
+import App from './components/App';
+import * as serviceWorker from './serviceWorker';
+import 'semantic-ui-css/semantic.min.css';
+
+ReactDOM.render(<BrowserRouter><App/></BrowserRouter>, document.getElementById('root'));
