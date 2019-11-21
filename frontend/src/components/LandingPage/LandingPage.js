@@ -1,12 +1,13 @@
 import React from 'react';
-import { Button, Segment } from 'semantic-ui-react';
+import { Grid, Button, Segment } from 'semantic-ui-react';
+import GoogleButton from 'react-google-button';
+import "typeface-roboto";
 
 export default class LandingPage extends React.Component {
   constructor(props) {
     super(props);
   }
 
-  //replace button with google auth button
   render() {
     return (
       <div
@@ -17,7 +18,10 @@ export default class LandingPage extends React.Component {
           "align-items": "center",
           "justify-content":"center"
         }}>
-        <Button href="/dashboard" color="blue" >Sign-in with Google</Button>
+        <Grid columns={1} textAlign="center">
+          <Grid.Row><img src="ohq-login.png" width="600px"/></Grid.Row>
+          <Grid.Row><GoogleButton/></Grid.Row>
+        </Grid>
       </div>
 
     );
