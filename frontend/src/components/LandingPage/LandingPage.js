@@ -20,7 +20,7 @@ export default class LandingPage extends React.Component {
         }}>
         <Grid columns={1} textAlign="center">
           <Grid.Row><img src="ohq-login.png" width="600px"/></Grid.Row>
-          <Grid.Row><GoogleButton/></Grid.Row>
+          <Grid.Row><GoogleButton onClick={() => { window.location = "/dashboard"}}/></Grid.Row>
         </Grid>
       </div>
 
