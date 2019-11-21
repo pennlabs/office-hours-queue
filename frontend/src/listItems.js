@@ -8,18 +8,19 @@ import FeedbackIcon from '@material-ui/icons/StarHalf';
 import PeopleIcon from '@material-ui/icons/People';
 import BarChartIcon from '@material-ui/icons/BarChart';
 import SettingsIcon from '@material-ui/icons/SettingsApplications';
-import AssignmentIcon from '@material-ui/icons/ExitToApp';
+import ExitIcon from '@material-ui/icons/ExitToApp';
+import { Link } from '@material-ui/core';
 
 export const mainListItems = (
   <div>
     <ListSubheader inset>CIS 121</ListSubheader>
-    <ListItem button>
+    <ListItem button component="a" href="Dashboard">
       <ListItemIcon>
         <DashboardIcon />
       </ListItemIcon>
       <ListItemText primary="Queues" />
     </ListItem>
-    <ListItem button>
+    <ListItem button component="a" href="Roster">
       <ListItemIcon>
         <PeopleIcon />
       </ListItemIcon>
@@ -48,9 +49,9 @@ export const mainListItems = (
 
 export const secondaryListItems = (
   <div>
-    <ListItem button>
+    <ListItem button component="a" href="SignIn">
       <ListItemIcon>
-        <AssignmentIcon />
+        <ExitIcon />
       </ListItemIcon>
       <ListItemText primary="Log Off" />
     </ListItem>
