@@ -1,5 +1,5 @@
 import React from 'react';
-import { Segment, Sidebar, Icon, Menu, Card, Header, Grid } from 'semantic-ui-react';
+import { Segment, Menu, Header, Grid, Modal, Form } from 'semantic-ui-react';
 import CourseCard from './CourseCard';
 import ArchivedCourseCard from './ArchivedCourseCard';
 import AddCard from './AddCard';
@@ -11,31 +11,47 @@ export default class Dashboard extends React.Component {
     this.state = {
       showArchived: false,
       studentCourses: [],
-      instructorCourses: []
+      instructorCourses: [],
+      newStudentCourse: {
+        code: "",
+        title: "",
+      },
+      studentModalOpen: false
     };
 
     this.handleArchivedChange = this.handleArchivedChange.bind(this);
-    this.addStudentCourse = this.addStudentCourse.bind(this);
+    this.handleStudentCourseSubmit = this.handleStudentCourseSubmit.bind(this);
+    this.handleStudentCourseChange = this.handleStudentCourseChange.bind(this);
+    this.openStudentModal = this.openStudentModal.bind(this);
   }
 
   handleArchivedChange() {
     this.setState({ showArchived: !this.state.showArchived });
   }
 
-  addStudentCourse() {
+  openStudentModal() {
+    this.setState({ studentModalOpen: true });
+  }
+
+  handleStudentCourseSubmit() {
     var newStudentCourses = this.state.studentCourses;
-    //dummy class
-    newStudentCourses.push({
-      code: "CIS 545",
-      title: "Big Data Analytics",
+    var newCourse = {
+      code: this.state.newStudentCourse.code,
+      title: this.state.newStudentCourse.title,
       totalQueues: "1",
       openQueues: "0",
       isArchived: false,
       year: 2019,
       semester: 0
-    });
+    };
+    newStudentCourses.push(newCourse)
+    this.setState({ studentCourses: newStudentCourses, studentModalOpen: false });
+  }
 
-    this.setState({ studentCourses: newStudentCourses });
+  handleStudentCourseChange(e, { name, value }) {
+    var course = this.state.newStudentCourse;
+    course[name] = value;
+    this.setState({ newStudentCourse: course });
   }
 
   componentDidMount() {
@@ -85,7 +101,23 @@ export default class Dashboard extends React.Component {
                   ))
                 }
                 <Grid.Column>
-                  <AddCard clickFunc={this.addStudentCourse}/>
+                  <AddCard clickFunc={this.openStudentModal}/>
+                  <Modal open={this.state.studentModalOpen}>
+                    <Modal.Header>Add New Student Course</Modal.Header>
+                    <Modal.Content>
+                      <Form onSubmit={this.handleStudentCourseSubmit}>
+                        <Form.Field>
+                          <label>Course Code</label>
+                          <Form.Input name="code" value={this.state.newStudentCourse.code} onChange={this.handleStudentCourseChange}/>
+                        </Form.Field>
+                        <Form.Field>
+                          <label>Course Title</label>
+                          <Form.Input name="title" value={this.state.newStudentCourse.title} onChange={this.handleStudentCourseChange}/>
+                        </Form.Field>
+                        <Form.Button content="Submit"/>
+                      </Form>
+                    </Modal.Content>
+                  </Modal>
                 </Grid.Column>
             </Grid.Row>
             <Segment basic padded>
