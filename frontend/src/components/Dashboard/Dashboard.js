@@ -3,6 +3,7 @@ import { Segment, Menu, Header, Grid, Modal, Form } from 'semantic-ui-react';
 import CourseCard from './CourseCard';
 import ArchivedCourseCard from './ArchivedCourseCard';
 import AddCard from './AddCard';
+import ModalAddStudentCourse from './ModalAddStudentCourse';
 import { fakeStudentCourses, fakeInstructorCourses } from './coursedata.js';
 
 export default class Dashboard extends React.Component {
@@ -102,22 +103,11 @@ export default class Dashboard extends React.Component {
                 }
                 <Grid.Column>
                   <AddCard clickFunc={this.openStudentModal}/>
-                  <Modal open={this.state.studentModalOpen}>
-                    <Modal.Header>Add New Student Course</Modal.Header>
-                    <Modal.Content>
-                      <Form onSubmit={this.handleStudentCourseSubmit}>
-                        <Form.Field>
-                          <label>Course Code</label>
-                          <Form.Input name="code" value={this.state.newStudentCourse.code} onChange={this.handleStudentCourseChange}/>
-                        </Form.Field>
-                        <Form.Field>
-                          <label>Course Title</label>
-                          <Form.Input name="title" value={this.state.newStudentCourse.title} onChange={this.handleStudentCourseChange}/>
-                        </Form.Field>
-                        <Form.Button content="Submit"/>
-                      </Form>
-                    </Modal.Content>
-                  </Modal>
+                  <ModalAddStudentCourse
+                    changeFunc={this.handleStudentCourseChange}
+                    submitFunc={this.handleStudentCourseSubmit}
+                    open={this.state.studentModalOpen}
+                  />
                 </Grid.Column>
             </Grid.Row>
             <Segment basic padded>
