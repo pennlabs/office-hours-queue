@@ -5,11 +5,13 @@
   "dependencies": {
     "@material-ui/core": "^4.5.2",
     "@material-ui/icons": "^4.5.1",
+    "firebase": "^7.4.0",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
     "react-google-button": "^0.5.3",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.2.0",
+    "recompose": "^0.30.0",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.1",
     "typeface-roboto": "0.0.75"

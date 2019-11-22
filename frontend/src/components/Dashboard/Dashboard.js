@@ -1,5 +1,5 @@
 import React from 'react';
-import { Segment, Menu, Header, Grid, Modal, Form } from 'semantic-ui-react';
+import { Segment, Menu, Header, Grid } from 'semantic-ui-react';
 import CourseCard from './CourseCard';
 import ArchivedCourseCard from './ArchivedCourseCard';
 import AddCard from './AddCard';
@@ -17,13 +17,23 @@ export default class Dashboard extends React.Component {
         code: "",
         title: "",
       },
-      studentModalOpen: false
+      studentModalOpen: false,
+      instructorModalOpen: false,
+      newInstructorCourse: {
+        code: "",
+        title: "",
+      }
     };
 
     this.handleArchivedChange = this.handleArchivedChange.bind(this);
+
     this.handleStudentCourseSubmit = this.handleStudentCourseSubmit.bind(this);
     this.handleStudentCourseChange = this.handleStudentCourseChange.bind(this);
     this.openStudentModal = this.openStudentModal.bind(this);
+
+    this.handleInstructorCourseSubmit = this.handleInstructorCourseSubmit.bind(this);
+    this.handleInstructorCourseChange = this.handleInstructorCourseChange.bind(this);
+    this.openInstructorModal = this.openInstructorModal.bind(this);
   }
 
   handleArchivedChange() {
@@ -32,6 +42,10 @@ export default class Dashboard extends React.Component {
 
   openStudentModal() {
     this.setState({ studentModalOpen: true });
+  }
+
+  openInstructorModal() {
+    this.setState({ instructorModalOpen: true });
   }
 
   handleStudentCourseSubmit() {
@@ -53,6 +67,27 @@ export default class Dashboard extends React.Component {
     var course = this.state.newStudentCourse;
     course[name] = value;
     this.setState({ newStudentCourse: course });
+  }
+
+  handleInstructorCourseSubmit() {
+    var newInstructorCourses = this.state.instructorCourses;
+    var newCourse = {
+      code: this.state.newInstructorCourse.code,
+      title: this.state.newInstructorCourse.title,
+      totalQueues: "1",
+      openQueues: "0",
+      isArchived: false,
+      year: 2019,
+      semester: 0
+    };
+    newInstructorCourses.push(newCourse)
+    this.setState({ instructorCourses: newInstructorCourses, instructorModalOpen: false });
+  }
+
+  handleInstructorCourseChange(e, { name, value }) {
+    var course = this.state.newInstructorCourse;
+    course[name] = value;
+    this.setState({ newInstructorCourse: course });
   }
 
   componentDidMount() {
@@ -134,6 +169,14 @@ export default class Dashboard extends React.Component {
                     </Grid.Column>
                   ))
                 }
+                <Grid.Column>
+                  <AddCard clickFunc={this.openInstructorModal}/>
+                  <ModalAddStudentCourse
+                    changeFunc={this.handleInstructorCourseChange}
+                    submitFunc={this.handleInstructorCourseSubmit}
+                    open={this.state.instructorModalOpen}
+                  />
+                </Grid.Column>
             </Grid.Row>
             <a style={{"text-decoration":"underline"}} onClick={this.handleArchivedChange}>
               { this.state.showArchived ? "Hide Archived Courses" : "See Archived Courses"}
