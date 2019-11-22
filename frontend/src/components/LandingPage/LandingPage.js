@@ -67,9 +67,7 @@ const SignInGoogle = compose(
 )(SignInGoogleBase);
 
 const LandingPage = () => (
-  <div>
     <SignInGoogle />
-  </div>
 );
 
 export default LandingPage;
