@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
-import { Grid, Button, Segment } from 'semantic-ui-react';
+import { Grid } from 'semantic-ui-react';
 
 import { withFirebase } from '../Firebase';
 // import * as ROUTES from '../../constants/routes';
@@ -37,12 +37,6 @@ class SignInGoogleBase extends Component {
 
   render() {
     return (
-        <GoogleButton onClick={this.onSubmit}/>
-    );
-  }
-
-  render() {
-    return (
       <div
         style={{
           "height":"100%",
@@ -52,7 +46,7 @@ class SignInGoogleBase extends Component {
           "justifyContent":"center"
         }}>
         <Grid columns={1} textAlign="center">
-          <Grid.Row><img src="ohq-login.png" width="600px"/></Grid.Row>
+          <Grid.Row><img src="ohq-login.png" width="600px" alt=""/></Grid.Row>
           <Grid.Row><GoogleButton onClick={this.onSubmit}/></Grid.Row>
         </Grid>
       </div>
