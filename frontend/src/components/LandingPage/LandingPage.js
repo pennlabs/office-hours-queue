@@ -8,6 +8,8 @@ import { withFirebase } from '../Firebase';
 import GoogleButton from 'react-google-button';
 import "typeface-roboto";
 
+import * as ROUTES from '../../constants/routes';
+
 class SignInGoogleBase extends Component {
   constructor(props) {
     super(props);
@@ -24,10 +26,9 @@ class SignInGoogleBase extends Component {
       })
       .then(() => {
         this.setState({ error: null });
+        this.props.history.push(ROUTES.DASHBOARD);
       })
       .catch(error => {
-        console.log("Fuck, there was an error! " + error)
-
         this.setState({ error });
       });
 
