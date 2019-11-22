@@ -2,9 +2,6 @@ import React from 'react'
 import { Segment, Header, Icon } from 'semantic-ui-react';
 
 export default class CourseCard extends React.Component {
-  constructor(props) {
-    super(props);
-  }
 
   render() {
     return (

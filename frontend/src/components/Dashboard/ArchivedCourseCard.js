@@ -2,10 +2,7 @@ import React from 'react';
 import { Segment, Header } from 'semantic-ui-react';
 
 export default class ArchivedCourseCard extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
+  
   render() {
     return (
       <Segment basic>

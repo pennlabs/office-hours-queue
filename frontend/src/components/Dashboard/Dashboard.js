@@ -1,5 +1,5 @@
 import React from 'react';
-import { Segment, Menu, Header, Grid, Modal, Form } from 'semantic-ui-react';
+import { Segment, Menu, Header, Grid } from 'semantic-ui-react';
 import CourseCard from './CourseCard';
 import ArchivedCourseCard from './ArchivedCourseCard';
 import AddCard from './AddCard';

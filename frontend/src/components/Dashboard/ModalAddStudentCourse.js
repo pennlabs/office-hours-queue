@@ -3,9 +3,6 @@ import { Modal, Form } from 'semantic-ui-react';
 
 //modal for adding student courses (props: submit and change function, and open boolean)
 export default class ModalAddStudentCourse extends React.Component {
-  constructor(props) {
-    super(props);
-  }
 
   render() {
     return (
