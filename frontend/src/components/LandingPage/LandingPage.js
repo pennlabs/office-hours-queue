@@ -4,7 +4,6 @@ import { compose } from 'recompose';
 import { Grid } from 'semantic-ui-react';
 
 import { withFirebase } from '../Firebase';
-// import * as ROUTES from '../../constants/routes';
 
 import GoogleButton from 'react-google-button';
 import "typeface-roboto";
