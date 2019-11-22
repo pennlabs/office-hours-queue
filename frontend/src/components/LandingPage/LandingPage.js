@@ -8,6 +8,12 @@ import { withFirebase } from '../Firebase';
 import GoogleButton from 'react-google-button';
 import "typeface-roboto";
 
+import * as ROUTES from '../../constants/routes';
+
+import Dashboard from '../Dashboard/Dashboard';
+
+import AuthUserContext from '../Session/context';
+
 class SignInGoogleBase extends Component {
   constructor(props) {
     super(props);
@@ -24,10 +30,9 @@ class SignInGoogleBase extends Component {
       })
       .then(() => {
         this.setState({ error: null });
+        this.props.history.push(ROUTES.DASHBOARD);
       })
       .catch(error => {
-        console.log("Fuck, there was an error! " + error)
-
         this.setState({ error });
       });
 
@@ -35,21 +40,28 @@ class SignInGoogleBase extends Component {
   };
 
   render() {
-    return (
-      <div
-        style={{
-          "height":"100%",
-          "width":"100%",
-          "display":"flex",
-          "alignItems": "center",
-          "justifyContent":"center"
-        }}>
-        <Grid columns={1} textAlign="center">
-          <Grid.Row><img src="ohq-login.png" width="600px" alt=""/></Grid.Row>
-          <Grid.Row><GoogleButton onClick={this.onSubmit}/></Grid.Row>
-        </Grid>
-      </div>
+    const condition = authUser => !!authUser;
 
+    return (
+      <AuthUserContext.Consumer>
+          {authUser =>
+            condition(authUser) 
+            ? <Dashboard />
+            : <div
+                style={{
+                  "height":"100%",
+                  "width":"100%",
+                  "display":"flex",
+                  "alignItems": "center",
+                  "justifyContent":"center"
+                }}>
+                <Grid columns={1} textAlign="center">
+                  <Grid.Row><img src="ohq-login.png" width="600px" alt=""/></Grid.Row>
+                  <Grid.Row><GoogleButton onClick={this.onSubmit}/></Grid.Row>
+                </Grid>
+              </div> 
+          }
+      </AuthUserContext.Consumer>
     );
   }
 }

@@ -11,8 +11,8 @@ export default class AddCard extends React.Component {
             "height":"110px",
             "width":"205px",
             "display": "flex",
-            "align-items": "center",
-            "justify-content":"center"
+            "alignItems": "center",
+            "justifyContent":"center"
           }}
           onClick={this.props.clickFunc}
           >

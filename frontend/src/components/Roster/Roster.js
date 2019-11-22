@@ -22,18 +22,8 @@ import { mainListItems, secondaryListItems } from './listItems';
 // import Deposits from './Deposits';
 import People from './People';
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        OHQ
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+import { withAuthorization } from '../Session';
+import { compose } from 'recompose';
 
 const drawerWidth = 240;
 
@@ -118,7 +108,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function Roster() {
+function Roster() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
   const handleDrawerOpen = () => {
@@ -189,8 +179,13 @@ export default function Roster() {
             </Grid>
           </Grid>
         </Container>
-        <Copyright />
       </main>
     </div>
   );
 }
+
+const condition = authUser => !!authUser;
+
+export default compose(
+  withAuthorization(condition),
+)(Roster);

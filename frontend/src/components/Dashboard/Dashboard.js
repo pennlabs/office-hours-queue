@@ -6,7 +6,10 @@ import AddCard from './AddCard';
 import ModalAddStudentCourse from './ModalAddStudentCourse';
 import { fakeStudentCourses, fakeInstructorCourses } from './coursedata.js';
 
-export default class Dashboard extends React.Component {
+import { withAuthorization } from '../Session';
+import { compose } from 'recompose';
+
+class Dashboard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -120,7 +123,7 @@ export default class Dashboard extends React.Component {
               </Header>
             </Segment>
             {/* add student course cards */}
-            <Grid.Row columns={4} padded>
+            <Grid.Row columns={4} padded="true">
                 {
                   this.state.studentCourses.map(course => (
 
@@ -153,7 +156,7 @@ export default class Dashboard extends React.Component {
               </Header>
             </Segment>
             {/* add instructor course cards */}
-            <Grid.Row columns={4} padded>
+            <Grid.Row columns={4} padded="true">
                 {
                   this.state.instructorCourses.map(course => (
 
@@ -178,11 +181,11 @@ export default class Dashboard extends React.Component {
                   />
                 </Grid.Column>
             </Grid.Row>
-            <a style={{"text-decoration":"underline"}} onClick={this.handleArchivedChange}>
+            <a style={{"textDecoration":"underline"}} onClick={this.handleArchivedChange}>
               { this.state.showArchived ? "Hide Archived Courses" : "See Archived Courses"}
             </a>
             {/* add archived instructor courses if "see archived" is toggled */}
-            <Grid.Row columns={4} padded>
+            <Grid.Row columns={4} padded="true">
                 {
                   this.state.instructorCourses.map(course => (
 
@@ -204,3 +207,9 @@ export default class Dashboard extends React.Component {
     );
   }
 }
+
+const condition = authUser => !!authUser;
+
+export default compose(
+  withAuthorization(condition),
+)(Dashboard);
