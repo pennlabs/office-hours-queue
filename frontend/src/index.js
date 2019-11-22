@@ -35,4 +35,13 @@ import App from './components/App';
 import * as serviceWorker from './serviceWorker';
 import 'semantic-ui-css/semantic.min.css';
 
-ReactDOM.render(<BrowserRouter><App/></BrowserRouter>, document.getElementById('root'));
+import Firebase, { FirebaseContext } from './components/Firebase';
+
+ReactDOM.render(
+    <FirebaseContext.Provider value={new Firebase()}>
+    <BrowserRouter>
+        <App/>
+    </BrowserRouter>
+    </FirebaseContext.Provider>, 
+    document.getElementById('root')
+);

@@ -1,4 +1,5 @@
-import app from 'firebase/app';
+import * as firebase from "firebase/app";
+import "firebase/auth";
 
 const config = {
     apiKey: "AIzaSyAiEIpy5y_EGS9lOeMc5NQF5VDUiJScSqE",
@@ -12,9 +13,15 @@ const config = {
 };
 
 class Firebase {
-  constructor() {
-    app.initializeApp(config);
-  }
+    constructor() {
+        firebase.initializeApp(config);
+
+        this.auth = firebase.auth();
+        this.googleProvider = new firebase.auth.GoogleAuthProvider();
+    }
+
+    doSignInWithGoogle = () =>
+        this.auth.signInWithPopup(this.googleProvider);
 }
 
 export default Firebase;
