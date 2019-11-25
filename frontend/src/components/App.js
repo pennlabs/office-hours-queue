@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import * as ROUTES from '../constants/routes';
 
 import LandingPage from './LandingPage/LandingPage';
@@ -12,9 +12,12 @@ class App extends React.Component {
   render() {
     return (
       <Router>
-        <Route exact path={ROUTES.LANDING} component={ LandingPage }/>
-        <Route exact path={ROUTES.DASHBOARD} component={ Dashboard }/>
-        <Route exact path={ROUTES.ROSTER} component={ Roster }/>
+        <Switch>
+          <Route exact path={ROUTES.LANDING} component={ LandingPage }/>
+          <Route exact path={ROUTES.DASHBOARD} component={ Dashboard }/>
+          <Route exact path={ROUTES.ROSTER} component={ Roster }/>
+          <Route component={ Dashboard }/>
+        </Switch>
       </Router>
     );
   }
