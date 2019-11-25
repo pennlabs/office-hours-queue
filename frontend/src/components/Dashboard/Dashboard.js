@@ -1,10 +1,12 @@
 import React from 'react';
-import { Segment, Menu, Header, Grid } from 'semantic-ui-react';
+import { Segment, Menu, Header, Grid, Image } from 'semantic-ui-react';
 import CourseCard from './CourseCard';
 import ArchivedCourseCard from './ArchivedCourseCard';
 import AddCard from './AddCard';
 import ModalAddStudentCourse from './ModalAddStudentCourse';
 import { fakeStudentCourses, fakeInstructorCourses } from './coursedata.js';
+import * as ROUTES from '../../constants/routes';
+
 
 import { withAuthorization } from '../Session';
 import { compose } from 'recompose';
@@ -105,11 +107,25 @@ class Dashboard extends React.Component {
       <Grid columns={2} divided="horizontally">
         <Grid.Column width={3}>
           <Segment basic>
+          <Image src='../../../ohq.png' size='tiny'/>
           <Menu vertical secondary fluid>
             <Menu.Item
               name="Dashboard"
-              onClick={function(){}}
+              icon='dashboard'
+              href={ROUTES.DASHBOARD}
+              active={true}
+              color={'blue'}
             />
+            <Menu.Item
+              name="Sample Queue"
+              icon='hourglass one'
+              href={ROUTES.QUEUE}
+              />
+            <Menu.Item
+              name="Sample Roster"
+              icon='users'
+              href={ROUTES.ROSTER}
+              />
           </Menu>
           </Segment>
         </Grid.Column>
