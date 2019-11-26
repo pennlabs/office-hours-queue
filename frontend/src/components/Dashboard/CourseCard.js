@@ -9,14 +9,13 @@ export default class CourseCard extends React.Component {
         <Segment attached="top" color="blue" style={{"height":"70px", "width":"205px"}}>
           <Header
             content={this.props.code}
-            href='RosterSem' // should link to course page, which should then have queues, roster, etc.
+            href='/Queue' // should link to course page, which should then have queues, roster, etc.
             subheader={this.props.title.length < 28 ? this.props.title : this.props.title.substring(0, 25) + "..."}
           />
         </Segment>
         <Segment attached="bottom" secondary textAlign="right" style={{"height":"40px"}}>
           <Header as="h6">
-            <Header.Content href='Queue' // placeholder link for now
-            > 
+            <Header.Content>
               <Icon name="circle" color={ this.props.openQueues == 0 ? "red" : "green" }/>
               {this.props.openQueues} / { this.props.totalQueues } Queues
             </Header.Content>

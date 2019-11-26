@@ -35,6 +35,7 @@ class Dashboard extends React.Component {
     this.handleStudentCourseSubmit = this.handleStudentCourseSubmit.bind(this);
     this.handleStudentCourseChange = this.handleStudentCourseChange.bind(this);
     this.openStudentModal = this.openStudentModal.bind(this);
+    this.closeStudentModal = this.closeStudentModal.bind(this);
 
     this.handleInstructorCourseSubmit = this.handleInstructorCourseSubmit.bind(this);
     this.handleInstructorCourseChange = this.handleInstructorCourseChange.bind(this);
@@ -47,6 +48,10 @@ class Dashboard extends React.Component {
 
   openStudentModal() {
     this.setState({ studentModalOpen: true });
+  }
+
+  closeStudentModal() {
+    this.setState({ studentModalOpen: false });
   }
 
   openInstructorModal() {
@@ -160,6 +165,7 @@ class Dashboard extends React.Component {
                   <ModalAddStudentCourse
                     changeFunc={this.handleStudentCourseChange}
                     submitFunc={this.handleStudentCourseSubmit}
+                    closeFunc={this.closeStudentModal}
                     open={this.state.studentModalOpen}
                   />
                 </Grid.Column>
