@@ -24,7 +24,8 @@ class Queue extends React.Component{
 
         this.handleAnswerQuestion = this.handleAnswerQuestion.bind(this);
         this.handleDeleteQuestion = this.handleDeleteQuestion.bind(this);
-
+        this.handleTagClick = this.handleTagClick.bind(this);
+        this.handleTagClear = this.handleTagClear.bind(this);
       }
 
       handleArchivedChange() {
@@ -40,10 +41,24 @@ class Queue extends React.Component{
         var questions = queue.questions;
         var question = questions[questionIndex];
         question.isDeleted = true;
-        questions[questionIndex] = question;
-        queue.questions = questions;
 
         this.setState({ queues: queues });
+      }
+
+      handleTagClick(index) {
+        var tags = this.state.tags;
+        var tag = tags[index];
+        tag.isActive = !tag.isActive;
+        this.setState({ tags: tags });
+      }
+
+      handleTagClear() {
+        var tags = this.state.tags;
+        tags.map(tag => {
+          tag.isActive = false;
+        });
+
+        this.setState({ tags: tags });
       }
 
       componentDidMount() {
@@ -96,16 +111,19 @@ class Queue extends React.Component{
                   <Segment basic>
                     <Header as="h3" content="Tags (select to filter)"/>
                     {
-                      this.state.tags.map(tag => (
+                      this.state.tags.map((tag, index) => (
                         <Label
                           as="a"
                           color={tag.isActive ? "blue" : ""}
-                          onClick={() => {tag.isActive = !tag.isActive}}
+                          onClick={() => {this.handleTagClick(index)}}
                         >
                           { tag.name }
                         </Label>
                       ))
                     }
+                    <a style={{"margin-left":"12px", "text-decoration":"underline"}}
+                      onClick={this.handleTagClear}
+                    >Clear All</a>
                   </Segment>
                 </Grid.Row>
                 <Grid.Row>
