@@ -115,6 +115,7 @@ class Question(models.Model):
 
     time_asked = models.DateTimeField()
     time_last_updated = models.DateTimeField(blank=True, null=True)
+    time_started = models.DateTimeField(blank=True, null=True)
     time_answered = models.DateTimeField(blank=True, null=True)
     time_withdrawn = models.DateTimeField(blank=True, null=True)
 
