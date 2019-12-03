@@ -18,7 +18,7 @@ class Queue extends React.Component{
           queues: [],
           tags: [
             { name: "hw3", isActive: false },
-            { name: "dijkstra", isActive: false}
+            { name: "dijkstra", isActive: false }
           ]
         };
 
@@ -26,6 +26,7 @@ class Queue extends React.Component{
         this.handleDeleteQuestion = this.handleDeleteQuestion.bind(this);
         this.handleTagClick = this.handleTagClick.bind(this);
         this.handleTagClear = this.handleTagClear.bind(this);
+        this.containsActiveTag = this.containsActiveTag.bind(this);
       }
 
       handleArchivedChange() {
@@ -59,6 +60,29 @@ class Queue extends React.Component{
         });
 
         this.setState({ tags: tags });
+      }
+
+      containsActiveTag(question) {
+        //why tf do i hav to do it this way
+        var bool = false;
+        var activeTags = this.state.tags.filter(tag => {
+          return tag.isActive;
+        }).map(tag => tag.name);
+
+        if (activeTags.length == 0) {
+          bool = true;;
+        }
+
+        question.tags.forEach(tag => {
+          console.log(activeTags);
+          console.log(tag);
+          if (activeTags.includes(tag)) {
+            console.log("hello");
+            bool = true;
+          }
+        });
+
+        return bool;
       }
 
       componentDidMount() {
@@ -139,6 +163,7 @@ class Queue extends React.Component{
                           this.state.queues.length > 0 &&
                           this.state.queues[0].questions.map((question, index) => (
                             !question.isDeleted && !question.isAnswered &&
+                            this.containsActiveTag(question) &&
                             <Grid.Row>
                               <QuestionCard
                                 asker={question.asker}
@@ -166,6 +191,7 @@ class Queue extends React.Component{
                           this.state.queues.length > 1 &&
                           this.state.queues[1].questions.map((question, index) => (
                             !question.isAnswered && !question.isDeleted &&
+                            this.containsActiveTag(question) &&
                             <Grid.Column>
                               <QuestionCard
                                 asker={question.asker}
