@@ -77,7 +77,6 @@ class Queue extends React.Component{
           console.log(activeTags);
           console.log(tag);
           if (activeTags.includes(tag)) {
-            console.log("hello");
             bool = true;
           }
         });
