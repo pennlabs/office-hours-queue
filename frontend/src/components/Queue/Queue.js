@@ -1,5 +1,5 @@
 import React from 'react';
-import { Segment, Menu, Header, Grid, Image } from 'semantic-ui-react';
+import { Segment, Menu, Header, Grid, Image, Label } from 'semantic-ui-react';
 import QuestionCard from './QuestionCard';
 import { fakeMainQueue, fakeDebuggingQueue } from './questiondata.js';
 import * as ROUTES from '../../constants/routes';
@@ -15,14 +15,12 @@ class Queue extends React.Component{
         this.state = {
           code: "CIS 121",
           title: "Introduction to Data Structures and Algorithms",
-          showMainQueueMore: false,
-          showDebugQueueMore: false,
-          mainQueueQuestions: [],
-          debuggingQueueQuestions: [],
+          queues: [],
+          tags: [
+            { name: "hw3", isActive: false },
+            { name: "dijkstra", isActive: false}
+          ]
         };
-
-        this.handleMainQueueChange = this.handleMainQueueChange.bind(this);
-        this.handleDebugQueueChange = this.handleDebugQueueChange.bind(this);
 
         this.handleAnswerQuestion = this.handleAnswerQuestion.bind(this);
         this.handleDeleteQuestion = this.handleDeleteQuestion.bind(this);
@@ -33,34 +31,24 @@ class Queue extends React.Component{
         this.setState({ showArchived: !this.state.showArchived });
       }
 
-      handleMainQueueChange() {
-        this.setState({ showMainQueueMore: !this.state.showMainQueueMore });
+      handleAnswerQuestion(queueIndex) {
       }
 
-      handleDebugQueueChange() {
-        this.setState({ showDebugQueueMore: !this.state.showDebugQueueMore });
-      }
+      handleDeleteQuestion(queueIndex, questionIndex) {
+        var queues = this.state.queues;
+        var queue = queues[queueIndex];
+        var questions = queue.questions;
+        var question = questions[questionIndex];
+        question.isDeleted = true;
+        questions[questionIndex] = question;
+        queue.questions = questions;
 
-      handleDeleteQuestion(isMainQueue, isDebugQueue) {
-        // TODO
-        var queue;
-        if(isMainQueue){
-          queue = this.mainQueueQuestions;
-        }
-        else{
-          queue = this.debuggingQueueQuestions;
-        }
-
-      }
-
-      handleAnswerQuestion(isMainQueue, isDebugQueue){
-        // TODO
+        this.setState({ queues: queues });
       }
 
       componentDidMount() {
         this.setState({
-          mainQueueQuestions: fakeMainQueue,
-          debuggingQueueQuestions: fakeDebuggingQueue
+          queues: [fakeMainQueue, fakeDebuggingQueue]
         });
       }
 
@@ -94,6 +82,7 @@ class Queue extends React.Component{
             <Grid.Column width={13}>
               <Grid columns={2} padded>
                 <Grid.Row>
+                  {/* COURSE HEADER */}
                   <Segment basic>
                     <Header as="h1">
                       {this.state.code}
@@ -104,17 +93,33 @@ class Queue extends React.Component{
                   </Segment>
                 </Grid.Row>
                 <Grid.Row>
+                  <Segment basic>
+                    <Header as="h3" content="Tags (select to filter)"/>
+                    {
+                      this.state.tags.map(tag => (
+                        <Label
+                          as="a"
+                          color={tag.isActive ? "blue" : ""}
+                          onClick={() => {tag.isActive = !tag.isActive}}
+                        >
+                          { tag.name }
+                        </Label>
+                      ))
+                    }
+                  </Segment>
+                </Grid.Row>
+                <Grid.Row>
                   <Grid.Column>
                     <Header as="h3">
                       <Header.Content>
-                        Main Queue
+                        { this.state.queues.length > 0 && this.state.queues[0].title }
                       </Header.Content>
                     </Header>
                     {/* add main queue cards */}
                     <Grid.Row columns={1} padded="true">
                         {
-                          this.state.mainQueueQuestions.map(question => (
-
+                          this.state.queues.length > 0 &&
+                          this.state.queues[0].questions.map((question, index) => (
                             !question.isDeleted && !question.isAnswered &&
                             <Grid.Row>
                               <QuestionCard
@@ -122,6 +127,9 @@ class Queue extends React.Component{
                                 text={question.text}
                                 time_asked={question.time_asked}
                                 tags={question.tags[0]}
+                                queueIndex={0}
+                                id={index}
+                                deleteFunc={this.handleDeleteQuestion}
                               />
                             </Grid.Row>
                           ))
@@ -131,14 +139,14 @@ class Queue extends React.Component{
                   <Grid.Column>
                     <Header as="h3">
                       <Header.Content>
-                        Debugging Queue
+                        { this.state.queues.length > 1 && this.state.queues[1].title }
                       </Header.Content>
                     </Header>
                     {/* add Debugging queue cards */}
                     <Grid.Row columns={1} padded="true">
                         {
-                          this.state.debuggingQueueQuestions.map(question => (
-
+                          this.state.queues.length > 1 &&
+                          this.state.queues[1].questions.map((question, index) => (
                             !question.isAnswered && !question.isDeleted &&
                             <Grid.Column>
                               <QuestionCard
@@ -146,6 +154,9 @@ class Queue extends React.Component{
                                 text={question.text}
                                 time_asked={question.time_asked}
                                 tags={question.tags[0]}
+                                queueIndex={1}
+                                id={index}
+                                deleteFunc={this.handleDeleteQuestion}
                               />
                             </Grid.Column>
                           ))

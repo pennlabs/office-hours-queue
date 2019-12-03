@@ -1,5 +1,7 @@
 //fake question data for queue page
-var fakeMainQueue = [
+var fakeMainQueue = {
+  title: "Main Queue",
+  questions: [
     {
       asker: "Monal Garg",
       time_asked: "5:46 pm",
@@ -16,9 +18,12 @@ var fakeMainQueue = [
         isAnswered: false,
         isDeleted: false
     }
-  ];
-  
-  var fakeDebuggingQueue= [
+  ]
+};
+
+  var fakeDebuggingQueue = {
+    title: "Debugging Queue",
+    questions: [
     {
         asker: "Steven Bursztyn",
         time_asked: "5:43 pm",
@@ -43,7 +48,7 @@ var fakeMainQueue = [
         isAnswered: false,
         isDeleted: false
     }
-  ];
-  
+  ]
+}
+
   export { fakeMainQueue, fakeDebuggingQueue };
-  

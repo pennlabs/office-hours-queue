@@ -24,12 +24,19 @@ export default class CourseCard extends React.Component {
         <Segment attached="bottom" secondary textAlign="right" style={{"height":"50px",  "width":"300px"}}>
           <Header as="h5" floated='left'>
               <Header.Content>
-              <Button compact size='mini' color='red'>Delete</Button>
-                <Button compact size='mini' color='green'>Answer</Button>
+              <Button compact
+                size='mini'
+                color='red'
+                content='Delete'
+                onClick={() => this.props.deleteFunc(this.props.queueIndex, this.props.id)}/>
+                <Button compact
+                  size='mini'
+                  color='green'
+                  content='Answer'/>
               </Header.Content>
             </Header>
           <Header as="h6" floated='right'>
-            <Header.Content href='Queue'> 
+            <Header.Content href='Queue'>
               <Icon name="tags" color="blue"/>
               <Label>
                 {this.props.tags}
