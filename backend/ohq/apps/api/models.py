@@ -37,6 +37,7 @@ class Course(models.Model):
 
     name = models.CharField(max_length=100)
     department = models.CharField(max_length=100)
+    description = models.CharField(max_length=250)
     year = models.IntegerField()
     semester = models.CharField(**Semester.choices())
     is_archived = models.BooleanField(default=False)
