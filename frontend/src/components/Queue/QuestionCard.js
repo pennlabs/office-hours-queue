@@ -1,5 +1,5 @@
 import React from 'react'
-import { Segment, Header, Icon, Button, Label } from 'semantic-ui-react';
+import { Segment, Header, Icon, Button, Label, Popup } from 'semantic-ui-react';
 
 export default class CourseCard extends React.Component {
 
@@ -35,14 +35,20 @@ export default class CourseCard extends React.Component {
                   content='Answer'/>
               </Header.Content>
             </Header>
-          <Header as="h6" floated='right'>
-            <Header.Content href='Queue'>
-              <Icon name="tags" color="blue"/>
-              <Label>
-                {this.props.tags}
-              </Label>
-            </Header.Content>
-          </Header>
+            <Popup
+              trigger= {
+                <Icon name="tags"/>
+              }
+              content= {
+                this.props.tags.map(tag => {
+                  return ' ' + tag
+                }).toString()
+              }
+              basic
+              position="bottom left"
+              inverted
+            />
+
         </Segment>
       </Segment>
     );

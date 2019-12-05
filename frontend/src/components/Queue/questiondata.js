@@ -47,4 +47,14 @@ var fakeMainQueue = {
   ]
 }
 
-  export { fakeMainQueue, fakeDebuggingQueue };
+var fakeCourse = {
+  name: "121",
+  department: "CIS",
+  description: "Introduction to Data Structures and Algorithms",
+  year: 2019,
+  semester: "Fall",
+  isArchived: false,
+  queues: [fakeMainQueue, fakeDebuggingQueue]
+}
+
+  export { fakeCourse };

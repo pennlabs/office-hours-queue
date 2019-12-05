@@ -1,7 +1,7 @@
 import React from 'react';
 import { Segment, Menu, Header, Grid, Image, Label } from 'semantic-ui-react';
 import QuestionCard from './QuestionCard';
-import { fakeMainQueue, fakeDebuggingQueue } from './questiondata.js';
+import { fakeCourse } from './questiondata.js';
 import * as ROUTES from '../../constants/routes';
 
 
@@ -13,13 +13,8 @@ class Queue extends React.Component{
     constructor(props) {
         super(props);
         this.state = {
-          code: "CIS 121",
-          title: "Introduction to Data Structures and Algorithms",
-          queues: [],
-          tags: [
-            { name: "hw3", isActive: false },
-            { name: "dijkstra", isActive: false }
-          ]
+          course: "",
+          allTags: []
         };
 
         this.handleAnswerQuestion = this.handleAnswerQuestion.bind(this);
@@ -27,6 +22,21 @@ class Queue extends React.Component{
         this.handleTagClick = this.handleTagClick.bind(this);
         this.handleTagClear = this.handleTagClear.bind(this);
         this.containsActiveTag = this.containsActiveTag.bind(this);
+      }
+
+      componentDidMount() {
+        var tags = [];
+
+        fakeCourse.queues.forEach(queue => {
+            queue.tags.forEach(tag => {
+              tags.push({ name: tag, isActive: false });
+            });
+        });
+
+        this.setState({
+          course: fakeCourse,
+          allTags: tags
+        });
       }
 
       handleArchivedChange() {
@@ -47,25 +57,25 @@ class Queue extends React.Component{
       }
 
       handleTagClick(index) {
-        var tags = this.state.tags;
+        var tags = this.state.allTags;
         var tag = tags[index];
         tag.isActive = !tag.isActive;
-        this.setState({ tags: tags });
+        this.setState({ allTags: tags });
       }
 
       handleTagClear() {
-        var tags = this.state.tags;
+        var tags = this.state.allTags;
         tags.map(tag => {
           tag.isActive = false;
         });
 
-        this.setState({ tags: tags });
+        this.setState({ allTags: tags });
       }
 
       containsActiveTag(question) {
         //why tf do i hav to do it this way
         var bool = false;
-        var activeTags = this.state.tags.filter(tag => {
+        var activeTags = this.state.allTags.filter(tag => {
           return tag.isActive;
         }).map(tag => tag.name);
 
@@ -82,12 +92,6 @@ class Queue extends React.Component{
         });
 
         return bool;
-      }
-
-      componentDidMount() {
-        this.setState({
-          queues: [fakeMainQueue, fakeDebuggingQueue]
-        });
       }
 
       render() {
@@ -123,9 +127,9 @@ class Queue extends React.Component{
                   {/* COURSE HEADER */}
                   <Segment basic>
                     <Header as="h1">
-                      {this.state.code}
+                      {this.state.course.department + " " + this.state.course.name}
                       <Header.Subheader>
-                        {this.state.title}
+                        {this.state.course.description}
                       </Header.Subheader>
                     </Header>
                   </Segment>
@@ -134,7 +138,7 @@ class Queue extends React.Component{
                   <Segment basic>
                     <Header as="h3" content="Tags (select to filter)"/>
                     {
-                      this.state.tags.map((tag, index) => (
+                      this.state.allTags.map((tag, index) => (
                         <Label
                           as="a"
                           color={tag.isActive ? "blue" : ""}
@@ -152,15 +156,25 @@ class Queue extends React.Component{
                 <Grid.Row>
                   <Grid.Column>
                     <Header as="h3">
-                      <Header.Content>
-                        { this.state.queues.length > 0 && this.state.queues[0].title }
-                      </Header.Content>
+                      {
+                        this.state.course.queues &&
+                        this.state.course.queues.length > 0 &&
+                        this.state.course.queues[0].name
+                      }
+                      <Header.Subheader>
+                        {
+                          this.state.course.queues &&
+                          this.state.course.queues.length > 0 &&
+                          this.state.course.queues[0].description
+                        }
+                      </Header.Subheader>
                     </Header>
                     {/* add main queue cards */}
                     <Grid.Row columns={1} padded="true">
                         {
-                          this.state.queues.length > 0 &&
-                          this.state.queues[0].questions.map((question, index) => (
+                          this.state.course.queues &&
+                          this.state.course.queues.length > 0 &&
+                          this.state.course.queues[0].questions.map((question, index) => (
                             !question.isDeleted && !question.isAnswered &&
                             this.containsActiveTag(question) &&
                             <Grid.Row>
@@ -168,7 +182,7 @@ class Queue extends React.Component{
                                 asker={question.asker}
                                 text={question.text}
                                 time_asked={question.time_asked}
-                                tags={question.tags[0]}
+                                tags={question.tags}
                                 queueIndex={0}
                                 id={index}
                                 deleteFunc={this.handleDeleteQuestion}
@@ -180,15 +194,25 @@ class Queue extends React.Component{
                   </Grid.Column>
                   <Grid.Column>
                     <Header as="h3">
-                      <Header.Content>
-                        { this.state.queues.length > 1 && this.state.queues[1].title }
-                      </Header.Content>
+                      {
+                        this.state.course.queues &&
+                        this.state.course.queues.length > 1 &&
+                        this.state.course.queues[1].name
+                      }
+                      <Header.Subheader>
+                        {
+                          this.state.course.queues &&
+                          this.state.course.queues.length > 1 &&
+                          this.state.course.queues[1].description
+                        }
+                      </Header.Subheader>
                     </Header>
                     {/* add Debugging queue cards */}
                     <Grid.Row columns={1} padded="true">
                         {
-                          this.state.queues.length > 1 &&
-                          this.state.queues[1].questions.map((question, index) => (
+                          this.state.course.queues &&
+                          this.state.course.queues.length > 1 &&
+                          this.state.course.queues[1].questions.map((question, index) => (
                             !question.isAnswered && !question.isDeleted &&
                             this.containsActiveTag(question) &&
                             <Grid.Column>
@@ -196,7 +220,7 @@ class Queue extends React.Component{
                                 asker={question.asker}
                                 text={question.text}
                                 time_asked={question.time_asked}
-                                tags={question.tags[0]}
+                                tags={question.tags}
                                 queueIndex={1}
                                 id={index}
                                 deleteFunc={this.handleDeleteQuestion}

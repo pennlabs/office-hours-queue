@@ -12,8 +12,8 @@ import { compose } from 'recompose';
 class Roster extends React.Component {
     constructor(props) {
         super(props);
-    
-        this.state = { 
+
+        this.state = {
           people: [],
           direction: null,
           column: null
@@ -28,17 +28,17 @@ class Roster extends React.Component {
 
       handleSort = (clickedColumn) => () => {
         const { column, people, direction } = this.state
-    
+
         if (column !== clickedColumn) {
           this.setState({
             column: clickedColumn,
             people: _.sortBy(people, [clickedColumn]),
             direction: 'ascending',
           })
-    
+
           return
         }
-    
+
         this.setState({
           people: people.reverse(),
           direction: direction === 'ascending' ? 'descending' : 'ascending',
@@ -52,7 +52,7 @@ class Roster extends React.Component {
             <Grid.Column width={4}>
               <Segment basic>
                 <Image src='../../../ohq.png' size='tiny'/>
-              <Menu vertical secondary fluid> 
+              <Menu vertical secondary fluid>
                 <Menu.Item
                   name="Dashboard"
                   icon='dashboard'
@@ -83,7 +83,7 @@ class Roster extends React.Component {
                   </Header>
                 </Segment>
                 {/* add person information */}
-                <Table striped sortable color={'blue'}>
+                <Table celled>
                   <Table.Header>
                     <Table.Row>
                       <Table.HeaderCell
@@ -113,10 +113,10 @@ class Roster extends React.Component {
                                 <Table.Cell>{person.preferredName}</Table.Cell>
                                 <Table.Cell>{person.role}</Table.Cell>
                                 <Table.Cell>{person.email}</Table.Cell>
-                              </Table.Row> 
+                              </Table.Row>
                     ))}
                   </Table.Body>
-                  </Table>               
+                  </Table>
               </Grid>
             </Grid.Column>
           </Grid>
