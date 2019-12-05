@@ -15,11 +15,11 @@ class App extends React.Component {
     return (
       <Router>
         <Switch>
-        <Route exact path={ROUTES.LANDING} component={ LandingPage }/>
-        <Route exact path={ROUTES.DASHBOARD} component={ Dashboard }/>
-        <Route exact path={ROUTES.ROSTER} component={ Roster }/>
-        <Route exact path={ROUTES.QUEUE} component={ Queue }/>
-        <Route component={ Dashboard }/>
+          <Route exact path={ROUTES.LANDING} component={ LandingPage }/>
+          <Route exact path={ROUTES.DASHBOARD} component={ Dashboard }/>
+          <Route exact path={ROUTES.ROSTER} component={ Roster }/>
+          <Route exact path={ROUTES.QUEUE} component={ Queue }/>
+          <Route component={ Dashboard }/>
         </Switch>
       </Router>
     );
