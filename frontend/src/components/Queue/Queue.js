@@ -1,5 +1,5 @@
 import React from 'react';
-import { Segment, Menu, Header, Grid, Image, Label, Modal, Form } from 'semantic-ui-react';
+import { Segment, Menu, Header, Grid, Image, Label, Modal, Dropdown, TextArea, Form, Button } from 'semantic-ui-react';
 import QuestionCard from './QuestionCard';
 import { fakeCourse } from './questiondata.js';
 import * as ROUTES from '../../constants/routes';
@@ -7,6 +7,14 @@ import * as ROUTES from '../../constants/routes';
 
 import { withAuthorization } from '../Session';
 import { compose } from 'recompose';
+
+const deleteOptions = [
+  {key: 'NOT_HERE', value: 'NOT_HERE', text: 'Not Here'},
+  {key: 'OH_ENDED', value: 'OH_ENDED', text: 'OH Ended'},
+  {key: 'NOT_SPECIFIC', value: 'NOT_SPECIFIC', text: 'Not Specific'},
+  {key: 'WRONG_QUEUE', value: 'WRONG_QUEUE', text: 'Wrong Queue'},
+  {key: 'OTHER', value: 'OTHER', text: 'Other'}
+]
 
 class Queue extends React.Component{
 
@@ -16,14 +24,25 @@ class Queue extends React.Component{
           course: "",
           allTags: [],
           questionToDelete: {},
-          deleteModalOpen: false
+          deleteModal: {
+            open: false,
+            reason: "",
+            textDisabled: true,
+            text: ""
+          }
         };
 
         this.handleAnswerQuestion = this.handleAnswerQuestion.bind(this);
-        this.handleDeleteQuestion = this.handleDeleteQuestion.bind(this);
+
         this.handleTagClick = this.handleTagClick.bind(this);
         this.handleTagClear = this.handleTagClear.bind(this);
         this.containsActiveTag = this.containsActiveTag.bind(this);
+
+        this.handleDeleteDropdownChange = this.handleDeleteDropdownChange.bind(this);
+        this.openDeleteModal = this.openDeleteModal.bind(this);
+        this.closeDeleteModal = this.closeDeleteModal.bind(this);
+        this.handleDeleteQuestion = this.handleDeleteQuestion.bind(this);
+
       }
 
       componentDidMount() {
@@ -48,12 +67,14 @@ class Queue extends React.Component{
       handleAnswerQuestion(queueIndex) {
       }
 
-      handleDeleteQuestion(queueIndex, questionIndex) {
+      handleDeleteQuestion() {
         var course = this.state.course;
-        var question = course.queues[queueIndex].questions[questionIndex];
+        var queue = course.queues[this.state.questionToDelete.queueIndex];
+        var question = queue.questions[this.state.questionToDelete.questionIndex];
         question.isDeleted = true;
 
-        this.setState({ course: course, questionToDelete: question, deleteModalOpen: true });
+        this.setState({ course: course, questionToDelete: question });
+        this.closeDeleteModal();
       }
 
       handleTagClick(index) {
@@ -84,8 +105,6 @@ class Queue extends React.Component{
         }
 
         question.tags.forEach(tag => {
-          console.log(activeTags);
-          console.log(tag);
           if (activeTags.includes(tag)) {
             bool = true;
           }
@@ -94,18 +113,62 @@ class Queue extends React.Component{
         return bool;
       }
 
+      handleDeleteDropdownChange(e, { value }) {
+        var deleteModal = this.state.deleteModal;
+        deleteModal.reason = value;
+        deleteModal.textDisabled = deleteModal.reason != "OTHER";
+        this.setState({ deleteModal: deleteModal });
+      }
+
+      openDeleteModal(queueIndex, questionIndex) {
+        var deleteModal = this.state.deleteModal;
+        deleteModal.open = true;
+
+        var queue = this.state.course.queues[queueIndex];
+        var questionToDelete = queue.questions[questionIndex];
+        questionToDelete.queueIndex = queueIndex;
+        questionToDelete.questionIndex = questionIndex;
+
+        this.setState({ deleteModal: deleteModal, questionToDelete: questionToDelete });
+      }
+
+      closeDeleteModal() {
+        var deleteModal = this.state.deleteModal;
+        deleteModal.open = false;
+        this.setState({ deleteModal: deleteModal });
+      }
+
       render() {
         return (
           <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
-            <Modal open={this.state.deleteModalOpen}>
+            <Modal open={this.state.deleteModal.open}>
               <Modal.Header>Delete Question</Modal.Header>
               <Modal.Content>
                 <Modal.Description>
                   You are about to delete the following question from
                   <b>{" " + this.state.questionToDelete.asker}</b>:<br/>
-                  <Segment inverted color="blue">{this.state.questionToDelete.text}</Segment>
+                  <Segment inverted color="blue">{'"' + this.state.questionToDelete.text + '"'}</Segment>
+                  <Form>
+                    <Form.Field>
+                      <Dropdown
+                         placeholder="Select Reason"
+                         options={deleteOptions}
+                         selection
+                         onChange={this.handleDeleteDropdownChange}
+                         value={this.state.deleteModal.reason}
+                       />
+                    </Form.Field>
+                    <Form.Field
+                      control={TextArea}
+                      disabled={this.state.deleteModal.textDisabled}
+                    />
+                  </Form>
                 </Modal.Description>
               </Modal.Content>
+              <Modal.Actions>
+                <Button content="Cancel" compact onClick={this.closeDeleteModal}/>
+                <Button content="Delete" color="red" compact onClick={this.handleDeleteQuestion}/>
+              </Modal.Actions>
             </Modal>
             <Grid.Column width={3}>
               <Segment basic>
@@ -191,11 +254,11 @@ class Queue extends React.Component{
                               <QuestionCard
                                 asker={question.asker}
                                 text={question.text}
-                                time_asked={question.time_asked}
+                                time_asked={question.timeAsked}
                                 tags={question.tags}
                                 queueIndex={0}
                                 id={index}
-                                deleteFunc={this.handleDeleteQuestion}
+                                deleteFunc={this.openDeleteModal}
                               />
                             </Grid.Row>
                           ))
@@ -229,7 +292,7 @@ class Queue extends React.Component{
                               <QuestionCard
                                 asker={question.asker}
                                 text={question.text}
-                                time_asked={question.time_asked}
+                                time_asked={question.timeAsked}
                                 tags={question.tags}
                                 queueIndex={1}
                                 id={index}
