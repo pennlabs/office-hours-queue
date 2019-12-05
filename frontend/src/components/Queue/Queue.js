@@ -47,13 +47,11 @@ class Queue extends React.Component{
       }
 
       handleDeleteQuestion(queueIndex, questionIndex) {
-        var queues = this.state.queues;
-        var queue = queues[queueIndex];
-        var questions = queue.questions;
-        var question = questions[questionIndex];
+        var course = this.state.course;
+        var question = course.queues[queueIndex].questions[questionIndex];
         question.isDeleted = true;
 
-        this.setState({ queues: queues });
+        this.setState({ course: course });
       }
 
       handleTagClick(index) {
