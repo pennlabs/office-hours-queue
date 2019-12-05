@@ -296,7 +296,7 @@ class Queue extends React.Component{
                                 tags={question.tags}
                                 queueIndex={1}
                                 id={index}
-                                deleteFunc={this.handleDeleteQuestion}
+                                deleteFunc={this.openDeleteModal}
                               />
                             </Grid.Column>
                           ))
