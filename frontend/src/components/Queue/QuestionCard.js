@@ -1,5 +1,5 @@
 import React from 'react'
-import { Segment, Header, Icon, Button, Label, Popup } from 'semantic-ui-react';
+import { Segment, Header, Icon, Button, Popup} from 'semantic-ui-react';
 
 export default class CourseCard extends React.Component {
 
@@ -24,11 +24,11 @@ export default class CourseCard extends React.Component {
         <Segment attached="bottom" secondary textAlign="right" style={{"height":"50px",  "width":"300px"}}>
           <Header as="h5" floated='left'>
               <Header.Content>
-              <Button compact
-                size='mini'
-                color='red'
-                content='Delete'
-                onClick={() => this.props.deleteFunc(this.props.queueIndex, this.props.id)}/>
+                <Button compact
+                  size='mini'
+                  color='red'
+                  content='Delete'
+                  onClick={() => this.props.deleteFunc(this.props.queueIndex, this.props.id)}/>
                 <Button compact
                   size='mini'
                   color='green'

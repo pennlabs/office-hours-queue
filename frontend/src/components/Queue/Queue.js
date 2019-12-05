@@ -1,5 +1,5 @@
 import React from 'react';
-import { Segment, Menu, Header, Grid, Image, Label } from 'semantic-ui-react';
+import { Segment, Menu, Header, Grid, Image, Label, Modal, Form } from 'semantic-ui-react';
 import QuestionCard from './QuestionCard';
 import { fakeCourse } from './questiondata.js';
 import * as ROUTES from '../../constants/routes';
@@ -14,7 +14,9 @@ class Queue extends React.Component{
         super(props);
         this.state = {
           course: "",
-          allTags: []
+          allTags: [],
+          questionToDelete: {},
+          deleteModalOpen: false
         };
 
         this.handleAnswerQuestion = this.handleAnswerQuestion.bind(this);
@@ -51,7 +53,7 @@ class Queue extends React.Component{
         var question = course.queues[queueIndex].questions[questionIndex];
         question.isDeleted = true;
 
-        this.setState({ course: course });
+        this.setState({ course: course, questionToDelete: question, deleteModalOpen: true });
       }
 
       handleTagClick(index) {
@@ -95,6 +97,16 @@ class Queue extends React.Component{
       render() {
         return (
           <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
+            <Modal open={this.state.deleteModalOpen}>
+              <Modal.Header>Delete Question</Modal.Header>
+              <Modal.Content>
+                <Modal.Description>
+                  You are about to delete the following question from
+                  <b>{" " + this.state.questionToDelete.asker}</b>:<br/>
+                  <Segment inverted color="blue">{this.state.questionToDelete.text}</Segment>
+                </Modal.Description>
+              </Modal.Content>
+            </Modal>
             <Grid.Column width={3}>
               <Segment basic>
                 <Image src='../../../ohq.png' size='tiny'/>
