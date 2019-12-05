@@ -1,53 +1,49 @@
 //fake question data for queue page
 var fakeMainQueue = {
-  title: "Main Queue",
+  name: "Main Queue",
+  description: "For questions about homework, lectures, recitation, etc.",
+  estimatedWaitTime: "30-40 mins",
+  tags: ["graphs", "algorithms", "sorting", "runtime"],
   questions: [
     {
       asker: "Monal Garg",
-      time_asked: "5:46 pm",
+      timeAsked: "5:46 pm",
       text: "I am wondering about how to implement the logic for the Widest path algorithm using BFS and Kruskal",
-      tags: ["graphs", "algorithms"],
-      isAnswered: false,
-      isDeleted: false
+      tags: ["graphs", "algorithms"]
     },
     {
-        asker: "Karen Shen",
-        time_asked: "5:53 pm",
-        text: "How do I calculate the runtime of QuickSort?",
-        tags: ["sorting", "runtime"],
-        isAnswered: false,
-        isDeleted: false
+      asker: "Karen Shen",
+      timeAsked: "5:53 pm",
+      text: "How do I calculate the runtime of QuickSort?",
+      tags: ["sorting", "runtime"]
     }
   ]
 };
 
   var fakeDebuggingQueue = {
-    title: "Debugging Queue",
+    name: "Debugging Queue",
+    description: "For questions about debugging (we will not debug for you!)",
+    estimatedWaitTime: "50-60 mins",
+    tags: ["hw3", "dijkstra", "dfs"],
     questions: [
-    {
+      {
         asker: "Steven Bursztyn",
-        time_asked: "5:43 pm",
+        timeAsked: "5:43 pm",
         text: "debugging dijkstras",
-        tags: ["hw3", "dijkstra"],
-        isAnswered: false,
-        isDeleted: false
-    },
-    {
+        tags: ["hw3", "dijkstra"]
+      },
+      {
         asker: "Chris Fischer",
-        time_asked: "5:45 pm",
+        timeAsked: "5:45 pm",
         text: "testing diljkstra (nulllPointer)",
-        tags: ["hw3", "dijkstra"],
-        isAnswered: false,
-        isDeleted: false
-    },
-    {
+        tags: ["hw3", "dijkstra"]
+      },
+      {
         asker: "Marshall Vail",
-        time_asked: "5:45 pm",
+        timeAsked: "5:45 pm",
         text: "dfs infinite loop",
-        tags: ["hw3", "dfs"],
-        isAnswered: false,
-        isDeleted: false
-    }
+        tags: ["hw3", "dfs"]
+      }
   ]
 }
 
