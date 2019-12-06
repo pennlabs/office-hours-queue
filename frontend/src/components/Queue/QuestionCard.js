@@ -44,7 +44,8 @@ export default class CourseCard extends React.Component {
                   <Button compact
                     size='mini'
                     color='green'
-                    content='Finish'/>
+                    content='Finish'
+                    onClick={() => this.props.finishFunc(this.props.queueIndex, this.props.id)}/>
                 </Header.Content>
               }
             </Header>

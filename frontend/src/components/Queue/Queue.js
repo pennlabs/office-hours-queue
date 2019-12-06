@@ -33,6 +33,7 @@ class Queue extends React.Component{
         };
 
         this.handleStartQuestion = this.handleStartQuestion.bind(this);
+        this.handleAnswerQuestion = this.handleAnswerQuestion.bind(this);
 
         this.handleTagClick = this.handleTagClick.bind(this);
         this.handleTagClear = this.handleTagClear.bind(this);
@@ -69,7 +70,16 @@ class Queue extends React.Component{
         var queue = course.queues[queueIndex];
         var question = queue.questions[questionIndex];
         question.timeStarted = "fake time";
-        console.log(question.timeStarted);
+        
+        this.setState({ course: course });
+      }
+
+      handleAnswerQuestion(queueIndex, questionIndex) {
+        var course = this.state.course;
+        var queue = course.queues[queueIndex];
+        var question = queue.questions[questionIndex];
+        question.timeAnswered = "fake time";
+
         this.setState({ course: course });
       }
 
@@ -266,6 +276,7 @@ class Queue extends React.Component{
                                 id={index}
                                 deleteFunc={this.openDeleteModal}
                                 answerFunc={this.handleStartQuestion}
+                                finishFunc={this.handleAnswerQuestion}
                                 started={question.timeStarted}
                               />
                             </Grid.Row>
@@ -306,6 +317,7 @@ class Queue extends React.Component{
                                 id={index}
                                 deleteFunc={this.openDeleteModal}
                                 answerFunc={this.handleStartQuestion}
+                                finishFunc={this.handleAnswerQuestion}
                                 started={question.timeStarted}
                               />
                             </Grid.Column>
