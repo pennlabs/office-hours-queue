@@ -32,7 +32,7 @@ class Queue extends React.Component{
           }
         };
 
-        this.handleAnswerQuestion = this.handleAnswerQuestion.bind(this);
+        this.handleStartQuestion = this.handleStartQuestion.bind(this);
 
         this.handleTagClick = this.handleTagClick.bind(this);
         this.handleTagClear = this.handleTagClear.bind(this);
@@ -64,14 +64,20 @@ class Queue extends React.Component{
         this.setState({ showArchived: !this.state.showArchived });
       }
 
-      handleAnswerQuestion(queueIndex) {
+      handleStartQuestion(queueIndex, questionIndex) {
+        var course = this.state.course;
+        var queue = course.queues[queueIndex];
+        var question = queue.questions[questionIndex];
+        question.timeStarted = "fake time";
+        console.log(question.timeStarted);
+        this.setState({ course: course });
       }
 
       handleDeleteQuestion() {
         var course = this.state.course;
         var queue = course.queues[this.state.questionToDelete.queueIndex];
         var question = queue.questions[this.state.questionToDelete.questionIndex];
-        question.isDeleted = true;
+        question.timeRejected = "fake time";
 
         this.setState({ course: course, questionToDelete: question });
         this.closeDeleteModal();
@@ -248,7 +254,7 @@ class Queue extends React.Component{
                           this.state.course.queues &&
                           this.state.course.queues.length > 0 &&
                           this.state.course.queues[0].questions.map((question, index) => (
-                            !question.isDeleted && !question.isAnswered &&
+                            !question.timeRejected && !question.timeAnswered &&
                             this.containsActiveTag(question) &&
                             <Grid.Row>
                               <QuestionCard
@@ -259,6 +265,8 @@ class Queue extends React.Component{
                                 queueIndex={0}
                                 id={index}
                                 deleteFunc={this.openDeleteModal}
+                                answerFunc={this.handleStartQuestion}
+                                started={question.timeStarted}
                               />
                             </Grid.Row>
                           ))
@@ -286,7 +294,7 @@ class Queue extends React.Component{
                           this.state.course.queues &&
                           this.state.course.queues.length > 1 &&
                           this.state.course.queues[1].questions.map((question, index) => (
-                            !question.isAnswered && !question.isDeleted &&
+                            !question.timeAnswered && !question.timeRejected &&
                             this.containsActiveTag(question) &&
                             <Grid.Column>
                               <QuestionCard
@@ -297,6 +305,8 @@ class Queue extends React.Component{
                                 queueIndex={1}
                                 id={index}
                                 deleteFunc={this.openDeleteModal}
+                                answerFunc={this.handleStartQuestion}
+                                started={question.timeStarted}
                               />
                             </Grid.Column>
                           ))

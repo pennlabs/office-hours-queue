@@ -18,11 +18,15 @@ export default class CourseCard extends React.Component {
               </Header.Content>
             </Header>
         </Segment>
-        <Segment attached style={{"height":"80px",  "width":"300px"}}>
+        <Segment attached
+          style={{"height":"80px",  "width":"300px"}}
+          tertiary={this.props.started}>
         {this.props.text.length < 100 ? this.props.text : this.props.text.substring(0, 99) + "..."}
         </Segment>
         <Segment attached="bottom" secondary textAlign="right" style={{"height":"50px",  "width":"300px"}}>
           <Header as="h5" floated='left'>
+            {
+              !this.props.started ?
               <Header.Content>
                 <Button compact
                   size='mini'
@@ -32,8 +36,17 @@ export default class CourseCard extends React.Component {
                 <Button compact
                   size='mini'
                   color='green'
-                  content='Answer'/>
+                  content='Answer'
+                  onClick={() => this.props.answerFunc(this.props.queueIndex, this.props.id)}/>
               </Header.Content>
+                :
+                <Header.Content>
+                  <Button compact
+                    size='mini'
+                    color='green'
+                    content='Finish'/>
+                </Header.Content>
+              }
             </Header>
             <Popup
               trigger= {
