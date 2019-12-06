@@ -7,6 +7,9 @@ import ModalAddStudentCourse from './ModalAddStudentCourse';
 import { fakeStudentCourses, fakeInstructorCourses } from './coursedata.js';
 import * as ROUTES from '../../constants/routes';
 
+import SignOutButton from '../SignOut';
+
+
 
 import { withAuthorization } from '../Session';
 import { compose } from 'recompose';
@@ -125,12 +128,13 @@ class Dashboard extends React.Component {
               name="Sample Queue"
               icon='hourglass one'
               href={ROUTES.QUEUE}
-              />
+            />
             <Menu.Item
               name="Sample Roster"
               icon='users'
               href={ROUTES.ROSTER}
-              />
+            />
+            <SignOutButton />
           </Menu>
           </Segment>
         </Grid.Column>

@@ -23,16 +23,20 @@ class Firebase {
     doSignInWithGoogle = () =>
         this.auth.signInWithPopup(this.googleProvider);
 
+    doSignOut = () => this.auth.signOut();
+
     onAuthUserListener = (next, fallback) =>
         this.auth.onAuthStateChanged(authUser => {
-            authUser = {
-                uid: authUser.uid,
-                name: authUser.displayName,
-                email: authUser.email,
-                providerData: authUser.providerData
-            }
+            if (authUser) {
+                authUser = {
+                    uid: authUser.uid,
+                    name: authUser.displayName,
+                    email: authUser.email,
+                    providerData: authUser.providerData
+                }
 
-            next(authUser)
+                next(authUser)
+            }
             // if (authUser) {
             //     this.user(authUser.uid)
             //         .once('value')
