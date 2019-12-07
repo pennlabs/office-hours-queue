@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'phonenumber_field',
     'graphene_django',
-    'ohq.apps.api'
+    'polymorphic',
+    'ohq.apps.api',
 ]
 
 MIDDLEWARE = [
