@@ -10,8 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
-from decouple import config
+import django_heroku
 import os
+from decouple import config
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -89,10 +90,10 @@ DATABASES = {
     }
 }
 
-if os.getenv('GAE_INSTANCE'):
-    DATABASES['default']['HOST'] = '/cloudsql/office-hour-q:us-east4:ohq-db'
-else:
-    DATABASES['default']['HOST'] = '127.0.0.1'
+# if os.getenv('GAE_INSTANCE'):
+#     DATABASES['default']['HOST'] = '/cloudsql/office-hour-q:us-east4:ohq-db'
+# else:
+#     DATABASES['default']['HOST'] = '127.0.0.1'
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -130,7 +131,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
-STATIC_URL = 'https://storage.googleapis.com/ohq-api-admin/static/'
+# STATIC_URL = 'https://storage.googleapis.com/ohq-api-admin/static/'
 STATIC_ROOT = 'static/'
 
 
@@ -139,3 +140,6 @@ STATIC_ROOT = 'static/'
 GRAPHENE = {
     'SCHEMA': 'ohq.schema.schema'
 }
+
+# Activate Django-Heroku.
+django_heroku.settings(locals())
