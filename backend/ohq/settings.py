@@ -10,8 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
-import django_heroku
 import os
+import django_heroku
+import dj_database_url
 from decouple import config
 
 
@@ -80,15 +81,18 @@ WSGI_APPLICATION = 'ohq.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ohq',
-        'USER': config('DATABASE_USER'),
-        'PASSWORD':  config('DATABASE_PASSWORD'),
-        'PORT': '5432',
-    }
-}
+DATABASES = {}
+DATABASES['default'] = dj_database_url.config(default=config('DATABASE_URL'))
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'ohq',
+#         'USER': config('DATABASE_USER'),
+#         'PASSWORD':  config('DATABASE_PASSWORD'),
+#         'PORT': '5432',
+#     }
+# }
 
 # if os.getenv('GAE_INSTANCE'):
 #     DATABASES['default']['HOST'] = '/cloudsql/office-hour-q:us-east4:ohq-db'
