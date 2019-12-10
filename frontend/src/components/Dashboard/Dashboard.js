@@ -21,9 +21,11 @@ class Dashboard extends React.Component {
       showArchived: false,
       studentCourses: [],
       instructorCourses: [],
+      searchCourses: [],
+      searchResults: [],
       newStudentCourse: {
         code: "",
-        title: "",
+        course: {},
       },
       studentModalOpen: false,
       instructorModalOpen: false,
@@ -43,6 +45,9 @@ class Dashboard extends React.Component {
     this.handleInstructorCourseSubmit = this.handleInstructorCourseSubmit.bind(this);
     this.handleInstructorCourseChange = this.handleInstructorCourseChange.bind(this);
     this.openInstructorModal = this.openInstructorModal.bind(this);
+    this.closeInstructorModal = this.closeInstructorModal.bind(this);
+
+    this.handleCourseSearch = this.handleCourseSearch.bind(this);
   }
 
   handleArchivedChange() {
@@ -61,13 +66,17 @@ class Dashboard extends React.Component {
     this.setState({ instructorModalOpen: true });
   }
 
+  closeInstructorModal() {
+    this.setState({ instructorModalOpen: false });
+  }
+
   handleStudentCourseSubmit() {
     var newStudentCourses = this.state.studentCourses;
     var newCourse = {
-      code: this.state.newStudentCourse.code,
-      title: this.state.newStudentCourse.title,
+      code: this.state.newStudentCourse.course.code,
+      title: this.state.newStudentCourse.course.title,
       totalQueues: "1",
-      openQueues: "0",
+      openQueues: "1",
       isArchived: false,
       year: 2019,
       semester: 0
@@ -80,6 +89,32 @@ class Dashboard extends React.Component {
     var course = this.state.newStudentCourse;
     course[name] = value;
     this.setState({ newStudentCourse: course });
+  }
+
+  handleCourseSearch() {
+    var code = this.state.newStudentCourse.code;
+    var results = [];
+
+    this.state.searchCourses.forEach(course => {
+      if (course.code.includes(code)) {
+        results.push(course);
+      }
+    });
+
+    this.fillOptions(results);
+  }
+
+  fillOptions(courses) {
+    var options = [];
+    courses.forEach(course => {
+      options.push({
+        key: course.title,
+        value: { code: course.code, title: course.title },
+        text: course.title + " (" + course.code + ")"
+      });
+    });
+
+    this.setState({ searchResults: options });
   }
 
   handleInstructorCourseSubmit() {
@@ -106,7 +141,8 @@ class Dashboard extends React.Component {
   componentDidMount() {
     this.setState({
       studentCourses: fakeStudentCourses,
-      instructorCourses: fakeInstructorCourses
+      instructorCourses: fakeInstructorCourses,
+      searchCourses: fakeSearchCourses
     });
   }
 
@@ -171,6 +207,8 @@ class Dashboard extends React.Component {
                     submitFunc={this.handleStudentCourseSubmit}
                     closeFunc={this.closeStudentModal}
                     open={this.state.studentModalOpen}
+                    searchFunc={this.handleCourseSearch}
+                    results={this.state.searchResults}
                   />
                 </Grid.Column>
             </Grid.Row>
@@ -203,7 +241,7 @@ class Dashboard extends React.Component {
                   <ModalAddStudentCourse
                     changeFunc={this.handleInstructorCourseChange}
                     submitFunc={this.handleInstructorCourseSubmit}
-                    closeFunc={this.closeStudentModal}
+                    closeFunc={this.closeInstructorModal}
                     open={this.state.instructorModalOpen}
                   />
                 </Grid.Column>

@@ -14,9 +14,21 @@ export default class ModalAddStudentCourse extends React.Component {
               <Form.Input name="code" onChange={this.props.changeFunc}/>
             </Form.Field>
             <Form.Field>
-              <label>Course Title</label>
-              <Form.Input name="title" onChange={this.props.changeFunc}/>
+              <Form.Button content="Search" color="blue" onClick={this.props.searchFunc}/>
             </Form.Field>
+            {
+              this.props.results && this.props.results.length > 0 &&
+              <Form.Field>
+                <label>Results</label>
+                <Form.Dropdown
+                  placeholder="Select Course"
+                  name="course"
+                  options={this.props.results}
+                  onChange={this.props.changeFunc}
+                  search
+                  selection/>
+              </Form.Field>
+            }
           </Form>
         </Modal.Content>
         <Modal.Actions>
