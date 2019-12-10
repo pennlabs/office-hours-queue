@@ -83,7 +83,7 @@ class Dashboard extends React.Component {
         semester: 0
       };
       newStudentCourses.push(newCourse)
-      this.setState({ studentCourses: newStudentCourses, studentModalOpen: false });
+      this.setState({ studentCourses: newStudentCourses, studentModalOpen: false, searchResults: [] });
     }
   }
 
