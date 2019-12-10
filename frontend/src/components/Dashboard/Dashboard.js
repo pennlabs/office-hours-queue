@@ -71,18 +71,20 @@ class Dashboard extends React.Component {
   }
 
   handleStudentCourseSubmit() {
-    var newStudentCourses = this.state.studentCourses;
-    var newCourse = {
-      code: this.state.newStudentCourse.course.code,
-      title: this.state.newStudentCourse.course.title,
-      totalQueues: "1",
-      openQueues: "1",
-      isArchived: false,
-      year: 2019,
-      semester: 0
-    };
-    newStudentCourses.push(newCourse)
-    this.setState({ studentCourses: newStudentCourses, studentModalOpen: false });
+    if (this.state.newStudentCourse.course.title) {
+      var newStudentCourses = this.state.studentCourses;
+      var newCourse = {
+        code: this.state.newStudentCourse.course.code,
+        title: this.state.newStudentCourse.course.title,
+        totalQueues: "1",
+        openQueues: "1",
+        isArchived: false,
+        year: 2019,
+        semester: 0
+      };
+      newStudentCourses.push(newCourse)
+      this.setState({ studentCourses: newStudentCourses, studentModalOpen: false });
+    }
   }
 
   handleStudentCourseChange(e, { name, value }) {
