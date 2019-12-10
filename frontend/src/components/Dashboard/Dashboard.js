@@ -4,7 +4,7 @@ import CourseCard from './CourseCard';
 import ArchivedCourseCard from './ArchivedCourseCard';
 import AddCard from './AddCard';
 import ModalAddStudentCourse from './ModalAddStudentCourse';
-import { fakeStudentCourses, fakeInstructorCourses } from './coursedata.js';
+import { fakeStudentCourses, fakeInstructorCourses, fakeSearchCourses } from './coursedata.js';
 import * as ROUTES from '../../constants/routes';
 
 import SignOutButton from '../SignOut';
@@ -203,6 +203,7 @@ class Dashboard extends React.Component {
                   <ModalAddStudentCourse
                     changeFunc={this.handleInstructorCourseChange}
                     submitFunc={this.handleInstructorCourseSubmit}
+                    closeFunc={this.closeStudentModal}
                     open={this.state.instructorModalOpen}
                   />
                 </Grid.Column>

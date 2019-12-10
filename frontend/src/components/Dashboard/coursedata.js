@@ -2,7 +2,7 @@
 var fakeStudentCourses = [
   {
     code: "CIS 320",
-    title: "sanjeev",
+    title: "Algorithms",
     totalQueues: "1",
     openQueues: "0",
     isArchived: false,
@@ -41,4 +41,25 @@ var fakeInstructorCourses = [
   }
 ];
 
-export { fakeStudentCourses, fakeInstructorCourses };
+var fakeSearchCourses = [
+  {
+    code: "CIS 545",
+    title: "Big Data Analytics",
+    totalQueues: "1",
+    openQueues: "1",
+    isArchived: false,
+    year: 2019,
+    semester: 0
+  },
+  {
+    code: "CIS 550",
+    title: "Databases",
+    totalQueues: "1",
+    openQueues: "2",
+    isArchived: false,
+    year: 2019,
+    semester: 0
+  }
+]
+
+export { fakeStudentCourses, fakeInstructorCourses, fakeSearchCourses };
