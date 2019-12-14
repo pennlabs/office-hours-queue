@@ -28,8 +28,10 @@ class Queue extends React.Component{
           tagModal: {
             open: false
           },
-          tagToAdd: {}
+          tagToAdd: ""
         };
+
+        this.updateTags = this.updateTags.bind(this);
 
         this.handleStartQuestion = this.handleStartQuestion.bind(this);
         this.handleAnswerQuestion = this.handleAnswerQuestion.bind(this);
@@ -40,6 +42,8 @@ class Queue extends React.Component{
         this.addNewTag = this.addNewTag.bind(this);
         this.openTagModal = this.openTagModal.bind(this);
         this.closeTagModal = this.closeTagModal.bind(this);
+        this.handleNewTagChange = this.handleNewTagChange.bind(this);
+        this.deleteTag = this.deleteTag.bind(this);
 
         this.handleDeleteDropdownChange = this.handleDeleteDropdownChange.bind(this);
         this.openDeleteModal = this.openDeleteModal.bind(this);
@@ -49,17 +53,14 @@ class Queue extends React.Component{
 
       componentDidMount() {
         var tags = [];
-
         fakeCourse.queues.forEach(queue => {
             queue.tags.forEach(tag => {
-              tags.push({ name: tag, isActive: false });
+              if (!tags.includes(tag)) {
+                tags.push({ name: tag, isActive: false });
+              }
             });
         });
-
-        this.setState({
-          course: fakeCourse,
-          allTags: tags
-        });
+        this.setState({ course: fakeCourse, allTags: tags });
       }
 
       /* ANSWER QUESTIONS FUNCTIONS */
@@ -127,19 +128,51 @@ class Queue extends React.Component{
         this.setState({ tagModal: tagModal })
       }
 
+      updateTags() {
+        var course = this.state.course;
+        var tags = [];
+        var tagNames = [];
+
+        course.queues.forEach(queue => {
+            queue.tags.forEach(tag => {
+              if (!tagNames.includes(tag)) {
+                tags.push({ name: tag, isActive: false });
+                tagNames.push(tag);
+              }
+            });
+        });
+
+        this.setState({ allTags: tags });
+      }
+
       closeTagModal() {
         var tagModal = this.state.tagModal;
         tagModal.open = false;
-
+        this.updateTags();
         this.setState({ tagModal: tagModal });
       }
 
-      addNewTag() {
-
+      handleNewTagChange(e) {
+        this.setState({ tagToAdd: e.target.value });
       }
 
-      deleteTag() {
+      addNewTag(queueIndex) {
+        var course = this.state.course;
+        var tags = course.queues[queueIndex].tags;
 
+        if (this.state.tagToAdd && !tags.includes(this.state.tagToAdd)) {
+          tags.push(this.state.tagToAdd);
+        }
+
+        this.setState({ course: course, tagToAdd: "" });
+      }
+
+      deleteTag(queueIndex, tagIndex) {
+        var course = this.state.course;
+        var tags = course.queues[queueIndex].tags;
+        tags.splice(tagIndex, 1);
+
+        this.setState({ course: course });
       }
 
       /* DELETE QUESTION FUNCTIONS */
@@ -200,8 +233,12 @@ class Queue extends React.Component{
               this.state.course.queues &&
                 <TagModal
                 attrs={this.state.tagModal}
+                newTag={this.state.tagToAdd}
                 funcs={{
-                  closeFunc: this.closeTagModal,
+                  inputFunc: this.handleNewTagChange,
+                  addFunc: this.addNewTag,
+                  deleteFunc: this.deleteTag,
+                  closeFunc: this.closeTagModal
                 }}
                 queues={this.state.course.queues}
               />
@@ -257,7 +294,7 @@ class Queue extends React.Component{
                         </Label>
                       ))
                     }
-                    <Label as="a" color="green" onClick={this.openTagModal}>EDIT</Label>
+                    <Label as="a" color="green" onClick={this.openTagModal} content="Edit" icon="cog"/>
                     <a style={{"margin-left":"12px", "text-decoration":"underline"}}
                       onClick={this.handleTagClear}
                     >Clear All</a>

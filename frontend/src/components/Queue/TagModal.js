@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Modal, Tab, Button, Label, Icon, Header, Segment, Input } from 'semantic-ui-react';
+import { Form, Modal, Tab, Button, Label, Icon, Header, Segment, Input, Message } from 'semantic-ui-react';
 
 export default class TagModal extends React.Component {
   render() {
@@ -9,7 +9,7 @@ export default class TagModal extends React.Component {
         <Modal.Content>
           <Modal.Description>
             <Tab menu={{ pointing: true, secondary: true }} panes={
-              this.props.queues.map(queue => {
+              this.props.queues.map((queue, queueIndex) => {
                   return {
                     menuItem: queue.name,
                     render: () => {
@@ -18,10 +18,10 @@ export default class TagModal extends React.Component {
                           <Segment basic>
                             <Header content="Current Tags"/>
                             {
-                              queue.tags.map((tag, index) => (
+                              queue.tags.map((tag, tagIndex) => (
                                 <Label
                                   as="a"
-                                  onClick={() => {}}
+                                  onClick={() => {this.props.funcs.deleteFunc(queueIndex, tagIndex)}}
                                 >
                                   { tag }
                                   <Icon name="delete"/>
@@ -41,8 +41,11 @@ export default class TagModal extends React.Component {
                               placeholder="New Tag Here..."
                               action={{
                                 color: "blue",
-                                content: "Add"
+                                content: "Add",
+                                onClick: () => { this.props.funcs.addFunc(queueIndex) }
                               }}
+                              value={this.props.newTag}
+                              onChange={ this.props.funcs.inputFunc }
                             />
                           </Segment>
                         </Tab.Pane>
