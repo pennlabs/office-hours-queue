@@ -2,6 +2,7 @@ import React from 'react';
 import { Segment, Menu, Header, Grid, Image, Label, Modal, Form, Button, Input } from 'semantic-ui-react';
 import QuestionCard from './QuestionCard';
 import DeleteQuestionModal from './DeleteQuestionModal';
+import TagModal from './TagModal';
 import { fakeCourse } from './questiondata.js';
 import * as ROUTES from '../../constants/routes';
 
@@ -15,7 +16,7 @@ class Queue extends React.Component{
     constructor(props) {
         super(props);
         this.state = {
-          course: "",
+          course: {},
           allTags: [],
           questionToDelete: {},
           deleteModal: {
@@ -23,7 +24,11 @@ class Queue extends React.Component{
             reason: "",
             textDisabled: true,
             text: ""
-          }
+          },
+          tagModal: {
+            open: false
+          },
+          tagToAdd: {}
         };
 
         this.handleStartQuestion = this.handleStartQuestion.bind(this);
@@ -33,6 +38,8 @@ class Queue extends React.Component{
         this.handleTagClear = this.handleTagClear.bind(this);
         this.containsActiveTag = this.containsActiveTag.bind(this);
         this.addNewTag = this.addNewTag.bind(this);
+        this.openTagModal = this.openTagModal.bind(this);
+        this.closeTagModal = this.closeTagModal.bind(this);
 
         this.handleDeleteDropdownChange = this.handleDeleteDropdownChange.bind(this);
         this.openDeleteModal = this.openDeleteModal.bind(this);
@@ -113,7 +120,25 @@ class Queue extends React.Component{
         return bool;
       }
 
+      openTagModal() {
+        var tagModal = this.state.tagModal;
+        tagModal.open = true;
+
+        this.setState({ tagModal: tagModal })
+      }
+
+      closeTagModal() {
+        var tagModal = this.state.tagModal;
+        tagModal.open = false;
+
+        this.setState({ tagModal: tagModal });
+      }
+
       addNewTag() {
+
+      }
+
+      deleteTag() {
 
       }
 
@@ -171,6 +196,16 @@ class Queue extends React.Component{
                 deleteFunc: this.handleDeleteQuestion
               }}
             />
+            {
+              this.state.course.queues &&
+                <TagModal
+                attrs={this.state.tagModal}
+                funcs={{
+                  closeFunc: this.closeTagModal,
+                }}
+                queues={this.state.course.queues}
+              />
+            }
             <Grid.Column width={3}>
               <Segment basic>
                 <Image src='../../../ohq.png' size='tiny'/>
@@ -222,19 +257,10 @@ class Queue extends React.Component{
                         </Label>
                       ))
                     }
+                    <Label as="a" color="green" onClick={this.openTagModal}>EDIT</Label>
                     <a style={{"margin-left":"12px", "text-decoration":"underline"}}
                       onClick={this.handleTagClear}
                     >Clear All</a>
-                  </Segment>
-                </Grid.Row>
-                <Grid.Row>
-                  <Segment basic>
-                    <Input style={{"margin-top":"-50px"}} placeholder="Add New Tag..." icon="tag"/>
-                    <Button
-                      style={{"margin-left":"12px"}}
-                      color="green"
-                      content="Add"
-                    />
                   </Segment>
                 </Grid.Row>
                 <Grid.Row>
