@@ -294,7 +294,7 @@ class Queue extends React.Component{
                         </Label>
                       ))
                     }
-                    <Label as="a" color="green" onClick={this.openTagModal} content="Edit" icon="cog"/>
+                    <Label as="a" color="grey" onClick={this.openTagModal} content="Edit" icon="cog"/>
                     <a style={{"margin-left":"12px", "text-decoration":"underline"}}
                       onClick={this.handleTagClear}
                     >Clear All</a>
@@ -316,6 +316,13 @@ class Queue extends React.Component{
                         }
                       </Header.Subheader>
                     </Header>
+                    <Label content={
+                      this.state.course.queues &&
+                      this.state.course.queues.length > 0 &&
+                      this.state.course.queues[0].questions.length + " users"
+                    } color="blue" icon="user"/>
+                    <Label content="30 mins" color="blue" icon="clock"/>
+                    <Label content="Edit" color="grey" icon="cog"/>
                     {/* add main queue cards */}
                     <Grid.Row columns={1} padded="true">
                         {
@@ -357,6 +364,13 @@ class Queue extends React.Component{
                         }
                       </Header.Subheader>
                     </Header>
+                    <Label content={
+                      this.state.course.queues &&
+                      this.state.course.queues.length > 0 &&
+                      this.state.course.queues[1].questions.length + " users"
+                    } color="blue" icon="user"/>
+                    <Label content="30 mins" color="blue" icon="clock"/>
+                    <Label content="Edit" color="grey" icon="cog"/>
                     {/* add Debugging queue cards */}
                     <Grid.Row columns={1} padded="true">
                         {
