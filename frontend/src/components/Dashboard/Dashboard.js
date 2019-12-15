@@ -4,7 +4,7 @@ import CourseCard from './CourseCard';
 import ArchivedCourseCard from './ArchivedCourseCard';
 import AddCard from './AddCard';
 import ModalAddStudentCourse from './ModalAddStudentCourse';
-import { fakeStudentCourses, fakeInstructorCourses, fakeSearchCourses } from './coursedata.js';
+import { fakeCourseUsers, fakeSearchCourses } from './coursedata.js';
 import * as ROUTES from '../../constants/routes';
 
 import SignOutButton from '../SignOut';
@@ -19,20 +19,13 @@ class Dashboard extends React.Component {
     super(props);
     this.state = {
       showArchived: false,
-      studentCourses: [],
-      instructorCourses: [],
+      courseUsers: [],
       searchCourses: [],
       searchResults: [],
-      newStudentCourse: {
-        code: "",
-        course: {},
-      },
+      newStudentCourse: {},
       studentModalOpen: false,
       instructorModalOpen: false,
-      newInstructorCourse: {
-        code: "",
-        title: "",
-      }
+      newInstructorCourse: {}
     };
 
     this.handleArchivedChange = this.handleArchivedChange.bind(this);
@@ -59,7 +52,7 @@ class Dashboard extends React.Component {
   }
 
   closeStudentModal() {
-    this.setState({ studentModalOpen: false });
+    this.setState({ studentModalOpen: false, newStudentCourse: {}, searchResults: [] });
   }
 
   openInstructorModal() {
@@ -71,19 +64,28 @@ class Dashboard extends React.Component {
   }
 
   handleStudentCourseSubmit() {
-    if (this.state.newStudentCourse.course.title) {
-      var newStudentCourses = this.state.studentCourses;
-      var newCourse = {
-        code: this.state.newStudentCourse.course.code,
-        title: this.state.newStudentCourse.course.title,
-        totalQueues: "1",
-        openQueues: "1",
-        isArchived: false,
-        year: 2019,
-        semester: 0
+    if (this.state.newStudentCourse && this.state.newStudentCourse.course) {
+      var newCourseUsers = this.state.courseUsers;
+      var newCourseUser = {
+        course: {
+          name: this.state.newStudentCourse.course.name,
+          description: this.state.newStudentCourse.course.description,
+          isArchived: false,
+          year: 2019,
+          semester: "FALL",
+          totalQueues: "1",
+          openQueues: "1"
+        },
+        kind: "STUDENT"
       };
-      newStudentCourses.push(newCourse)
-      this.setState({ studentCourses: newStudentCourses, studentModalOpen: false, searchResults: [] });
+
+      newCourseUsers.push(newCourseUser)
+      this.setState({
+        courseUsers: newCourseUsers,
+        studentModalOpen: false,
+        searchResults: [],
+        newStudentCourse: {}
+      });
     }
   }
 
@@ -94,14 +96,16 @@ class Dashboard extends React.Component {
   }
 
   handleCourseSearch() {
-    var code = this.state.newStudentCourse.code;
+    var name = this.state.newStudentCourse.name;
     var results = [];
 
     this.state.searchCourses.forEach(course => {
-      if (course.code.includes(code)) {
+      if (course.name.includes(name)) {
         results.push(course);
       }
     });
+
+    console.log(name);
 
     this.fillOptions(results);
   }
@@ -110,9 +114,9 @@ class Dashboard extends React.Component {
     var options = [];
     courses.forEach(course => {
       options.push({
-        key: course.title,
-        value: { code: course.code, title: course.title },
-        text: course.title + " (" + course.code + ")"
+        key: course.name,
+        value: { name: course.name, description: course.description },
+        text: course.description + " (" + course.name + ")"
       });
     });
 
@@ -120,18 +124,22 @@ class Dashboard extends React.Component {
   }
 
   handleInstructorCourseSubmit() {
-    var newInstructorCourses = this.state.instructorCourses;
-    var newCourse = {
-      code: this.state.newInstructorCourse.code,
-      title: this.state.newInstructorCourse.title,
-      totalQueues: "1",
-      openQueues: "0",
-      isArchived: false,
-      year: 2019,
-      semester: 0
+    var newCourseUsers = this.state.courseUsers;
+    var newCourseUser = {
+      course: {
+        name: this.state.newInstructorCourse.name,
+        description: this.state.newInstructorCourse.description,
+        isArchived: false,
+        year: 2019,
+        semester: "FALL",
+        totalQueues: "1",
+        openQueues: "0"
+      },
+      kind: "TA"
     };
-    newInstructorCourses.push(newCourse)
-    this.setState({ instructorCourses: newInstructorCourses, instructorModalOpen: false });
+
+    newCourseUsers.push(newCourseUser)
+    this.setState({ courseUsers: newCourseUsers, instructorModalOpen: false });
   }
 
   handleInstructorCourseChange(e, { name, value }) {
@@ -142,8 +150,7 @@ class Dashboard extends React.Component {
 
   componentDidMount() {
     this.setState({
-      studentCourses: fakeStudentCourses,
-      instructorCourses: fakeInstructorCourses,
+      courseUsers: fakeCourseUsers,
       searchCourses: fakeSearchCourses
     });
   }
@@ -188,16 +195,17 @@ class Dashboard extends React.Component {
             {/* add student course cards */}
             <Grid.Row columns={4} padded="true">
                 {
-                  this.state.studentCourses.map(course => (
+                  this.state.courseUsers.map(courseUser => (
 
-                    !course.isArchived &&
+                    !courseUser.course.isArchived &&
+                    courseUser.kind == "STUDENT" &&
                     <Grid.Column>
                       <CourseCard
-                        code={course.code}
-                        title={course.title}
-                        totalQueues={course.totalQueues}
-                        openQueues={course.openQueues}
-                        isArchived={course.isArchived}
+                        name={courseUser.course.name}
+                        description={courseUser.course.description}
+                        totalQueues={courseUser.course.totalQueues}
+                        openQueues={courseUser.course.openQueues}
+                        isArchived={courseUser.course.isArchived}
                       />
                     </Grid.Column>
                   ))
@@ -224,16 +232,16 @@ class Dashboard extends React.Component {
             {/* add instructor course cards */}
             <Grid.Row columns={4} padded="true">
                 {
-                  this.state.instructorCourses.map(course => (
-
-                    !course.isArchived &&
+                  this.state.courseUsers.map(courseUser => (
+                    !courseUser.course.isArchived &&
+                    courseUser.kind != "STUDENT" &&
                     <Grid.Column>
                       <CourseCard
-                        code={course.code}
-                        title={course.title}
-                        totalQueues={course.totalQueues}
-                        openQueues={course.openQueues}
-                        isArchived={course.isArchived}
+                        name={courseUser.course.name}
+                        description={courseUser.course.description}
+                        totalQueues={courseUser.course.totalQueues}
+                        openQueues={courseUser.course.openQueues}
+                        isArchived={courseUser.course.isArchived}
                       />
                     </Grid.Column>
                   ))
@@ -254,15 +262,17 @@ class Dashboard extends React.Component {
             {/* add archived instructor courses if "see archived" is toggled */}
             <Grid.Row columns={4} padded="true">
                 {
-                  this.state.instructorCourses.map(course => (
+                  this.state.courseUsers.map(courseUser => (
 
-                    this.state.showArchived && course.isArchived &&
+                    this.state.showArchived &&
+                    courseUser.course.isArchived &&
+                    courseUser.kind != "STUDENT" &&
                     <Grid.Column>
                       <ArchivedCourseCard
-                        code={course.code}
-                        title={course.title}
-                        isArchived={course.isArchived}
-                        year={course.year}
+                        name={courseUser.course.name}
+                        description={courseUser.course.description}
+                        isArchived={courseUser.course.isArchived}
+                        year={courseUser.course.year}
                       />
                     </Grid.Column>
                   ))

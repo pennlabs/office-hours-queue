@@ -11,7 +11,7 @@ export default class ModalAddStudentCourse extends React.Component {
           <Form>
             <Form.Field>
               <label>Course Code</label>
-              <Form.Input name="code" onChange={this.props.changeFunc}/>
+              <Form.Input name="name" onChange={this.props.changeFunc}/>
             </Form.Field>
             <Form.Field>
               <Form.Button content="Search" color="blue" onClick={this.props.searchFunc}/>

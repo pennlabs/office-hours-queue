@@ -273,7 +273,7 @@ class Queue extends React.Component{
                   {/* COURSE HEADER */}
                   <Segment basic>
                     <Header as="h1">
-                      {this.state.course.department + " " + this.state.course.name}
+                      {this.state.course.name}
                       <Header.Subheader>
                         {this.state.course.description}
                       </Header.Subheader>
@@ -322,7 +322,7 @@ class Queue extends React.Component{
                       this.state.course.queues[0].questions.length + " users"
                     } color="blue" icon="user"/>
                     <Label content="30 mins" color="blue" icon="clock"/>
-                    <Label content="Edit" color="grey" icon="cog"/>
+                    <Label as="a" content="Edit" color="grey" icon="cog"/>
                     {/* add main queue cards */}
                     <Grid.Row columns={1} padded="true">
                         {
@@ -370,7 +370,7 @@ class Queue extends React.Component{
                       this.state.course.queues[1].questions.length + " users"
                     } color="blue" icon="user"/>
                     <Label content="30 mins" color="blue" icon="clock"/>
-                    <Label content="Edit" color="grey" icon="cog"/>
+                    <Label as="a" content="Edit" color="grey" icon="cog"/>
                     {/* add Debugging queue cards */}
                     <Grid.Row columns={1} padded="true">
                         {
