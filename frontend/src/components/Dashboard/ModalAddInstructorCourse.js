@@ -29,6 +29,11 @@ export default class ModalAddInstructorCourse extends React.Component {
               </Form.Field>
             }
           </Form>
+          <div style={{"margin-top":"20px"}}>
+          <a style={{"textDecoration":"underline", "cursor":"pointer"}}>
+            Create a New Course
+          </a>
+          </div>
         </Modal.Content>
         <Modal.Actions>
           <Button content="Cancel" compact onClick={this.props.closeFunc}/>

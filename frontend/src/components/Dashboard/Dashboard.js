@@ -299,7 +299,7 @@ class Dashboard extends React.Component {
                   <AddCard clickFunc={this.openInstructorModal}/>
                 </Grid.Column>
             </Grid.Row>
-            <a style={{"textDecoration":"underline"}} onClick={this.handleArchivedChange}>
+            <a style={{"textDecoration":"underline", "cursor":"pointer"}} onClick={this.handleArchivedChange}>
               { this.state.showArchived ? "Hide Archived Courses" : "See Archived Courses"}
             </a>
             {/* add archived instructor courses if "see archived" is toggled */}
