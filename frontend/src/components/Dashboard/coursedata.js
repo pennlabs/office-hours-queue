@@ -54,27 +54,51 @@ var fakeCourseUsers = [
   }
 ];
 
-var fakeSearchCourses = [
-  {
-    name: "CIS 545",
-    department: "CIS",
-    description: "Big Data Analytics",
-    isArchived: false,
-    year: 2019,
-    semester: "FALL",
-    totalQueues: "1",
-    openQueues: "1"
-  },
-  {
-    name: "CIS 550",
-    department: "CIS",
-    description: "Databases",
-    isArchived: false,
-    year: 2019,
-    semester: "FALL",
-    totalQueues: "1",
-    openQueues: "2"
-  }
-]
+var fakeSearchCourses = {
+  student: [
+    {
+      name: "CIS 545",
+      department: "CIS",
+      description: "Big Data Analytics",
+      isArchived: false,
+      year: 2019,
+      semester: "FALL",
+      totalQueues: "1",
+      openQueues: "1"
+    },
+    {
+      name: "CIS 550",
+      department: "CIS",
+      description: "Databases",
+      isArchived: false,
+      year: 2019,
+      semester: "FALL",
+      totalQueues: "1",
+      openQueues: "2"
+    }
+  ],
+  instructor: [
+    {
+      name: "NETS 212",
+      department: "NETS",
+      description: "Networked and Cloud Computing",
+      isArchived: false,
+      year: 2019,
+      semester: "FALL",
+      totalQueues: "1",
+      openQueues: "1"
+    },
+    {
+      name: "ECON 101",
+      department: "ECON",
+      description: "Microeconomics",
+      isArchived: false,
+      year: 2019,
+      semester: "FALL",
+      totalQueues: "1",
+      openQueues: "2"
+    }
+  ]
+}
 
 export { fakeCourseUsers, fakeSearchCourses };

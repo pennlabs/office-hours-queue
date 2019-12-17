@@ -4,6 +4,7 @@ import CourseCard from './CourseCard';
 import ArchivedCourseCard from './ArchivedCourseCard';
 import AddCard from './AddCard';
 import ModalAddStudentCourse from './ModalAddStudentCourse';
+import ModalAddInstructorCourse from './ModalAddInstructorCourse';
 import { fakeCourseUsers, fakeSearchCourses } from './coursedata.js';
 import * as ROUTES from '../../constants/routes';
 
@@ -20,8 +21,14 @@ class Dashboard extends React.Component {
     this.state = {
       showArchived: false,
       courseUsers: [],
-      searchCourses: [],
-      searchResults: [],
+      searchCourses: {
+        student: [],
+        instructor: []
+      },
+      searchResults: {
+        student: [],
+        instructor: []
+      },
       newStudentCourse: {},
       studentModalOpen: false,
       instructorModalOpen: false,
@@ -32,35 +39,37 @@ class Dashboard extends React.Component {
 
     this.handleStudentCourseSubmit = this.handleStudentCourseSubmit.bind(this);
     this.handleStudentCourseChange = this.handleStudentCourseChange.bind(this);
+    this.handleStudentCourseSearch = this.handleStudentCourseSearch.bind(this);
     this.openStudentModal = this.openStudentModal.bind(this);
     this.closeStudentModal = this.closeStudentModal.bind(this);
 
     this.handleInstructorCourseSubmit = this.handleInstructorCourseSubmit.bind(this);
     this.handleInstructorCourseChange = this.handleInstructorCourseChange.bind(this);
+    this.handleInstructorCourseSearch = this.handleInstructorCourseSearch.bind(this);
     this.openInstructorModal = this.openInstructorModal.bind(this);
     this.closeInstructorModal = this.closeInstructorModal.bind(this);
 
-    this.handleCourseSearch = this.handleCourseSearch.bind(this);
+  }
+
+  componentDidMount() {
+    this.setState({
+      courseUsers: fakeCourseUsers,
+      searchCourses: fakeSearchCourses
+    });
   }
 
   handleArchivedChange() {
     this.setState({ showArchived: !this.state.showArchived });
   }
 
+  /* ADD STUDENT COURSE FUNCTIONS */
+
   openStudentModal() {
     this.setState({ studentModalOpen: true });
   }
 
   closeStudentModal() {
-    this.setState({ studentModalOpen: false, newStudentCourse: {}, searchResults: [] });
-  }
-
-  openInstructorModal() {
-    this.setState({ instructorModalOpen: true });
-  }
-
-  closeInstructorModal() {
-    this.setState({ instructorModalOpen: false });
+    this.setState({ studentModalOpen: false, newStudentCourse: {}, searchResults: {} });
   }
 
   handleStudentCourseSubmit() {
@@ -83,7 +92,7 @@ class Dashboard extends React.Component {
       this.setState({
         courseUsers: newCourseUsers,
         studentModalOpen: false,
-        searchResults: [],
+        searchResults: {},
         newStudentCourse: {}
       });
     }
@@ -95,22 +104,19 @@ class Dashboard extends React.Component {
     this.setState({ newStudentCourse: course });
   }
 
-  handleCourseSearch() {
+  handleStudentCourseSearch() {
     var name = this.state.newStudentCourse.name;
     var results = [];
 
-    this.state.searchCourses.forEach(course => {
+    this.state.searchCourses.student.forEach(course => {
       if (course.name.includes(name)) {
         results.push(course);
       }
     });
-
-    console.log(name);
-
-    this.fillOptions(results);
+    this.fillStudentOptions(results);
   }
 
-  fillOptions(courses) {
+  fillStudentOptions(courses) {
     var options = [];
     courses.forEach(course => {
       options.push({
@@ -120,26 +126,43 @@ class Dashboard extends React.Component {
       });
     });
 
-    this.setState({ searchResults: options });
+    this.setState({ searchResults: { student: options } });
+  }
+
+  /* ADD INSTRUCTOR COURSE FUNCTIONS */
+
+  openInstructorModal() {
+    this.setState({ instructorModalOpen: true });
+  }
+
+  closeInstructorModal() {
+    this.setState({ instructorModalOpen: false });
   }
 
   handleInstructorCourseSubmit() {
-    var newCourseUsers = this.state.courseUsers;
-    var newCourseUser = {
-      course: {
-        name: this.state.newInstructorCourse.name,
-        description: this.state.newInstructorCourse.description,
-        isArchived: false,
-        year: 2019,
-        semester: "FALL",
-        totalQueues: "1",
-        openQueues: "0"
-      },
-      kind: "TA"
-    };
+    if (this.state.newInstructorCourse && this.state.newInstructorCourse.course) {
+      var newCourseUsers = this.state.courseUsers;
+      var newCourseUser = {
+        course: {
+          name: this.state.newInstructorCourse.course.name,
+          description: this.state.newInstructorCourse.course.description,
+          isArchived: false,
+          year: 2019,
+          semester: "FALL",
+          totalQueues: "1",
+          openQueues: "1"
+        },
+        kind: "TA"
+      };
 
-    newCourseUsers.push(newCourseUser)
-    this.setState({ courseUsers: newCourseUsers, instructorModalOpen: false });
+      newCourseUsers.push(newCourseUser)
+      this.setState({
+        courseUsers: newCourseUsers,
+        instructorModalOpen: false,
+        searchResults: {},
+        newInstructorCourse: {}
+      });
+    }
   }
 
   handleInstructorCourseChange(e, { name, value }) {
@@ -148,16 +171,50 @@ class Dashboard extends React.Component {
     this.setState({ newInstructorCourse: course });
   }
 
-  componentDidMount() {
-    this.setState({
-      courseUsers: fakeCourseUsers,
-      searchCourses: fakeSearchCourses
+  handleInstructorCourseSearch() {
+    var name = this.state.newInstructorCourse.name;
+    var results = [];
+
+    this.state.searchCourses.instructor.forEach(course => {
+      if (course.name.includes(name)) {
+        results.push(course);
+      }
     });
+    this.fillInstructorOptions(results);
+  }
+
+  fillInstructorOptions(courses) {
+    var options = [];
+    courses.forEach(course => {
+      options.push({
+        key: course.name,
+        value: { name: course.name, description: course.description },
+        text: course.description + " (" + course.name + ")"
+      });
+    });
+
+    this.setState({ searchResults: { instructor: options } });
   }
 
   render() {
     return (
       <Grid columns={2} divided="horizontally">
+        <ModalAddStudentCourse
+          changeFunc={this.handleStudentCourseChange}
+          submitFunc={this.handleStudentCourseSubmit}
+          closeFunc={this.closeStudentModal}
+          open={this.state.studentModalOpen}
+          searchFunc={this.handleStudentCourseSearch}
+          results={this.state.searchResults.student}
+        />
+        <ModalAddInstructorCourse
+          changeFunc={this.handleInstructorCourseChange}
+          submitFunc={this.handleInstructorCourseSubmit}
+          closeFunc={this.closeInstructorModal}
+          open={this.state.instructorModalOpen}
+          searchFunc={this.handleInstructorCourseSearch}
+          results={this.state.searchResults.instructor}
+        />
         <Grid.Column width={3}>
           <Segment basic>
           <Image src='../../../ohq.png' size='tiny'/>
@@ -212,14 +269,6 @@ class Dashboard extends React.Component {
                 }
                 <Grid.Column>
                   <AddCard clickFunc={this.openStudentModal}/>
-                  <ModalAddStudentCourse
-                    changeFunc={this.handleStudentCourseChange}
-                    submitFunc={this.handleStudentCourseSubmit}
-                    closeFunc={this.closeStudentModal}
-                    open={this.state.studentModalOpen}
-                    searchFunc={this.handleCourseSearch}
-                    results={this.state.searchResults}
-                  />
                 </Grid.Column>
             </Grid.Row>
             <Segment basic padded>
@@ -248,12 +297,6 @@ class Dashboard extends React.Component {
                 }
                 <Grid.Column>
                   <AddCard clickFunc={this.openInstructorModal}/>
-                  <ModalAddStudentCourse
-                    changeFunc={this.handleInstructorCourseChange}
-                    submitFunc={this.handleInstructorCourseSubmit}
-                    closeFunc={this.closeInstructorModal}
-                    open={this.state.instructorModalOpen}
-                  />
                 </Grid.Column>
             </Grid.Row>
             <a style={{"textDecoration":"underline"}} onClick={this.handleArchivedChange}>
