@@ -3,6 +3,7 @@ import { Segment, Menu, Header, Grid, Image, Label, Modal, Form, Button, Input }
 import QuestionCard from './QuestionCard';
 import DeleteQuestionModal from './DeleteQuestionModal';
 import TagModal from './TagModal';
+import EditQueueModal from './EditQueueModal';
 import { fakeCourse } from './questiondata.js';
 import * as ROUTES from '../../constants/routes';
 
@@ -28,7 +29,11 @@ class Queue extends React.Component{
           tagModal: {
             open: false
           },
-          tagToAdd: ""
+          tagToAdd: "",
+          editQueueModal: {
+            open: false,
+            queue: {}
+          }
         };
 
         this.updateTags = this.updateTags.bind(this);
@@ -49,6 +54,9 @@ class Queue extends React.Component{
         this.openDeleteModal = this.openDeleteModal.bind(this);
         this.closeDeleteModal = this.closeDeleteModal.bind(this);
         this.handleDeleteQuestion = this.handleDeleteQuestion.bind(this);
+
+        this.openEditQueueModal = this.openEditQueueModal.bind(this);
+        this.closeEditQueueModal = this.closeEditQueueModal.bind(this);
       }
 
       componentDidMount() {
@@ -217,6 +225,26 @@ class Queue extends React.Component{
         this.setState({ deleteModal: deleteModal });
       }
 
+      /* EDIT QUEUE MODAL FUNCTIONS */
+
+      openEditQueueModal(queueIndex) {
+        var editQueueModal = {
+          open: true,
+          queue: this.state.course.queues[queueIndex]
+        }
+
+        this.setState({ editQueueModal: editQueueModal });
+      }
+
+      closeEditQueueModal() {
+        var editQueueModal = {
+          open: false,
+          queue: {}
+        }
+
+        this.setState({ editQueueModal: editQueueModal });
+      }
+
       render() {
         return (
           <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
@@ -302,100 +330,113 @@ class Queue extends React.Component{
                 </Grid.Row>
                 <Grid.Row>
                   <Grid.Column>
-                    <Header as="h3">
-                      {
-                        this.state.course.queues &&
-                        this.state.course.queues.length > 0 &&
-                        this.state.course.queues[0].name
-                      }
-                      <Header.Subheader>
-                        {
-                          this.state.course.queues &&
-                          this.state.course.queues.length > 0 &&
-                          this.state.course.queues[0].description
-                        }
-                      </Header.Subheader>
-                    </Header>
-                    <Label content={
+                    {
                       this.state.course.queues &&
                       this.state.course.queues.length > 0 &&
-                      this.state.course.queues[0].questions.length + " users"
-                    } color="blue" icon="user"/>
-                    <Label content="30 mins" color="blue" icon="clock"/>
-                    <Label as="a" content="Edit" color="grey" icon="cog"/>
-                    {/* add main queue cards */}
-                    <Grid.Row columns={1} padded="true">
-                        {
-                          this.state.course.queues &&
-                          this.state.course.queues.length > 0 &&
-                          this.state.course.queues[0].questions.map((question, index) => (
-                            !question.timeRejected && !question.timeAnswered &&
-                            this.containsActiveTag(question) &&
-                            <Grid.Row>
-                              <QuestionCard
-                                asker={question.asker}
-                                text={question.text}
-                                time_asked={question.timeAsked}
-                                tags={question.tags}
-                                queueIndex={0}
-                                id={index}
-                                deleteFunc={this.openDeleteModal}
-                                answerFunc={this.handleStartQuestion}
-                                finishFunc={this.handleAnswerQuestion}
-                                started={question.timeStarted}
-                              />
-                            </Grid.Row>
-                          ))
-                        }
-                    </Grid.Row>
+                      <div>
+                        <EditQueueModal
+                          attrs={this.state.editQueueModal}
+                          funcs={{
+                            closeFunc: this.closeEditQueueModal
+                          }}
+                        />
+                        <Header as="h3">
+                          { this.state.course.queues[0].name }
+                          <Header.Subheader>
+                              { this.state.course.queues[0].description }
+                          </Header.Subheader>
+                        </Header>
+                        <Label
+                          content={ this.state.course.queues[0].questions.length + " users" }
+                          color="blue"
+                          icon="user"
+                        />
+                        <Label content="30 mins" color="blue" icon="clock"/>
+                        <Label as="a"
+                          content="Edit"
+                          color="grey"
+                          icon="cog"
+                          onClick={() => {this.openEditQueueModal(0)}}
+                        />
+                        {/* add main queue cards */}
+                        <Grid.Row columns={1} padded="true">
+                            {
+                              this.state.course.queues[0].questions.map((question, index) => (
+                                !question.timeRejected && !question.timeAnswered &&
+                                this.containsActiveTag(question) &&
+                                <Grid.Row>
+                                  <QuestionCard
+                                    asker={question.asker}
+                                    text={question.text}
+                                    time_asked={question.timeAsked}
+                                    tags={question.tags}
+                                    queueIndex={0}
+                                    id={index}
+                                    deleteFunc={this.openDeleteModal}
+                                    answerFunc={this.handleStartQuestion}
+                                    finishFunc={this.handleAnswerQuestion}
+                                    started={question.timeStarted}
+                                  />
+                                </Grid.Row>
+                              ))
+                            }
+                        </Grid.Row>
+                      </div>
+                    }
                   </Grid.Column>
                   <Grid.Column>
-                    <Header as="h3">
-                      {
-                        this.state.course.queues &&
-                        this.state.course.queues.length > 1 &&
-                        this.state.course.queues[1].name
-                      }
-                      <Header.Subheader>
-                        {
-                          this.state.course.queues &&
-                          this.state.course.queues.length > 1 &&
-                          this.state.course.queues[1].description
-                        }
-                      </Header.Subheader>
-                    </Header>
-                    <Label content={
+                    {
                       this.state.course.queues &&
-                      this.state.course.queues.length > 0 &&
-                      this.state.course.queues[1].questions.length + " users"
-                    } color="blue" icon="user"/>
-                    <Label content="30 mins" color="blue" icon="clock"/>
-                    <Label as="a" content="Edit" color="grey" icon="cog"/>
-                    {/* add Debugging queue cards */}
-                    <Grid.Row columns={1} padded="true">
-                        {
-                          this.state.course.queues &&
-                          this.state.course.queues.length > 1 &&
-                          this.state.course.queues[1].questions.map((question, index) => (
-                            !question.timeAnswered && !question.timeRejected &&
-                            this.containsActiveTag(question) &&
-                            <Grid.Column>
-                              <QuestionCard
-                                asker={question.asker}
-                                text={question.text}
-                                time_asked={question.timeAsked}
-                                tags={question.tags}
-                                queueIndex={1}
-                                id={index}
-                                deleteFunc={this.openDeleteModal}
-                                answerFunc={this.handleStartQuestion}
-                                finishFunc={this.handleAnswerQuestion}
-                                started={question.timeStarted}
-                              />
-                            </Grid.Column>
-                          ))
-                        }
-                    </Grid.Row>
+                      this.state.course.queues.length > 1 &&
+                      <div>
+                        <EditQueueModal
+                          attrs={this.state.editQueueModal}
+                          funcs={{
+                            closeFunc: this.closeEditQueueModal
+                          }}
+                        />
+                        <Header as="h3">
+                          { this.state.course.queues[1].name }
+                          <Header.Subheader>
+                            { this.state.course.queues[1].description }
+                          </Header.Subheader>
+                        </Header>
+                        <Label
+                          content={ this.state.course.queues[1].questions.length + " users"}
+                          color="blue" icon="user"
+                        />
+                        <Label content="30 mins" color="blue" icon="clock"/>
+                        <Label as="a"
+                          content="Edit"
+                          color="grey"
+                          icon="cog"
+                          onClick={() => {this.openEditQueueModal(1)}}
+                        />
+                        {/* add Debugging queue cards */}
+                        <Grid.Row columns={1} padded="true">
+                            {
+                              this.state.course.queues[1].questions.map((question, index) => (
+                                !question.timeAnswered && !question.timeRejected &&
+                                this.containsActiveTag(question) &&
+                                <Grid.Column>
+                                  <QuestionCard
+                                    asker={question.asker}
+                                    text={question.text}
+                                    time_asked={question.timeAsked}
+                                    tags={question.tags}
+                                    queueIndex={1}
+                                    id={index}
+                                    deleteFunc={this.openDeleteModal}
+                                    answerFunc={this.handleStartQuestion}
+                                    finishFunc={this.handleAnswerQuestion}
+                                    started={question.timeStarted}
+                                  />
+                                </Grid.Column>
+                              ))
+                            }
+                        </Grid.Row>
+                      </div>
+                    }
                   </Grid.Column>
                 </Grid.Row>
               </Grid>
