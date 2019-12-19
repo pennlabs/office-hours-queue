@@ -5,7 +5,7 @@ export default class EditQueueModal extends React.Component {
   render() {
     return (
       <Modal open={this.props.attrs.open}>
-        <Modal.Header>{this.props.attrs.queue.name}</Modal.Header>
+        <Modal.Header>{"Edit: " + this.props.attrs.queue.name}</Modal.Header>
         <Modal.Content>
           <Modal.Description>
           </Modal.Description>

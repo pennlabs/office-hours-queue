@@ -37,6 +37,7 @@ class Queue extends React.Component{
         };
 
         this.updateTags = this.updateTags.bind(this);
+        this.numberOfActiveQuestions = this.numberOfActiveQuestions.bind(this);
 
         this.handleStartQuestion = this.handleStartQuestion.bind(this);
         this.handleAnswerQuestion = this.handleAnswerQuestion.bind(this);
@@ -69,6 +70,17 @@ class Queue extends React.Component{
             });
         });
         this.setState({ course: fakeCourse, allTags: tags });
+      }
+
+      numberOfActiveQuestions(queueIndex) {
+        var count = 0;
+        this.state.course.queues[queueIndex].questions.forEach(question => {
+          if (!question.timeAnswered && !question.timeRejected) {
+            count = count + 1;
+          }
+        });
+
+        return count;
       }
 
       /* ANSWER QUESTIONS FUNCTIONS */
@@ -323,9 +335,15 @@ class Queue extends React.Component{
                       ))
                     }
                     <Label as="a" color="grey" onClick={this.openTagModal} content="Edit" icon="cog"/>
-                    <a style={{"margin-left":"12px", "text-decoration":"underline"}}
-                      onClick={this.handleTagClear}
-                    >Clear All</a>
+                    <a
+                      style={{
+                        "margin-left":"12px",
+                        "text-decoration":"underline",
+                        "cursor":"pointer"
+                      }}
+                      onClick={this.handleTagClear}>
+                      Clear All
+                    </a>
                   </Segment>
                 </Grid.Row>
                 <Grid.Row>
@@ -347,7 +365,7 @@ class Queue extends React.Component{
                           </Header.Subheader>
                         </Header>
                         <Label
-                          content={ this.state.course.queues[0].questions.length + " users" }
+                          content={ this.numberOfActiveQuestions(0) + " users" }
                           color="blue"
                           icon="user"
                         />
@@ -402,7 +420,7 @@ class Queue extends React.Component{
                           </Header.Subheader>
                         </Header>
                         <Label
-                          content={ this.state.course.queues[1].questions.length + " users"}
+                          content={ this.numberOfActiveQuestions(1) + " users" }
                           color="blue" icon="user"
                         />
                         <Label content="30 mins" color="blue" icon="clock"/>
