@@ -5,6 +5,7 @@ import ArchivedCourseCard from './ArchivedCourseCard';
 import AddCard from './AddCard';
 import ModalAddStudentCourse from './ModalAddStudentCourse';
 import ModalAddInstructorCourse from './ModalAddInstructorCourse';
+import ModalCreateCourse from './ModalCreateCourse';
 import { fakeCourseUsers, fakeSearchCourses } from './coursedata.js';
 import * as ROUTES from '../../constants/routes';
 
@@ -29,10 +30,11 @@ class Dashboard extends React.Component {
         student: [],
         instructor: []
       },
-      newStudentCourse: {},
       studentModalOpen: false,
+      newStudentCourse: {},
       instructorModalOpen: false,
-      newInstructorCourse: {}
+      newInstructorCourse: {},
+      createModalOpen: false
     };
 
     this.handleArchivedChange = this.handleArchivedChange.bind(this);
@@ -49,6 +51,7 @@ class Dashboard extends React.Component {
     this.openInstructorModal = this.openInstructorModal.bind(this);
     this.closeInstructorModal = this.closeInstructorModal.bind(this);
 
+    this.openCreateModal = this.openCreateModal.bind(this);
   }
 
   componentDidMount() {
@@ -136,7 +139,11 @@ class Dashboard extends React.Component {
   }
 
   closeInstructorModal() {
-    this.setState({ instructorModalOpen: false });
+    this.setState({
+      instructorModalOpen: false,
+      searchResults: {},
+      newInstructorCourse: {}
+    });
   }
 
   handleInstructorCourseSubmit() {
@@ -196,24 +203,50 @@ class Dashboard extends React.Component {
     this.setState({ searchResults: { instructor: options } });
   }
 
+  /* CREATE NEW COURSE MODAL FUNCTIONS */
+
+  openCreateModal() {
+    console.log("hello");
+    this.setState({
+      openInstructorModal: false,
+      searchResults: {},
+      newInstructorCourse: {}
+    });
+  }
+
   render() {
     return (
       <Grid columns={2} divided="horizontally">
         <ModalAddStudentCourse
-          changeFunc={this.handleStudentCourseChange}
-          submitFunc={this.handleStudentCourseSubmit}
-          closeFunc={this.closeStudentModal}
-          open={this.state.studentModalOpen}
-          searchFunc={this.handleStudentCourseSearch}
-          results={this.state.searchResults.student}
+          funcs = {{
+            changeFunc: this.handleStudentCourseChange,
+            submitFunc: this.handleStudentCourseSubmit,
+            closeFunc: this.closeStudentModal,
+            searchFunc: this.handleStudentCourseSearch
+          }}
+          attrs = {{
+            open: this.state.studentModalOpen,
+            results: this.state.searchResults.student
+          }}
         />
         <ModalAddInstructorCourse
-          changeFunc={this.handleInstructorCourseChange}
-          submitFunc={this.handleInstructorCourseSubmit}
-          closeFunc={this.closeInstructorModal}
-          open={this.state.instructorModalOpen}
-          searchFunc={this.handleInstructorCourseSearch}
-          results={this.state.searchResults.instructor}
+          funcs={{
+            changeFunc: this.handleInstructorCourseChange,
+            submitFunc: this.handleInstructorCourseSubmit,
+            closeFunc: this.closeInstructorModal,
+            searchFunc: this.handleInstructorCourseSearch,
+            createFunc: this.openCreateModal
+          }}
+          attrs={{
+            open: this.state.instructorModalOpen,
+            results: this.state.searchResults.instructor
+          }}
+        />
+        <ModalCreateCourse
+          funcs={{}}
+          attrs={{
+            open: this.state.createModalOpen
+          }}
         />
         <Grid.Column width={3}>
           <Segment basic>
