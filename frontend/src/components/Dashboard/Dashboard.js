@@ -206,11 +206,11 @@ class Dashboard extends React.Component {
   /* CREATE NEW COURSE MODAL FUNCTIONS */
 
   openCreateModal() {
+    this.closeInstructorModal();
+
     console.log("hello");
     this.setState({
-      openInstructorModal: false,
-      searchResults: {},
-      newInstructorCourse: {}
+      createModalOpen: true
     });
   }
 
