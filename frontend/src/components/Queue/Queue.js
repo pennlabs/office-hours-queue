@@ -1,5 +1,5 @@
 import React from 'react';
-import { Segment, Menu, Header, Grid, Image, Label, Modal, Form, Button, Input } from 'semantic-ui-react';
+import { Segment, Menu, Header, Grid, Image, Label, Modal, Form, Button, Input, Message } from 'semantic-ui-react';
 import QuestionCard from './QuestionCard';
 import DeleteQuestionModal from './DeleteQuestionModal';
 import TagModal from './TagModal';
@@ -63,22 +63,26 @@ class Queue extends React.Component{
       componentDidMount() {
         var tags = [];
         fakeCourse.queues.forEach(queue => {
-            queue.tags.forEach(tag => {
-              if (!tags.includes(tag)) {
-                tags.push({ name: tag, isActive: false });
-              }
-            });
+            if (queue.tags) {
+              queue.tags.forEach(tag => {
+                if (!tags.includes(tag)) {
+                  tags.push({ name: tag, isActive: false });
+                }
+              });
+            }
         });
         this.setState({ course: fakeCourse, allTags: tags });
       }
 
       numberOfActiveQuestions(queueIndex) {
         var count = 0;
-        this.state.course.queues[queueIndex].questions.forEach(question => {
-          if (!question.timeAnswered && !question.timeRejected) {
-            count = count + 1;
-          }
-        });
+        if (this.state.course.queues[queueIndex].questions) {
+          this.state.course.queues[queueIndex].questions.forEach(question => {
+            if (!question.timeAnswered && !question.timeRejected) {
+              count = count + 1;
+            }
+          });
+        }
 
         return count;
       }
@@ -324,7 +328,7 @@ class Queue extends React.Component{
                   <Segment basic>
                     <Header as="h3" content="Tags (select to filter)"/>
                     {
-                      this.state.allTags.map((tag, index) => (
+                      this.state.allTags.length > 0 ? this.state.allTags.map((tag, index) => (
                         <Label
                           as="a"
                           color={tag.isActive ? "blue" : ""}
@@ -332,13 +336,13 @@ class Queue extends React.Component{
                         >
                           { tag.name }
                         </Label>
-                      ))
+                      )) : <Label color="blue">No Tags</Label>
                     }
                     <Label as="a" color="grey" onClick={this.openTagModal} content="Edit" icon="cog"/>
                     <a
                       style={{
-                        "margin-left":"12px",
-                        "text-decoration":"underline",
+                        "marginLeft":"12px",
+                        "textDecoration":"underline",
                         "cursor":"pointer"
                       }}
                       onClick={this.handleTagClear}>
@@ -348,16 +352,17 @@ class Queue extends React.Component{
                 </Grid.Row>
                 <Grid.Row>
                   <Grid.Column>
+                    <EditQueueModal
+                      attrs={this.state.editQueueModal}
+                      funcs={{
+                        closeFunc: this.closeEditQueueModal
+                      }}
+                    />
                     {
                       this.state.course.queues &&
                       this.state.course.queues.length > 0 &&
+                      this.state.course.queues[0].name ?
                       <div>
-                        <EditQueueModal
-                          attrs={this.state.editQueueModal}
-                          funcs={{
-                            closeFunc: this.closeEditQueueModal
-                          }}
-                        />
                         <Header as="h3">
                           { this.state.course.queues[0].name }
                           <Header.Subheader>
@@ -399,6 +404,32 @@ class Queue extends React.Component{
                               ))
                             }
                         </Grid.Row>
+                      </div> :
+                      <div>
+                      <Header as="h3">
+                        Queue #1
+                        <Header.Subheader>
+                            Your first queue description.
+                        </Header.Subheader>
+                      </Header>
+                      <Label
+                        content="N/A users"
+                        color="blue"
+                        icon="user"
+                      />
+                      <Label content="N/A mins" color="blue" icon="clock"/>
+                      <Label as="a"
+                        content="Edit"
+                        color="grey"
+                        icon="cog"
+                        onClick={() => {this.openEditQueueModal(0)}}
+                      />
+                      <Segment basic>
+                        <Message
+                          header="Queue DNE"
+                          content="You can edit this queue to open it!"
+                        />
+                      </Segment>
                       </div>
                     }
                   </Grid.Column>
