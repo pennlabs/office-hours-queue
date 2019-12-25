@@ -9,9 +9,7 @@ import ModalCreateCourse from './ModalCreateCourse';
 import { fakeCourseUsers, fakeSearchCourses } from './coursedata.js';
 import * as ROUTES from '../../constants/routes';
 
-import SignOutButton from '../SignOut';
-
-
+import Sidebar from '../Sidebar';
 
 import { withAuthorization } from '../Session';
 import { compose } from 'recompose';
@@ -248,31 +246,7 @@ class Dashboard extends React.Component {
             open: this.state.createModalOpen
           }}
         />
-        <Grid.Column width={3}>
-          <Segment basic>
-          <Image src='../../../ohq.png' size='tiny'/>
-          <Menu vertical secondary fluid>
-            <Menu.Item
-              name="Dashboard"
-              icon='dashboard'
-              href={ROUTES.DASHBOARD}
-              active={true}
-              color={'blue'}
-            />
-            <Menu.Item
-              name="Sample Queue"
-              icon='hourglass one'
-              href={ROUTES.QUEUE}
-            />
-            <Menu.Item
-              name="Sample Roster"
-              icon='users'
-              href={ROUTES.ROSTER}
-            />
-            <SignOutButton />
-          </Menu>
-          </Segment>
-        </Grid.Column>
+        <Sidebar />
         <Grid.Column width={13}>
           <Grid padded>
             <Segment basic padded>
