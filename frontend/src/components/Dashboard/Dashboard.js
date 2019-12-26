@@ -246,7 +246,7 @@ class Dashboard extends React.Component {
             open: this.state.createModalOpen
           }}
         />
-        <Sidebar />
+        <Sidebar active={'dashboard'}/>
         <Grid.Column width={13}>
           <Grid padded>
             <Segment basic padded>

@@ -5,7 +5,7 @@ import * as ROUTES from '../../constants/routes';
 
 import SignOutButton from '../SignOut';
 
-const Sidebar = ({ firebase }) => (
+const Sidebar = route => (
   <Grid.Column width={3}>
     <Segment basic>
     <Image src='../../../ohq.png' size='tiny'/>
@@ -14,23 +14,29 @@ const Sidebar = ({ firebase }) => (
         name="Dashboard"
         icon='dashboard'
         href={ROUTES.DASHBOARD}
-        active={true}
+        active={route.active === 'dashboard'}
         color={'blue'}
       />
       <Menu.Item
         name="Sample Queue"
         icon='hourglass one'
         href={ROUTES.QUEUE}
+        active={route.active === 'queue'}
+        color={'blue'}
       />
       <Menu.Item
         name="Sample Roster"
         icon='users'
         href={ROUTES.ROSTER}
+        active={route.active === 'roster'}
+        color={'blue'}
       />
       <Menu.Item
         name="Sample Analytics"
         icon='chart bar'
         href={ROUTES.ANALYTICS}
+        active={route.active === 'analytics'}
+        color={'blue'}
       />
       <SignOutButton />
     </Menu>

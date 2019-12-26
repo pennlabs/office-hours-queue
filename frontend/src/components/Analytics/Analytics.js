@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
 import { Table, Segment, Menu, Header, Grid, Image } from 'semantic-ui-react';
+import Sidebar from '../Sidebar';
 import * as ROUTES from '../../constants/routes';
 
 import Chart from 'chart.js';
@@ -63,30 +64,7 @@ class Analytics extends React.Component {
       const { column, people, direction } = this.state
         return(
             <Grid columns={2} divided="horizontally">
-            <Grid.Column width={3}>
-              <Segment basic>
-                <Image src='../../../ohq.png' size='tiny'/>
-              <Menu vertical secondary fluid>
-                <Menu.Item
-                  name="Dashboard"
-                  icon='dashboard'
-                  href={ROUTES.DASHBOARD}
-                />
-                <Menu.Item
-                  name="Sample Queue"
-                  icon='hourglass one'
-                  href={ROUTES.QUEUE}
-                />
-                <Menu.Item
-                  name="Sample Roster"
-                  icon='users'
-                  href={ROUTES.ROSTER}
-                  active={true}
-                  color={'blue'}
-                  />
-              </Menu>
-              </Segment>
-            </Grid.Column>
+            <Sidebar active={'analytics'}/>
             <Grid.Column width={12}>
               <Grid padded>
                 <Segment basic padded>

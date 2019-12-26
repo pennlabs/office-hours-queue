@@ -6,6 +6,7 @@ import TagModal from './TagModal';
 import EditQueueModal from './EditQueueModal';
 import { fakeCourse } from './questiondata.js';
 import * as ROUTES from '../../constants/routes';
+import Sidebar from '../Sidebar';
 
 
 import { withAuthorization } from '../Session';
@@ -287,30 +288,7 @@ class Queue extends React.Component{
                 queues={this.state.course.queues}
               />
             }
-            <Grid.Column width={3}>
-              <Segment basic>
-                <Image src='../../../ohq.png' size='tiny'/>
-                <Menu vertical secondary fluid>
-                  <Menu.Item
-                    name='Dashboard'
-                    href={ROUTES.DASHBOARD}
-                    icon='dashboard'
-                  />
-                  <Menu.Item
-                    name="Sample Queue"
-                    href={ROUTES.QUEUE}
-                    icon='hourglass one'
-                    active={true}
-                    color={'blue'}
-                  />
-                  <Menu.Item
-                    name="Sample Roster"
-                    icon='users'
-                    href={ROUTES.ROSTER}
-                    />
-                </Menu>
-              </Segment>
-            </Grid.Column>
+            <Sidebar active={'queue'}/>
             <Grid.Column width={13}>
               <Grid columns={2} padded>
                 <Grid.Row>
