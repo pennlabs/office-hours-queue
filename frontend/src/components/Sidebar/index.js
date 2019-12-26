@@ -6,7 +6,7 @@ import * as ROUTES from '../../constants/routes';
 import SignOutButton from '../SignOut';
 
 const Sidebar = ({ firebase }) => (
-  <Grid.Column width={4}>
+  <Grid.Column width={3}>
     <Segment basic>
     <Image src='../../../ohq.png' size='tiny'/>
     <Menu vertical secondary fluid>
@@ -26,6 +26,11 @@ const Sidebar = ({ firebase }) => (
         name="Sample Roster"
         icon='users'
         href={ROUTES.ROSTER}
+      />
+      <Menu.Item
+        name="Sample Analytics"
+        icon='chart bar'
+        href={ROUTES.ANALYTICS}
       />
       <SignOutButton />
     </Menu>
