@@ -49,37 +49,43 @@ class Roster extends React.Component {
     render(){
       const { column, people, direction } = this.state
         return(
-            <Grid columns={2} divided="horizontally">
+            <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
             <Sidebar active={'roster'}/>
-            <Grid.Column width={12}>
+            <Grid.Column width={13}>
               <Grid padded>
-                <Segment basic padded>
-                  <Header as="h2">
-                    <Header.Content>
-                      Course Roster
-                    </Header.Content>
+                <Segment basic>
+                  <Header as="h1">
+                      CIS 121
+                      <Header.Subheader>
+                        Introduction to Data Structures and Algorithms
+                      </Header.Subheader>
                   </Header>
                 </Segment>
                 {/* add person information */}
-                <Table celled>
+                <Grid.Row>
+                <Table celled padded>
                   <Table.Header>
                     <Table.Row>
                       <Table.HeaderCell
                         sorted={column === 'fullName' ? direction : null}
                         onClick={this.handleSort('fullName')}
+                        width={3}
                       >
                         Full Name</Table.HeaderCell>
                       <Table.HeaderCell
                         sorted={column === 'preferredName' ? direction : null}
                         onClick={this.handleSort('preferredName')}
+                        width={3}
                       >Preferred Name</Table.HeaderCell>
                       <Table.HeaderCell
                         sorted={column === 'role' ? direction : null}
                         onClick={this.handleSort('role')}
+                        width={2}
                       >Role</Table.HeaderCell>
                       <Table.HeaderCell
                         sorted={column === 'email' ? direction : null}
                         onClick={this.handleSort('email')}
+                        width={4}
                       >Email</Table.HeaderCell>
                     </Table.Row>
                   </Table.Header>
@@ -95,6 +101,7 @@ class Roster extends React.Component {
                     ))}
                   </Table.Body>
                   </Table>
+                  </Grid.Row>
               </Grid>
             </Grid.Column>
           </Grid>

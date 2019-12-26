@@ -214,7 +214,7 @@ class Dashboard extends React.Component {
 
   render() {
     return (
-      <Grid columns={2} divided="horizontally">
+      <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
         <ModalAddStudentCourse
           funcs = {{
             changeFunc: this.handleStudentCourseChange,

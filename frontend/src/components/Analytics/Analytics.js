@@ -63,16 +63,19 @@ class Analytics extends React.Component {
     render(){
       const { column, people, direction } = this.state
         return(
-            <Grid columns={2} divided="horizontally">
+            <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
             <Sidebar active={'analytics'}/>
             <Grid.Column width={12}>
               <Grid padded>
                 <Segment basic padded>
-                  <Header as="h2">
-                    <Header.Content>
-                      Course Analytics
-                    </Header.Content>
+                  <Header as="h1">
+                    CIS 121
+                    <Header.Subheader>
+                      Introduction to Data Structures and Algorithms
+                    </Header.Subheader>
                   </Header>
+                </Segment>
+                <Grid.Row>
               <Header as="h3">Usage Trends of Queues</Header>
               <canvas
                 style={{ width: 800, height: 300 }}
@@ -93,7 +96,7 @@ class Analytics extends React.Component {
               style={{ width: 800, height: 300 }}
               ref={node4 => (this.node4 = node4)}
               />
-                </Segment>
+
                 {/* add person information */}
                 <Header as="h3">Student Participation</Header>
                 <Table celled>
@@ -125,6 +128,7 @@ class Analytics extends React.Component {
                     ))}
                   </Table.Body>
                   </Table>
+                  </Grid.Row>
               </Grid>
             </Grid.Column>
           </Grid>
