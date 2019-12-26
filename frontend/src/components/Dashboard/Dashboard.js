@@ -228,13 +228,18 @@ class Dashboard extends React.Component {
             />
             <Menu.Item
               name="Sample Queue"
-              icon='hourglass one'
+              icon='tasks'
               href={ROUTES.QUEUE}
             />
             <Menu.Item
               name="Sample Roster"
               icon='users'
               href={ROUTES.ROSTER}
+            />
+            <Menu.Item
+              name="Sample Analytics"
+              icon='chart bar'
+              href={ROUTES.ANALYTICS}
             />
             <SignOutButton />
           </Menu>

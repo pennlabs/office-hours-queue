@@ -5,8 +5,10 @@
   "dependencies": {
     "@material-ui/core": "^4.5.2",
     "@material-ui/icons": "^4.5.1",
+    "chart.js": "^2.9.3",
     "firebase": "^7.4.0",
     "react": "^16.11.0",
+    "react-chartjs-2": "^2.8.0",
     "react-dom": "^16.11.0",
     "react-google-button": "^0.5.3",
     "react-router-dom": "^5.1.2",
