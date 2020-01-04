@@ -10,8 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
-from decouple import config
 import os
+import django_heroku
+import dj_database_url
+from decouple import config
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -42,7 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'phonenumber_field',
     'graphene_django',
-    'ohq.apps.api'
+    'polymorphic',
+    'ohq.apps.api',
 ]
 
 MIDDLEWARE = [
@@ -79,20 +82,23 @@ WSGI_APPLICATION = 'ohq.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ohq',
-        'USER': config('DATABASE_USER'),
-        'PASSWORD':  config('DATABASE_PASSWORD'),
-        'PORT': '5432',
-    }
-}
+DATABASES = {}
+DATABASES['default'] = dj_database_url.config(default=config('DATABASE_URL'))
 
-if os.getenv('GAE_INSTANCE'):
-    DATABASES['default']['HOST'] = '/cloudsql/office-hour-q:us-east4:ohq-db'
-else:
-    DATABASES['default']['HOST'] = '127.0.0.1'
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'ohq',
+#         'USER': config('DATABASE_USER'),
+#         'PASSWORD':  config('DATABASE_PASSWORD'),
+#         'PORT': '5432',
+#     }
+# }
+
+# if os.getenv('GAE_INSTANCE'):
+#     DATABASES['default']['HOST'] = '/cloudsql/office-hour-q:us-east4:ohq-db'
+# else:
+#     DATABASES['default']['HOST'] = '127.0.0.1'
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -130,7 +136,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
-STATIC_URL = 'https://storage.googleapis.com/ohq-api-admin/static/'
+# STATIC_URL = 'https://storage.googleapis.com/ohq-api-admin/static/'
 STATIC_ROOT = 'static/'
 
 
@@ -139,3 +145,6 @@ STATIC_ROOT = 'static/'
 GRAPHENE = {
     'SCHEMA': 'ohq.schema.schema'
 }
+
+# Activate Django-Heroku.
+django_heroku.settings(locals())

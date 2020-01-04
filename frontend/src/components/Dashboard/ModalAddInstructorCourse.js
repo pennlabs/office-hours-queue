@@ -1,17 +1,11 @@
 import React from 'react';
 import { Modal, Form, Button } from 'semantic-ui-react';
 
-//modal for adding student courses (props: submit and change function, and open boolean)
-export default class ModalAddStudentCourse extends React.Component {
-  state = { modalOpen: false }
-
-  handleClose = () => this.setState( {modalOpen: true })
-  handleOpen = () => this.setState( {modalOpen: false })
-
+export default class ModalAddInstructorCourse extends React.Component {
   render() {
     return (
       <Modal open={this.props.attrs.open}>
-        <Modal.Header>Add New Student Course</Modal.Header>
+        <Modal.Header>Add New Instructor Course</Modal.Header>
         <Modal.Content>
           <Form>
             <Form.Field>
@@ -35,6 +29,14 @@ export default class ModalAddStudentCourse extends React.Component {
               </Form.Field>
             }
           </Form>
+          <div style={{"marginTop":"20px"}}>
+          <a
+            style={{"textDecoration":"underline", "cursor":"pointer"}}
+            onClick={this.props.funcs.createFunc}
+          >
+            Create a New Course
+          </a>
+          </div>
         </Modal.Content>
         <Modal.Actions>
           <Button content="Cancel" compact onClick={this.props.funcs.closeFunc}/>
@@ -43,5 +45,4 @@ export default class ModalAddStudentCourse extends React.Component {
       </Modal>
     );
   }
-
 }

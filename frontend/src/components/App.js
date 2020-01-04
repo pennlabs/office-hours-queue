@@ -5,8 +5,8 @@ import * as ROUTES from '../constants/routes';
 import LandingPage from './LandingPage/LandingPage';
 import Dashboard from './Dashboard/Dashboard';
 import Roster from './Roster/Roster';
-import RosterSem from './Roster/Roster';
 import Queue from './Queue/Queue';
+import Analytics from './Analytics/Analytics';
 
 import { withAuthentication } from './Session';
 
@@ -19,6 +19,7 @@ class App extends React.Component {
           <Route exact path={ROUTES.DASHBOARD} component={ Dashboard }/>
           <Route exact path={ROUTES.ROSTER} component={ Roster }/>
           <Route exact path={ROUTES.QUEUE} component={ Queue }/>
+          <Route exact path={ROUTES.ANALYTICS} component={ Analytics }/>
           <Route component={ Dashboard }/>
         </Switch>
       </Router>
