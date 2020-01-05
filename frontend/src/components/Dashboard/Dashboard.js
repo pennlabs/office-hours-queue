@@ -275,7 +275,7 @@ class Dashboard extends React.Component {
                   ))
                 }
                 <Grid.Column>
-                  <AddCard clickFunc={this.openStudentModal}/>
+                <AddCard clickFunc={this.openStudentModal}/>
                 </Grid.Column>
             </Grid.Row>
             <Segment basic padded>

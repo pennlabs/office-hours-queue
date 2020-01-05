@@ -18,10 +18,17 @@ const Sidebar = route => (
         color={'blue'}
       />
       <Menu.Item
-        name="Sample Queue"
+        name="Sample Instructor Queue"
         icon='hourglass one'
         href={ROUTES.QUEUE}
         active={route.active === 'queue'}
+        color={'blue'}
+      />
+      <Menu.Item
+        name="Sample Student Queue"
+        icon='hourglass one'
+        href={ROUTES.STUDENTQUEUE}
+        active={route.active === 'roster'}
         color={'blue'}
       />
       <Menu.Item
