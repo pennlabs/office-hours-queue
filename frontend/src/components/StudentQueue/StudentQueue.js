@@ -56,13 +56,22 @@ class Queue extends React.Component{
         return count;
       }
 
-      renderQuestion(){
+      /* RENDERING THINGS */
+
+      renderAskedQuestion(){
         if (this.state.questionAsked){
           return <QuestionCard 
             text={this.state.question.text}
             queueName={this.state.course.queues[this.state.question.queueIndex].name}
             timeAsked={this.state.question.timeAsked}
           />
+        }
+        return null;
+      }
+
+      renderQueue(queueIndex){
+        if (!this.state.questionAsked){
+          return <AddQuestion clickFunc={() => this.openQuestionModal(queueIndex)}/>
         }
         return null;
       }
@@ -135,7 +144,7 @@ class Queue extends React.Component{
                   </Segment>
                 </Grid.Row>
                 <Grid.Row>
-                  { this.renderQuestion() }
+                  { this.renderAskedQuestion() }
                 </Grid.Row>
                 <Grid.Row>
                   <Grid.Column>
@@ -157,11 +166,7 @@ class Queue extends React.Component{
                         />
                         <Label content="30 mins" color="blue" icon="clock"/>
                         <div>
-                            {
-                                !this.state.questionAsked ? 
-                                <AddQuestion clickFunc={() => this.openQuestionModal(0)}/> :
-                                <Header>Asked Question, you are _ in line out of {this.numberOfActiveQuestions(0)}</Header>
-                            }
+                            { this.renderQueue(0) }
                         </div>
                       </div> :
                       <div>
@@ -186,11 +191,7 @@ class Queue extends React.Component{
                         />
                         <Label content="30 mins" color="blue" icon="clock"/>
                         <div>
-                        {
-                                !this.state.questionAsked ? 
-                                <AddQuestion clickFunc={() => this.openQuestionModal(1)}/> : 
-                                <Header>Asked Question, you are _ in line out of {this.numberOfActiveQuestions(1)}</Header>
-                            }
+                          { this.renderQueue(1) }
                         </div>
                       </div>
                     }
