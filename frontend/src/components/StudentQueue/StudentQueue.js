@@ -2,6 +2,7 @@ import React from 'react';
 import { Segment, Menu, Header, Grid, Image, Label, Modal, Form, Button, Input, Message } from 'semantic-ui-react';
 import AddQuestion from './AddQuestion'
 import QuestionCard from './QuestionCard.js'
+import EditQuestionModal from './EditQuestionModal.js';
 import { fakeCourse } from './questiondata.js';
 import AskQuestionModal from './AskQuestionModal.js';
 import Sidebar from '../Sidebar';
@@ -14,6 +15,7 @@ class Queue extends React.Component{
         super(props);
         this.state = {
           newQuestionOpen : false,
+          editQuestionOpen : false,
           questionAsked: false,
           queueIndexQuestionAskedOn: 0,
           question: {},
@@ -24,10 +26,13 @@ class Queue extends React.Component{
         this.numberOfActiveQuestions = this.numberOfActiveQuestions.bind(this);
 
         this.openQuestionModal = this.openQuestionModal.bind(this);
+        this.closeQuestionModal = this.closeQuestionModal.bind(this);
+
+        this.openEditQuestionModal = this.openEditQuestionModal.bind(this);
+        this.closeEditQuestionModal = this.closeEditQuestionModal.bind(this);
         
         this.handleQuestionSubmit = this.handleQuestionSubmit.bind(this);
         this.handleQuestionChange = this.handleQuestionChange.bind(this);
-        this.closeQuestionModal = this.closeQuestionModal.bind(this);
       }
 
       componentDidMount() {
@@ -64,6 +69,7 @@ class Queue extends React.Component{
             text={this.state.question.text}
             queueName={this.state.course.queues[this.state.question.queueIndex].name}
             timeAsked={this.state.question.timeAsked}
+            editFunc={() => this.openEditQuestionModal()}
           />
         }
         return null;
@@ -87,6 +93,24 @@ class Queue extends React.Component{
           });
       }
 
+      openEditQuestionModal(){
+        this.setState({ 
+            editQuestionOpen: true, 
+         });
+      }
+
+      closeQuestionModal(){
+        this.setState({ 
+            newQuestionOpen: false 
+        });
+      }
+
+      closeEditQuestionModal(){
+        this.setState({ 
+            editQuestionOpen: false 
+        });
+      }
+
       /* QUESTION FORM */
 
       handleQuestionChange(e, {name, value} ){
@@ -106,14 +130,9 @@ class Queue extends React.Component{
           this.setState({ 
               questionAsked: true, 
               newQuestionOpen: false, 
+              editQuestionOpen: false,
               question : q
            });
-      }
-
-      closeQuestionModal(){
-        this.setState({ 
-            newQuestionOpen: false 
-         });
       }
 
       render() {
@@ -127,6 +146,17 @@ class Queue extends React.Component{
                 }}
                 attrs = {{
                     open: this.state.newQuestionOpen
+                }}
+            />
+            <EditQuestionModal
+                funcs = {{
+                    changeFunc: this.handleQuestionChange,
+                    submitFunc: this.handleQuestionSubmit,
+                    closeFunc: this.closeEditQuestionModal,
+                }}
+                attrs = {{
+                    open: this.state.editQuestionOpen,
+                    // prevQuestion = this.state.question.text
                 }}
             />
             <Sidebar active={'queue'}/>

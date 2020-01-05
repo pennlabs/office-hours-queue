@@ -40,7 +40,7 @@ export default class QuestionCard extends React.Component {
                     size='mini'
                     color='green'
                     content='Edit'
-                    onClick={() => this.props.answerFunc(this.props.queueIndex, this.props.id)}
+                    onClick={() => this.props.editFunc()}
                     />
                 </Header.Content>
                 }

@@ -2,11 +2,11 @@ import React from 'react';
 import { Modal, Form, Button } from 'semantic-ui-react';
 
 //modal for adding student courses (props: submit and change function, and open boolean)
-export default class AskQuestionModal extends React.Component {
+export default class EditQuestionModal extends React.Component {
   render() {
     return (
       <Modal open={this.props.attrs.open}>
-        <Modal.Header>Add New Question</Modal.Header>
+        <Modal.Header>Edit Question</Modal.Header>
         <Modal.Content>
           <Form>
             <Form.Field>
