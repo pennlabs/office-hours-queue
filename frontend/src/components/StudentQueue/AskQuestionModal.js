@@ -11,7 +11,7 @@ export default class ModalAddStudentCourse extends React.Component {
           <Form>
             <Form.Field>
               <label>Question</label>
-              <Form.Input name="question" onChange={this.props.funcs.changeFunc}/>
+              <Form.Input name="text" onChange={this.props.funcs.changeFunc}/>
             </Form.Field>
           </Form>
         </Modal.Content>

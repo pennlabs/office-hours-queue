@@ -1,6 +1,7 @@
 import React from 'react';
 import { Segment, Menu, Header, Grid, Image, Label, Modal, Form, Button, Input, Message } from 'semantic-ui-react';
 import AddQuestion from './AddQuestion'
+import QuestionCard from './QuestionCard.js'
 import { fakeCourse } from './questiondata.js';
 import AskQuestionModal from './AskQuestionModal.js';
 import Sidebar from '../Sidebar';
@@ -55,10 +56,26 @@ class Queue extends React.Component{
         return count;
       }
 
+      renderQuestion(){
+        if (this.state.questionAsked){
+          return <QuestionCard 
+            text={this.state.question.text}
+            queueName={this.state.course.queues[this.state.question.queueIndex].name}
+            timeAsked={this.state.question.timeAsked}
+          />
+        }
+        return null;
+      }
+
       /* ADDING NEW QUESTIONS */
 
-      openQuestionModal(){
-          this.setState({ newQuestionOpen : true })
+      openQuestionModal(queueIndex){
+          var q = this.state.question;
+          q['queueIndex'] = queueIndex;
+          this.setState({ 
+              newQuestionOpen: true, 
+              question: q
+          });
       }
 
       /* QUESTION FORM */
@@ -70,9 +87,17 @@ class Queue extends React.Component{
       }
 
       handleQuestionSubmit(){
+          var date = new Date();
+          var dateText = date.toString();
+          dateText = dateText.split(' ')[4];
+          
+          var q = this.state.question;
+          q['timeAsked'] = dateText;
+
           this.setState({ 
               questionAsked: true, 
-              newQuestionOpen: false 
+              newQuestionOpen: false, 
+              question : q
            });
       }
 
@@ -110,6 +135,9 @@ class Queue extends React.Component{
                   </Segment>
                 </Grid.Row>
                 <Grid.Row>
+                  { this.renderQuestion() }
+                </Grid.Row>
+                <Grid.Row>
                   <Grid.Column>
                     {
                       this.state.course.queues &&
@@ -131,7 +159,7 @@ class Queue extends React.Component{
                         <div>
                             {
                                 !this.state.questionAsked ? 
-                                <AddQuestion clickFunc={this.openQuestionModal}/> :
+                                <AddQuestion clickFunc={() => this.openQuestionModal(0)}/> :
                                 <Header>Asked Question, you are _ in line out of {this.numberOfActiveQuestions(0)}</Header>
                             }
                         </div>
@@ -160,7 +188,7 @@ class Queue extends React.Component{
                         <div>
                         {
                                 !this.state.questionAsked ? 
-                                <AddQuestion clickFunc={this.openQuestionModal}/> : 
+                                <AddQuestion clickFunc={() => this.openQuestionModal(1)}/> : 
                                 <Header>Asked Question, you are _ in line out of {this.numberOfActiveQuestions(1)}</Header>
                             }
                         </div>
