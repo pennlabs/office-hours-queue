@@ -33,9 +33,15 @@ export default class QuestionCard extends React.Component {
             Question: { this.props.text } 
           </Segment>
           <Segment attached="bottom" secondary textAlign="right" style={{"height":"50px",  "width":"900px"}}>
-            <Header as="h5" floated='left'>
+            <Header as="h5" floated='right'>
               {
                 <Header.Content>
+                  <Button compact
+                    size='mini'
+                    color='red'
+                    content='Delete'
+                    onClick={() => this.props.deleteFunc()}
+                    />
                   <Button compact
                     size='mini'
                     color='green'

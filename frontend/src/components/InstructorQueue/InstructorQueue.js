@@ -288,7 +288,7 @@ class Queue extends React.Component{
                 queues={this.state.course.queues}
               />
             }
-            <Sidebar active={'queue'}/>
+            <Sidebar active={'instructor_queue'}/>
             <Grid.Column width={13}>
               <Grid columns={2} padded>
                 <Grid.Row>

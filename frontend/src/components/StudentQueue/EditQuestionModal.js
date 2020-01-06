@@ -11,7 +11,7 @@ export default class EditQuestionModal extends React.Component {
           <Form>
             <Form.Field>
               <label>Question</label>
-              <Form.Input name="text" onChange={this.props.funcs.changeFunc}/>
+              <Form.Input placeholder={this.props.attrs.prevQuestion} name="text" onChange={this.props.funcs.changeFunc}/>
             </Form.Field>
           </Form>
         </Modal.Content>
