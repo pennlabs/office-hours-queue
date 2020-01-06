@@ -4,12 +4,11 @@ import QuestionCard from './QuestionCard';
 import DeleteQuestionModal from './DeleteQuestionModal';
 import TagModal from './TagModal';
 import EditQueueModal from './EditQueueModal';
-import { fakeCourse } from './questiondata.js';
-import * as ROUTES from '../../constants/routes';
-import Sidebar from '../Sidebar';
+import { fakeCourse } from '../questiondata';
+import Sidebar from '../../Sidebar';
 
 
-import { withAuthorization } from '../Session';
+import { withAuthorization } from '../../Session';
 import { compose } from 'recompose';
 
 

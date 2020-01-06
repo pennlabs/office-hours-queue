@@ -5,8 +5,8 @@ import * as ROUTES from '../constants/routes';
 import LandingPage from './LandingPage/LandingPage';
 import Dashboard from './Dashboard/Dashboard';
 import Roster from './Roster/Roster';
-import InstructorQueue from './InstructorQueue/InstructorQueue';
-import StudentQueue from './StudentQueue/StudentQueue';
+import InstructorQueue from './Queue/InstructorQueue/InstructorQueue'
+import StudentQueue from './Queue/StudentQueue/StudentQueue';
 import Analytics from './Analytics/Analytics';
 
 import { withAuthentication } from './Session';

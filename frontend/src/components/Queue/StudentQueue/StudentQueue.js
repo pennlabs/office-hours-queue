@@ -1,27 +1,27 @@
 import React from 'react';
 import { Segment, Menu, Header, Grid, Image, Label, Modal, Form, Button, Input, Message } from 'semantic-ui-react';
 import AddQuestion from './AskQuestion'
-import QuestionCard from './QuestionCard.js'
-import EditQuestionModal from './EditQuestionModal.js';
-import DeletePopupModal from './DeletePopup.js';
-import { fakeCourse } from './questiondata.js';
-import AskQuestionModal from './AskQuestionModal.js';
-import Sidebar from '../Sidebar';
+import QuestionCard from './QuestionCard'
+import EditQuestionModal from './EditQuestionModal';
+import DeletePopupModal from './DeletePopup';
+import { fakeCourse } from '../questiondata';
+import AskQuestionModal from './AskQuestionModal';
+import Sidebar from '../../Sidebar';
 
-import { withAuthorization } from '../Session';
+import { withAuthorization } from '../../Session';
 import { compose } from 'recompose';
 
 class Queue extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      course: {},
+      allTags: [],
+      question: {},
+      questionAsked: false,
       newQuestionModalOpen: false,
       editQuestionModalOpen: false,
       deleteQuestionModalOpen: false,
-      questionAsked: false,
-      question: {},
-      course: {},
-      allTags: []
     };
 
     this.numberOfActiveQuestions = this.numberOfActiveQuestions.bind(this);
@@ -39,6 +39,7 @@ class Queue extends React.Component {
 
     this.handleQuestionSubmit = this.handleQuestionSubmit.bind(this);
     this.handleQuestionChange = this.handleQuestionChange.bind(this);
+    this.handleTagQuestion = this.handleTagQuestion.bind(this);
   }
 
   componentDidMount() {
@@ -75,6 +76,7 @@ class Queue extends React.Component {
         text={this.state.question.text}
         queueName={this.state.course.queues[this.state.question.queueIndex].name}
         timeAsked={this.state.question.timeAsked}
+        tags={this.state.allTags}
         editFunc={() => this.openEditQuestionModal()}
         deleteFunc={() => this.openDeletePopupModal()}
       />
@@ -127,6 +129,7 @@ class Queue extends React.Component {
   }
 
   deleteQuestionModal() {
+    this.clearTags();
     this.setState({
       deleteQuestionModalOpen: false,
       questionAsked: false,
@@ -138,6 +141,22 @@ class Queue extends React.Component {
     this.setState({
       deleteQuestionModalOpen: true
     });
+  }
+
+  /* TAGS */
+
+  handleTagQuestion(index){
+    var tags = this.state.allTags;
+    tags[index].isActive = true; 
+    this.setState({ allTags: tags });
+  }
+
+  clearTags(){
+    var tags = this.state.allTags;
+    tags.forEach(tag => {
+      tag.isActive = false;
+    })
+    this.setState({ allTags: tags });
   }
 
   /* QUESTION FORM */
@@ -175,12 +194,14 @@ class Queue extends React.Component {
       <Grid columns={2} divided="horizontally" style={{ "width": "100%" }}>
         <AskQuestionModal
           funcs={{
-            changeFunc: this.handleQuestionChange,
+            updateQuestionFunc: this.handleQuestionChange,
+            tagQuestionFunc: this.handleTagQuestion,
             submitFunc: this.handleQuestionSubmit,
             closeFunc: this.closeQuestionModal,
           }}
           attrs={{
-            open: this.state.newQuestionModalOpen
+            open: this.state.newQuestionModalOpen,
+            allTags: this.state.allTags
           }}
         />
         <EditQuestionModal

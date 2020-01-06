@@ -1,5 +1,5 @@
 import React from 'react'
-import { Segment, Header, Icon, Button, Popup } from 'semantic-ui-react';
+import { Segment, Header, Icon, Button, Popup, Label } from 'semantic-ui-react';
 
 // Shows current state of the question asked (which queue it is on, when it was asked)
 export default class QuestionCard extends React.Component {
@@ -8,7 +8,7 @@ export default class QuestionCard extends React.Component {
     this.state = {
       currentlyBeingAnswered: false
     };
-  }ß
+  } ß
 
   answerCard = () => this.setState({ currentlyBeingAnswered: true })
 
@@ -32,6 +32,16 @@ export default class QuestionCard extends React.Component {
           </Segment>
         <Segment attached>
           Question: {this.props.text}
+          Tags: {
+            this.props.tags.length > 0 ? this.props.tags.map((tag, index) => (
+              tag.isActive ?
+                <Header.Content>
+                  {tag.name}
+                </Header.Content> :
+                null
+            )) : null
+          }
+          {/* Tags: {this.props.tags[0]} */}
         </Segment>
         <Segment attached="bottom" secondary textAlign="right" style={{ "height": "50px", "width": "900px" }}>
           <Header as="h5" floated='right'>
