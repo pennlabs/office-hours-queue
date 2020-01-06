@@ -48,26 +48,13 @@ class CourseSettings extends React.Component{
         this.state = {
           course: {
             name: 'CIS 121',
-            description: 'Introduction to Data Structures and Algorithms'
+            department: 'CIS',
+            number: '121',
+            description: 'Introduction to Data Structures and Algorithms',
+            year: '2019',
+            semester: 'Spring'
           },
-          allTags: [],
-          questionToDelete: {},
-          deleteModal: {
-            open: false,
-            reason: "",
-            textDisabled: true,
-            text: ""
-          },
-          tagModal: {
-            open: false
-          },
-          tagToAdd: "",
-          editQueueModal: {
-            open: false,
-            queue: {}
-          }
         };
-
       }
 
       render() {
@@ -97,19 +84,20 @@ class CourseSettings extends React.Component{
                           fluid
                           selection
                           options={departmentOptions}
+                          defaultValue={this.state.course.department}
                         />
                       </Form.Field>
                       <Form.Field>
                         <label>Course Number</label>
-                        <input placeholder='Course Number' />
+                        <input placeholder='Course Number' defaultValue={this.state.course.number} />
                       </Form.Field>
                       <Form.Field>
                         <label>Course Description</label>
-                        <input placeholder='Course Description' />
+                        <input placeholder='Course Description' defaultValue={this.state.course.description}/>
                       </Form.Field>
                       <Form.Field>
                         <label>Year</label>
-                        <input placeholder='Year' />
+                        <input placeholder='Year' defaultValue={this.state.course.year} />
                       </Form.Field>
                       <Form.Field>
                         <label>Semester</label>
@@ -118,6 +106,7 @@ class CourseSettings extends React.Component{
                           fluid
                           selection
                           options={semesterOptions}
+                          defaultValue={this.state.course.semester}
                         />
                       </Form.Field>
                       <Form.Field>
