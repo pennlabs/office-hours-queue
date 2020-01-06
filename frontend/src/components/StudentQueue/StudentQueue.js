@@ -35,6 +35,7 @@ class Queue extends React.Component {
 
     this.openEditQuestionModal = this.openEditQuestionModal.bind(this);
     this.closeEditQuestionModal = this.closeEditQuestionModal.bind(this);
+    this.handleQuestionEdit = this.handleQuestionEdit.bind(this);
 
     this.handleQuestionSubmit = this.handleQuestionSubmit.bind(this);
     this.handleQuestionChange = this.handleQuestionChange.bind(this);
@@ -125,7 +126,7 @@ class Queue extends React.Component {
     });
   }
 
-  deleteQuestionModal(){
+  deleteQuestionModal() {
     this.setState({
       deleteQuestionModalOpen: false,
       questionAsked: false,
@@ -135,7 +136,7 @@ class Queue extends React.Component {
 
   openDeletePopupModal() {
     this.setState({
-      deleteQuestionModalOpen: true 
+      deleteQuestionModalOpen: true
     });
   }
 
@@ -145,6 +146,12 @@ class Queue extends React.Component {
     var question = this.state.question;
     question[name] = value;
     this.setState({ question: question });
+  }
+
+  handleQuestionEdit(){
+    this.setState({
+      editQuestionModalOpen: false
+    });
   }
 
   handleQuestionSubmit() {
@@ -179,7 +186,7 @@ class Queue extends React.Component {
         <EditQuestionModal
           funcs={{
             changeFunc: this.handleQuestionChange,
-            submitFunc: this.handleQuestionSubmit,
+            submitFunc: this.handleQuestionEdit,
             closeFunc: this.closeEditQuestionModal,
           }}
           attrs={{
