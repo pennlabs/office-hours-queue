@@ -207,11 +207,13 @@ class Queue extends React.Component {
         <EditQuestionModal
           funcs={{
             changeFunc: this.handleQuestionChange,
+            tagQuestionFunc: this.handleTagQuestion,
             submitFunc: this.handleQuestionEdit,
             closeFunc: this.closeEditQuestionModal,
           }}
           attrs={{
             open: this.state.editQuestionModalOpen,
+            allTags: this.state.allTags,
             prevQuestion: this.state.question.text
           }}
         />

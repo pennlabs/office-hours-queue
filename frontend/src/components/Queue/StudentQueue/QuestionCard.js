@@ -41,7 +41,6 @@ export default class QuestionCard extends React.Component {
                 null
             )) : null
           }
-          {/* Tags: {this.props.tags[0]} */}
         </Segment>
         <Segment attached="bottom" secondary textAlign="right" style={{ "height": "50px", "width": "900px" }}>
           <Header as="h5" floated='right'>
