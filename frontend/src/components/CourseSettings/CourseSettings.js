@@ -52,7 +52,8 @@ class CourseSettings extends React.Component{
             number: '121',
             description: 'Introduction to Data Structures and Algorithms',
             year: '2019',
-            semester: 'Spring'
+            semester: 'Spring',
+            active: true
           },
         };
       }
@@ -110,7 +111,7 @@ class CourseSettings extends React.Component{
                         />
                       </Form.Field>
                       <Form.Field>
-                        <Checkbox toggle label='TODO: something about deactivating course here' />
+                        <Checkbox toggle label='Course Active?' defaultChecked={this.state.course.active} />
                       </Form.Field>
                       <Button type='submit'>Submit</Button>
                     </Form>
