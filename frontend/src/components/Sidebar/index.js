@@ -52,6 +52,13 @@ const Sidebar = route => (
         active={route.active === 'course_settings'}
         color={'blue'}
       />
+      <Menu.Item
+        name="Sample Account Settings"
+        icon='settings'
+        href={ROUTES.ACCOUNTSETTINGS}
+        active={route.active === 'account_settings'}
+        color={'blue'}
+      />
       <SignOutButton />
     </Menu>
     </Segment>

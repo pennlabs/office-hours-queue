@@ -9,6 +9,7 @@ import InstructorQueue from './Queue/InstructorQueue/InstructorQueue'
 import StudentQueue from './Queue/StudentQueue/StudentQueue';
 import Analytics from './Analytics/Analytics';
 import CourseSettings from './CourseSettings/CourseSettings';
+import AccountSettings from './AccountSettings/AccountSettings';
 
 import { withAuthentication } from './Session';
 
@@ -24,6 +25,7 @@ class App extends React.Component {
           <Route exact path={ROUTES.STUDENTQUEUE} component={ StudentQueue }/>
           <Route exact path={ROUTES.ANALYTICS} component={ Analytics }/>
           <Route exact path={ROUTES.COURSESETTINGS} component={ CourseSettings }/>
+          <Route exact path={ROUTES.ACCOUNTSETTINGS} component={ AccountSettings }/>
           <Route component={ Dashboard }/>
         </Switch>
       </Router>
