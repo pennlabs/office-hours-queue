@@ -194,9 +194,133 @@ class Query(graphene.ObjectType):
     # def resolve_course_users(self, info, kind, id):
     #     return CourseUser.objects.filter(kind=kind, id=id)
 
-    # def resolve_all_courses(self, info, **kwargs):
-    #     # We can easily optimize query count in the resolve method
-    #     return Course.objects.all()
+
     #
     # def resolve_all_course_users(self, info, **kwargs):
     #     return CourseUser.objects.select_related('course').select_related('user').all()
+
+class CreateUserInput(graphene.InputObjectType):
+    full_name = graphene.String(required=True)
+    preferred_name = graphene.String(required=True)
+    email = graphene.String(required=True)
+    phone_number = graphene.String(required=False)
+
+class CreateUserResponse(graphene.ObjectType):
+    user = graphene.Field(UserNode, required=True)
+
+class CreateUser(graphene.Mutation):
+    class Arguments:
+        input = CreateUserInput(required=True)
+
+    Output = CreateUserResponse
+
+    @staticmethod
+    def mutate(root, info, input):
+        user = User.objects.create(
+            full_name=input.full_name,
+            preferred_name=input.preferred_name,
+            email=input.email,
+            phone_number=input.phone_number,
+        )
+
+        return CreateUserResponse(user=user)
+
+
+class CreateCourseInput(graphene.InputObjectType):
+    name = graphene.String(required=True)
+    department = graphene.String(required=True)
+    description = graphene.String(required=False)
+    year = graphene.Int(required=True)
+    semester = graphene.Field(SemesterType, required=True)
+    invite_only = graphene.Boolean(required=True)
+
+
+class CreateCourseResponse(graphene.ObjectType):
+    course = graphene.Field(CourseNode, required=False)
+
+
+class CreateCourse(graphene.Mutation):
+    class Arguments:
+        input = CreateCourseInput(required=True)
+
+    Output = CreateCourseResponse
+
+    @staticmethod
+    def mutate(root, info, input):
+        course = Course.objects.create(
+            name=input.name,
+            department=input.department,
+            description=input.description or "",
+            year=input.year,
+            semester=input.semester,
+            invite_only=input.invite_only,
+        )
+
+        return CreateCourseResponse(course=course)
+
+
+class CreateQueueInput(graphene.InputObjectType):
+    name = graphene.String(required=True)
+    description = graphene.String(required=False)
+    tags = graphene.List(graphene.String, required=True)
+    start_end_times = graphene.String(required=True)
+    course_id = graphene.ID(required=True)
+
+
+class CreateQueueResponse(graphene.ObjectType):
+    queue = graphene.Field(QueueNode, required=False)
+
+
+class CreateQueue(graphene.Mutation):
+    class Arguments:
+        input = CreateQueueInput(required=True)
+
+    Output = CreateQueueResponse
+
+    @staticmethod
+    def mutate(root, info, input):
+        # TODO check permissions
+        course = Queue.objects.create(
+            name=input.name,
+            description=input.description or "",
+            tags=input.tags,
+            start_end_times=input.start_end_times,
+            course=Course.objects.get(pk=from_global_id(input.course_id)[1]),
+        )
+
+        return CreateQueueResponse(course=course)
+
+
+class AddUserToCourseInput(graphene.InputObjectType):
+    user_id = graphene.ID(required=True)
+    course_id = graphene.ID(required=True)
+    kind = graphene.Field(CourseUserKindType, required=True)
+
+
+class AddUserToCourseResponse(graphene.ObjectType):
+    course_user = graphene.Field(CourseUserNode, required=False)
+
+
+class AddUserToCourse(graphene.Mutation):
+    class Arguments:
+        input = AddUserToCourseInput(required=False)
+
+    Output = AddUserToCourseResponse
+
+    @staticmethod
+    def mutate(root, info, input):
+        # TODO check permissions
+        course_user = CourseUser.objects.create(
+            user=User.objects.get(pk=from_global_id(input.user_id)[1]),
+            course=Course.objects.get(pk=from_global_id(input.course_id)[1]),
+            kind=input.kind,
+        )
+
+        return AddUserToCourseResponse(course_user=course_user)
+
+
+class Mutation(graphene.ObjectType):
+    create_user = CreateUser.Field()
+    create_course = CreateCourse.Field()
+    create_queue = CreateQueue.Field()
+    add_student_to_course = AddUserToCourse.Field()
