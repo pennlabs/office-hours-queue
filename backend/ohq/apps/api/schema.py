@@ -27,10 +27,10 @@ class CourseUserNode(DjangoObjectType):
         )
         interfaces = (relay.Node,)
 
-    rejected_questions = DjangoFilterConnectionField(lambda: CourseUserNode)
-    asked_questions = DjangoFilterConnectionField(lambda: CourseUserNode)
-    answered_questions = DjangoFilterConnectionField(lambda: CourseUserNode)
     kind = graphene.Field(CourseUserKindType, required=True)
+    rejected_questions = DjangoFilterConnectionField(lambda: QuestionNode)
+    asked_questions = DjangoFilterConnectionField(lambda: QuestionNode)
+    answered_questions = DjangoFilterConnectionField(lambda: QuestionNode)
 
     def resolve_rejected_questions(self, info, **kwargs):
         return Question.objects.filter(course_user=self, **kwargs)
@@ -58,7 +58,6 @@ class UserNode(DjangoObjectType):
     course_users = DjangoFilterConnectionField(CourseUserNode)
 
     def resolve_course_users(self, info, **kwargs):
-        print("\n\nkwargs", kwargs, "\n\n")
         return CourseUser.objects.filter(user=self, **kwargs)
 
 
