@@ -53,21 +53,21 @@ class Course(models.Model):
 
     @property
     def student_users(self):
-        return self.course_users.filter(kind=CourseUserType.STUDENT)
+        return self.course_users.filter(kind=CourseUserKind.STUDENT)
 
     @property
     def ta_users(self):
-        return self.course_users.filter(kind=CourseUserType.TA)
+        return self.course_users.filter(kind=CourseUserKind.TA)
 
     @property
     def head_ta_users(self):
-        return self.course_users.filter(kind=CourseUserType.HEAD_TA)
+        return self.course_users.filter(kind=CourseUserKind.HEAD_TA)
 
     def __str__(self):
         return self.department + " " + self.name
 
 
-class CourseUserType(ChoicesEnum):
+class CourseUserKind(ChoicesEnum):
     STUDENT = "STUDENT"
     TA = "TA"
     HEAD_TA = "HEAD_TA"
@@ -78,7 +78,7 @@ class CourseUserType(ChoicesEnum):
 class CourseUser(models.Model):
     course = models.ForeignKey(Course, related_name='course_users', on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name='course_users', on_delete=models.CASCADE)
-    kind = models.CharField(**CourseUserType.choices())
+    kind = models.CharField(**CourseUserKind.choices())
     is_deactivated = models.BooleanField(default=False)
 
     class Meta:
