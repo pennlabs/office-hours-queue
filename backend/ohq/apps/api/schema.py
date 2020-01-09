@@ -125,6 +125,7 @@ class CourseNode(DjangoObjectType):
             'id',
             'name',
             'department',
+            'description',
             'year',
             'is_archived',
             'invite_only',
@@ -142,6 +143,27 @@ class CourseNode(DjangoObjectType):
         return Queue.objects.filter(course=self, **kwargs)
 
 
+class JoinableCourseNode(DjangoObjectType):
+    class Meta:
+        model = Course
+        filter_fields = (
+            'name',
+            'department',
+            'year',
+            'semester',
+        )
+        fields = (
+            'id',
+            'name',
+            'department',
+            'description',
+            'year',
+            'invite_only',
+        )
+        interfaces = (relay.Node,)
+
+    semester = graphene.Field(SemesterType, required=True)
+
 
 class Query(graphene.ObjectType):
     # node = relay.Node.Field()
@@ -156,9 +178,12 @@ class Query(graphene.ObjectType):
     # course_users = DjangoFilterField(CourseUserNode)
 
     course = relay.Node.Field(CourseNode)
-    # courses = DjangoFilterConnectionField(CourseNode)
+    joinable_courses = DjangoFilterConnectionField(JoinableCourseNode)
     # courses = graphene.List(CourseNode)
     # courses = DjangoFilterField(CourseNode)
+
+    def resolve_joinable_courses(self, info, **kwargs):
+        return Course.objects.filter(invite_only=False, **kwargs)
 
     queue = relay.Node.Field(QueueNode)
 
