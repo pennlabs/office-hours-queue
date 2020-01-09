@@ -19,7 +19,7 @@ class User(models.Model):
 
     full_name = models.CharField(max_length=100)
     preferred_name = models.CharField(max_length=100)
-    email = models.EmailField()
+    email = models.EmailField(unique=True)
     phone_number = PhoneNumberField(blank=True, null=True)
 
     def __str__(self):
@@ -41,6 +41,14 @@ class Course(models.Model):
     year = models.IntegerField()
     semester = models.CharField(**Semester.choices())
     is_archived = models.BooleanField(default=False)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name", "department", "year"],
+                name="unique_course_name",
+            )
+        ]
 
     @property
     def student_users(self):
@@ -72,9 +80,16 @@ class CourseUser(models.Model):
     kind = models.CharField(**CourseUserType.choices())
     is_deactivated = models.BooleanField(default=False)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["course", "user"],
+                name="unique_course_user",
+            )
+        ]
+
     def __str__(self):
         return f'{self.user.full_name} - {self.course}'
-
 
 
 class Queue(models.Model):
