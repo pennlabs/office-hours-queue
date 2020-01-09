@@ -41,6 +41,7 @@ class Course(models.Model):
     year = models.IntegerField()
     semester = models.CharField(**Semester.choices())
     is_archived = models.BooleanField(default=False)
+    invite_only = models.BooleanField(default=False)
 
     class Meta:
         constraints = [

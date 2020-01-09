@@ -111,6 +111,7 @@ class CourseNode(DjangoObjectType):
             'year',
             'semester',
             'is_archived',
+            'invite_only',
         )
         fields = (
             'id',
@@ -119,6 +120,7 @@ class CourseNode(DjangoObjectType):
             'year',
             'semester',
             'is_archived',
+            'invite_only',
         )
         interfaces = (relay.Node,)
 
