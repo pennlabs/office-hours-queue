@@ -3,9 +3,17 @@ from graphene import relay, ObjectType
 from graphene_django.types import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 
+from graphql_relay.node.node import from_global_id
+
+
 from ohq.apps.api.util.django_filter import DjangoFilterField
 
-from ohq.apps.api.models import CourseUser, Course, User, Queue, Question
+from ohq.apps.api.models import *
+
+
+SemesterType = graphene.Enum.from_enum(Semester)
+CourseUserKindType = graphene.Enum.from_enum(CourseUserKind)
+QuestionRejectionReasonType = graphene.Enum.from_enum(QuestionRejectionReason)
 
 
 class CourseUserNode(DjangoObjectType):
@@ -15,7 +23,6 @@ class CourseUserNode(DjangoObjectType):
         fields = (
             'user',
             'course',
-            'kind',
             'is_deactivated',
         )
         interfaces = (relay.Node,)
@@ -23,6 +30,7 @@ class CourseUserNode(DjangoObjectType):
     rejected_questions = DjangoFilterConnectionField(lambda: CourseUserNode)
     asked_questions = DjangoFilterConnectionField(lambda: CourseUserNode)
     answered_questions = DjangoFilterConnectionField(lambda: CourseUserNode)
+    kind = graphene.Field(CourseUserKindType, required=True)
 
     def resolve_rejected_questions(self, info, **kwargs):
         return Question.objects.filter(course_user=self, **kwargs)
@@ -69,13 +77,14 @@ class QuestionNode(DjangoObjectType):
             'time_withdrawn',
             'time_rejected',
             'is_rejected',
-            'rejected_reason',
             'queue',
             'rejected_by',
             'asker',
             'answerer',
         )
         interfaces = (relay.Node,)
+
+    rejected_reason = graphene.Field(QuestionRejectionReasonType, required=True)
 
 
 class QueueNode(DjangoObjectType):
@@ -118,12 +127,12 @@ class CourseNode(DjangoObjectType):
             'name',
             'department',
             'year',
-            'semester',
             'is_archived',
             'invite_only',
         )
         interfaces = (relay.Node,)
 
+    semester = graphene.Field(SemesterType, required=True)
     course_users = DjangoFilterConnectionField(CourseUserNode)
     queues = DjangoFilterConnectionField(QueueNode)
 
