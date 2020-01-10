@@ -21,25 +21,26 @@ class CourseUserNode(DjangoObjectType):
         model = CourseUser
         filter_fields = ('kind', 'is_deactivated')
         fields = (
-            'user',
-            'course',
             'is_deactivated',
         )
         interfaces = (relay.Node,)
 
     kind = graphene.Field(CourseUserKindType, required=True)
-    rejected_questions = DjangoFilterConnectionField(lambda: QuestionNode)
-    asked_questions = DjangoFilterConnectionField(lambda: QuestionNode)
-    answered_questions = DjangoFilterConnectionField(lambda: QuestionNode)
+    user = graphene.Field(lambda: UserMetaNode, required=True)
+    course = graphene.Field(lambda: CourseNode, required=True)
 
-    def resolve_rejected_questions(self, info, **kwargs):
-        return Question.objects.filter(course_user=self, **kwargs)
 
-    def resolve_asked_questions(self, info, **kwargs):
-        return Question.objects.filter(course_user=self, **kwargs)
+class InvitedCourseUserNode(DjangoObjectType):
+    class Meta:
+        model = InvitedCourseUser
+        filter_fields = ('kind',)
+        fields = (
+            'email',
+            'course',
+        )
+        interfaces = (relay.Node,)
 
-    def resolve_answered_questions(self, info, **kwargs):
-        return Question.objects.filter(course_user=self, **kwargs)
+    kind = graphene.Field(CourseUserKindType, required=True)
 
 
 class UserNode(DjangoObjectType):
@@ -56,9 +57,38 @@ class UserNode(DjangoObjectType):
         interfaces = (relay.Node,)
 
     course_users = DjangoFilterConnectionField(CourseUserNode)
+    rejected_questions = DjangoFilterConnectionField(lambda: QuestionNode)
+    asked_questions = DjangoFilterConnectionField(lambda: QuestionNode)
+    answered_questions = DjangoFilterConnectionField(lambda: QuestionNode)
 
     def resolve_course_users(self, info, **kwargs):
         return CourseUser.objects.filter(user=self, **kwargs)
+
+    def resolve_rejected_questions(self, info, **kwargs):
+        return Question.objects.filter(course_user=self, **kwargs)
+
+    def resolve_asked_questions(self, info, **kwargs):
+        return Question.objects.filter(course_user=self, **kwargs)
+
+    def resolve_answered_questions(self, info, **kwargs):
+        return Question.objects.filter(course_user=self, **kwargs)
+
+
+class UserMetaNode(DjangoObjectType):
+    class Meta:
+        model = User
+        filter_fields = {
+            'id': ['exact'],
+            'email': ['exact', 'icontains'],
+            'full_name': ['exact', 'icontains'],
+        }
+        fields = (
+            'id',
+            'full_name',
+            'preferred_name',
+            'email',
+        )
+        interfaces = (relay.Node,)
 
 
 class QuestionNode(DjangoObjectType):
@@ -134,6 +164,7 @@ class CourseNode(DjangoObjectType):
 
     semester = graphene.Field(SemesterType, required=True)
     course_users = DjangoFilterConnectionField(CourseUserNode)
+    invited_course_users = DjangoFilterConnectionField(InvitedCourseUserNode)
     queues = DjangoFilterConnectionField(QueueNode)
 
     def resolve_course_users(self, info, **kwargs):
@@ -143,7 +174,7 @@ class CourseNode(DjangoObjectType):
         return Queue.objects.filter(course=self, **kwargs)
 
 
-class JoinableCourseNode(DjangoObjectType):
+class CourseMetaNode(DjangoObjectType):
     class Meta:
         model = Course
         filter_fields = (
@@ -166,27 +197,29 @@ class JoinableCourseNode(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
-    # node = relay.Node.Field()
-
 
     # users = DjangoFilterConnectionField(UserNode)
     # users = graphene.List(UserNode)
-    user = relay.Node.Field(UserNode)
-    users = DjangoFilterConnectionField(UserNode)
+    currentUser = relay.Node.Field(UserNode)
+
+    # User search for invitation
+    invitable_users = DjangoFilterConnectionField(UserMetaNode)
 
     # course_user = graphene.Field(CourseUserNode)
     # course_users = DjangoFilterField(CourseUserNode)
 
-    course = relay.Node.Field(CourseNode)
-    joinable_courses = DjangoFilterConnectionField(JoinableCourseNode)
     # courses = graphene.List(CourseNode)
     # courses = DjangoFilterField(CourseNode)
+
+    course = relay.Node.Field(CourseNode)
+
+    # Course search for students joining
+    joinable_courses = DjangoFilterConnectionField(CourseMetaNode)
 
     def resolve_joinable_courses(self, info, **kwargs):
         return Course.objects.filter(invite_only=False, **kwargs)
 
     queue = relay.Node.Field(QueueNode)
-
 
     # def resolve_user(self, info, email, id):
     #     return User.objects.filter(email=email, id=id)
@@ -217,6 +250,7 @@ class CreateUser(graphene.Mutation):
     @staticmethod
     def mutate(root, info, input):
         user = User.objects.create(
+            firebase_uid="", # TODO
             full_name=input.full_name,
             preferred_name=input.preferred_name,
             email=input.email,
@@ -237,6 +271,7 @@ class CreateCourseInput(graphene.InputObjectType):
 
 class CreateCourseResponse(graphene.ObjectType):
     course = graphene.Field(CourseNode, required=False)
+    course_user = graphene.Field(CourseUserNode, required=False)
 
 
 class CreateCourse(graphene.Mutation):
@@ -247,6 +282,7 @@ class CreateCourse(graphene.Mutation):
 
     @staticmethod
     def mutate(root, info, input):
+        print(info.context)
         course = Course.objects.create(
             name=input.name,
             department=input.department,
@@ -255,8 +291,13 @@ class CreateCourse(graphene.Mutation):
             semester=input.semester,
             invite_only=input.invite_only,
         )
+        course_user = CourseUser.objects.create(
+            user=None, #TODO
+            course=course,
+            kind=CourseUserKind.PROFESSOR.name,
+        )
 
-        return CreateCourseResponse(course=course)
+        return CreateCourseResponse(course=course, course_user=course_user)
 
 
 class CreateQueueInput(graphene.InputObjectType):
@@ -291,6 +332,38 @@ class CreateQueue(graphene.Mutation):
         return CreateQueueResponse(course=course)
 
 
+class CreateShortAnswerFeedbackQuestionInput(graphene.InputObjectType):
+    name = graphene.String(required=True)
+    description = graphene.String(required=False)
+    tags = graphene.List(graphene.String, required=True)
+    start_end_times = graphene.String(required=True)
+    course_id = graphene.ID(required=True)
+
+
+# class CreateShortAnswerFeedbackQuestionResponse(graphene.ObjectType):
+#     queue = graphene.Field(QueueNode, required=False)
+#
+#
+# class CreateShortAnswerFeedbackQuestion(graphene.Mutation):
+#     class Arguments:
+#         input = CreateShortAnswerFeedbackQuestionInput(required=True)
+#
+#     Output = CreateShortAnswerFeedbackQuestionResponse
+#
+#     @staticmethod
+#     def mutate(root, info, input):
+#         # TODO check permissions
+#         course = Queue.objects.create(
+#             name=input.name,
+#             description=input.description or "",
+#             tags=input.tags,
+#             start_end_times=input.start_end_times,
+#             course=Course.objects.get(pk=from_global_id(input.course_id)[1]),
+#         )
+#
+#         return CreateShortAnswerFeedbackQuestionResponse(course=course)
+
+
 class AddUserToCourseInput(graphene.InputObjectType):
     user_id = graphene.ID(required=True)
     course_id = graphene.ID(required=True)
@@ -310,6 +383,7 @@ class AddUserToCourse(graphene.Mutation):
     @staticmethod
     def mutate(root, info, input):
         # TODO check permissions
+        # Check if already in?
         course_user = CourseUser.objects.create(
             user=User.objects.get(pk=from_global_id(input.user_id)[1]),
             course=Course.objects.get(pk=from_global_id(input.course_id)[1]),
@@ -319,8 +393,65 @@ class AddUserToCourse(graphene.Mutation):
         return AddUserToCourseResponse(course_user=course_user)
 
 
+class JoinCourseInput(graphene.InputObjectType):
+    course_id = graphene.ID(required=True)
+
+
+class JoinCourseResponse(graphene.ObjectType):
+    course_user = graphene.Field(CourseUserNode, required=False)
+
+
+class JoinCourse(graphene.Mutation):
+    class Arguments:
+        input = JoinCourseInput(required=False)
+
+    Output = JoinCourseResponse
+
+    @staticmethod
+    def mutate(root, info, input):
+        # TODO check invite_only
+        # TODO get user
+        course_user = CourseUser.objects.create(
+            user=None,
+            course=Course.objects.get(pk=from_global_id(input.course_id)[1]),
+            kind=CourseUserKind.STUDENT.name,
+        )
+
+        return JoinCourseResponse(course_user=course_user)
+
+
+class InviteEmailInput(graphene.InputObjectType):
+    email = graphene.String(required=True)
+
+
+class InviteEmailResponse(graphene.ObjectType):
+    invited_course_user = graphene.Field(InvitedCourseUserNode, required=False)
+
+
+class InviteEmail(graphene.Mutation):
+    class Arguments:
+        input = InviteEmailInput(required=False)
+
+    Output = InviteEmailResponse
+
+    @staticmethod
+    def mutate(root, info, input):
+        # TODO check invite_only
+        # TODO get user
+        invited_course_user = InvitedCourseUser.objects.create(
+            email=input.email,
+            course=Course.objects.get(pk=from_global_id(input.course_id)[1]),
+            invited_by=None, # TODO
+            kind=CourseUserKind.STUDENT.name,
+        )
+
+        return InviteEmailResponse(invited_course_user=invited_course_user)
+
+
 class Mutation(graphene.ObjectType):
     create_user = CreateUser.Field()
     create_course = CreateCourse.Field()
     create_queue = CreateQueue.Field()
-    add_student_to_course = AddUserToCourse.Field()
+    add_user_to_course = AddUserToCourse.Field()
+    join_course = JoinCourse.Field()
+    invite_email = InviteEmail.Field()
