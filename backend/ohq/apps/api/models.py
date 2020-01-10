@@ -140,6 +140,14 @@ class Queue(models.Model):
         # TODO
         return None
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["course", "name"],
+                name="unique_queue_name",
+            )
+        ]
+
     def __str__(self):
         return f'{self.name} - {self.course}'
 
