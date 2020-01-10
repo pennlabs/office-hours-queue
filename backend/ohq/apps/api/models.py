@@ -180,7 +180,7 @@ class Question(models.Model):
 
     is_rejected = models.BooleanField(default=False)
     rejected_by = models.ForeignKey(
-        CourseUser,
+        User,
         related_name='rejected_questions',
         on_delete=models.SET_NULL,
         blank=True,
@@ -192,15 +192,15 @@ class Question(models.Model):
         **QuestionRejectionReason.choices(),
     )
 
-    asker = models.ForeignKey(
-        CourseUser,
+    asked_by = models.ForeignKey(
+        User,
         related_name='asked_questions',
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
     )
-    answerer = models.ForeignKey(
-        CourseUser,
+    answered_by = models.ForeignKey(
+        User,
         related_name='answered_questions',
         on_delete=models.SET_NULL,
         blank=True,
