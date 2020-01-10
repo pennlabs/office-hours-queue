@@ -93,6 +93,35 @@ class CourseUser(models.Model):
         return f'{self.user.full_name} - {self.course}'
 
 
+class InvitedCourseUser(models.Model):
+    course = models.ForeignKey(
+        Course,
+        related_name='invited_course_users',
+        on_delete=models.CASCADE,
+    )
+    email = models.EmailField()
+    kind = models.CharField(**CourseUserKind.choices())
+    time_created = models.DateTimeField(auto_now_add=True)
+    invited_by = models.ForeignKey(
+        User,
+        related_name='invited_users',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["course", "email"],
+                name="unique_invited_course_user",
+            )
+        ]
+
+    def __str__(self):
+        return f'{self.email} - {self.course}'
+
+
 class Queue(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)

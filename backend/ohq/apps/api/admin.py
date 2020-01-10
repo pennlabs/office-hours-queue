@@ -6,6 +6,7 @@ from .models import *
 admin.site.register(User)
 admin.site.register(Course)
 admin.site.register(CourseUser)
+admin.site.register(InvitedCourseUser)
 admin.site.register(Queue)
 admin.site.register(Question)
 # admin.site.register(FeedbackQuestion)
