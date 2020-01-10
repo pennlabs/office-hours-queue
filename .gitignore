@@ -76,7 +76,8 @@ local_settings.py
 
 .env
 db.sqlite3
-static/
-ohq-firebase-adminsdk.json
+backend/static
+backend/staticfiles
+backend/ohq-firebase-adminsdk.json
 
 .idea/
