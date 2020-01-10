@@ -22,6 +22,7 @@ class User(models.Model):
     preferred_name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     phone_number = PhoneNumberField(blank=True, null=True)
+    time_joined = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.full_name
@@ -81,6 +82,7 @@ class CourseUser(models.Model):
     user = models.ForeignKey(User, related_name='course_users', on_delete=models.CASCADE)
     kind = models.CharField(**CourseUserKind.choices())
     is_deactivated = models.BooleanField(default=False)
+    time_created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         constraints = [
@@ -223,6 +225,7 @@ class SliderFeedbackQuestion(FeedbackQuestion):
 
 class FeedbackAnswer(PolymorphicModel):
     question = models.ForeignKey(FeedbackQuestion, related_name='answers', on_delete=models.CASCADE)
+    time_created = models.DateTimeField(auto_now_add=True)
 
 
 class ShortAnswerFeedbackAnswer(FeedbackQuestion):
