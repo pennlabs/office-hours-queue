@@ -17,6 +17,7 @@ class ChoicesEnum(Enum):
 class User(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
+    firebase_uid = models.CharField(max_length=100, unique=True, editable=False)
     full_name = models.CharField(max_length=100)
     preferred_name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
