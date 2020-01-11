@@ -54,7 +54,7 @@ const Sidebar = route => (
       />
       <Menu.Item
         name="Sample Account Settings"
-        icon='settings'
+        icon='setting'
         href={ROUTES.ACCOUNTSETTINGS}
         active={route.active === 'account_settings'}
         color={'blue'}
