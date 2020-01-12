@@ -1,5 +1,5 @@
 import React from 'react';
-import { Segment, Menu, Header, Grid, Image } from 'semantic-ui-react';
+import { Segment, Header, Grid } from 'semantic-ui-react';
 import CourseCard from './CourseCard';
 import ArchivedCourseCard from './ArchivedCourseCard';
 import AddCard from './AddCard';
@@ -7,7 +7,6 @@ import ModalAddStudentCourse from './ModalAddStudentCourse';
 import ModalAddInstructorCourse from './ModalAddInstructorCourse';
 import ModalCreateCourse from './ModalCreateCourse';
 import { fakeCourseUsers, fakeSearchCourses } from './coursedata.js';
-import * as ROUTES from '../../constants/routes';
 
 import Sidebar from '../Sidebar';
 

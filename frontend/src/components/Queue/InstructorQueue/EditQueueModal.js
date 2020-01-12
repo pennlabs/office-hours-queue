@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Segment, Header, Form, Button } from 'semantic-ui-react';
+import { Modal, Form, Button } from 'semantic-ui-react';
 
 const days = [
   {key: 'MON', value: 'MON', text: 'Monday'},

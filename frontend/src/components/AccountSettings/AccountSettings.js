@@ -1,5 +1,5 @@
 import React from 'react';
-import { Segment, Menu, Header, Grid, Form, Button, Input } from 'semantic-ui-react';
+import { Segment, Header, Grid, Form, Button } from 'semantic-ui-react';
 import Sidebar from '../Sidebar';
 
 import { withAuthorization } from '../Session';

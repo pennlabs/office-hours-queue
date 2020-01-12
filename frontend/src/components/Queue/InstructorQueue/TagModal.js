@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Modal, Tab, Button, Label, Icon, Header, Segment, Input, Message } from 'semantic-ui-react';
+import { Modal, Tab, Button, Label, Icon, Header, Segment, Input } from 'semantic-ui-react';
 
 export default class TagModal extends React.Component {
   render() {

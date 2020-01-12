@@ -1,9 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 import _ from 'lodash';
-import { Table, Segment, Menu, Header, Grid, Image } from 'semantic-ui-react';
-import * as ROUTES from '../../constants/routes';
+import { Table, Segment, Header, Grid } from 'semantic-ui-react';
 import Sidebar from '../Sidebar';
-
 
 import { fakePeople } from './peopledata';
 

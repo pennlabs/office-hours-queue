@@ -1,5 +1,5 @@
 import React from 'react';
-import { Segment, Menu, Header, Grid, Image, Label, Modal, Form, Button, Input, Message } from 'semantic-ui-react';
+import { Segment, Header, Grid, Label, Message } from 'semantic-ui-react';
 import QuestionCard from './QuestionCard';
 import DeleteQuestionModal from './DeleteQuestionModal';
 import TagModal from './TagModal';
