@@ -14,12 +14,24 @@ export default class EditQueueModal extends React.Component {
   render() {
     return (
       <Modal open={this.props.attrs.open}>
-        <Modal.Header>{this.props.attrs.queue.name}</Modal.Header>
+        <Modal.Header>
+          { this.props.attrs.queue.name || "Create Queue" }
+        </Modal.Header>
         <Modal.Content>
           <Modal.Description>
             <Form>
-              <Form.Input label="Title" placeholder={this.props.attrs.queue.name}/>
-              <Form.Input label="Description" placeholder={this.props.attrs.queue.description}/>
+              <Form.Input
+                label="Title"
+                placeholder={this.props.attrs.queue.name}
+                name="name"
+                onChange={this.props.funcs.inputChangeFunc}
+              />
+              <Form.Input
+                label="Description"
+                placeholder={this.props.attrs.queue.description}
+                name="description"
+                onChange={this.props.funcs.inputChangeFunc}
+              />
               <Form.Group widths="equal">
                 <Form.Field>
                   <Form.Dropdown label="Day" selection placeholder="Day of the Week" options={days}/>
@@ -34,12 +46,11 @@ export default class EditQueueModal extends React.Component {
               <Button color="red" content="Close Manually"/>
               <Button color="green" content="Open Manually"/>
             </Form>
-
           </Modal.Description>
         </Modal.Content>
         <Modal.Actions>
           <Button content="Cancel" compact onClick={this.props.funcs.closeFunc}/>
-          <Button content="Submit" color="blue" compact/>
+          <Button content="Submit" color="blue" compact onClick={this.props.funcs.submitFunc}/>
         </Modal.Actions>
       </Modal>
     );

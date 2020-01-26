@@ -44,7 +44,7 @@ export default class TagModal extends React.Component {
                                 content: "Add",
                                 onClick: () => { this.props.funcs.addFunc(queueIndex) }
                               }}
-                              value={this.props.newTag}
+                              value={ this.props.newTag }
                               onChange={ this.props.funcs.inputFunc }
                             />
                           </Segment>

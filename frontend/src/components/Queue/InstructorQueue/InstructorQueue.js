@@ -12,7 +12,7 @@ import { withAuthorization } from '../../Session';
 import { compose } from 'recompose';
 
 
-class Queue extends React.Component{
+export default class Queue extends React.Component{
 
     constructor(props) {
         super(props);
@@ -32,7 +32,8 @@ class Queue extends React.Component{
           tagToAdd: "",
           editQueueModal: {
             open: false,
-            queue: {}
+            queue: {},
+            newQueue: {}
           }
         };
 
@@ -58,6 +59,8 @@ class Queue extends React.Component{
 
         this.openEditQueueModal = this.openEditQueueModal.bind(this);
         this.closeEditQueueModal = this.closeEditQueueModal.bind(this);
+        this.handleEditQueueInputChange = this.handleEditQueueInputChange.bind(this);
+        this.handleEditQueueSubmit = this.handleEditQueueSubmit.bind(this);
       }
 
       componentDidMount() {
@@ -246,7 +249,9 @@ class Queue extends React.Component{
       openEditQueueModal(queueIndex) {
         var editQueueModal = {
           open: true,
-          queue: this.state.course.queues[queueIndex]
+          queueIndex: queueIndex,
+          queue: this.state.course.queues[queueIndex],
+          newQueue: {}
         }
 
         this.setState({ editQueueModal: editQueueModal });
@@ -255,10 +260,30 @@ class Queue extends React.Component{
       closeEditQueueModal() {
         var editQueueModal = {
           open: false,
-          queue: {}
+          queue: {},
+          newQueue: {}
         }
-
         this.setState({ editQueueModal: editQueueModal });
+      }
+
+      handleEditQueueInputChange(e, { name, value }) {
+        var editQueueModal = this.state.editQueueModal;
+        var queue = editQueueModal.newQueue;
+        queue[name] = value;
+        this.setState({ editQueueModal: editQueueModal });
+      }
+
+      handleEditQueueSubmit() {
+        var course = this.state.course;
+        var currentQueue = course.queues[this.state.editQueueModal.queueIndex];
+        var newQueue = this.state.editQueueModal.newQueue;
+
+        currentQueue.name = newQueue.name;
+        currentQueue.description = newQueue.description;
+        currentQueue.questions = currentQueue.questions || [];
+
+        this.setState({ course: course });
+        this.closeEditQueueModal();
       }
 
       render() {
@@ -302,6 +327,7 @@ class Queue extends React.Component{
                   </Segment>
                 </Grid.Row>
                 <Grid.Row>
+                  {/* TAGS */}
                   <Segment basic>
                     <Header as="h3" content="Tags (select to filter)"/>
                     {
@@ -332,7 +358,9 @@ class Queue extends React.Component{
                     <EditQueueModal
                       attrs={this.state.editQueueModal}
                       funcs={{
-                        closeFunc: this.closeEditQueueModal
+                        closeFunc: this.closeEditQueueModal,
+                        inputChangeFunc: this.handleEditQueueInputChange,
+                        submitFunc: this.handleEditQueueSubmit
                       }}
                     />
                     {
@@ -383,30 +411,24 @@ class Queue extends React.Component{
                         </Grid.Row>
                       </div> :
                       <div>
-                      <Header as="h3">
-                        Queue #1
-                        <Header.Subheader>
-                            Your first queue description.
-                        </Header.Subheader>
-                      </Header>
-                      <Label
-                        content="N/A users"
-                        color="blue"
-                        icon="user"
-                      />
-                      <Label content="N/A mins" color="blue" icon="clock"/>
-                      <Label as="a"
-                        content="Edit"
-                        color="grey"
-                        icon="cog"
-                        onClick={() => {this.openEditQueueModal(0)}}
-                      />
-                      <Segment basic>
-                        <Message
-                          header="Queue DNE"
-                          content="You can edit this queue to open it!"
+                        <Header as="h3">
+                          Queue #1
+                          <Header.Subheader>
+                              Your first queue description.
+                          </Header.Subheader>
+                        </Header>
+                        <Label
+                          content="N/A users"
+                          color="blue"
+                          icon="user"
                         />
-                      </Segment>
+                        <Label content="N/A mins" color="blue" icon="clock"/>
+                        <Label as="a"
+                          content="Edit"
+                          color="grey"
+                          icon="cog"
+                          onClick={() => {this.openEditQueueModal(0)}}
+                        />
                       </div>
                     }
                   </Grid.Column>
@@ -414,13 +436,8 @@ class Queue extends React.Component{
                     {
                       this.state.course.queues &&
                       this.state.course.queues.length > 1 &&
+                      this.state.course.queues[1].name ?
                       <div>
-                        <EditQueueModal
-                          attrs={this.state.editQueueModal}
-                          funcs={{
-                            closeFunc: this.closeEditQueueModal
-                          }}
-                        />
                         <Header as="h3">
                           { this.state.course.queues[1].name }
                           <Header.Subheader>
@@ -461,6 +478,26 @@ class Queue extends React.Component{
                               ))
                             }
                         </Grid.Row>
+                      </div> :
+                      <div>
+                        <Header as="h3">
+                          Queue #2
+                          <Header.Subheader>
+                              Your second queue description.
+                          </Header.Subheader>
+                        </Header>
+                        <Label
+                          content="N/A users"
+                          color="blue"
+                          icon="user"
+                        />
+                        <Label content="N/A mins" color="blue" icon="clock"/>
+                        <Label as="a"
+                          content="Edit"
+                          color="grey"
+                          icon="cog"
+                          onClick={() => {this.openEditQueueModal(1)}}
+                        />
                       </div>
                     }
                   </Grid.Column>
@@ -473,8 +510,11 @@ class Queue extends React.Component{
 
 }
 
+//UNCOMMENT FOR GOOGLE AUTH
+/*
 const condition = authUser => !!authUser;
 
 export default compose(
   withAuthorization(condition),
 )(Queue);
+*/
