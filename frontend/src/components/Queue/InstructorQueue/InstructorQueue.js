@@ -510,11 +510,8 @@ export default class Queue extends React.Component{
 
 }
 
-//UNCOMMENT FOR GOOGLE AUTH
-/*
 const condition = authUser => !!authUser;
 
 export default compose(
   withAuthorization(condition),
 )(Queue);
-*/
