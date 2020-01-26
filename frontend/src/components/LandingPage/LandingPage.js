@@ -14,6 +14,17 @@ import Dashboard from '../Dashboard/Dashboard';
 
 import AuthUserContext from '../Session/context';
 
+import { useQuery } from '@apollo/react-hooks';
+import { gql } from 'apollo-boost';
+
+const TEST = gql`
+  {
+    joinableCourses(department: "ECON") {
+      name
+    }
+  }
+`;
+
 class SignInGoogleBase extends Component {
   constructor(props) {
     super(props);
@@ -41,6 +52,28 @@ class SignInGoogleBase extends Component {
 
   render() {
     const condition = authUser => !!authUser;
+    const Test = () => {
+      const { loading, error, data } = useQuery(TEST);
+  
+      if (loading) {
+        return <div>Error! {loading.message}</div>;
+      }
+  
+      if (error) {
+        console.log(error);
+        return <div>Error! {error.message}</div>;
+      }
+    
+      return (
+        <ul>
+          {
+            data.edges.map(({node}) => (
+              <div>node.name</div>
+            ))
+          }
+        </ul>
+      );
+    };
 
     return (
       <AuthUserContext.Consumer>
@@ -58,6 +91,7 @@ class SignInGoogleBase extends Component {
                 <Grid columns={1} textAlign="center">
                   <Grid.Row><img src="ohq-login.png" width="600px" alt=""/></Grid.Row>
                   <Grid.Row><GoogleButton onClick={this.onSubmit}/></Grid.Row>
+                  <Test/>
                 </Grid>
               </div> 
           }

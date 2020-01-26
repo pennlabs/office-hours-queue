@@ -34,12 +34,22 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './components/App';
 // import * as serviceWorker from './serviceWorker';
 import 'semantic-ui-css/semantic.min.css';
+import { ApolloProvider } from '@apollo/react-hooks';
 
 import Firebase, { FirebaseContext } from './components/Firebase';
 
+import ApolloClient from 'apollo-boost';
+import { gql } from "apollo-boost";
+
+const client = new ApolloClient({
+  uri: 'https://ohq.herokuapp.com/graphql',
+});
+
 ReactDOM.render(
+  <ApolloProvider client={client}>
     <FirebaseContext.Provider value={new Firebase()}>
         <App/>
-    </FirebaseContext.Provider>, 
+    </FirebaseContext.Provider>
+    </ApolloProvider>,
     document.getElementById('root')
 );
