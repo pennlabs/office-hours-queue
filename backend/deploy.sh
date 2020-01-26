@@ -1,1 +1,1 @@
-(cd "`git rev-parse --show-toplevel`"; git subtree push --prefix backend heroku master)
+(cd "`git rev-parse --show-toplevel`"; git push heroku `git subtree split --prefix backend master`:master --force)
