@@ -46,9 +46,11 @@ INSTALLED_APPS = [
     'graphene_django',
     'polymorphic',
     'ohq.apps.api',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -148,3 +150,16 @@ GRAPHENE = {
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
+
+# Cors
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+CORS_ORIGIN_ALLOW_ALL = True
