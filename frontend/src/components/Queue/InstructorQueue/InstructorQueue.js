@@ -12,7 +12,7 @@ import { withAuthorization } from '../../Session';
 import { compose } from 'recompose';
 
 
-export default class Queue extends React.Component{
+class Queue extends React.Component{
 
     constructor(props) {
         super(props);
