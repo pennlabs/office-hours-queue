@@ -2,9 +2,12 @@ import uuid
 from enum import Enum
 
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import PermissionsMixin, AbstractBaseUser, BaseUserManager
 from django.contrib.postgres.fields import ArrayField
 from phonenumber_field.modelfields import PhoneNumberField
 from polymorphic.models import PolymorphicModel
+
 
 class ChoicesEnum(Enum):
     @classmethod
@@ -14,15 +17,39 @@ class ChoicesEnum(Enum):
         return dict(choices=c, max_length=l)
 
 
+class AuthUserManager(BaseUserManager):
+    def create_user(self, firebase_uid, **kwargs):
+        user = AuthUser(firebase_uid=firebase_uid)
+        user.set_unusable_password()
+        user.save()
+        return user
+
+    def create_superuser(self, firebase_uid, password, **kwargs):
+        user = AuthUser(firebase_uid=firebase_uid, is_superuser=True, is_staff=True)
+        user.set_password(password)
+        user.save()
+        return user
+
+
+class AuthUser(AbstractBaseUser, PermissionsMixin):
+    firebase_uid = models.CharField(max_length=40, unique=True, editable=False)
+    is_staff = models.BooleanField(
+        default=False,
+        help_text='Designates whether the user can log into this admin site.',
+    )
+    USERNAME_FIELD = 'firebase_uid'
+    objects = AuthUserManager()
+
+
 class User(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    firebase_uid = models.CharField(max_length=100, unique=True, editable=False)
     full_name = models.CharField(max_length=100)
     preferred_name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     phone_number = PhoneNumberField(blank=True, null=True)
     time_joined = models.DateTimeField(auto_now_add=True)
+    auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.full_name

@@ -282,7 +282,7 @@ class CreateCourse(graphene.Mutation):
 
     @staticmethod
     def mutate(root, info, input):
-        print(info.context)
+        print(info.context.user)
         course = Course.objects.create(
             name=input.name,
             department=input.department,
@@ -321,6 +321,7 @@ class CreateQueue(graphene.Mutation):
     @staticmethod
     def mutate(root, info, input):
         # TODO check permissions
+        # TODO limit to 2 queues
         course = Queue.objects.create(
             name=input.name,
             description=input.description or "",
@@ -422,6 +423,7 @@ class JoinCourse(graphene.Mutation):
 
 class InviteEmailInput(graphene.InputObjectType):
     email = graphene.String(required=True)
+    course_id = graphene.ID(required=True)
 
 
 class InviteEmailResponse(graphene.ObjectType):
@@ -438,6 +440,7 @@ class InviteEmail(graphene.Mutation):
     def mutate(root, info, input):
         # TODO check invite_only
         # TODO get user
+        print(info.context.user)
         invited_course_user = InvitedCourseUser.objects.create(
             email=input.email,
             course=Course.objects.get(pk=from_global_id(input.course_id)[1]),

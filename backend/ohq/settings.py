@@ -32,6 +32,8 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 # Safe on App Engine
 ALLOWED_HOSTS = ['*']
 
+AUTH_USER_MODEL = 'api.AuthUser'
+
 
 # Application definition
 
@@ -42,10 +44,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'ohq.apps.api.apps.ApiConfig',
     'phonenumber_field',
     'graphene_django',
     'polymorphic',
-    'ohq.apps.api',
     'corsheaders',
 ]
 
@@ -54,10 +56,15 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'ohq.apps.api.authentication.FirebaseAuthentication',
 ]
 
 ROOT_URLCONF = 'ohq.urls'
@@ -143,7 +150,6 @@ STATIC_ROOT = 'static/'
 
 
 # Graphene
-
 GRAPHENE = {
     'SCHEMA': 'ohq.schema.schema'
 }
@@ -152,7 +158,6 @@ GRAPHENE = {
 django_heroku.settings(locals())
 
 # Cors
-
 CORS_ALLOW_METHODS = [
     'DELETE',
     'GET',
@@ -163,3 +168,6 @@ CORS_ALLOW_METHODS = [
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+# Firebase
+FIREBASE_KEY_FILE = os.path.join(BASE_DIR, 'ohq-firebase-adminsdk.json')

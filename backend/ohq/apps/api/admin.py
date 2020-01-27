@@ -3,14 +3,13 @@ from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModel
 
 from .models import *
 
+admin.site.register(AuthUser)
 admin.site.register(User)
 admin.site.register(Course)
 admin.site.register(CourseUser)
 admin.site.register(InvitedCourseUser)
 admin.site.register(Queue)
 admin.site.register(Question)
-# admin.site.register(FeedbackQuestion)
-# admin.site.register(FeedbackAnswer)
 
 
 @admin.register(ShortAnswerFeedbackQuestion)
