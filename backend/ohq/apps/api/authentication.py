@@ -42,4 +42,7 @@ class FirebaseAuthentication:
 
     def _get_user_from_token(self, decoded_token):
         firebase_uid = decoded_token.get('uid')
-        return AuthUser.objects.get(firebase_uid=firebase_uid)
+        try:
+            return AuthUser.objects.get(firebase_uid=firebase_uid)
+        except AuthUser.DoesNotExist:
+            return AuthUser.objects.create_user(firebase_uid)
