@@ -43,6 +43,9 @@ import { gql } from "apollo-boost";
 
 const client = new ApolloClient({
   uri: 'https://ohq.herokuapp.com/graphql',
+  headers: {
+    'Access-Control-Allow-Origin': '*'
+  }
 });
 
 ReactDOM.render(

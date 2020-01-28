@@ -20,7 +20,11 @@ import { gql } from 'apollo-boost';
 const TEST = gql`
   {
     joinableCourses(department: "ECON") {
-      name
+      edges {
+        node {
+          name
+        }
+      }
     }
   }
 `;
@@ -52,6 +56,7 @@ class SignInGoogleBase extends Component {
 
   render() {
     const condition = authUser => !!authUser;
+
     const Test = () => {
       const { loading, error, data } = useQuery(TEST);
   
