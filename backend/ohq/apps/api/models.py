@@ -160,6 +160,7 @@ class Queue(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=500)
     course = models.ForeignKey(Course, related_name='queues', on_delete=models.CASCADE)
+    archived = models.BooleanField(default=False)
 
     estimated_wait_time = models.IntegerField(default=0)
     start_end_times = models.CharField(max_length=100)
