@@ -296,20 +296,20 @@ class CreateCourse(graphene.Mutation):
 
     @staticmethod
     def mutate(root, info, input):
-        print(info.context.user)
-        course = Course.objects.create(
-            name=input.name,
-            department=input.department,
-            description=input.description or "",
-            year=input.year,
-            semester=input.semester,
-            invite_only=input.invite_only,
-        )
-        course_user = CourseUser.objects.create(
-            user=None, #TODO
-            course=course,
-            kind=CourseUserKind.PROFESSOR.name,
-        )
+        with transaction.atomic():
+            course = Course.objects.create(
+                name=input.name,
+                department=input.department,
+                description=input.description or "",
+                year=input.year,
+                semester=input.semester,
+                invite_only=input.invite_only,
+            )
+            course_user = CourseUser.objects.create(
+                user=info.context.user.get_user(),
+                course=course,
+                kind=CourseUserKind.PROFESSOR.name,
+            )
 
         return CreateCourseResponse(course=course, course_user=course_user)
 
@@ -334,17 +334,29 @@ class CreateQueue(graphene.Mutation):
 
     @staticmethod
     def mutate(root, info, input):
-        # TODO check permissions
-        # TODO limit to 2 queues
-        course = Queue.objects.create(
-            name=input.name,
-            description=input.description or "",
-            tags=input.tags,
-            start_end_times=input.start_end_times,
-            course=Course.objects.get(pk=from_global_id(input.course_id)[1]),
-        )
+        with transaction.atomic():
+            user = info.context.user.get_user()
+            course = Course.objects.get(pk=from_global_id(input.course_id)[1])
+            if not CourseUser.objects.filter(
+                user=user,
+                course=course,
+                kind__in=[CourseUserKind.PROFESSOR, CourseUserKind.HEAD_TA, CourseUserKind.TA],
+            ).exists():
+                raise PermissionError
 
-        return CreateQueueResponse(course=course)
+            if Queue.objects.filter(course=course, archived=False).count() < Queue.MAX_NUMBER_QUEUES:
+                queue = Queue.objects.create(
+                    name=input.name,
+                    description=input.description or "",
+                    tags=input.tags,
+                    start_end_times=input.start_end_times,
+                    course=course,
+                )
+            else:
+                # TODO raise exception
+                queue = None
+
+        return CreateQueueResponse(queue=queue)
 
 
 class CreateShortAnswerFeedbackQuestionInput(graphene.InputObjectType):
