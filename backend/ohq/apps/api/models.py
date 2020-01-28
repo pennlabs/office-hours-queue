@@ -167,6 +167,8 @@ class Queue(models.Model):
 
     tags = ArrayField(models.CharField(max_length=20))
 
+    MAX_NUMBER_QUEUES = 2
+
     def is_active(self):
         # TODO
         return None

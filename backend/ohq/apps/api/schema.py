@@ -5,8 +5,8 @@ from graphene_django.filter import DjangoFilterConnectionField
 
 from graphql_relay.node.node import from_global_id
 
-
-from ohq.apps.api.util.django_filter import DjangoFilterField
+from django.db import transaction
+from django.db.models import Q
 
 from ohq.apps.api.models import *
 
@@ -248,13 +248,28 @@ class CreateUser(graphene.Mutation):
 
     @staticmethod
     def mutate(root, info, input):
-        user = User.objects.create(
-            firebase_uid="", # TODO
-            full_name=input.full_name,
-            preferred_name=input.preferred_name,
-            email=input.email,
-            phone_number=input.phone_number,
-        )
+        if input.email != info.context.user.email:
+            # TODO better error
+            raise PermissionError
+
+        with transaction.atomic():
+            user = User.objects.create(
+                full_name=input.full_name,
+                preferred_name=input.preferred_name,
+                email=input.email,
+                phone_number=input.phone_number,
+                auth_user=info.context.user,
+            )
+            invites = InvitedCourseUser.objects.filter(email=input.email)
+            new_course_users = []
+            for invite in invites:
+                new_course_users.append(CourseUser(
+                    user=user,
+                    course = invite.course,
+                    kind=invite.kind,
+                ))
+            CourseUser.objects.bulk_create(new_course_users)
+            invites.delete()
 
         return CreateUserResponse(user=user)
 
