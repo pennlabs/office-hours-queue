@@ -1,16 +1,19 @@
-from django.contrib.auth.mixins import AccessMixin
-from graphene_django.views import GraphQLView
+import json
 
+from django.http import HttpResponse
 from django.contrib.auth import authenticate
 
+from graphene_django.views import GraphQLView
 
-class AuthRequiredMixin(AccessMixin):
-    """Verify that the current user is authenticated."""
+
+class PrivateGraphQLView(GraphQLView):
+
     def dispatch(self, request, *args, **kwargs):
-        if not authenticate(request):
-            return self.handle_no_permission()
+        if request.method.lower() == "post" and not authenticate(request):
+            content = {
+                "errors": [{"message": "Forbidden"}],
+            }
+            return HttpResponse(
+                status=403, content=json.dumps(content), content_type="application/json"
+            )
         return super().dispatch(request, *args, **kwargs)
-
-
-class PrivateGraphQLView(AuthRequiredMixin, GraphQLView):
-    raise_exception = True

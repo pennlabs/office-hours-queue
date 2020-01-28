@@ -22,7 +22,6 @@ class FirebaseAuthentication:
     def _get_auth_token(self, request):
         encoded_token = request.META.get('HTTP_AUTHORIZATION')
         decoded_token = None
-        print(encoded_token.split("Bearer ")[1])
         try:
             decoded_token = auth.verify_id_token(
                 encoded_token.split("Bearer ")[1],
@@ -30,6 +29,8 @@ class FirebaseAuthentication:
                 check_revoked=True,
             )
         except ValueError:
+            pass
+        except AttributeError:
             pass
         except auth.InvalidIdTokenError:
             pass
