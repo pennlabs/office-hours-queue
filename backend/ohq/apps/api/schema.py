@@ -409,13 +409,20 @@ class AddUserToCourse(graphene.Mutation):
 
     @staticmethod
     def mutate(root, info, input):
-        # TODO check permissions
-        # Check if already in?
-        course_user = CourseUser.objects.create(
-            user=User.objects.get(pk=from_global_id(input.user_id)[1]),
-            course=Course.objects.get(pk=from_global_id(input.course_id)[1]),
-            kind=input.kind,
-        )
+        with transaction.atomic():
+            course = Course.objects.get(pk=from_global_id(input.course_id)[1])
+            if not CourseUser.objects.filter(
+                user= info.context.user.get_user(),
+                course=course,
+                kind__in=[CourseUserKind.PROFESSOR, CourseUserKind.HEAD_TA],
+            ).exists():
+                raise PermissionError
+
+            course_user = CourseUser.objects.create(
+                user=User.objects.get(pk=from_global_id(input.user_id)[1]),
+                course=course,
+                kind=input.kind,
+            )
 
         return AddUserToCourseResponse(course_user=course_user)
 
@@ -436,13 +443,17 @@ class JoinCourse(graphene.Mutation):
 
     @staticmethod
     def mutate(root, info, input):
-        # TODO check invite_only
-        # TODO get user
-        course_user = CourseUser.objects.create(
-            user=None,
-            course=Course.objects.get(pk=from_global_id(input.course_id)[1]),
-            kind=CourseUserKind.STUDENT.name,
-        )
+        with transaction.atomic():
+            course = Course.objects.get(pk=from_global_id(input.course_id)[1])
+            if course.invite_only:
+                # TODO better error
+                raise PermissionError
+
+            course_user = CourseUser.objects.create(
+                user=info.context.user.get_user(),
+                course=course,
+                kind=CourseUserKind.STUDENT.name,
+            )
 
         return JoinCourseResponse(course_user=course_user)
 
@@ -464,15 +475,21 @@ class InviteEmail(graphene.Mutation):
 
     @staticmethod
     def mutate(root, info, input):
-        # TODO check invite_only
-        # TODO get user
-        print(info.context.user)
-        invited_course_user = InvitedCourseUser.objects.create(
-            email=input.email,
-            course=Course.objects.get(pk=from_global_id(input.course_id)[1]),
-            invited_by=None, # TODO
-            kind=CourseUserKind.STUDENT.name,
-        )
+        with transaction.atomic():
+            course = Course.objects.get(pk=from_global_id(input.course_id)[1])
+            if not CourseUser.objects.filter(
+                user= info.context.user.get_user(),
+                course=course,
+                kind__in=[CourseUserKind.PROFESSOR, CourseUserKind.HEAD_TA],
+            ).exists():
+                raise PermissionError
+
+            invited_course_user = InvitedCourseUser.objects.create(
+                email=input.email,
+                course=course,
+                invited_by=None, # TODO
+                kind=CourseUserKind.STUDENT.name,
+            )
 
         return InviteEmailResponse(invited_course_user=invited_course_user)
 
