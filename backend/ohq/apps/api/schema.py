@@ -198,9 +198,9 @@ class CourseMetaNode(DjangoObjectType):
 
 class Query(graphene.ObjectType):
 
-    # users = DjangoFilterConnectionField(UserNode)
-    # users = graphene.List(UserNode)
-    currentUser = relay.Node.Field(UserNode)
+    current_user = graphene.Field(UserNode)
+    def resolve_current_user(self, info):
+        return info.context.user.get_user()
 
     # User search for invitation
     invitable_users = DjangoFilterConnectionField(UserMetaNode)
@@ -221,8 +221,7 @@ class Query(graphene.ObjectType):
 
     queue = relay.Node.Field(QueueNode)
 
-    # def resolve_user(self, info, email, id):
-    #     return User.objects.filter(email=email, id=id)
+
 
     # def resolve_course_users(self, info, kind, id):
     #     return CourseUser.objects.filter(kind=kind, id=id)
