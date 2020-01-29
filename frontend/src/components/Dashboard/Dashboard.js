@@ -13,6 +13,22 @@ import Sidebar from '../Sidebar';
 import { withAuthorization } from '../Session';
 import { compose } from 'recompose';
 
+import { useQuery } from '@apollo/react-hooks';
+import { gql } from 'apollo-boost';
+import { useMutation } from '@apollo/react-hooks';
+
+const TEST = gql`
+  {
+    joinableCourses(department: "ECON") {
+      edges {
+        node {
+          name
+        }
+      }
+    }
+  }
+`;
+
 class Dashboard extends React.Component {
   constructor(props) {
     super(props);
@@ -205,13 +221,35 @@ class Dashboard extends React.Component {
   openCreateModal() {
     this.closeInstructorModal();
 
-    console.log("hello");
     this.setState({
       createModalOpen: true
     });
   }
 
   render() {
+    const Test = () => {
+      const { loading, error, data } = useQuery(TEST);
+  
+      if (loading) {
+        return <div>Error! {loading.message}</div>;
+      }
+  
+      if (error) {
+        console.log(error);
+        return <div>Error! {error.message}</div>;
+      }
+    
+      return (
+        <ul>
+          {
+            data.edges.map(({node}) => (
+              <div>node.name</div>
+            ))
+          }
+        </ul>
+      );
+    };
+
     return (
       <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
         <ModalAddStudentCourse
@@ -303,6 +341,7 @@ class Dashboard extends React.Component {
                 }
                 <Grid.Column>
                   <AddCard clickFunc={this.openInstructorModal}/>
+                  <Test/>
                 </Grid.Column>
             </Grid.Row>
             <a style={{"textDecoration":"underline", "cursor":"pointer"}} onClick={this.handleArchivedChange}>

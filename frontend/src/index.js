@@ -38,15 +38,38 @@ import { ApolloProvider } from '@apollo/react-hooks';
 
 import Firebase, { FirebaseContext } from './components/Firebase';
 
-import ApolloClient from 'apollo-boost';
-import { gql } from "apollo-boost";
+import { ApolloClient } from 'apollo-client';
+import { createHttpLink } from 'apollo-link-http';
+import { setContext } from 'apollo-link-context';
+import { InMemoryCache } from 'apollo-cache-inmemory';
 
-const client = new ApolloClient({
+const httpLink = createHttpLink({
   uri: 'https://ohq.herokuapp.com/graphql',
-  headers: {
-    'Access-Control-Allow-Origin': '*'
+});
+
+const authLink = setContext((_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  const token = JSON.parse(localStorage.getItem('authUser')).stsTokenManager.accessToken;
+  console.log(token);
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : "",
+    }
   }
 });
+
+const client = new ApolloClient({
+  link: authLink.concat(httpLink),
+  cache: new InMemoryCache()
+});
+
+/*
+const client = new ApolloClient({
+  uri: 'https://ohq.herokuapp.com/graphql'
+});
+*/
 
 ReactDOM.render(
   <ApolloProvider client={client}>
