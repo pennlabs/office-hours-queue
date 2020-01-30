@@ -29,6 +29,29 @@ const TEST = gql`
   }
 `;
 
+const CREATE_USER = gql`
+  mutation CreateUser($input: CreateUserInput!) {
+    createUser(input: $input) {
+        user {
+          id
+        }
+    }
+  }
+`;
+
+const CREATE_COURSE = gql`
+  mutation CreateCourse($input: CreateCourseInput!) {
+    createCourse(input: $input) {
+      course {
+        id
+      }
+      courseUser {
+        id
+      }
+    }
+  }
+`;
+
 class Dashboard extends React.Component {
   constructor(props) {
     super(props);
@@ -242,13 +265,48 @@ class Dashboard extends React.Component {
       return (
         <ul>
           {
-            data.edges.map(({node}) => (
+            data.edges && data.edges.map(({node}) => (
               <div>node.name</div>
             ))
           }
         </ul>
       );
     };
+
+    function CreateCourse() {
+      let input;
+      const [createCourse, { data }] = useMutation(CREATE_COURSE);
+
+      return (
+        <div>
+          <form
+            onSubmit={e => {
+              e.preventDefault();
+              console.log(createCourse({ 
+                variables: { 
+                  input:{ 
+                    name: "121",
+                    department: "CIS",
+                    description: "Data Structures and Algorithms",
+                    year: 2020,
+                    semester: "FALL",
+                    inviteOnly: false 
+                  }
+                }
+              }));
+              input.value = '';
+            }}
+          >
+            <input
+              ref={node => {
+                input = node;
+              }}
+            />
+            <button type="submit">Add Course</button>
+          </form>
+        </div>
+      );
+    }
 
     return (
       <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
@@ -341,7 +399,7 @@ class Dashboard extends React.Component {
                 }
                 <Grid.Column>
                   <AddCard clickFunc={this.openInstructorModal}/>
-                  <Test/>
+                  <CreateCourse/>
                 </Grid.Column>
             </Grid.Row>
             <a style={{"textDecoration":"underline", "cursor":"pointer"}} onClick={this.handleArchivedChange}>
