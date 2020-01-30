@@ -494,10 +494,46 @@ class InviteEmail(graphene.Mutation):
         return InviteEmailResponse(invited_course_user=invited_course_user)
 
 
+class RemoveUserFromCourseInput(graphene.InputObjectType):
+    user_id = graphene.ID(required=True)
+    course_id = graphene.ID(required=True)
+
+
+class RemoveUserFromCourseResponse(graphene.ObjectType):
+    success = graphene.Boolean(required=True)
+
+
+class RemoveUserFromCourse(graphene.Mutation):
+    class Arguments:
+        input = RemoveUserFromCourseInput(required=False)
+
+    Output = RemoveUserFromCourseResponse
+
+    @staticmethod
+    def mutate(root, info, input):
+        with transaction.atomic():
+            course = Course.objects.get(pk=from_global_id(input.course_id)[1])
+            if not CourseUser.objects.filter(
+                user= info.context.user.get_user(),
+                course=course,
+                kind__in=[CourseUserKind.PROFESSOR, CourseUserKind.HEAD_TA],
+            ).exists():
+                raise PermissionError
+
+            course_user = CourseUser.objects.get(
+                user=User.objects.get(pk=from_global_id(input.user_id)[1]),
+                course=course,
+            )
+            course_user.delete()
+
+        return RemoveUserFromCourseResponse(success=True)
+
+
 class Mutation(graphene.ObjectType):
     create_user = CreateUser.Field()
     create_course = CreateCourse.Field()
     create_queue = CreateQueue.Field()
     add_user_to_course = AddUserToCourse.Field()
+    remove_user_from_course = RemoveUserFromCourse.Field()
     join_course = JoinCourse.Field()
     invite_email = InviteEmail.Field()
