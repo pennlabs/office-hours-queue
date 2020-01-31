@@ -171,3 +171,6 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 # Firebase
 FIREBASE_KEY_FILE = os.path.join(BASE_DIR, 'ohq-firebase-adminsdk.json')
+
+# Phone number field
+PHONENUMBER_DEFAULT_REGION = "US"
