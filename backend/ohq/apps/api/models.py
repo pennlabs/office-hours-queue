@@ -18,14 +18,14 @@ class ChoicesEnum(Enum):
 
 
 class AuthUserManager(BaseUserManager):
-    def create_user(self, firebase_uid, **kwargs):
-        user = AuthUser(firebase_uid=firebase_uid)
+    def create_user(self, firebase_uid, email, **kwargs):
+        user = AuthUser(firebase_uid=firebase_uid, email=email)
         user.set_unusable_password()
         user.save()
         return user
 
-    def create_superuser(self, firebase_uid, password, **kwargs):
-        user = AuthUser(firebase_uid=firebase_uid, is_superuser=True, is_staff=True)
+    def create_superuser(self, firebase_uid, password, email, **kwargs):
+        user = AuthUser(firebase_uid=firebase_uid, email=email, is_superuser=True, is_staff=True)
         user.set_password(password)
         user.save()
         return user
@@ -33,11 +33,13 @@ class AuthUserManager(BaseUserManager):
 
 class AuthUser(AbstractBaseUser, PermissionsMixin):
     firebase_uid = models.CharField(max_length=40, unique=True, editable=False)
+    email = models.EmailField()
     is_staff = models.BooleanField(
         default=False,
         help_text='Designates whether the user can log into this admin site.',
     )
     USERNAME_FIELD = 'firebase_uid'
+    REQUIRED_FIELDS = ['email']
     objects = AuthUserManager()
 
     def get_user(self):

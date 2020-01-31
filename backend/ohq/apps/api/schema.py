@@ -234,7 +234,6 @@ class Query(graphene.ObjectType):
 class CreateUserInput(graphene.InputObjectType):
     full_name = graphene.String(required=True)
     preferred_name = graphene.String(required=True)
-    email = graphene.String(required=True)
     phone_number = graphene.String(required=False)
 
 class CreateUserResponse(graphene.ObjectType):
@@ -248,19 +247,15 @@ class CreateUser(graphene.Mutation):
 
     @staticmethod
     def mutate(root, info, input):
-        if input.email != info.context.user.email:
-            # TODO better error
-            raise PermissionError
-
         with transaction.atomic():
             user = User.objects.create(
                 full_name=input.full_name,
                 preferred_name=input.preferred_name,
-                email=input.email,
+                email=info.context.user.email,
                 phone_number=input.phone_number,
                 auth_user=info.context.user,
             )
-            invites = InvitedCourseUser.objects.filter(email=input.email)
+            invites = InvitedCourseUser.objects.filter(email=info.context.user.email)
             new_course_users = []
             for invite in invites:
                 new_course_users.append(CourseUser(

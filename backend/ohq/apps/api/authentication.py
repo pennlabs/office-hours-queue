@@ -45,4 +45,5 @@ class FirebaseAuthentication:
         try:
             return AuthUser.objects.get(firebase_uid=firebase_uid)
         except AuthUser.DoesNotExist:
-            return AuthUser.objects.create_user(firebase_uid)
+            user = auth.get_user(firebase_uid)
+            return AuthUser.objects.create_user(firebase_uid, user.email)
