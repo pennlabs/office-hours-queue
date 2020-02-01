@@ -149,7 +149,7 @@ class CourseNode(DjangoObjectType):
             'department',
             'year',
             'semester',
-            'is_archived',
+            'archived',
             'invite_only',
         )
         fields = (
@@ -158,7 +158,7 @@ class CourseNode(DjangoObjectType):
             'department',
             'description',
             'year',
-            'is_archived',
+            'archived',
             'invite_only',
         )
         interfaces = (relay.Node,)
@@ -207,7 +207,7 @@ class ShortAnswerFeedbackQuestionNode(DjangoObjectType):
         fields = (
             'id',
             'question_text',
-            'is_active',
+            'archived',
             'order_key',
         )
 
@@ -218,7 +218,7 @@ class RadioButtonFeedbackQuestionNode(DjangoObjectType):
         fields = (
             'id',
             'question_text',
-            'is_active',
+            'archived',
             'order_key',
             'answer_choices',
         )
@@ -230,7 +230,7 @@ class SliderFeedbackQuestionNode(DjangoObjectType):
         fields = (
             'id',
             'question_text',
-            'is_active',
+            'archived',
             'order_key',
             'answer_lower_bound',
             'answer_upper_bound',

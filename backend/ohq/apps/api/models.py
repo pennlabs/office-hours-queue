@@ -74,7 +74,7 @@ class Course(models.Model):
     description = models.CharField(max_length=250, default="")
     year = models.IntegerField()
     semester = models.CharField(**Semester.choices())
-    is_archived = models.BooleanField(default=False)
+    archived = models.BooleanField(default=False)
     invite_only = models.BooleanField(default=False)
 
     class Meta:
