@@ -445,7 +445,7 @@ class CreateShortAnswerFeedbackQuestion(graphene.Mutation):
                 raise PermissionError
             feedback_question = ShortAnswerFeedbackQuestion.objects.create(
                 course=course,
-                question_text=input.question_test,
+                question_text=input.question_text,
                 order_key=input.order_key or FeedbackQuestion.objects.filter(course=course).count()
             )
 
@@ -482,7 +482,7 @@ class CreateRadioButtonFeedbackQuestion(graphene.Mutation):
                 raise PermissionError
             feedback_question = RadioButtonFeedbackQuestion.objects.create(
                 course=course,
-                question_text=input.question_test,
+                question_text=input.question_text,
                 answer_choices=input.answer_choices,
                 order_key=input.order_key or FeedbackQuestion.objects.filter(course=course).count()
             )
@@ -521,7 +521,7 @@ class CreateSliderFeedbackQuestion(graphene.Mutation):
                 raise PermissionError
             feedback_question = SliderFeedbackQuestion.objects.create(
                 course=course,
-                question_text=input.question_test,
+                question_text=input.question_text,
                 answer_lower_bound=input.answer_lower_bound,
                 answer_upper_bound=input.answer_upper_bound,
                 order_key=input.order_key or FeedbackQuestion.objects.filter(course=course).count()
