@@ -273,6 +273,38 @@ class Dashboard extends React.Component {
       );
     };
 
+    function CreateUser() {
+      let input;
+      const [createCourse, { data }] = useMutation(CREATE_USER);
+
+      return (
+        <div>
+          <form
+            onSubmit={e => {
+              e.preventDefault();
+              console.log(createCourse({ 
+                variables: { 
+                  input:{ 
+                    fullName: "Marshall Vail",
+                    preferredName: "Marshall",
+                    email: "vailm@seas.upenn.edu"
+                  }
+                }
+              }));
+              input.value = '';
+            }}
+          >
+            <input
+              ref={node => {
+                input = node;
+              }}
+            />
+            <button type="submit">Add Course</button>
+          </form>
+        </div>
+      );
+    }
+
     function CreateCourse() {
       let input;
       const [createCourse, { data }] = useMutation(CREATE_COURSE);
@@ -399,7 +431,7 @@ class Dashboard extends React.Component {
                 }
                 <Grid.Column>
                   <AddCard clickFunc={this.openInstructorModal}/>
-                  <CreateCourse/>
+                  <CreateUser/>
                 </Grid.Column>
             </Grid.Row>
             <a style={{"textDecoration":"underline", "cursor":"pointer"}} onClick={this.handleArchivedChange}>
