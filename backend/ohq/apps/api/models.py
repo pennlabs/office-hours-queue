@@ -249,6 +249,7 @@ class Question(models.Model):
 class FeedbackQuestion(PolymorphicModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     question_text = models.CharField(max_length=200)
+    # TODO cannot change is_active while a queue is active
     is_active = models.BooleanField(default=True)
     order_key = models.IntegerField()
     course = models.ForeignKey(Course, related_name='feedback_questions', on_delete=models.CASCADE)
