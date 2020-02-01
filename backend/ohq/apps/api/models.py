@@ -251,6 +251,7 @@ class FeedbackQuestion(PolymorphicModel):
     question_text = models.CharField(max_length=200)
     is_active = models.BooleanField(default=True)
     order_key = models.IntegerField()
+    course = models.ForeignKey(Course, related_name='feedback_questions', on_delete=models.CASCADE)
 
 
 class ShortAnswerFeedbackQuestion(FeedbackQuestion):

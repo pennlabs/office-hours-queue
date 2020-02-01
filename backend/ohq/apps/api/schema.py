@@ -166,12 +166,16 @@ class CourseNode(DjangoObjectType):
     course_users = DjangoFilterConnectionField(CourseUserNode)
     invited_course_users = DjangoFilterConnectionField(InvitedCourseUserNode)
     queues = DjangoFilterConnectionField(QueueNode)
+    feedback_questions = graphene.List(lambda: FeedbackQuestionNode)
 
     def resolve_course_users(self, info, **kwargs):
         return CourseUser.objects.filter(course=self, **kwargs)
 
     def resolve_queues(self, info, **kwargs):
         return Queue.objects.filter(course=self, **kwargs)
+
+    def resolve_feedback_questions(self, info, **kwargs):
+        return FeedbackQuestion.objects.filter(course=self, **kwargs)
 
 
 class CourseMetaNode(DjangoObjectType):
@@ -194,6 +198,61 @@ class CourseMetaNode(DjangoObjectType):
         interfaces = (relay.Node,)
 
     semester = graphene.Field(SemesterType, required=True)
+
+
+class ShortAnswerFeedbackQuestionNode(DjangoObjectType):
+    class Meta:
+        model = ShortAnswerFeedbackQuestion
+        fields = (
+            'id',
+            'question_text',
+            'is_active',
+            'order_key',
+        )
+
+
+class RadioButtonFeedbackQuestionNode(DjangoObjectType):
+    class Meta:
+        model = RadioButtonFeedbackQuestion
+        fields = (
+            'id',
+            'question_text',
+            'is_active',
+            'order_key',
+            'answer_choices',
+        )
+
+
+class SliderFeedbackQuestionNode(DjangoObjectType):
+    class Meta:
+        model = SliderFeedbackQuestion
+        fields = (
+            'id',
+            'question_text',
+            'is_active',
+            'order_key',
+            'answer_lower_bound',
+            'answer_upper_bound',
+        )
+
+
+class FeedbackQuestionNode(graphene.Union):
+    @classmethod
+    def resolve_type(cls, instance, info):
+        if isinstance(instance, ShortAnswerFeedbackQuestion):
+            return ShortAnswerFeedbackQuestionNode
+        elif isinstance(instance, RadioButtonFeedbackQuestion):
+            return RadioButtonFeedbackQuestionNode
+        elif isinstance(instance, SliderFeedbackQuestion):
+            return SliderFeedbackQuestionNode
+        return ShortAnswerFeedbackQuestionNode
+
+    class Meta:
+        types = (
+            ShortAnswerFeedbackQuestionNode,
+            RadioButtonFeedbackQuestionNode,
+            SliderFeedbackQuestionNode,
+        )
 
 
 class Query(graphene.ObjectType):
