@@ -95,7 +95,7 @@ class QuestionNode(DjangoObjectType):
     class Meta:
         model = Question
         # TODO better filtering class
-        filter_fields = ('id', 'time_asked', 'is_rejected')
+        filter_fields = ('id', 'time_asked', 'asked_by')
         fields = (
             'id',
             'text',
@@ -105,15 +105,14 @@ class QuestionNode(DjangoObjectType):
             'time_answered',
             'time_withdrawn',
             'time_rejected',
-            'is_rejected',
             'queue',
-            'rejected_by',
-            'asker',
-            'answerer',
         )
         interfaces = (relay.Node,)
 
     rejected_reason = graphene.Field(QuestionRejectionReasonType, required=True)
+    rejected_by = graphene.Field(UserMetaNode)
+    asked_by = graphene.Field(UserMetaNode)
+    answered_by = graphene.Field(UserMetaNode)
 
 
 class QueueNode(DjangoObjectType):
@@ -529,6 +528,46 @@ class CreateSliderFeedbackQuestion(graphene.Mutation):
         return CreateSliderFeedbackQuestionResponse(feedback_question=feedback_question)
 
 
+class CreateQuestionInput(graphene.InputObjectType):
+    queue_id = graphene.ID(required=True)
+    text = graphene.String(required=True)
+    tags = graphene.List(graphene.String, required=True)
+
+
+class CreateQuestionResponse(graphene.ObjectType):
+    question = graphene.Field(QuestionNode)
+
+
+class CreateQuestion(graphene.Mutation):
+    class Arguments:
+        input = CreateQuestionInput(required=True)
+
+    Output = CreateQuestionResponse
+
+    @staticmethod
+    def mutate(root, info, input):
+        with transaction.atomic():
+            user = info.context.user.get_user()
+            queue = Queue.objects.get(pk=from_global_id(input.queue_id)[1])
+            course = queue.course
+            if not CourseUser.objects.filter(
+                user=user,
+                course=course,
+                kind=CourseUserKind.STUDENT,
+            ).exists():
+                raise PermissionError
+            if any(tag not in course.tags for tag in input.tags):
+                raise ValueError
+            question = Question.objects.create(
+                queue=queue,
+                text=input.text,
+                tags=input.tags,
+                asked_by=user,
+            )
+
+        return CreateQuestionResponse(question=question)
+
+
 class AddUserToCourseInput(graphene.InputObjectType):
     user_id = graphene.ID(required=True)
     course_id = graphene.ID(required=True)
@@ -674,6 +713,8 @@ class Mutation(graphene.ObjectType):
     create_short_answer_feedback_question = CreateShortAnswerFeedbackQuestion.Field()
     create_radio_button_feedback_question = CreateRadioButtonFeedbackQuestion.Field()
     create_slider_feedback_question = CreateSliderFeedbackQuestion.Field()
+
+    create_question = CreateQuestion.Field()
 
     add_user_to_course = AddUserToCourse.Field()
     remove_user_from_course = RemoveUserFromCourse.Field()

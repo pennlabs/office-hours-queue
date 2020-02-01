@@ -205,10 +205,17 @@ class Question(models.Model):
         on_delete=models.CASCADE,
     )
 
-    time_asked = models.DateTimeField()
+    time_asked = models.DateTimeField(auto_now_add=True)
+    asked_by = models.ForeignKey(
+        User,
+        related_name='asked_questions',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+
+    # TODO I don't think we should allow question editing
     time_last_updated = models.DateTimeField(blank=True, null=True)
-    time_started = models.DateTimeField(blank=True, null=True)
-    time_answered = models.DateTimeField(blank=True, null=True)
     time_withdrawn = models.DateTimeField(blank=True, null=True)
 
     time_rejected = models.DateTimeField(blank=True, null=True)
@@ -226,14 +233,10 @@ class Question(models.Model):
         null=True,
         **QuestionRejectionReason.choices(),
     )
+    rejected_reason_other = models.CharField(max_length=200, blank=True, null=True)
 
-    asked_by = models.ForeignKey(
-        User,
-        related_name='asked_questions',
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-    )
+    time_started = models.DateTimeField(blank=True, null=True)
+    time_answered = models.DateTimeField(blank=True, null=True)
     answered_by = models.ForeignKey(
         User,
         related_name='answered_questions',
