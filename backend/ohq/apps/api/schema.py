@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import graphene
 from graphene import relay, ObjectType
 from graphene_django.types import DjangoObjectType
@@ -568,6 +570,48 @@ class CreateQuestion(graphene.Mutation):
         return CreateQuestionResponse(question=question)
 
 
+class RejectQuestionInput(graphene.InputObjectType):
+    question_id = graphene.ID(required=True)
+    rejected_reason = graphene.Field(QuestionRejectionReasonType, required=True)
+    rejected_reason_other = graphene.String(required=False)
+
+
+class RejectQuestionResponse(graphene.ObjectType):
+    question = graphene.Field(QuestionNode)
+
+
+class RejectQuestion(graphene.Mutation):
+    class Arguments:
+        input = RejectQuestionInput(required=True)
+
+    Output = RejectQuestionResponse
+
+    @staticmethod
+    def mutate(root, info, input):
+        with transaction.atomic():
+            user = info.context.user.get_user()
+            question = Question.objects.get(pk=from_global_id(input.queue_id)[1])
+            if not CourseUser.objects.filter(
+                user=user,
+                course=question.queue.course,
+                kind__in=[CourseUserKind.PROFESSOR, CourseUserKind.HEAD_TA, CourseUserKind.TA],
+            ).exists():
+                raise PermissionError
+            if (
+                (input.rejected_reason == QuestionRejectionReason.OTHER and
+                 input.rejected_reason_other is None) or
+                (input.rejected_reason != QuestionRejectionReason.OTHER and
+                 input.rejected_reason_other is not None)
+            ):
+                raise ValueError
+            question.rejected_reason = input.rejected_reason
+            question.rejected_reason_other = input.rejected_reason_other
+            question.rejected_by = user
+            question.time_rejected = datetime.now()
+
+        return RejectQuestionResponse(question=question)
+
+
 class AddUserToCourseInput(graphene.InputObjectType):
     user_id = graphene.ID(required=True)
     course_id = graphene.ID(required=True)
@@ -715,6 +759,7 @@ class Mutation(graphene.ObjectType):
     create_slider_feedback_question = CreateSliderFeedbackQuestion.Field()
 
     create_question = CreateQuestion.Field()
+    reject_question = RejectQuestion.Field()
 
     add_user_to_course = AddUserToCourse.Field()
     remove_user_from_course = RemoveUserFromCourse.Field()

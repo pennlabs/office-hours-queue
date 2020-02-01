@@ -219,8 +219,6 @@ class Question(models.Model):
     time_withdrawn = models.DateTimeField(blank=True, null=True)
 
     time_rejected = models.DateTimeField(blank=True, null=True)
-
-    is_rejected = models.BooleanField(default=False)
     rejected_by = models.ForeignKey(
         User,
         related_name='rejected_questions',
