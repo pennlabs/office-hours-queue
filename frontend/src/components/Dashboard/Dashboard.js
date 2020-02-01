@@ -286,8 +286,7 @@ class Dashboard extends React.Component {
                 variables: { 
                   input:{ 
                     fullName: "Marshall Vail",
-                    preferredName: "Marshall",
-                    email: "vailm@seas.upenn.edu"
+                    preferredName: "Marshall"
                   }
                 }
               }));
