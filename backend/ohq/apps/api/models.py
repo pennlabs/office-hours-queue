@@ -43,7 +43,7 @@ class AuthUser(AbstractBaseUser, PermissionsMixin):
     objects = AuthUserManager()
 
     def get_user(self):
-        return self.user_set.first()
+        return self.user_set.get()
 
 
 class User(models.Model):

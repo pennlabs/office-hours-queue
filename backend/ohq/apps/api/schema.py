@@ -199,6 +199,7 @@ class CourseMetaNode(DjangoObjectType):
 class Query(graphene.ObjectType):
 
     current_user = graphene.Field(UserNode)
+
     def resolve_current_user(self, info):
         return info.context.user.get_user()
 
@@ -292,6 +293,7 @@ class CreateCourse(graphene.Mutation):
     @staticmethod
     def mutate(root, info, input):
         with transaction.atomic():
+            user = info.context.user.get_user()
             course = Course.objects.create(
                 name=input.name,
                 department=input.department,
@@ -301,7 +303,7 @@ class CreateCourse(graphene.Mutation):
                 invite_only=input.invite_only,
             )
             course_user = CourseUser.objects.create(
-                user=info.context.user.get_user(),
+                user=user,
                 course=course,
                 kind=CourseUserKind.PROFESSOR.name,
             )
