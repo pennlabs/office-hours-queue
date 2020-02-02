@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal, Form, Button, Tab } from 'semantic-ui-react';
 import CreateCourseForm from './CreateCourseForm';
+import AddInstructorForm from './AddInstructorForm';
 
 export default class ModalAddInstructorCourse extends React.Component {
   render() {
@@ -12,30 +13,7 @@ export default class ModalAddInstructorCourse extends React.Component {
             {
               menuItem: "Join",
               render: () => {
-                return (
-                  <Form>
-                    <Form.Field>
-                      <label>Course Code</label>
-                      <Form.Input name="name" onChange={this.props.funcs.changeFunc}/>
-                    </Form.Field>
-                    <Form.Field>
-                      <Form.Button content="Search" color="blue" onClick={this.props.funcs.searchFunc}/>
-                    </Form.Field>
-                    {
-                      this.props.attrs.results && this.props.attrs.results.length > 0 &&
-                      <Form.Field>
-                        <label>Results</label>
-                        <Form.Dropdown
-                          placeholder="Select Course"
-                          name="course"
-                          options={this.props.attrs.results}
-                          onChange={this.props.funcs.changeFunc}
-                          search
-                          selection/>
-                      </Form.Field>
-                    }
-                  </Form>
-                );
+                return <AddInstructorForm/>
               }
             },
             {

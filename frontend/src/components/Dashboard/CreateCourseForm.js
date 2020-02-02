@@ -17,8 +17,7 @@ const CREATE_COURSE = gql`
   }
 `;
 
-const CreateCourseForm = (props) => {
-  const [open, setOpen] = useState(props.open);
+const CreateCourseForm = () => {
   const [input, setInput] = useState({ department: null, name: null, year: null, semester: null, inviteOnly: false })
   const [results, setResults] = useState([]);
 
