@@ -1,12 +1,9 @@
 import React from 'react';
 import { Segment, Header, Grid } from 'semantic-ui-react';
-import CourseCard from './CourseCard';
 import ArchivedCourseCard from './ArchivedCourseCard';
-import AddCard from './AddCard';
-import ModalAddStudentCourse from './ModalAddStudentCourse';
-import ModalAddInstructorCourse from './ModalAddInstructorCourse';
-import { fakeCourseUsers, fakeSearchCourses } from './coursedata.js';
 import InstructorCourses from './InstructorCourses';
+import StudentCourses from './StudentCourses';
+
 
 import Sidebar from '../Sidebar';
 
@@ -17,35 +14,14 @@ class Dashboard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showArchived: false,
-      courseUsers: [],
-      studentModalOpen: false,
-      instructorModalOpen: false
+      showArchived: false
     };
 
     this.handleArchivedChange = this.handleArchivedChange.bind(this);
-    this.triggerStudentModal = this.triggerStudentModal.bind(this);
-    this.triggerInstructorModal = this.triggerInstructorModal.bind(this);
-  }
-
-  componentDidMount() {
-    this.setState({
-      courseUsers: fakeCourseUsers
-    });
   }
 
   handleArchivedChange() {
     this.setState({ showArchived: !this.state.showArchived });
-  }
-
-  /* STUDENT AND INSTRUCTOR FUNCTIONS */
-
-  triggerStudentModal() {
-    this.setState({ studentModalOpen: !this.state.studentModalOpen });
-  }
-
-  triggerInstructorModal() {
-    this.setState({ instructorModalOpen: !this.state.instructorModalOpen });
   }
 
   
@@ -54,10 +30,6 @@ class Dashboard extends React.Component {
 
     return (
       <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
-        <ModalAddStudentCourse
-          open={ this.state.studentModalOpen }
-          closeFunc={ this.triggerStudentModal }
-        />
         <Sidebar active={'dashboard'}/>
         <Grid.Column width={13}>
           <Grid padded>
@@ -69,29 +41,7 @@ class Dashboard extends React.Component {
               </Header>
             </Segment>
             {/* add student course cards */}
-            <Grid.Row columns={4} padded="true">
-                {
-                  
-                  this.state.courseUsers.map(courseUser => (
-
-                    !courseUser.course.isArchived &&
-                    courseUser.kind == "STUDENT" &&
-                    <Grid.Column>
-                      <CourseCard
-                        name={courseUser.course.name}
-                        description={courseUser.course.description}
-                        totalQueues={courseUser.course.totalQueues}
-                        openQueues={courseUser.course.openQueues}
-                        isArchived={courseUser.course.isArchived}
-                      />
-                    </Grid.Column>
-                  ))
-                  
-                }
-                <Grid.Column>
-                <AddCard clickFunc={ this.triggerStudentModal }/>
-                </Grid.Column>
-            </Grid.Row>
+            <StudentCourses/>
             <Segment basic padded>
               <Header as="h2">
                 <Header.Content>
@@ -100,17 +50,14 @@ class Dashboard extends React.Component {
               </Header>
             </Segment>
             {/* add instructor course cards */}
-            <InstructorCourses
-              open={ this.state.instructorModalOpen }
-              closeFunc={ this.triggerInstructorModal }
-              clickFunc={this.triggerInstructorModal}/>
+            <InstructorCourses/>
             <a style={{"textDecoration":"underline", "cursor":"pointer"}} onClick={this.handleArchivedChange}>
               { this.state.showArchived ? "Hide Archived Courses" : "See Archived Courses"}
             </a>
-            {/* add archived instructor courses if "see archived" is toggled */}
+            {/* add archived instructor courses if "see archived" is toggled (NEED TO MOVE) */}
             <Grid.Row columns={4} padded="true">
                 {
-                  this.state.courseUsers.map(courseUser => (
+                  this.state.courseUsers && this.state.courseUsers.map(courseUser => (
 
                     this.state.showArchived &&
                     courseUser.course.isArchived &&

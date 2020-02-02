@@ -44,7 +44,6 @@ const AddStudentForm = () => {
 
   /* LOADING SEARCH RESULTS */
   if (data) {
-    console.log(data.joinableCourses.edges.length);
     var new_results = [];
     data.joinableCourses.edges.map((course, index) => {
       new_results.push({
@@ -57,11 +56,6 @@ const AddStudentForm = () => {
         JSON.stringify(new_results) != JSON.stringify(results)) {
       setResults(new_results);
     }
-  }
-
-  /* CONFIRMING JOIN */
-  if (joinData && joinData.data) {
-    
   }
 
   /* HANDLER FUNCTIONS */
@@ -78,13 +72,13 @@ const AddStudentForm = () => {
   }
   
   const onSubmit = () => {
-    console.log(joinCourse({
+    joinCourse({
       variables: {
         input: {
           courseId: input.courseId
         }
       }
-    }));
+    });
   }
 
   return (
