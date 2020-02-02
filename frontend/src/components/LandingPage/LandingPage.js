@@ -46,14 +46,16 @@ const SignInGoogleBase = (props) => {
       .doSignInWithGoogle()
       .then(socialAuthUser => {
         console.log("Wooo!!! I got " + socialAuthUser.user.email + " with name " + socialAuthUser.user.displayName);
-        createUser({
-          variables: { 
-            input:{ 
-              fullName: socialAuthUser.user.displayName,
-              preferredName: socialAuthUser.user.displayName.split("/[ ,]+/")[0]
+        if (socialAuthUser.additionalUserInfo.isNewUser) {
+          createUser({
+            variables: { 
+              input:{ 
+                fullName: socialAuthUser.user.displayName,
+                preferredName: socialAuthUser.user.displayName.split("/[ ,]+/")[0]
+              }
             }
-          }
-        });
+          });
+        }
       })
       .then(() => {
         setError(null);
@@ -93,8 +95,6 @@ const SignInGoogle = compose(
   withRouter,
   withFirebase,
 )(SignInGoogleBase);
-
-console.log(withRouter);
 
 const LandingPage = () => {
     return <SignInGoogle />
