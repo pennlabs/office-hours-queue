@@ -12,7 +12,7 @@ import { useQuery } from '@apollo/react-hooks';
 const FIND_COURSES = gql`
   {
     currentUser {
-      courseUsers(kind: "PROFESSOR") {
+      courseUsers {
         edges {
           node {
             course {
@@ -20,6 +20,7 @@ const FIND_COURSES = gql`
               department
               description
             }
+            kind
           }
         }
       }
@@ -48,7 +49,7 @@ const InstructorCourses = (props) => {
       {
         data && data.currentUser.courseUsers &&
         data.currentUser.courseUsers.edges.map(courseUser => (
-          !courseUser.node.course.archived &&
+          !courseUser.node.course.archived && courseUser.node.kind != "STUDENT" &&
           <Grid.Column>
             <CourseCard
               name={courseUser.node.course.name}
