@@ -13,22 +13,6 @@ import Sidebar from '../Sidebar';
 import { withAuthorization } from '../Session';
 import { compose } from 'recompose';
 
-import { useQuery } from '@apollo/react-hooks';
-import { gql } from 'apollo-boost';
-import { useMutation } from '@apollo/react-hooks';
-
-const TEST = gql`
-  {
-    joinableCourses(department: "ECON") {
-      edges {
-        node {
-          name
-        }
-      }
-    }
-  }
-`;
-
 class Dashboard extends React.Component {
   constructor(props) {
     super(props);
@@ -58,11 +42,7 @@ class Dashboard extends React.Component {
     this.openStudentModal = this.openStudentModal.bind(this);
     this.closeStudentModal = this.closeStudentModal.bind(this);
 
-    this.handleInstructorCourseSubmit = this.handleInstructorCourseSubmit.bind(this);
-    this.handleInstructorCourseChange = this.handleInstructorCourseChange.bind(this);
-    this.handleInstructorCourseSearch = this.handleInstructorCourseSearch.bind(this);
-    this.openInstructorModal = this.openInstructorModal.bind(this);
-    this.closeInstructorModal = this.closeInstructorModal.bind(this);
+    this.triggerInstructorModal = this.triggerInstructorModal.bind(this);
   }
 
   componentDidMount() {
@@ -143,79 +123,15 @@ class Dashboard extends React.Component {
     this.setState({ searchResults: { student: options } });
   }
 
-  /* ADD INSTRUCTOR COURSE FUNCTIONS */
+  /* ADD INSTRUCTOR COURSE MODAL */
 
-  openInstructorModal() {
-    this.setState({ instructorModalOpen: true });
+  triggerInstructorModal() {
+    this.setState({ instructorModalOpen: !this.state.instructorModalOpen });
   }
 
-  closeInstructorModal() {
-    this.setState({
-      instructorModalOpen: false
-    });
-  }
-
-  handleInstructorCourseSubmit() {
-    if (this.state.newInstructorCourse && this.state.newInstructorCourse.course) {
-      var newCourseUsers = this.state.courseUsers;
-      var newCourseUser = {
-        course: {
-          name: this.state.newInstructorCourse.course.name,
-          description: this.state.newInstructorCourse.course.description,
-          isArchived: false,
-          year: 2019,
-          semester: "FALL",
-          totalQueues: "1",
-          openQueues: "1"
-        },
-        kind: "TA"
-      };
-
-      newCourseUsers.push(newCourseUser)
-      this.setState({
-        courseUsers: newCourseUsers,
-        instructorModalOpen: false,
-        searchResults: {},
-        newInstructorCourse: {}
-      });
-    }
-  }
-
-  handleInstructorCourseChange(e, { name, value }) {
-    var course = this.state.newInstructorCourse;
-    course[name] = value;
-    this.setState({ newInstructorCourse: course });
-  }
-
-  handleInstructorCourseSearch() {
-    var name = this.state.newInstructorCourse.name;
-    var results = [];
-
-    this.state.searchCourses.instructor.forEach(course => {
-      if (course.name.includes(name)) {
-        results.push(course);
-      }
-    });
-    this.fillInstructorOptions(results);
-  }
-
-  fillInstructorOptions(courses) {
-    var options = [];
-    courses.forEach(course => {
-      options.push({
-        key: course.name,
-        value: { name: course.name, description: course.description },
-        text: course.description + " (" + course.name + ")"
-      });
-    });
-
-    this.setState({ searchResults: { instructor: options } });
-  }
-
-
+  
   render() {
     console.log(this.props.firebase.auth.currentUser ? this.props.firebase.auth.currentUser.email : "hello");
-
 
     return (
       <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
@@ -232,7 +148,7 @@ class Dashboard extends React.Component {
           }}
         />
         <ModalAddInstructorCourse
-          closeFunc={ this.closeInstructorModal }
+          closeFunc={ this.triggerInstructorModal }
           open={ this.state.instructorModalOpen }
         />
         <Sidebar active={'dashboard'}/>
@@ -292,7 +208,7 @@ class Dashboard extends React.Component {
                   ))
                 }
                 <Grid.Column>
-                  <AddCard clickFunc={this.openInstructorModal}/>
+                  <AddCard clickFunc={this.triggerInstructorModal}/>
                 </Grid.Column>
             </Grid.Row>
             <a style={{"textDecoration":"underline", "cursor":"pointer"}} onClick={this.handleArchivedChange}>

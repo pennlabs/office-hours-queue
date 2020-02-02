@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Form, Button, Tab } from 'semantic-ui-react';
+import { Modal, Button, Tab } from 'semantic-ui-react';
 import CreateCourseForm from './CreateCourseForm';
 import AddInstructorForm from './AddInstructorForm';
 
