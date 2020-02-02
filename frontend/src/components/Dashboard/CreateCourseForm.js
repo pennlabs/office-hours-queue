@@ -58,6 +58,10 @@ const CreateCourseForm = () => {
       </Form.Field>
       <Form.Field>
           <Button content="Create" color = "green" onClick={onSubmit}/>
+          { 
+            data &&
+            <span style={{"margin-left":"20px"}}>Created!</span>
+          }
       </Form.Field>
     </Form>
   );

@@ -6,7 +6,7 @@ import AddInstructorForm from './AddInstructorForm';
 export default class ModalAddInstructorCourse extends React.Component {
   render() {
     return (
-      <Modal open={this.props.attrs.open}>
+      <Modal open={ this.props.open }>
         <Modal.Header>Add New Instructor Course</Modal.Header>
         <Modal.Content>
           <Tab menu={{ pointing: true, secondary: true }} panes={[
@@ -24,6 +24,9 @@ export default class ModalAddInstructorCourse extends React.Component {
             }
           ]}/>
         </Modal.Content>
+        <Modal.Actions>
+          <Button content="Done" onClick={ this.props.closeFunc }/>
+        </Modal.Actions>
       </Modal>
     );
   }

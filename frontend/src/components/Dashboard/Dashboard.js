@@ -63,9 +63,6 @@ class Dashboard extends React.Component {
     this.handleInstructorCourseSearch = this.handleInstructorCourseSearch.bind(this);
     this.openInstructorModal = this.openInstructorModal.bind(this);
     this.closeInstructorModal = this.closeInstructorModal.bind(this);
-
-    this.openCreateModal = this.openCreateModal.bind(this);
-    this.openCreateModalNew = this.openCreateModalNew.bind(this);
   }
 
   componentDidMount() {
@@ -154,9 +151,7 @@ class Dashboard extends React.Component {
 
   closeInstructorModal() {
     this.setState({
-      instructorModalOpen: false,
-      searchResults: {},
-      newInstructorCourse: {}
+      instructorModalOpen: false
     });
   }
 
@@ -217,24 +212,6 @@ class Dashboard extends React.Component {
     this.setState({ searchResults: { instructor: options } });
   }
 
-  /* CREATE NEW COURSE MODAL FUNCTIONS */
-
-  openCreateModal() {
-    this.closeInstructorModal();
-
-      this.setState({
-        createModalOpen: true
-      });
-  }
-
-  openCreateModalNew() {
-    console.log("creating/?");
-    this.setState({
-      createModalOpen: true
-    });
-    console.log(this.state.createModalOpen);
-  }
-
 
   render() {
     console.log(this.props.firebase.auth.currentUser ? this.props.firebase.auth.currentUser.email : "hello");
@@ -255,20 +232,8 @@ class Dashboard extends React.Component {
           }}
         />
         <ModalAddInstructorCourse
-          funcs={{
-            changeFunc: this.handleInstructorCourseChange,
-            submitFunc: this.handleInstructorCourseSubmit,
-            closeFunc: this.closeInstructorModal,
-            searchFunc: this.handleInstructorCourseSearch,
-            createFunc: this.openCreateModal
-          }}
-          attrs={{
-            open: this.state.instructorModalOpen,
-            results: this.state.searchResults.instructor
-          }}
-        />
-        <ModalCreateCourse
-          open = {this.state.createModalOpen}
+          closeFunc={ this.closeInstructorModal }
+          open={ this.state.instructorModalOpen }
         />
         <Sidebar active={'dashboard'}/>
         <Grid.Column width={13}>
