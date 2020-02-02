@@ -40,7 +40,6 @@ class Dashboard extends React.Component {
                 </Header.Content>
               </Header>
             </Segment>
-            {/* add student course cards */}
             <StudentCourses/>
             <Segment basic padded>
               <Header as="h2">
@@ -49,7 +48,6 @@ class Dashboard extends React.Component {
                 </Header.Content>
               </Header>
             </Segment>
-            {/* add instructor course cards */}
             <InstructorCourses/>
             <a style={{"textDecoration":"underline", "cursor":"pointer"}} onClick={this.handleArchivedChange}>
               { this.state.showArchived ? "Hide Archived Courses" : "See Archived Courses"}
