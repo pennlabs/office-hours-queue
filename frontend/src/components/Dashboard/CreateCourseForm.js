@@ -4,6 +4,7 @@ import { Form, Modal, Button } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
 
+/* GRAPHQL QUERIES/MUTATIONS */
 const CREATE_COURSE = gql`
   mutation CreateCourse($input: CreateCourseInput!) {
     createCourse(input: $input) {
@@ -17,20 +18,26 @@ const CREATE_COURSE = gql`
   }
 `;
 
+/* FUNCTIONAL COMPONENT */
 const CreateCourseForm = () => {
+  /* STATE */
   const [input, setInput] = useState({ department: null, name: null, year: null, semester: null, inviteOnly: false })
 
+  /* GRAPHQL QUERIES/MUTATIONS */
   const [createCourse, { data }] = useMutation(CREATE_COURSE);
 
+  /* HANDLER FUNCTIONS */
   const handleInputChange = (e, { name, value }) => {
     input[name] = value;
     setInput(input);
   }
 
   const onSubmit = () => {
-    console.log(createCourse({variables: {
-      input: input
-    }}));
+    createCourse({
+      variables: {
+        input: input
+      }
+    });
   }
 
   return (

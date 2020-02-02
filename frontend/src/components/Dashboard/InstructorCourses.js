@@ -31,6 +31,7 @@ const FIND_COURSES = gql`
   }
 `;
 
+/* FUNCTIONAL COMPONENT */
 const InstructorCourses = (props) => {
   /* STATE */
   const [open, setOpen] = useState(false);
@@ -40,6 +41,7 @@ const InstructorCourses = (props) => {
   const { loading, error, data, refetch } = useQuery(FIND_COURSES);
 
 
+  /* HANDLER FUNCTIONS */
   const triggerFunc = () => {
     setOpen(!open);
   }

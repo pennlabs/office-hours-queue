@@ -1,10 +1,7 @@
 import React from 'react';
 import { Segment, Header, Grid } from 'semantic-ui-react';
-import ArchivedCourseCard from './ArchivedCourseCard';
 import InstructorCourses from './InstructorCourses';
 import StudentCourses from './StudentCourses';
-
-
 import Sidebar from '../Sidebar';
 
 import { withAuthorization } from '../Session';
@@ -14,7 +11,7 @@ class Dashboard extends React.Component {
   constructor(props) {
     super(props);
   }
-  
+
   render() {
     console.log(this.props.firebase.auth.currentUser ? this.props.firebase.auth.currentUser.email : "hello");
 
