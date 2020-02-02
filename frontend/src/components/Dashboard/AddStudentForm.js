@@ -33,7 +33,7 @@ const JOIN_COURSE = gql`
 `;
 
 /* FUNCTIONAL COMPONENT */
-const AddInstructorForm = () => {
+const AddStudentForm = () => {
   /* STATE */
   const [input, setInput] = useState({ department: null, name: null, courseId: null });
   const [results, setResults] = useState(null);
@@ -126,4 +126,4 @@ const AddInstructorForm = () => {
   );
 }
 
-export default AddInstructorForm;
+export default AddStudentForm;

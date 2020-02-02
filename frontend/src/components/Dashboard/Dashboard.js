@@ -5,7 +5,6 @@ import ArchivedCourseCard from './ArchivedCourseCard';
 import AddCard from './AddCard';
 import ModalAddStudentCourse from './ModalAddStudentCourse';
 import ModalAddInstructorCourse from './ModalAddInstructorCourse';
-import ModalCreateCourse from './ModalCreateCourse';
 import { fakeCourseUsers, fakeSearchCourses } from './coursedata.js';
 
 import Sidebar from '../Sidebar';
@@ -19,36 +18,18 @@ class Dashboard extends React.Component {
     this.state = {
       showArchived: false,
       courseUsers: [],
-      searchCourses: {
-        student: [],
-        instructor: []
-      },
-      searchResults: {
-        student: [],
-        instructor: []
-      },
       studentModalOpen: false,
-      newStudentCourse: {},
-      instructorModalOpen: false,
-      newInstructorCourse: {},
-      createModalOpen: false
+      instructorModalOpen: false
     };
 
     this.handleArchivedChange = this.handleArchivedChange.bind(this);
-
-    this.handleStudentCourseSubmit = this.handleStudentCourseSubmit.bind(this);
-    this.handleStudentCourseChange = this.handleStudentCourseChange.bind(this);
-    this.handleStudentCourseSearch = this.handleStudentCourseSearch.bind(this);
-    this.openStudentModal = this.openStudentModal.bind(this);
-    this.closeStudentModal = this.closeStudentModal.bind(this);
-
+    this.triggerStudentModal = this.triggerStudentModal.bind(this);
     this.triggerInstructorModal = this.triggerInstructorModal.bind(this);
   }
 
   componentDidMount() {
     this.setState({
-      courseUsers: fakeCourseUsers,
-      searchCourses: fakeSearchCourses
+      courseUsers: fakeCourseUsers
     });
   }
 
@@ -56,74 +37,11 @@ class Dashboard extends React.Component {
     this.setState({ showArchived: !this.state.showArchived });
   }
 
-  /* ADD STUDENT COURSE FUNCTIONS */
+  /* STUDENT AND INSTRUCTOR FUNCTIONS */
 
-  openStudentModal() {
-    this.setState({ studentModalOpen: true });
+  triggerStudentModal() {
+    this.setState({ studentModalOpen: !this.state.studentModalOpen });
   }
-
-  closeStudentModal() {
-    this.setState({ studentModalOpen: false, newStudentCourse: {}, searchResults: {} });
-  }
-
-  handleStudentCourseSubmit() {
-    if (this.state.newStudentCourse && this.state.newStudentCourse.course) {
-      var newCourseUsers = this.state.courseUsers;
-      var newCourseUser = {
-        course: {
-          name: this.state.newStudentCourse.course.name,
-          description: this.state.newStudentCourse.course.description,
-          isArchived: false,
-          year: 2019,
-          semester: "FALL",
-          totalQueues: "1",
-          openQueues: "1"
-        },
-        kind: "STUDENT"
-      };
-
-      newCourseUsers.push(newCourseUser)
-      this.setState({
-        courseUsers: newCourseUsers,
-        studentModalOpen: false,
-        searchResults: {},
-        newStudentCourse: {}
-      });
-    }
-  }
-
-  handleStudentCourseChange(e, { name, value }) {
-    var course = this.state.newStudentCourse;
-    course[name] = value;
-    this.setState({ newStudentCourse: course });
-  }
-
-  handleStudentCourseSearch() {
-    var name = this.state.newStudentCourse.name;
-    var results = [];
-
-    this.state.searchCourses.student.forEach(course => {
-      if (course.name.includes(name)) {
-        results.push(course);
-      }
-    });
-    this.fillStudentOptions(results);
-  }
-
-  fillStudentOptions(courses) {
-    var options = [];
-    courses.forEach(course => {
-      options.push({
-        key: course.name,
-        value: { name: course.name, description: course.description },
-        text: course.description + " (" + course.name + ")"
-      });
-    });
-
-    this.setState({ searchResults: { student: options } });
-  }
-
-  /* ADD INSTRUCTOR COURSE MODAL */
 
   triggerInstructorModal() {
     this.setState({ instructorModalOpen: !this.state.instructorModalOpen });
@@ -136,20 +54,12 @@ class Dashboard extends React.Component {
     return (
       <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
         <ModalAddStudentCourse
-          funcs = {{
-            changeFunc: this.handleStudentCourseChange,
-            submitFunc: this.handleStudentCourseSubmit,
-            closeFunc: this.closeStudentModal,
-            searchFunc: this.handleStudentCourseSearch
-          }}
-          attrs = {{
-            open: this.state.studentModalOpen,
-            results: this.state.searchResults.student
-          }}
+          open={ this.state.studentModalOpen }
+          closeFunc={ this.triggerStudentModal }
         />
         <ModalAddInstructorCourse
-          closeFunc={ this.triggerInstructorModal }
           open={ this.state.instructorModalOpen }
+          closeFunc={ this.triggerInstructorModal }
         />
         <Sidebar active={'dashboard'}/>
         <Grid.Column width={13}>
@@ -180,7 +90,7 @@ class Dashboard extends React.Component {
                   ))
                 }
                 <Grid.Column>
-                <AddCard clickFunc={this.openStudentModal}/>
+                <AddCard clickFunc={ this.triggerStudentModal }/>
                 </Grid.Column>
             </Grid.Row>
             <Segment basic padded>

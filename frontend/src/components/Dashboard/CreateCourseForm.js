@@ -19,7 +19,6 @@ const CREATE_COURSE = gql`
 
 const CreateCourseForm = () => {
   const [input, setInput] = useState({ department: null, name: null, year: null, semester: null, inviteOnly: false })
-  const [results, setResults] = useState([]);
 
   const [createCourse, { data }] = useMutation(CREATE_COURSE);
 
