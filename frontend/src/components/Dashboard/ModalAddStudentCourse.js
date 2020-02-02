@@ -6,7 +6,7 @@ export default class ModalAddStudentCourse extends React.Component {
   render() {
     return (
       <Modal open={ this.props.open }>
-        <Modal.Header>Add New Student Course</Modal.Header>
+        <Modal.Header>Add New Course</Modal.Header>
         <Modal.Content>
           <AddStudentForm/>
         </Modal.Content>

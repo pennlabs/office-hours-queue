@@ -6,6 +6,7 @@ import AddCard from './AddCard';
 import ModalAddStudentCourse from './ModalAddStudentCourse';
 import ModalAddInstructorCourse from './ModalAddInstructorCourse';
 import { fakeCourseUsers, fakeSearchCourses } from './coursedata.js';
+import InstructorCourses from './InstructorCourses';
 
 import Sidebar from '../Sidebar';
 
@@ -57,10 +58,6 @@ class Dashboard extends React.Component {
           open={ this.state.studentModalOpen }
           closeFunc={ this.triggerStudentModal }
         />
-        <ModalAddInstructorCourse
-          open={ this.state.instructorModalOpen }
-          closeFunc={ this.triggerInstructorModal }
-        />
         <Sidebar active={'dashboard'}/>
         <Grid.Column width={13}>
           <Grid padded>
@@ -74,6 +71,7 @@ class Dashboard extends React.Component {
             {/* add student course cards */}
             <Grid.Row columns={4} padded="true">
                 {
+                  
                   this.state.courseUsers.map(courseUser => (
 
                     !courseUser.course.isArchived &&
@@ -88,6 +86,7 @@ class Dashboard extends React.Component {
                       />
                     </Grid.Column>
                   ))
+                  
                 }
                 <Grid.Column>
                 <AddCard clickFunc={ this.triggerStudentModal }/>
@@ -101,26 +100,10 @@ class Dashboard extends React.Component {
               </Header>
             </Segment>
             {/* add instructor course cards */}
-            <Grid.Row columns={4} padded="true">
-                {
-                  this.state.courseUsers.map(courseUser => (
-                    !courseUser.course.isArchived &&
-                    courseUser.kind != "STUDENT" &&
-                    <Grid.Column>
-                      <CourseCard
-                        name={courseUser.course.name}
-                        description={courseUser.course.description}
-                        totalQueues={courseUser.course.totalQueues}
-                        openQueues={courseUser.course.openQueues}
-                        isArchived={courseUser.course.isArchived}
-                      />
-                    </Grid.Column>
-                  ))
-                }
-                <Grid.Column>
-                  <AddCard clickFunc={this.triggerInstructorModal}/>
-                </Grid.Column>
-            </Grid.Row>
+            <InstructorCourses
+              open={ this.state.instructorModalOpen }
+              closeFunc={ this.triggerInstructorModal }
+              clickFunc={this.triggerInstructorModal}/>
             <a style={{"textDecoration":"underline", "cursor":"pointer"}} onClick={this.handleArchivedChange}>
               { this.state.showArchived ? "Hide Archived Courses" : "See Archived Courses"}
             </a>

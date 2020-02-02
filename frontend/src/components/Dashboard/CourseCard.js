@@ -8,7 +8,7 @@ export default class CourseCard extends React.Component {
       <Segment basic>
         <Segment attached="top" color="blue" style={{"height":"70px", "width":"205px"}}>
           <Header
-            content={this.props.name}
+            content={this.props.department + " " + this.props.name}
             href='/Queue' // should link to course page, which should then have queues, roster, etc.
             subheader={
               this.props.description.length <= 20 ? this.props.description :
