@@ -155,3 +155,34 @@ class FinishQuestion(graphene.Mutation):
         return FinishQuestionResponse(question=question)
 
 
+# class AnswerFeedbackQuestionsInput(graphene.InputObjectType):
+#     question_id = graphene.ID(required=True)
+#
+#
+# class AnswerFeedbackQuestionsResponse(graphene.ObjectType):
+#     question = graphene.Field(QuestionNode)
+#
+#
+# class AnswerFeedbackQuestions(graphene.Mutation):
+#     class Arguments:
+#         input = AnswerFeedbackQuestionsInput(required=True)
+#
+#     Output = AnswerFeedbackQuestionsResponse
+#
+#     @staticmethod
+#     def mutate(root, info, input):
+#         with transaction.atomic():
+#             user = info.context.user.get_user()
+#             question = Question.objects.get(pk=from_global_id(input.queue_id)[1])
+#             # if not CourseUser.objects.filter(
+#             #     user=user,
+#             #     course=question.queue.course,
+#             #     kind__in=[CourseUserKind.PROFESSOR, CourseUserKind.HEAD_TA, CourseUserKind.TA],
+#             # ).exists():
+#             #     raise PermissionError
+#             if question.asked_by != user:
+#                 raise PermissionError
+#
+#             question.save()
+#
+#         return AnswerFeedbackQuestionsResponse(question=question)
