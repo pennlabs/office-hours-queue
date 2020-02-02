@@ -8,7 +8,7 @@ export default class ArchivedCourseCard extends React.Component {
       <Segment basic>
         <Segment attached="top" color="blue" secondary>
           <Header
-            content={this.props.name}
+            content={this.props.department + " " + this.props.name}
             subheader={
               this.props.description.length < 35 ? this.props.description :
               this.props.description.substring(0, 25) + "..."
