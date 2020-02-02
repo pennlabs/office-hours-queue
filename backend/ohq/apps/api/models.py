@@ -80,7 +80,7 @@ class Course(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["name", "department", "year"],
+                fields=["name", "department", "year", "semester"],
                 name="unique_course_name",
             )
         ]
