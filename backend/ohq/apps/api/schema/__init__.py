@@ -4,7 +4,7 @@ from graphene_django.filter import DjangoFilterConnectionField
 
 from ohq.apps.api.schema import account, courses, feedback_questions, questions, types
 
-from ohq.apps.api.models import Course
+from ohq.apps.api.models import Course, CourseUser
 
 
 class Query(graphene.ObjectType):
@@ -29,7 +29,12 @@ class Query(graphene.ObjectType):
     joinable_courses = DjangoFilterConnectionField(types.CourseMetaNode)
 
     def resolve_joinable_courses(self, info, **kwargs):
-        return Course.objects.filter(invite_only=False, **kwargs)
+        course_ids = (
+            CourseUser.objects
+                .filter(user=info.context.user.get_user())
+                .values_list('course_id', flat=True)
+        )
+        return Course.objects.exclude(id__in=course_ids).filter(invite_only=False, **kwargs)
 
     queue = relay.Node.Field(types.QueueNode)
 
