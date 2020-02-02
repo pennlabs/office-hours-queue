@@ -65,12 +65,6 @@ const client = new ApolloClient({
   cache: new InMemoryCache()
 });
 
-/*
-const client = new ApolloClient({
-  uri: 'https://ohq.herokuapp.com/graphql'
-});
-*/
-
 ReactDOM.render(
   <ApolloProvider client={client}>
     <FirebaseContext.Provider value={new Firebase()}>

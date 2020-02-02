@@ -55,7 +55,7 @@ const CreateCourseForm = (props) => {
       </Form.Field>
       <Form.Field>
         <label>Semester</label>
-        <Form.Input name="year" onChange={ handleInputChange } placeholder="FALL"/>
+        <Form.Input name="semester" onChange={ handleInputChange } placeholder="FALL"/>
       </Form.Field>
       <Form.Field>
           <Button content="Create" color = "green" onClick={onSubmit}/>
