@@ -28,14 +28,6 @@ const CREATE_USER = gql`
   }
 `;
 
-
-/*createUser(name) {
-  
-
-  console.log("hello");
-  console.log();
-}*/
-
 const SignInGoogleBase = (props) => {
   const [error, setError] = useState(null);
   const condition = authUser => !!authUser;

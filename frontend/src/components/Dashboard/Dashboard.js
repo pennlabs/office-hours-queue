@@ -240,6 +240,7 @@ class Dashboard extends React.Component {
   }
 
   render() {
+    console.log(this.props.firebase.auth.currentUser ? this.props.firebase.auth.currentUser.email : "hello");
     const Test = () => {
       const { loading, error, data } = useQuery(TEST);
   
