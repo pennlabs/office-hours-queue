@@ -27,19 +27,6 @@ const TEST = gql`
       }
     }
   }
-`
-
-const CREATE_COURSE = gql`
-  mutation CreateCourse($input: CreateCourseInput!) {
-    createCourse(input: $input) {
-      course {
-        id
-      }
-      courseUser {
-        id
-      }
-    }
-  }
 `;
 
 class Dashboard extends React.Component {
@@ -78,6 +65,7 @@ class Dashboard extends React.Component {
     this.closeInstructorModal = this.closeInstructorModal.bind(this);
 
     this.openCreateModal = this.openCreateModal.bind(this);
+    this.openCreateModalNew = this.openCreateModalNew.bind(this);
   }
 
   componentDidMount() {
@@ -234,70 +222,23 @@ class Dashboard extends React.Component {
   openCreateModal() {
     this.closeInstructorModal();
 
+      this.setState({
+        createModalOpen: true
+      });
+  }
+
+  openCreateModalNew() {
+    console.log("creating/?");
     this.setState({
       createModalOpen: true
     });
+    console.log(this.state.createModalOpen);
   }
+
 
   render() {
     console.log(this.props.firebase.auth.currentUser ? this.props.firebase.auth.currentUser.email : "hello");
-    const Test = () => {
-      const { loading, error, data } = useQuery(TEST);
-  
-      if (loading) {
-        return <div>Error! {loading.message}</div>;
-      }
-  
-      if (error) {
-        console.log(error);
-        return <div>Error! {error.message}</div>;
-      }
-    
-      return (
-        <ul>
-          {
-            data.edges && data.edges.map(({node}) => (
-              <div>node.name</div>
-            ))
-          }
-        </ul>
-      );
-    };
 
-    function CreateCourse() {
-      let input;
-      const [createCourse, { data }] = useMutation(CREATE_COURSE);
-
-      return (
-        <div>
-          <form
-            onSubmit={e => {
-              e.preventDefault();
-              console.log(createCourse({ 
-                variables: { 
-                  input:{ 
-                    name: "121",
-                    department: "CIS",
-                    description: "Data Structures and Algorithms",
-                    year: 2020,
-                    semester: "FALL",
-                    inviteOnly: false 
-                  }
-                }
-              }));
-              input.value = '';
-            }}
-          >
-            <input
-              ref={node => {
-                input = node;
-              }}
-            />
-            <button type="submit">Add Course</button>
-          </form>
-        </div>
-      );
-    }
 
     return (
       <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
@@ -327,10 +268,7 @@ class Dashboard extends React.Component {
           }}
         />
         <ModalCreateCourse
-          funcs={{}}
-          attrs={{
-            open: this.state.createModalOpen
-          }}
+          open = {this.state.createModalOpen}
         />
         <Sidebar active={'dashboard'}/>
         <Grid.Column width={13}>
