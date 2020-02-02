@@ -85,5 +85,73 @@ class RejectQuestion(graphene.Mutation):
             question.rejected_reason_other = input.rejected_reason_other
             question.rejected_by = user
             question.time_rejected = datetime.now()
+            question.save()
 
         return RejectQuestionResponse(question=question)
+
+
+class StartQuestionInput(graphene.InputObjectType):
+    question_id = graphene.ID(required=True)
+
+
+class StartQuestionResponse(graphene.ObjectType):
+    question = graphene.Field(QuestionNode)
+
+
+class StartQuestion(graphene.Mutation):
+    class Arguments:
+        input = StartQuestionInput(required=True)
+
+    Output = StartQuestionResponse
+
+    @staticmethod
+    def mutate(root, info, input):
+        with transaction.atomic():
+            user = info.context.user.get_user()
+            question = Question.objects.get(pk=from_global_id(input.queue_id)[1])
+            if not CourseUser.objects.filter(
+                user=user,
+                course=question.queue.course,
+                kind__in=[CourseUserKind.PROFESSOR, CourseUserKind.HEAD_TA, CourseUserKind.TA],
+            ).exists():
+                raise PermissionError
+            question.time_started = datetime.now()
+            question.answered_by = user
+            question.save()
+
+        return StartQuestionResponse(question=question)
+
+
+class FinishQuestionInput(graphene.InputObjectType):
+    question_id = graphene.ID(required=True)
+
+
+class FinishQuestionResponse(graphene.ObjectType):
+    question = graphene.Field(QuestionNode)
+
+
+class FinishQuestion(graphene.Mutation):
+    class Arguments:
+        input = FinishQuestionInput(required=True)
+
+    Output = FinishQuestionResponse
+
+    @staticmethod
+    def mutate(root, info, input):
+        with transaction.atomic():
+            user = info.context.user.get_user()
+            question = Question.objects.get(pk=from_global_id(input.queue_id)[1])
+            # if not CourseUser.objects.filter(
+            #     user=user,
+            #     course=question.queue.course,
+            #     kind__in=[CourseUserKind.PROFESSOR, CourseUserKind.HEAD_TA, CourseUserKind.TA],
+            # ).exists():
+            #     raise PermissionError
+            if question.answered_by != user:
+                raise PermissionError
+            question.time_answered = datetime.now()
+            question.save()
+
+        return FinishQuestionResponse(question=question)
+
+
