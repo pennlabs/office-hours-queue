@@ -11,6 +11,7 @@ const JOINABLE_COURSES = gql`
         node {
           department
           name
+          description
         }
       }
     }
@@ -19,16 +20,29 @@ const JOINABLE_COURSES = gql`
 
 const AddInstructorForm = () => {
   const [input, setInput] = useState({ department: null, name: null })
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState(null);
   
   const [joinableCourses, { loading, data }] = useLazyQuery(JOINABLE_COURSES);
 
   if (loading) return <div>Loading!</div>;
 
   if (data) {
-    data.joinableCourses.edges.map(course => {
-      console.log(course.node.department + " " + course.node.name);
-    })
+    console.log(data.joinableCourses.edges.length);
+    var new_results = [];
+    data.joinableCourses.edges.map((course, index) => {
+      new_results.push({
+        key: index,
+        text: course.node.department + " " + course.node.name,
+        value: {
+          department: course.node.department,
+          name: course.node.name
+        }
+      })
+    });
+    if (!results || new_results.length != results.length || 
+        JSON.stringify(new_results) != JSON.stringify(results)) {
+      setResults(new_results);
+    }
   }
 
   const handleInputChange = (e, { name, value }) => {
@@ -56,6 +70,23 @@ const AddInstructorForm = () => {
       <Form.Field>
         <Button content="Search" color="blue" onClick={ onSearch }/>
       </Form.Field>
+      {
+        results &&
+        <div>
+        <Form.Field>
+          <label>Results</label>
+          <Form.Dropdown
+            placeholder="Select Course"
+            name="course"
+            options={results}
+            search
+            selection/>
+        </Form.Field>
+        <Form.Field>
+          <Button content="Add" color="green"/>
+        </Form.Field>
+        </div>
+      }
     </Form>
   );
 }
