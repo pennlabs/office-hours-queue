@@ -3,12 +3,15 @@ import { Form, Modal, Button } from 'semantic-ui-react';
 
 import { gql } from 'apollo-boost';
 import { useLazyQuery } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
 
+/* GRAPHQL QUERIES/MUTATIONS */
 const JOINABLE_COURSES = gql`
   query JoinableCourses($department: String, $name: String) {
     joinableCourses(department: $department, name: $name) {
       edges {
         node {
+          id
           department
           name
           description
@@ -18,21 +21,34 @@ const JOINABLE_COURSES = gql`
   }
 `;
 
+const JOIN_COURSE = gql`
+  mutation JoinCourse($input: JoinCourseInput!) {
+    joinCourse(input: $input) {
+      courseUser
+    }
+  }
+`;
+
+/* FUNCTIONAL COMPONENT */
 const AddInstructorForm = () => {
+  /* STATE */
   const [input, setInput] = useState({ department: null, name: null })
   const [results, setResults] = useState(null);
   
-  const [joinableCourses, { loading, data }] = useLazyQuery(JOINABLE_COURSES);
+  /* GRAPHQL QUERIES/MUTATIONS */
+  const [joinableCourses, { loading, searchData }] = useLazyQuery(JOINABLE_COURSES);
+  //const [joinCourse, { joinData }] = useMutation(JOIN_COURSE);
 
-  if (loading) return <div>Loading!</div>;
+  console.log(searchData);
 
-  if (data) {
-    console.log(data.joinableCourses.edges.length);
+  /* LOADING SEARCH RESULTS */
+  if (searchData) {
+    console.log(searchData.joinableCourses.edges.length);
     var new_results = [];
-    data.joinableCourses.edges.map((course, index) => {
+    searchData.joinableCourses.edges.map((course, index) => {
       new_results.push({
-        key: index,
-        text: course.node.department + " " + course.node.name,
+        key: course.node.id,
+        text: course.node.department + " " + course.node.name + " (" + course.node.description + ")",
         value: {
           department: course.node.department,
           name: course.node.name
@@ -45,17 +61,31 @@ const AddInstructorForm = () => {
     }
   }
 
+  /* HANDLER FUNCTIONS */
   const handleInputChange = (e, { name, value }) => {
+    console.log(name + " " + value);
     input[name] = value;
     setInput(input);
   }
 
   const onSearch = () => {
+    console.log(
     joinableCourses({ variables: {
       department: input.department,
       name: input.name
-    }});
+    }})
+    );
   }
+
+  /*
+  const onSubmit = () => {
+    joinCourse({
+      variables: {
+        input: {
+        }
+      }
+    })
+  }*/
 
   return (
     <Form>
