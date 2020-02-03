@@ -75,9 +75,9 @@ class RejectQuestion(graphene.Mutation):
             ).exists():
                 raise PermissionError
             if (
-                (input.rejected_reason == QuestionRejectionReason.OTHER and
+                (input.rejected_reason == QuestionRejectionReason.OTHER.name and
                  input.rejected_reason_other is None) or
-                (input.rejected_reason != QuestionRejectionReason.OTHER and
+                (input.rejected_reason != QuestionRejectionReason.OTHER.name and
                  input.rejected_reason_other is not None)
             ):
                 raise ValueError
