@@ -104,10 +104,11 @@ class QuestionNode(DjangoObjectType):
         )
         interfaces = (relay.Node,)
 
-    rejected_reason = graphene.Field(QuestionRejectionReasonType, required=True)
+    rejected_reason = graphene.Field(QuestionRejectionReasonType)
     rejected_by = graphene.Field(UserMetaNode)
     asked_by = graphene.Field(UserMetaNode)
     answered_by = graphene.Field(UserMetaNode)
+    feedback_answers = graphene.List(lambda: FeedbackAnswerNode)
 
 
 class QueueNode(DjangoObjectType):
@@ -203,6 +204,7 @@ class ShortAnswerFeedbackQuestionNode(DjangoObjectType):
             'archived',
             'order_key',
         )
+        interfaces = (relay.Node,)
 
 
 class RadioButtonFeedbackQuestionNode(DjangoObjectType):
@@ -215,6 +217,7 @@ class RadioButtonFeedbackQuestionNode(DjangoObjectType):
             'order_key',
             'answer_choices',
         )
+        interfaces = (relay.Node,)
 
 
 class SliderFeedbackQuestionNode(DjangoObjectType):
@@ -228,6 +231,7 @@ class SliderFeedbackQuestionNode(DjangoObjectType):
             'answer_lower_bound',
             'answer_upper_bound',
         )
+        interfaces = (relay.Node,)
 
 
 class FeedbackQuestionNode(graphene.Union):
