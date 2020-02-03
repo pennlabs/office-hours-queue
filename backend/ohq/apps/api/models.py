@@ -57,7 +57,7 @@ class User(models.Model):
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.full_name
+        return f"{self.full_name} ({self.email})"
 
 
 class Semester(ChoicesEnum):
@@ -125,7 +125,7 @@ class CourseUser(models.Model):
         ]
 
     def __str__(self):
-        return f'{self.user.full_name} - {self.course}'
+        return f'{self.user} - {self.course}'
 
 
 class InvitedCourseUser(models.Model):
