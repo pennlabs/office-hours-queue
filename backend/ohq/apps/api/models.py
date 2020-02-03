@@ -297,15 +297,13 @@ class FeedbackAnswer(PolymorphicModel):
     time_created = models.DateTimeField(auto_now_add=True)
 
 
-class ShortAnswerFeedbackAnswer(FeedbackQuestion):
+class ShortAnswerFeedbackAnswer(FeedbackAnswer):
     answer_text = models.TextField()
 
 
-class RadioButtonFeedbackAnswer(FeedbackQuestion):
+class RadioButtonFeedbackAnswer(FeedbackAnswer):
     answer_choice = models.IntegerField()
 
 
-class SliderFeedbackAnswer(FeedbackQuestion):
+class SliderFeedbackAnswer(FeedbackAnswer):
     answer_choice = models.IntegerField()
-
-
