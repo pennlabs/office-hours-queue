@@ -284,8 +284,13 @@ class SliderFeedbackQuestion(FeedbackQuestion):
 
 
 class FeedbackAnswer(PolymorphicModel):
-    question = models.ForeignKey(
+    feedback_question = models.ForeignKey(
         FeedbackQuestion,
+        related_name='answers',
+        on_delete=models.CASCADE,
+    )
+    question = models.ForeignKey(
+        Question,
         related_name='feedback_answers',
         on_delete=models.CASCADE,
     )

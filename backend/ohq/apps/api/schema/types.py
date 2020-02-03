@@ -264,6 +264,7 @@ class ShortAnswerFeedbackAnswerNode(DjangoObjectType):
         interfaces = (relay.Node,)
 
         question = graphene.Field(lambda: QuestionNode, required=True)
+        feedback_question = graphene.Field(ShortAnswerFeedbackQuestionNode, required=True)
 
 
 class RadioButtonFeedbackAnswerNode(DjangoObjectType):
@@ -277,6 +278,7 @@ class RadioButtonFeedbackAnswerNode(DjangoObjectType):
         interfaces = (relay.Node,)
 
         question = graphene.Field(lambda: QuestionNode, required=True)
+        feedback_question = graphene.Field(RadioButtonFeedbackQuestionNode, required=True)
 
 
 class SliderFeedbackAnswerNode(DjangoObjectType):
@@ -290,6 +292,7 @@ class SliderFeedbackAnswerNode(DjangoObjectType):
         interfaces = (relay.Node,)
 
         question = graphene.Field(lambda: QuestionNode, required=True)
+        feedback_question = graphene.Field(SliderFeedbackQuestionNode, required=True)
 
 
 class FeedbackAnswerNode(graphene.Union):
