@@ -56,7 +56,7 @@ const InstructorCourses = (props) => {
   }
 
   return (
-    <Grid>
+    <Grid style={{"width":"100%"}}>
       <Grid.Row columns={4} padded="true">
         <ModalAddInstructorCourse
             open={ open }
