@@ -251,3 +251,61 @@ class FeedbackQuestionNode(graphene.Union):
             RadioButtonFeedbackQuestionNode,
             SliderFeedbackQuestionNode,
         )
+
+
+class ShortAnswerFeedbackAnswerNode(DjangoObjectType):
+    class Meta:
+        model = ShortAnswerFeedbackAnswer
+        fields = (
+            'id',
+            'time_created',
+            'answer_text',
+        )
+        interfaces = (relay.Node,)
+
+        question = graphene.Field(lambda: QuestionNode, required=True)
+
+
+class RadioButtonFeedbackAnswerNode(DjangoObjectType):
+    class Meta:
+        model = RadioButtonFeedbackAnswer
+        fields = (
+            'id',
+            'time_created',
+            'answer_choice',
+        )
+        interfaces = (relay.Node,)
+
+        question = graphene.Field(lambda: QuestionNode, required=True)
+
+
+class SliderFeedbackAnswerNode(DjangoObjectType):
+    class Meta:
+        model = SliderFeedbackAnswer
+        fields = (
+            'id',
+            'time_created',
+            'answer_choice',
+        )
+        interfaces = (relay.Node,)
+
+        question = graphene.Field(lambda: QuestionNode, required=True)
+
+
+class FeedbackAnswerNode(graphene.Union):
+    @classmethod
+    def resolve_type(cls, instance, info):
+        if isinstance(instance, ShortAnswerFeedbackAnswer):
+            return ShortAnswerFeedbackAnswerNode
+        elif isinstance(instance, RadioButtonFeedbackAnswer):
+            return RadioButtonFeedbackAnswerNode
+        elif isinstance(instance, SliderFeedbackAnswer):
+            return SliderFeedbackAnswerNode
+        return ShortAnswerFeedbackAnswerNode
+
+    class Meta:
+        types = (
+            ShortAnswerFeedbackAnswerNode,
+            RadioButtonFeedbackAnswerNode,
+            SliderFeedbackAnswerNode,
+        )
