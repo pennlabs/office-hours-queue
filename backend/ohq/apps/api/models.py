@@ -284,7 +284,11 @@ class SliderFeedbackQuestion(FeedbackQuestion):
 
 
 class FeedbackAnswer(PolymorphicModel):
-    question = models.ForeignKey(FeedbackQuestion, related_name='answers', on_delete=models.CASCADE)
+    question = models.ForeignKey(
+        FeedbackQuestion,
+        related_name='feedback_answers',
+        on_delete=models.CASCADE,
+    )
     time_created = models.DateTimeField(auto_now_add=True)
 
 
