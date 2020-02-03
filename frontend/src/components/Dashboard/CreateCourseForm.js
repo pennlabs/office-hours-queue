@@ -18,6 +18,24 @@ const CREATE_COURSE = gql`
   }
 `;
 
+const semesterOptions = [
+  {
+    key: 0,
+    text: "Fall",
+    value: "FALL"
+  },
+  {
+    key: 1,
+    text: "Spring",
+    value: "SPRING"
+  },
+  {
+    key: 2,
+    text: "Summer",
+    value: "SUMMER"
+  }
+]
+
 /* FUNCTIONAL COMPONENT */
 const CreateCourseForm = () => {
   /* STATE */
@@ -60,7 +78,7 @@ const CreateCourseForm = () => {
       </Form.Field>
       <Form.Field>
         <label>Semester</label>
-        <Form.Input name="semester" onChange={ handleInputChange } placeholder="FALL"/>
+        <Form.Dropdown name="semester" onChange={ handleInputChange } selection options={ semesterOptions } required/>
       </Form.Field>
       <Form.Field>
           <Button content="Create" color = "green" onClick={onSubmit}/>
