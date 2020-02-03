@@ -72,7 +72,7 @@ class CreateQueue(graphene.Mutation):
             if not CourseUser.objects.filter(
                 user=user,
                 course=course,
-                kind__in=[CourseUserKind.PROFESSOR, CourseUserKind.HEAD_TA, CourseUserKind.TA],
+                kind__in=CourseUserKind.staff(),
             ).exists():
                 raise PermissionError
 
@@ -114,7 +114,7 @@ class AddUserToCourse(graphene.Mutation):
             if not CourseUser.objects.filter(
                 user= info.context.user.get_user(),
                 course=course,
-                kind__in=[CourseUserKind.PROFESSOR, CourseUserKind.HEAD_TA],
+                kind__in=CourseUserKind.leadership(),
             ).exists():
                 raise PermissionError
 
@@ -180,7 +180,7 @@ class InviteEmail(graphene.Mutation):
             if not CourseUser.objects.filter(
                 user= info.context.user.get_user(),
                 course=course,
-                kind__in=[CourseUserKind.PROFESSOR, CourseUserKind.HEAD_TA],
+                kind__in=CourseUserKind.leadership(),
             ).exists():
                 raise PermissionError
 
@@ -216,7 +216,7 @@ class RemoveUserFromCourse(graphene.Mutation):
             if not CourseUser.objects.filter(
                 user= info.context.user.get_user(),
                 course=course,
-                kind__in=[CourseUserKind.PROFESSOR, CourseUserKind.HEAD_TA],
+                kind__in=CourseUserKind.leadership(),
             ).exists():
                 raise PermissionError
 

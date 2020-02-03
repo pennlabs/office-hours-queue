@@ -32,7 +32,7 @@ class CreateQuestion(graphene.Mutation):
             if not CourseUser.objects.filter(
                 user=user,
                 course=course,
-                kind=CourseUserKind.STUDENT,
+                kind=CourseUserKind.STUDENT.name,
             ).exists():
                 raise PermissionError
             if any(tag not in course.tags for tag in input.tags):
@@ -71,7 +71,7 @@ class RejectQuestion(graphene.Mutation):
             if not CourseUser.objects.filter(
                 user=user,
                 course=question.queue.course,
-                kind__in=[CourseUserKind.PROFESSOR, CourseUserKind.HEAD_TA, CourseUserKind.TA],
+                kind__in=CourseUserKind.staff(),
             ).exists():
                 raise PermissionError
             if (
@@ -112,7 +112,7 @@ class StartQuestion(graphene.Mutation):
             if not CourseUser.objects.filter(
                 user=user,
                 course=question.queue.course,
-                kind__in=[CourseUserKind.PROFESSOR, CourseUserKind.HEAD_TA, CourseUserKind.TA],
+                kind__in=CourseUserKind.staff(),
             ).exists():
                 raise PermissionError
             question.time_started = datetime.now()
@@ -144,7 +144,7 @@ class FinishQuestion(graphene.Mutation):
             # if not CourseUser.objects.filter(
             #     user=user,
             #     course=question.queue.course,
-            #     kind__in=[CourseUserKind.PROFESSOR, CourseUserKind.HEAD_TA, CourseUserKind.TA],
+            #     kind__in=CourseUserKind.staff(),
             # ).exists():
             #     raise PermissionError
             if question.answered_by != user:
@@ -177,7 +177,7 @@ class FinishQuestion(graphene.Mutation):
 #             # if not CourseUser.objects.filter(
 #             #     user=user,
 #             #     course=question.queue.course,
-#             #     kind__in=[CourseUserKind.PROFESSOR, CourseUserKind.HEAD_TA, CourseUserKind.TA],
+#             #     kind__in=CourseUserKind.staff(),
 #             # ).exists():
 #             #     raise PermissionError
 #             if question.asked_by != user:

@@ -29,7 +29,7 @@ class CreateShortAnswerFeedbackQuestion(graphene.Mutation):
             if not CourseUser.objects.filter(
                 user=user,
                 course=course,
-                kind__in=[CourseUserKind.PROFESSOR, CourseUserKind.HEAD_TA],
+                kind__in=CourseUserKind.leadership(),
             ).exists():
                 raise PermissionError
             feedback_question = ShortAnswerFeedbackQuestion.objects.create(
@@ -66,7 +66,7 @@ class CreateRadioButtonFeedbackQuestion(graphene.Mutation):
             if not CourseUser.objects.filter(
                 user=user,
                 course=course,
-                kind__in=[CourseUserKind.PROFESSOR, CourseUserKind.HEAD_TA],
+                kind__in=CourseUserKind.leadership(),
             ).exists():
                 raise PermissionError
             feedback_question = RadioButtonFeedbackQuestion.objects.create(
@@ -105,7 +105,7 @@ class CreateSliderFeedbackQuestion(graphene.Mutation):
             if not CourseUser.objects.filter(
                 user=user,
                 course=course,
-                kind__in=[CourseUserKind.PROFESSOR, CourseUserKind.HEAD_TA],
+                kind__in=CourseUserKind.leadership(),
             ).exists():
                 raise PermissionError
             feedback_question = SliderFeedbackQuestion.objects.create(

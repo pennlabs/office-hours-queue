@@ -87,15 +87,15 @@ class Course(models.Model):
 
     @property
     def student_users(self):
-        return self.course_users.filter(kind=CourseUserKind.STUDENT)
+        return self.course_users.filter(kind=CourseUserKind.STUDENT.name)
 
     @property
     def ta_users(self):
-        return self.course_users.filter(kind=CourseUserKind.TA)
+        return self.course_users.filter(kind=CourseUserKind.TA.name)
 
     @property
     def head_ta_users(self):
-        return self.course_users.filter(kind=CourseUserKind.HEAD_TA)
+        return self.course_users.filter(kind=CourseUserKind.HEAD_TA.name)
 
     def __str__(self):
         return self.department + " " + self.name
@@ -108,6 +108,20 @@ class CourseUserKind(ChoicesEnum):
     PROFESSOR = "PROFESSOR"
     ADMIN = "ADMIN"
 
+    @staticmethod
+    def staff():
+        return (
+            CourseUserKind.PROFESSOR.name,
+            CourseUserKind.HEAD_TA.name,
+            CourseUserKind.TA.name,
+        )
+
+    @staticmethod
+    def leadership():
+        return (
+            CourseUserKind.PROFESSOR.name,
+            CourseUserKind.HEAD_TA.name,
+        )
 
 class CourseUser(models.Model):
     course = models.ForeignKey(Course, related_name='course_users', on_delete=models.CASCADE)
