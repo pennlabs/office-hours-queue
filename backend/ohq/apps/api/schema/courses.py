@@ -161,6 +161,7 @@ class JoinCourse(graphene.Mutation):
 class InviteEmailInput(graphene.InputObjectType):
     email = graphene.String(required=True)
     course_id = graphene.ID(required=True)
+    kind = graphene.Field(CourseUserKindType, required=True)
 
 
 class InviteEmailResponse(graphene.ObjectType):
@@ -176,9 +177,10 @@ class InviteEmail(graphene.Mutation):
     @staticmethod
     def mutate(root, info, input):
         with transaction.atomic():
+            user = info.context.user.get_user()
             course = Course.objects.get(pk=from_global_id(input.course_id)[1])
             if not CourseUser.objects.filter(
-                user= info.context.user.get_user(),
+                user=user,
                 course=course,
                 kind__in=CourseUserKind.leadership(),
             ).exists():
@@ -187,8 +189,8 @@ class InviteEmail(graphene.Mutation):
             invited_course_user = InvitedCourseUser.objects.create(
                 email=input.email,
                 course=course,
-                invited_by=None, # TODO
-                kind=CourseUserKind.STUDENT.name,
+                invited_by=user,
+                kind=input.kind,
             )
 
         return InviteEmailResponse(invited_course_user=invited_course_user)
