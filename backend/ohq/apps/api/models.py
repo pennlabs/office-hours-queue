@@ -263,11 +263,12 @@ class Question(models.Model):
 
 class FeedbackQuestion(PolymorphicModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    question_text = models.CharField(max_length=200, editable=False)
-    # TODO cannot change is_active while a queue is active
-    archived = models.BooleanField(default=False)
-    order_key = models.IntegerField()
     course = models.ForeignKey(Course, related_name='feedback_questions', on_delete=models.CASCADE)
+    question_text = models.CharField(max_length=200, editable=False)
+    order_key = models.IntegerField()
+    # TODO cannot change archived while a queue is active
+    archived = models.BooleanField(default=False)
+    required = models.BooleanField(default=True)
 
 
 class ShortAnswerFeedbackQuestion(FeedbackQuestion):
