@@ -1,34 +1,12 @@
 import React, { useState } from 'react';
 import { Table } from 'semantic-ui-react';
-import { gql } from 'apollo-boost';
-import { useQuery } from '@apollo/react-hooks';
-
-const GET_ROSTER = gql`
-  query course($id: ID!) {
-    course(id: $id) {
-      courseUsers {
-        edges {
-          node {
-            kind
-            user {
-              fullName
-              preferredName
-              email
-            }
-          }
-        }
-      }
-    }
-  }
-`;
+import _ from 'lodash';
 
 const RosterTable = (props) => {
-  const { loading, error, data } = useQuery(GET_ROSTER, { variables: {
-    id: props.id
-  }});
-
+  /* STATE */
   const [tableState, setTableState] = useState({ direction: null, column: null, users: props.users });
 
+  /* HANDLER FUNCTIONS */
   const handleSort = (clickedColumn) => {
     if (tableState.column !== clickedColumn) {
       setTableState({
