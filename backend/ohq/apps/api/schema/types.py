@@ -194,6 +194,10 @@ class CourseMetaNode(DjangoObjectType):
         interfaces = (relay.Node,)
 
     semester = graphene.Field(SemesterType, required=True)
+    professors = graphene.List(UserMetaNode, required=True)
+
+    def resolve_professors(self, info, **kwargs):
+        return CourseUser.objects.filter(course=self, kind=CourseUserKind.PROFESSOR.name, **kwargs)
 
 
 class ShortAnswerFeedbackQuestionNode(DjangoObjectType):
