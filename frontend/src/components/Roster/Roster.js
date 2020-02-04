@@ -1,14 +1,37 @@
-import React from 'react';
+import React, {useState} from 'react';
 import _ from 'lodash';
-import { Table, Segment, Header, Grid } from 'semantic-ui-react';
+import { Segment, Header, Grid } from 'semantic-ui-react';
 import Sidebar from '../Sidebar';
-
-import { fakePeople } from './peopledata';
+import RosterTable from './RosterTable';
+import { gql } from 'apollo-boost';
+import { useQuery } from '@apollo/react-hooks';
 
 import { withAuthorization } from '../Session';
 import { compose } from 'recompose';
 
-class Roster extends React.Component {
+const GET_COURSE = gql`
+  query course($id: ID!) {
+    course(id: $id) {
+      department
+      name
+      description
+      courseUsers {
+        edges {
+          node {
+            kind
+            user {
+              fullName
+              preferredName
+              email
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+/*class Roster extends React.Component {
     constructor(props) {
         super(props);
 
@@ -45,7 +68,6 @@ class Roster extends React.Component {
       }
 
     render(){
-      console.log(this.props.location.state.courseId);
       const { column, people, direction } = this.state
         return(
             <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
@@ -60,7 +82,6 @@ class Roster extends React.Component {
                       </Header.Subheader>
                   </Header>
                 </Segment>
-                {/* add person information */}
                 <Grid.Row>
                 <Table celled padded>
                   <Table.Header>
@@ -89,16 +110,8 @@ class Roster extends React.Component {
                     </Table.Row>
                   </Table.Header>
 
-                  <Table.Body>
-                  {this.state.people.map(person => (
-                                <Table.Row>
-                                <Table.Cell>{person.fullName}</Table.Cell>
-                                <Table.Cell>{person.preferredName}</Table.Cell>
-                                <Table.Cell>{person.role}</Table.Cell>
-                                <Table.Cell>{person.email}</Table.Cell>
-                              </Table.Row>
-                    ))}
-                  </Table.Body>
+                  <RosterTable id={this.props.location.state.courseId}/>
+
                   </Table>
                   </Grid.Row>
               </Grid>
@@ -106,6 +119,50 @@ class Roster extends React.Component {
           </Grid>
         );
     }
+}
+*/
+
+const Roster = (props) => {
+  const { loading, error, data } = useQuery(GET_COURSE, { variables: {
+    id: props.location.state.courseId
+  }});
+
+  const [users, setUsers] = useState([]);
+
+  if (data && users.length == 0) {
+    var allUsers = []
+    data.course.courseUsers.edges.map(item => {
+      allUsers.push({
+        fullName: item.node.user.fullName,
+        preferredName: item.node.user.preferredName,
+        email: item.node.user.email,
+        role: item.node.kind
+      })
+    });
+
+    setUsers(allUsers);
+  }
+
+  return (
+    data ? <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
+      <Sidebar active={'roster'}/>
+      <Grid.Column width={13}>
+        <Grid padded>
+          <Segment basic>
+            <Header as="h1">
+              { data.course.department + " " + data.course.name }
+              <Header.Subheader>
+                { data.course.description }
+              </Header.Subheader>
+            </Header>
+          </Segment>
+          <Grid.Row>
+          <RosterTable users={ users }/>
+          </Grid.Row>
+        </Grid>
+      </Grid.Column>
+    </Grid> : <Grid></Grid>
+  );
 }
 
 
