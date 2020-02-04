@@ -23,6 +23,7 @@ class CourseUserNode(DjangoObjectType):
     kind = graphene.Field(CourseUserKindType, required=True)
     user = graphene.Field(lambda: UserMetaNode, required=True)
     course = graphene.Field(lambda: CourseNode, required=True)
+    invited_by = graphene.Field(lambda: UserMetaNode, required=False)
 
 
 class InvitedCourseUserNode(DjangoObjectType):

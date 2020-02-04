@@ -110,9 +110,10 @@ class AddUserToCourse(graphene.Mutation):
     @staticmethod
     def mutate(root, info, input):
         with transaction.atomic():
+            user = info.context.user.get_user()
             course = Course.objects.get(pk=from_global_id(input.course_id)[1])
             if not CourseUser.objects.filter(
-                user= info.context.user.get_user(),
+                user=user,
                 course=course,
                 kind__in=CourseUserKind.leadership(),
             ).exists():
@@ -122,6 +123,7 @@ class AddUserToCourse(graphene.Mutation):
                 user=User.objects.get(pk=from_global_id(input.user_id)[1]),
                 course=course,
                 kind=input.kind,
+                invited_by=user,
             )
 
         return AddUserToCourseResponse(course_user=course_user)

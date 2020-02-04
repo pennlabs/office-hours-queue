@@ -129,6 +129,13 @@ class CourseUser(models.Model):
     kind = models.CharField(**CourseUserKind.choices())
     is_deactivated = models.BooleanField(default=False)
     time_created = models.DateTimeField(auto_now_add=True)
+    invited_by = models.ForeignKey(
+        User,
+        related_name='created_course_users',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
 
     class Meta:
         constraints = [

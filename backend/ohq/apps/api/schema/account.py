@@ -34,6 +34,7 @@ class CreateUser(graphene.Mutation):
                     user=user,
                     course = invite.course,
                     kind=invite.kind,
+                    invited_by=invite.invited_by,
                 ))
             CourseUser.objects.bulk_create(new_course_users)
             invites.delete()
