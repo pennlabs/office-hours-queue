@@ -225,10 +225,17 @@ class RemoveUserFromCourse(graphene.Mutation):
             ).exists():
                 raise PermissionError
 
-            course_user = CourseUser.objects.get(
+            course_user_to_remove = CourseUser.objects.get(
                 user=User.objects.get(pk=from_global_id(input.user_id)[1]),
                 course=course,
             )
-            course_user.delete()
+            if (
+                course_user_to_remove.kind in CourseUserKind.leadership() and
+                CourseUser.objects.filter(course=course, kind=CourseUserKind.leadership()).count()
+                    == 1
+            ):
+                raise ValueError
+
+            course_user_to_remove.delete()
 
         return RemoveUserFromCourseResponse(success=True)
