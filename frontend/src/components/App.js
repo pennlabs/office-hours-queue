@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import * as ROUTES from '../constants/routes';
 
@@ -13,14 +13,21 @@ import AccountSettings from './AccountSettings/AccountSettings';
 
 import { withAuthentication } from './Session';
 
-class App extends React.Component {
-  render() {
-    return (
-      <Router>
+const App = () => {
+  const [course, setCourse] = useState(null);
+
+  const selectCourse = (courseId) => {
+    window.location = ROUTES.ROSTER;
+    setCourse(courseId);
+    console.log(courseId);
+  }
+
+  return (
+    <Router>
         <Switch>
           <Route exact path={ROUTES.LANDING} component={ LandingPage }/>
-          <Route exact path={ROUTES.DASHBOARD} component={ Dashboard }/>
-          <Route exact path={ROUTES.ROSTER} component={ Roster }/>
+          <Route exact path={ROUTES.DASHBOARD} component={ () => <Dashboard selectCourse={ selectCourse } /> }/>
+          <Route exact path={ROUTES.ROSTER} component={ () => <Roster course={ course }/> }/>
           <Route exact path={ROUTES.QUEUE} component={ InstructorQueue }/>
           <Route exact path={ROUTES.STUDENTQUEUE} component={ StudentQueue }/>
           <Route exact path={ROUTES.ANALYTICS} component={ Analytics }/>
@@ -29,8 +36,7 @@ class App extends React.Component {
           <Route component={ Dashboard }/>
         </Switch>
       </Router>
-    );
-  }
+  )
 }
 
 export default withAuthentication(App);

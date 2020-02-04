@@ -28,7 +28,7 @@ class Dashboard extends React.Component {
                 </Header.Content>
               </Header>
             </Segment>
-            <StudentCourses/>
+            <StudentCourses selectCourse={ this.props.selectCourse }/>
 
             <Segment basic padded>
               <Header as="h2">

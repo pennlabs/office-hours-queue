@@ -97,23 +97,23 @@ const AddStudentForm = () => {
       {
         results &&
         <div>
-        <Form.Field>
-          <label>Results</label>
-          <Form.Dropdown
-            placeholder="Select Course"
-            name="courseId"
-            options={results}
-            search
-            selection
-            onChange={ handleInputChange }/>
-        </Form.Field>
-        <Form.Field>
-          <Button content="Add" color="green" onClick={ onSubmit }/>
-          { 
-            joinData && joinData.data &&
-            <span style={{"margin-left":"20px"}}>Added!</span>
-          }
-        </Form.Field>
+          <Form.Field>
+            <label>Results</label>
+            <Form.Dropdown
+              placeholder="Select Course"
+              name="courseId"
+              options={results}
+              search
+              selection
+              onChange={ handleInputChange }/>
+          </Form.Field>
+          <Form.Field>
+            <Button content="Add" color="green" onClick={ onSubmit }/>
+            { 
+              joinData && joinData.data &&
+              <span style={{"margin-left":"20px"}}>Added!</span>
+            }
+          </Form.Field>
         </div>
       }
     </Form>

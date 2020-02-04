@@ -63,6 +63,7 @@ const StudentCourses = (props) => {
               totalQueues={0}
               openQueues={0}
               archived={courseUser.node.course.archived}
+              clickFunc={ props.selectCourse }
             />
           </Grid.Column>
         ))

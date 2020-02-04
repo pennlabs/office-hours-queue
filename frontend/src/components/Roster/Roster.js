@@ -45,6 +45,7 @@ class Roster extends React.Component {
       }
 
     render(){
+      console.log(this.props.course);
       const { column, people, direction } = this.state
         return(
             <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>

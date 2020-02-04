@@ -1,5 +1,6 @@
 import React from 'react'
 import { Segment, Header, Icon } from 'semantic-ui-react';
+import * as ROUTES from '../../constants/routes';
 
 export default class CourseCard extends React.Component {
 
@@ -9,7 +10,7 @@ export default class CourseCard extends React.Component {
         <Segment attached="top" color="blue" style={{"height":"70px", "width":"205px"}}>
           <Header
             content={this.props.department + " " + this.props.name}
-            href='/Queue' // should link to course page, which should then have queues, roster, etc.
+            onClick={ () => {this.props.clickFunc(this.props.name)} } // should link to course page, which should then have queues, roster, etc.
             subheader={
               this.props.description.length <= 20 ? this.props.description :
               this.props.description.substring(0, 20) + "..."

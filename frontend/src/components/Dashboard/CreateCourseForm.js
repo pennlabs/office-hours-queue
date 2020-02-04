@@ -46,8 +46,10 @@ const CreateCourseForm = () => {
 
   /* HANDLER FUNCTIONS */
   const handleInputChange = (e, { name, value }) => {
-    input[name] = value;
+    
+    input[name] = name === "inviteOnly" ? !input[name] : value;
     setInput(input);
+    console.log(input.inviteOnly);
   }
 
   const onSubmit = () => {
@@ -78,7 +80,11 @@ const CreateCourseForm = () => {
       </Form.Field>
       <Form.Field>
         <label>Semester</label>
-        <Form.Dropdown name="semester" onChange={ handleInputChange } selection options={ semesterOptions } required/>
+        <Form.Dropdown name="semester" onChange={ handleInputChange } selection options={ semesterOptions }/>
+      </Form.Field>
+      <Form.Field>
+        <label>Invite Only?</label>
+        <Form.Radio name="inviteOnly" onChange={ handleInputChange } value={true} toggle/>
       </Form.Field>
       <Form.Field>
           <Button content="Create" color = "green" onClick={onSubmit}/>
