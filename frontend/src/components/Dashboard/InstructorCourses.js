@@ -22,6 +22,7 @@ const FIND_COURSES = gql`
               description
               year
               archived
+              id
             }
             kind
           }
@@ -70,6 +71,7 @@ const InstructorCourses = (props) => {
                 name={courseUser.node.course.name}
                 department={courseUser.node.course.department}
                 description={courseUser.node.course.description}
+                id={courseUser.node.course.id}
                 totalQueues={0}
                 openQueues={0}
               />

@@ -19,6 +19,7 @@ const FIND_COURSES = gql`
               name
               department
               description
+              id
             }
           }
         }
@@ -60,11 +61,10 @@ const StudentCourses = (props) => {
               name={courseUser.node.course.name}
               department={courseUser.node.course.department}
               description={courseUser.node.course.description}
+              id={courseUser.node.course.id}
               totalQueues={0}
               openQueues={0}
-              archived={courseUser.node.course.archived}
-              clickFunc={ props.selectCourse }
-            />
+              archived={courseUser.node.course.archived}/>
           </Grid.Column>
         ))
       }
