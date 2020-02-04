@@ -18,6 +18,7 @@ const RosterTable = (props) => {
       })
     } else {
       setTableState({
+        column: tableState.column,
         users: tableState.users.reverse(),
         direction: tableState.direction === 'ascending' ? 'descending' : 'ascending',
       })
