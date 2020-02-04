@@ -12,6 +12,7 @@ class CreateCourseInput(graphene.InputObjectType):
     year = graphene.Int(required=True)
     semester = graphene.Field(SemesterType, required=True)
     invite_only = graphene.Boolean(required=True)
+    course_user_kind = graphene.Field(CourseUserKindType, required=False)
 
 
 class CreateCourseResponse(graphene.ObjectType):
@@ -40,7 +41,7 @@ class CreateCourse(graphene.Mutation):
             course_user = CourseUser.objects.create(
                 user=user,
                 course=course,
-                kind=CourseUserKind.PROFESSOR.name,
+                kind=input.course_user_kind or CourseUserKind.PROFESSOR.name,
             )
 
         return CreateCourseResponse(course=course, course_user=course_user)
