@@ -2,7 +2,7 @@ import graphene
 from graphene import relay
 from graphene_django.filter import DjangoFilterConnectionField
 
-from ohq.apps.api.schema import account, courses, feedback_questions, questions, types
+from ohq.apps.api.schema import account, courses, queues, feedback_questions, questions, types
 
 from ohq.apps.api.models import Course, CourseUser
 
@@ -44,7 +44,9 @@ class Mutation(graphene.ObjectType):
     update_user = account.UpdateUser.Field()
 
     create_course = courses.CreateCourse.Field()
-    create_queue = courses.CreateQueue.Field()
+
+    create_queue = queues.CreateQueue.Field()
+    update_queue = queues.UpdateQueue.Field()
 
     create_short_answer_feedback_question = (
         feedback_questions.CreateShortAnswerFeedbackQuestion.Field()
