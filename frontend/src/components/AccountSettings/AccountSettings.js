@@ -1,6 +1,7 @@
 import React from 'react';
 import { Segment, Header, Grid, Form, Button } from 'semantic-ui-react';
 import Sidebar from '../Sidebar';
+import AccountForm from './AccountForm';
 
 import { withAuthorization } from '../Session';
 import { compose } from 'recompose';
@@ -35,25 +36,7 @@ class AccountSettings extends React.Component{
                 </Grid.Row>
                 <Grid.Row>
                   <Segment basic>
-                    <Form>
-                      <Form.Field>
-                        <label>Email Address</label>
-                        <input defaultValue={this.state.user.email} disabled='true' />
-                      </Form.Field>
-                      <Form.Field>
-                        <label>Full Name</label>
-                        <input placeholder='Full Name' defaultValue={this.state.user.fullName} />
-                      </Form.Field>
-                      <Form.Field>
-                        <label>Preferred Name</label>
-                        <input placeholder='Preferred Name' defaultValue={this.state.user.preferredName} />
-                      </Form.Field>
-                      <Form.Field>
-                        <label>Cellphone Number</label>
-                        <input placeholder='Cellphone Number' defaultValue={this.state.user.cellphone}/>
-                      </Form.Field>
-                      <Button type='submit'>Submit</Button>
-                    </Form>
+                    <AccountForm/>
                   </Segment>
                 </Grid.Row>
               </Grid>
