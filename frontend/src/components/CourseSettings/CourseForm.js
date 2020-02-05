@@ -7,6 +7,7 @@ import { Form, Button } from 'semantic-ui-react';
 const GET_COURSE = gql`
   query Course($id: ID!) {
     course(id: $id) {
+      id
       department
       name
       description
@@ -48,7 +49,7 @@ const semesterOptions = [
 
 const AccountForm = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
-  const { loading, error, data } = useQuery(GET_COURSE, {
+  const { loading, error, data, refetch } = useQuery(GET_COURSE, {
     variables: {
       id: props.courseId
     }
@@ -59,17 +60,20 @@ const AccountForm = (props) => {
   /* STATE */
   const [input, setInput] = useState(null);
 
-  /* LOAD QUERY DATA */
-  if (data && data.course && !input) {
-    setInput({ 
-      courseId: props.courseId,
+  if (data && data.course) {
+    var newInput = {
+      courseId: data.course.id,
       department: data.course.department,
       name: data.course.name,
       description: data.course.description,
       year: data.course.year,
       semester: data.course.semester,
       inviteOnly: data.course.inviteOnly
-    })
+    }
+
+    if (JSON.stringify(newInput) !== JSON.stringify(input)) {
+      setInput(newInput);
+    }
   }
 
   /* HANDLER FUNCTIONS */
@@ -87,7 +91,7 @@ const AccountForm = (props) => {
   }
 
   return (
-    data ?
+    input ?
     <Form>
       <Form.Field>
         <label>Department</label>
