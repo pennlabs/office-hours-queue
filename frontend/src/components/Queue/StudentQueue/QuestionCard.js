@@ -31,8 +31,8 @@ export default class QuestionCard extends React.Component {
           You are #__ in line, ETA:
           </Segment>
         <Segment attached>
-          Question: {this.props.text}
-          Tags: {
+          <b>Question</b>: {this.props.text} <br/>
+          <b>Tags</b>: {
             this.props.tags.length > 0 ? this.props.tags.map((tag, index) => (
               tag.isActive ?
                 <Header.Content>
