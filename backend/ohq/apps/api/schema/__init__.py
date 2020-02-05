@@ -65,6 +65,7 @@ class Mutation(graphene.ObjectType):
     withdraw_question = questions.WithdrawQuestion.Field()
     reject_question = questions.RejectQuestion.Field()
     start_question = questions.StartQuestion.Field()
+    undo_start_question = questions.UndoStartQuestion.Field()
     finish_question = questions.FinishQuestion.Field()
 
     add_user_to_course = courses.AddUserToCourse.Field()

@@ -161,6 +161,40 @@ class StartQuestion(graphene.Mutation):
         return StartQuestionResponse(question=question)
 
 
+class UndoStartQuestionInput(graphene.InputObjectType):
+    question_id = graphene.ID(required=True)
+
+
+class UndoStartQuestionResponse(graphene.ObjectType):
+    question = graphene.Field(QuestionNode)
+
+
+class UndoStartQuestion(graphene.Mutation):
+    class Arguments:
+        input = UndoStartQuestionInput(required=True)
+
+    Output = UndoStartQuestionResponse
+
+    @staticmethod
+    def mutate(root, info, input):
+        with transaction.atomic():
+            user = info.context.user.get_user()
+            question = Question.objects.get(pk=from_global_id(input.question_id)[1])
+            if not CourseUser.objects.filter(
+                    user=user,
+                    course=question.queue.course,
+                    kind__in=CourseUserKind.staff(),
+            ).exists():
+                raise PermissionError
+            if question.time_withdrawn:
+                raise ValueError
+            question.time_started = None
+            question.answered_by = None
+            question.save()
+
+        return UndoStartQuestionResponse(question=question)
+
+
 class FinishQuestionInput(graphene.InputObjectType):
     question_id = graphene.ID(required=True)
 

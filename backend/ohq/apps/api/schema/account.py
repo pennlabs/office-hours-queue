@@ -75,4 +75,3 @@ class UpdateUser(graphene.Mutation):
             user.save()
 
         return UpdateUserResponse(user=user)
-
