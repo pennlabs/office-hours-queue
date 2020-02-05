@@ -1,21 +1,9 @@
 import React, { useState } from 'react';
 import { gql } from 'apollo-boost';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
 import { Form, Button } from 'semantic-ui-react';
 
 /* GRAPHQL QUERIES/MUTATIONS */
-const CURRENT_USER = gql`
-  {
-    currentUser {
-      id
-      fullName
-      preferredName
-      email
-      phoneNumber
-    }
-  }
-`;
-
 const UPDATE_USER = gql`
   mutation UpdateUser($input: UpdateUserInput!) {
     updateUser(input: $input) {
@@ -28,21 +16,18 @@ const UPDATE_USER = gql`
   }
 `;
 
-const AccountForm = () => {
+const AccountForm = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
-  const { loading, error, data } = useQuery(CURRENT_USER);
   const [updateUser, updateData] = useMutation(UPDATE_USER);
 
   /* STATE */
-  const [input, setInput] = useState(null);
-
-  if (data && data.currentUser && !input) {
-    setInput({ 
-      fullName: data.currentUser.fullName,
-      preferredName: data.currentUser.preferredName,
-      phoneNumber: data.currentUser.phoneNumber
-    })
-  }
+  const [defUser, setDefUser] = useState({
+    email: props.user.email,
+    fullName: props.user.fullName,
+    preferredName: props.user.preferredName,
+    phoneNumber: props.user.phoneNumber
+  });
+  const [input, setInput] = useState({});
 
   const handleInputChange = (e, { name, value }) => {
     input[name] = value;
@@ -50,11 +35,11 @@ const AccountForm = () => {
   }
 
   const onSubmit = () => {
-    var fullName = input.fullName ? input.fullName : data.currentUser.fullName;
-    var preferredName = input.preferredName ? input.preferredName : data.currentUser.preferredName;
-    var phoneNumber = input.phoneNumber ? input.phoneNumber : data.currentUser.phoneNumber;
+    var fullName = input.fullName ? input.fullName : defUser.fullName;
+    var preferredName = input.preferredName ? input.preferredName : defUser.preferredName;
+    var phoneNumber = input.phoneNumber ? input.phoneNumber : defUser.phoneNumber;
 
-    var newInput = phoneNumber ? 
+    var newInput = (phoneNumber ? 
       {
         fullName: fullName,
         preferredName: preferredName,
@@ -63,24 +48,22 @@ const AccountForm = () => {
         fullName: fullName,
         preferredName: preferredName
       }
-
-
-      console.log(newInput);
+    );
 
     updateUser({
       variables: {
         input: newInput 
       }
     });
+    console.log(props.refetch());
   }
 
   return (
-    data ?
     <Form>
       <Form.Field>
         <label>Email Address</label>
         <Form.Input
-          defaultValue={ data.currentUser.email }
+          defaultValue={ defUser.email }
           disabled
           onChange={ handleInputChange }/>
       </Form.Field>
@@ -88,7 +71,7 @@ const AccountForm = () => {
         <label>Full Name</label>
         <Form.Input
           placeholder='Full Name'
-          defaultValue={ data.currentUser.fullName }
+          defaultValue={ defUser.fullName }
           name='fullName' required
           onChange={ handleInputChange }/>
       </Form.Field>
@@ -96,7 +79,7 @@ const AccountForm = () => {
         <label>Preferred Name</label>
         <Form.Input
           placeholder='Preferred Name'
-          defaultValue={ data.currentUser.preferredName }
+          defaultValue={ defUser.preferredName }
           name='preferredName' required
           onChange={ handleInputChange }/>
       </Form.Field>
@@ -104,7 +87,7 @@ const AccountForm = () => {
         <label>Cellphone Number</label>
         <Form.Input
           placeholder='Cellphone Number'
-          defaultValue={ data.currentUser.phoneNumber }
+          defaultValue={ defUser.phoneNumber }
           name='phoneNumber'
           onChange={ handleInputChange }/>
       </Form.Field>
@@ -112,8 +95,7 @@ const AccountForm = () => {
       {
         updateData && updateData.data && <span>Updated!</span>
       }
-    </Form> : <Form></Form>
-     
+    </Form>
   );
 }
 

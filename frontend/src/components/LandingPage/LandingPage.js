@@ -10,7 +10,7 @@ import "typeface-roboto";
 
 import * as ROUTES from '../../constants/routes';
 
-import Dashboard from '../Dashboard/Dashboard';
+import Dashboard from '../Home/Dashboard/Dashboard';
 
 import AuthUserContext from '../Session/context';
 

@@ -1,11 +1,10 @@
 import React from 'react';
 import { Segment, Menu, Grid, Image } from 'semantic-ui-react';
-import { withFirebase } from '../Firebase';
-import * as ROUTES from '../../constants/routes';
+import { withFirebase } from '../../Firebase';
 
-import SignOutButton from '../SignOut';
+import SignOutButton from '../../SignOut';
 
-const Sidebar = route => (
+const Sidebar = (props) => (
   <Grid.Column width={3}>
     <Segment basic>
     <Image src='../../../ohq.png' size='tiny' style={{"marginTop":"10px"}}/>
@@ -13,17 +12,15 @@ const Sidebar = route => (
       <Menu.Item
         name="Dashboard"
         icon='dashboard'
-        href={ROUTES.DASHBOARD}
-        active={route.active === 'dashboard'}
-        color={'blue'}
-      />
+        active={ props.active === 'dashboard' }
+        color='blue'
+        onClick={ () => props.clickFunc('dashboard') }/>
       <Menu.Item
         name="Account Settings"
         icon='setting'
-        href={ROUTES.ACCOUNTSETTINGS}
-        active={route.active === 'account_settings'}
-        color={'blue'}
-      />
+        active={ props.active === 'account_settings' }
+        color='blue'
+        onClick={ () => props.clickFunc('account_settings') }/>
       <SignOutButton />
     </Menu>
     </Segment>
