@@ -1,6 +1,7 @@
 from graphql_relay.node.node import from_global_id
 
 from django.db import transaction
+from django.db.models import F
 
 from ohq.apps.api.schema.types import *
 
@@ -118,10 +119,70 @@ class CreateSliderFeedbackQuestion(graphene.Mutation):
                 question_text=input.question_text,
                 answer_lower_bound=input.answer_lower_bound,
                 answer_upper_bound=input.answer_upper_bound,
-                order_key=input.order_key or FeedbackQuestion.objects.filter(course=course).count()
+                order_key=input.order_key or FeedbackQuestion.objects.filter(course=course).count(),
+                required=input.required,
             )
 
         return CreateSliderFeedbackQuestionResponse(feedback_question=feedback_question)
+
+
+class UpdateFeedbackQuestionInput(graphene.InputObjectType):
+    feedback_question_id = graphene.ID(required=True)
+    archived = graphene.Boolean(required=False)
+    required = graphene.Boolean(required=False)
+    order_key = graphene.Int(required=False)
+
+
+class UpdateFeedbackQuestionResponse(graphene.ObjectType):
+    feedback_question = graphene.Field(ShortAnswerFeedbackQuestionNode)
+
+
+class UpdateFeedbackQuestion(graphene.Mutation):
+    class Arguments:
+        input = UpdateFeedbackQuestionInput(required=True)
+
+    Output = UpdateFeedbackQuestionResponse
+
+    @staticmethod
+    def mutate(root, info, input):
+        if not input:
+            raise ValueError
+        with transaction.atomic():
+            user = info.context.user.get_user()
+            feedback_question = FeedbackQuestion.objects.get(
+                pk=from_global_id(input.feedback_question)[1]
+            )
+            course = feedback_question.course
+            if not CourseUser.objects.filter(
+                user=user,
+                course=course,
+                kind__in=CourseUserKind.leadership(),
+            ).exists():
+                raise PermissionError
+
+            if input.archived:
+                feedback_question.archived = input.archived
+            if input.required:
+                feedback_question.required = input.required
+            if input.order_key and feedback_question.order_key != input.order_key:
+                old_order_key = feedback_question.order_key
+                feedback_question.order_key = input.order_key
+                if input.order_key < old_order_key:
+                    # Moved up, so increment others
+                    FeedbackQuestion.objects.filter(
+                        course=course,
+                        order_key__gte=input.order_key,
+                        order_key__lt=old_order_key,
+                    ).update(order_key=F('order_key') + 1)
+                else:
+                    # Moved down, so decrement others
+                    FeedbackQuestion.objects.filter(
+                        course=course,
+                        order_key__gt=input.order_key,
+                        order_key__lte=old_order_key,
+                    ).update(order_key=F('order_key') - 1)
+
+        return UpdateFeedbackQuestionResponse(feedback_question=feedback_question)
 
 
 class ShortAnswerFeedbackAnswerInput(graphene.InputObjectType):

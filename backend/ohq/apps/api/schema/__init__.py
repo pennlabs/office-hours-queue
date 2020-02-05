@@ -58,6 +58,7 @@ class Mutation(graphene.ObjectType):
     create_slider_feedback_question = (
         feedback_questions.CreateSliderFeedbackQuestion.Field()
     )
+    update_feedback_question = feedback_questions.UpdateFeedbackQuestion.Field()
     answer_feedback_questions = feedback_questions.AnswerFeedbackQuestions.Field()
 
     create_question = questions.CreateQuestion.Field()
