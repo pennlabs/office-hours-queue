@@ -7,19 +7,6 @@ import { withAuthorization } from '../Session';
 import { compose } from 'recompose';
 
 class AccountSettings extends React.Component{
-
-    constructor(props) {
-        super(props);
-        this.state = {
-          user: {
-            fullName: 'Steven Bursztyn',
-            preferredName: 'Steven',
-            email: 'bursztyn@seas.upenn.edu',
-            cellphone: '7865555555',
-          },
-        };
-      }
-
       render() {
         return (
           <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
@@ -27,7 +14,6 @@ class AccountSettings extends React.Component{
             <Grid.Column width={13}>
               <Grid columns={2} padded>
                 <Grid.Row>
-                  {/* COURSE HEADER */}
                   <Segment basic>
                     <Header as="h1">
                       Account Settings

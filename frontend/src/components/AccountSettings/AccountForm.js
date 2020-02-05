@@ -15,7 +15,6 @@ const CURRENT_USER = gql`
   }
 `;
 
-
 const AccountForm = () => {
   const {loading, error, data} = useQuery(CURRENT_USER);
   return (

@@ -60,16 +60,18 @@ const Roster = (props) => {
       <Sidebar active={'roster'}/>
       <Grid.Column width={13}>
         <Grid padded>
-          <Segment basic>
-            <Header as="h1">
-              { data.course.department + " " + data.course.name }
-              <Header.Subheader>
-                { data.course.description }
-              </Header.Subheader>
-            </Header>
-          </Segment>
           <Grid.Row>
-          <RosterTable users={ users }/>
+            <Segment basic>
+              <Header as="h1">
+                { data.course.department + " " + data.course.name }
+                <Header.Subheader>
+                  { data.course.description }
+                </Header.Subheader>
+              </Header>
+            </Segment>
+          </Grid.Row>
+          <Grid.Row>
+            <RosterTable users={ users }/>
           </Grid.Row>
         </Grid>
       </Grid.Column>
