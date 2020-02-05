@@ -41,6 +41,8 @@ class Query(graphene.ObjectType):
 
 class Mutation(graphene.ObjectType):
     create_user = account.CreateUser.Field()
+    update_user = account.UpdateUser.Field()
+
     create_course = courses.CreateCourse.Field()
     create_queue = courses.CreateQueue.Field()
     create_short_answer_feedback_question = \

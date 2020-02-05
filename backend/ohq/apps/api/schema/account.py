@@ -8,8 +8,10 @@ class CreateUserInput(graphene.InputObjectType):
     preferred_name = graphene.String(required=True)
     phone_number = graphene.String(required=False)
 
+
 class CreateUserResponse(graphene.ObjectType):
     user = graphene.Field(UserNode, required=True)
+
 
 class CreateUser(graphene.Mutation):
     class Arguments:
@@ -40,4 +42,37 @@ class CreateUser(graphene.Mutation):
             invites.delete()
 
         return CreateUserResponse(user=user)
+
+
+class UpdateUserInput(graphene.InputObjectType):
+    full_name = graphene.String(required=False)
+    preferred_name = graphene.String(required=False)
+    phone_number = graphene.String(required=False)
+
+
+class UpdateUserResponse(graphene.ObjectType):
+    user = graphene.Field(UserNode, required=True)
+
+
+class UpdateUser(graphene.Mutation):
+    class Arguments:
+        input = UpdateUserInput(required=True)
+
+    Output = UpdateUserResponse
+
+    @staticmethod
+    def mutate(root, info, input):
+        if not input:
+            raise ValueError
+        with transaction.atomic():
+            user = info.context.user.get_user()
+            if input.full_name:
+                user.full_name = input.full_name
+            if input.preferred_name:
+                user.preferred_name = input.preferred_name
+            if input.phone_number:
+                user.preferred_name = input.phone_number
+            user.save()
+
+        return UpdateUserResponse(user=user)
 
