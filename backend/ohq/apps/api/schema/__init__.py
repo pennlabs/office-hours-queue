@@ -45,18 +45,23 @@ class Mutation(graphene.ObjectType):
 
     create_course = courses.CreateCourse.Field()
     create_queue = courses.CreateQueue.Field()
-    create_short_answer_feedback_question = \
+
+    create_short_answer_feedback_question = (
         feedback_questions.CreateShortAnswerFeedbackQuestion.Field()
-    create_radio_button_feedback_question = \
+    )
+    create_radio_button_feedback_question = (
         feedback_questions.CreateRadioButtonFeedbackQuestion.Field()
-    create_slider_feedback_question = \
+    )
+    create_slider_feedback_question = (
         feedback_questions.CreateSliderFeedbackQuestion.Field()
+    )
+    answer_feedback_questions = feedback_questions.AnswerFeedbackQuestions.Field()
 
     create_question = questions.CreateQuestion.Field()
+    withdraw_question = questions.WithdrawQuestion.Field()
     reject_question = questions.RejectQuestion.Field()
     start_question = questions.StartQuestion.Field()
     finish_question = questions.FinishQuestion.Field()
-    answer_feedback_questions = questions.AnswerFeedbackQuestions.Field()
 
     add_user_to_course = courses.AddUserToCourse.Field()
     remove_user_from_course = courses.RemoveUserFromCourse.Field()
