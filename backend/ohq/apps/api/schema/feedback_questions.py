@@ -9,6 +9,7 @@ class CreateShortAnswerFeedbackQuestionInput(graphene.InputObjectType):
     course_id = graphene.ID(required=True)
     question_text = graphene.String(required=True)
     order_key = graphene.Int(required=False)
+    required = graphene.Boolean(required=True)
 
 
 class CreateShortAnswerFeedbackQuestionResponse(graphene.ObjectType):
@@ -35,7 +36,8 @@ class CreateShortAnswerFeedbackQuestion(graphene.Mutation):
             feedback_question = ShortAnswerFeedbackQuestion.objects.create(
                 course=course,
                 question_text=input.question_text,
-                order_key=input.order_key or FeedbackQuestion.objects.filter(course=course).count()
+                order_key=input.order_key or FeedbackQuestion.objects.filter(course=course).count(),
+                required=input.required,
             )
 
         return CreateShortAnswerFeedbackQuestionResponse(feedback_question=feedback_question)
@@ -46,6 +48,7 @@ class CreateRadioButtonFeedbackQuestionInput(graphene.InputObjectType):
     question_text = graphene.String(required=True)
     answer_choices = graphene.List(graphene.String, required=True)
     order_key = graphene.Int(required=False)
+    required = graphene.Boolean(required=True)
 
 
 class CreateRadioButtonFeedbackQuestionResponse(graphene.ObjectType):
@@ -73,7 +76,8 @@ class CreateRadioButtonFeedbackQuestion(graphene.Mutation):
                 course=course,
                 question_text=input.question_text,
                 answer_choices=input.answer_choices,
-                order_key=input.order_key or FeedbackQuestion.objects.filter(course=course).count()
+                order_key=input.order_key or FeedbackQuestion.objects.filter(course=course).count(),
+                required=input.required
             )
 
         return CreateRadioButtonFeedbackQuestionResponse(feedback_question=feedback_question)
@@ -85,6 +89,7 @@ class CreateSliderFeedbackQuestionInput(graphene.InputObjectType):
     answer_lower_bound = graphene.Int(required=True)
     answer_upper_bound = graphene.Int(required=True)
     order_key = graphene.Int(required=False)
+    required = graphene.Boolean(required=True)
 
 
 class CreateSliderFeedbackQuestionResponse(graphene.ObjectType):

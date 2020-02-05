@@ -56,6 +56,7 @@ class UpdateQueueInput(graphene.InputObjectType):
     description = graphene.String(required=False)
     tags = graphene.List(graphene.String, required=False)
     start_end_times = graphene.String(required=False)
+    archived = graphene.Boolean(required=False)
 
 
 class UpdateQueueResponse(graphene.ObjectType):
@@ -90,6 +91,8 @@ class UpdateQueue(graphene.Mutation):
                 queue.tags = input.tags
             if input.start_end_times:
                 queue.start_end_times = input.start_end_times
+            if input.archived:
+                queue.archived = input.archived
             queue.save()
         return UpdateQueueResponse(queue=queue)
 

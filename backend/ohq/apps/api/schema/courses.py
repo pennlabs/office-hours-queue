@@ -55,6 +55,7 @@ class UpdateCourseInput(graphene.InputObjectType):
     year = graphene.Int(required=False)
     semester = graphene.Field(SemesterType, required=False)
     invite_only = graphene.Boolean(required=False)
+    archived = graphene.Boolean(required=False)
 
 
 class UpdateCourseResponse(graphene.ObjectType):
@@ -93,6 +94,8 @@ class UpdateCourse(graphene.Mutation):
                 course.semester = input.semester
             if input.invite_only:
                 course.invite_only = input.invite_only
+            if input.archived:
+                course.archived = input.archived
             course.save()
         return UpdateCourseResponse(course=course)
 

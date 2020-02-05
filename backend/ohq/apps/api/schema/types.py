@@ -206,8 +206,9 @@ class ShortAnswerFeedbackQuestionNode(DjangoObjectType):
         fields = (
             'id',
             'question_text',
-            'archived',
             'order_key',
+            'archived',
+            'required',
         )
         interfaces = (relay.Node,)
 
@@ -218,8 +219,9 @@ class RadioButtonFeedbackQuestionNode(DjangoObjectType):
         fields = (
             'id',
             'question_text',
-            'archived',
             'order_key',
+            'archived',
+            'required',
             'answer_choices',
         )
         interfaces = (relay.Node,)
@@ -231,8 +233,9 @@ class SliderFeedbackQuestionNode(DjangoObjectType):
         fields = (
             'id',
             'question_text',
-            'archived',
             'order_key',
+            'archived',
+            'required',
             'answer_lower_bound',
             'answer_upper_bound',
         )

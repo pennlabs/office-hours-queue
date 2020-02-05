@@ -97,6 +97,10 @@ class Course(models.Model):
     def head_ta_users(self):
         return self.course_users.filter(kind=CourseUserKind.HEAD_TA.name)
 
+    @property
+    def professor_users(self):
+        return self.course_users.filter(kind=CourseUserKind.PROFESSOR.name)
+
     def __str__(self):
         return self.department + " " + self.name
 
