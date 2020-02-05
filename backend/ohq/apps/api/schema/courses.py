@@ -47,6 +47,56 @@ class CreateCourse(graphene.Mutation):
         return CreateCourseResponse(course=course, course_user=course_user)
 
 
+class UpdateCourseInput(graphene.InputObjectType):
+    course_id = graphene.ID(required=True)
+    name = graphene.String(required=False)
+    department = graphene.String(required=False)
+    description = graphene.String(required=False)
+    year = graphene.Int(required=False)
+    semester = graphene.Field(SemesterType, required=False)
+    invite_only = graphene.Boolean(required=False)
+
+
+class UpdateCourseResponse(graphene.ObjectType):
+    course = graphene.Field(CourseNode, required=True)
+
+
+class UpdateCourse(graphene.Mutation):
+    class Arguments:
+        input = UpdateCourseInput(required=True)
+
+    Output = UpdateCourseResponse
+
+    @staticmethod
+    def mutate(root, info, input):
+        if not input:
+            raise ValueError
+        with transaction.atomic():
+            user = info.context.user.get_user()
+            course = Course.objects.get(pk=from_global_id(input.course_id)[1])
+            if not CourseUser.objects.filter(
+                user=user,
+                course=course,
+                kind__in=CourseUserKind.leadership(),
+            ).exists():
+                raise PermissionError
+
+            if input.name:
+                course.name = input.name
+            if input.department:
+                course.department = input.department
+            if input.description:
+                course.description = input.description
+            if input.year:
+                course.year = input.year
+            if input.semester:
+                course.semester = input.semester
+            if input.invite_only:
+                course.invite_only = input.invite_only
+            course.save()
+        return UpdateCourseResponse(course=course)
+
+
 class AddUserToCourseInput(graphene.InputObjectType):
     user_id = graphene.ID(required=True)
     course_id = graphene.ID(required=True)

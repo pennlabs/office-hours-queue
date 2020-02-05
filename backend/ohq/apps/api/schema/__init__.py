@@ -44,6 +44,7 @@ class Mutation(graphene.ObjectType):
     update_user = account.UpdateUser.Field()
 
     create_course = courses.CreateCourse.Field()
+    update_course = courses.UpdateCourse.Field()
 
     create_queue = queues.CreateQueue.Field()
     update_queue = queues.UpdateQueue.Field()
