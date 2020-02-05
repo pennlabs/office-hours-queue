@@ -6,7 +6,6 @@ import EditQuestionModal from './EditQuestionModal';
 import DeletePopupModal from './DeletePopup';
 import { fakeCourse } from '../questiondata';
 import AskQuestionModal from './AskQuestionModal';
-import Sidebar from '../../Sidebar';
 
 import { withAuthorization } from '../../Session';
 import { compose } from 'recompose';
@@ -226,7 +225,6 @@ class Queue extends React.Component {
             open: this.state.deleteQuestionModalOpen
           }}
         />
-        <Sidebar active={'student_queue'} />
         <Grid.Column width={13}>
           <Grid columns={2} padded>
             <Grid.Row>

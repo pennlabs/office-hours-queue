@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Segment, Header, Grid } from 'semantic-ui-react';
-import Sidebar from '../Sidebar';
-import SubSidebar from '../Sidebar/SubSidebar';
 import RosterTable from './RosterTable';
 
 import { gql } from 'apollo-boost';
@@ -75,8 +73,6 @@ const Roster = (props) => {
 
   return (
     data ? <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
-      <Sidebar active='dashboard'/>
-      <SubSidebar active={'roster'} courseId={ props.location.state.courseId }/>
       <Grid.Column width={10}>
         <Grid padded>
           <Grid.Row>

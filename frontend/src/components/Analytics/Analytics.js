@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
 import { Table, Segment, Menu, Header, Grid, Image } from 'semantic-ui-react';
-import Sidebar from '../Sidebar';
 import * as ROUTES from '../../constants/routes';
 
 import Chart from 'chart.js';
@@ -64,7 +63,6 @@ class Analytics extends React.Component {
       const { column, people, direction } = this.state
         return(
             <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
-            <Sidebar active={'analytics'}/>
             <Grid.Column width={12}>
               <Grid padded>
                 <Segment basic padded>

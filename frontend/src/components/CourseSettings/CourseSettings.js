@@ -1,7 +1,5 @@
 import React from 'react';
 import { Segment, Header, Grid } from 'semantic-ui-react';
-import Sidebar from '../Sidebar';
-import SubSidebar from '../Sidebar/SubSidebar';
 import CourseForm from './CourseForm';
 
 import { withAuthorization } from '../Session';
@@ -11,8 +9,6 @@ class CourseSettings extends React.Component{
   render() {
     return (
       <Grid columns={3} divided="horizontally" style={{"width":"100%"}}>
-        <Sidebar active={'dashboard'}/>
-        <SubSidebar active={'course_settings'} courseId={this.props.location.state.courseId}/>
         <Grid.Column width={10}>
           <Grid columns={2} padded>
             <Grid.Row>

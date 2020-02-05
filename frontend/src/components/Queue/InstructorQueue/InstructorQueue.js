@@ -5,8 +5,6 @@ import DeleteQuestionModal from './DeleteQuestionModal';
 import TagModal from './TagModal';
 import EditQueueModal from './EditQueueModal';
 import { fakeCourse } from '../questiondata';
-import Sidebar from '../../Sidebar';
-
 
 import { withAuthorization } from '../../Session';
 import { compose } from 'recompose';
@@ -312,7 +310,6 @@ class Queue extends React.Component{
                 queues={this.state.course.queues}
               />
             }
-            <Sidebar active={'instructor_queue'}/>
             <Grid.Column width={13}>
               <Grid columns={2} padded>
                 <Grid.Row>
