@@ -17,12 +17,12 @@ const FIND_COURSES = gql`
         edges {
           node {
             course {
+              id
               name
               department
               description
               year
               archived
-              id
             }
             kind
           }
@@ -40,8 +40,7 @@ const InstructorCourses = (props) => {
 
   /* GRAPHQL QUERIES/MUTATIONS */
   const { loading, error, data, refetch } = useQuery(FIND_COURSES);
-
-
+  
   /* HANDLER FUNCTIONS */
   const triggerFunc = () => {
     setOpen(!open);
