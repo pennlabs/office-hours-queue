@@ -71,7 +71,7 @@ class UpdateUser(graphene.Mutation):
             if input.preferred_name:
                 user.preferred_name = input.preferred_name
             if input.phone_number:
-                user.preferred_name = input.phone_number
+                user.phone_number = input.phone_number
             user.save()
 
         return UpdateUserResponse(user=user)
