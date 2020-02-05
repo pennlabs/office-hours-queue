@@ -48,6 +48,42 @@ class CreateQuestion(graphene.Mutation):
         return CreateQuestionResponse(question=question)
 
 
+class WithdrawQuestionInput(graphene.InputObjectType):
+    question_id = graphene.ID(required=True)
+
+
+class WithdrawQuestionResponse(graphene.ObjectType):
+    question = graphene.Field(QuestionNode)
+
+
+class WithdrawQuestion(graphene.Mutation):
+    class Arguments:
+        input = WithdrawQuestionInput(required=True)
+
+    Output = WithdrawQuestionResponse
+
+    @staticmethod
+    def mutate(root, info, input):
+        with transaction.atomic():
+            user = info.context.user.get_user()
+            question = Question.objects.get(pk=from_global_id(input.question_id)[1])
+            # if not CourseUser.objects.filter(
+            #     user=user,
+            #     course=question.queue.course,
+            #     kind__in=CourseUserKind.student.name,
+            # ).exists():
+            #     raise PermissionError
+            if question.asked_by != user:
+                raise PermissionError
+            if question.time_started or question.time_rejected:
+                raise ValueError
+
+            question.time_withdrawn = datetime.now()
+            question.save()
+
+        return WithdrawQuestionResponse(question=question)
+
+
 class RejectQuestionInput(graphene.InputObjectType):
     question_id = graphene.ID(required=True)
     rejected_reason = graphene.Field(QuestionRejectionReasonType, required=True)
@@ -116,6 +152,8 @@ class StartQuestion(graphene.Mutation):
                 kind__in=CourseUserKind.staff(),
             ).exists():
                 raise PermissionError
+            if question.time_withdrawn:
+                raise ValueError
             question.time_started = datetime.now()
             question.answered_by = user
             question.save()
