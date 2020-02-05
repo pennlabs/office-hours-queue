@@ -6,7 +6,7 @@ export default class EditQuestionModal extends React.Component {
     render() {
         return (
             <Modal open={this.props.attrs.open}>
-                <Modal.Header>Are you sure you want to delete the Question?</Modal.Header>
+                <Modal.Header>Are you sure you want to delete your question?</Modal.Header>
                 <Modal.Content>
                     <Form>
                         <Form.Field>
@@ -16,7 +16,7 @@ export default class EditQuestionModal extends React.Component {
                 </Modal.Content>
                 <Modal.Actions>
                     <Button content="Cancel" compact onClick={this.props.funcs.cancelFunc} />
-                    <Button content="Delete" color="green" compact onClick={this.props.funcs.deleteFunc} />
+                    <Button content="Delete" color="red" compact onClick={this.props.funcs.deleteFunc} />
                 </Modal.Actions>
             </Modal>
         );
