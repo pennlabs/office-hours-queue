@@ -37,6 +37,8 @@ const Roster = (props) => {
     id: props.location.state.courseId
   }});
 
+  console.log(props.location.state.courseId);
+
   /* STATE */
   const [users, setUsers] = useState([]);
 

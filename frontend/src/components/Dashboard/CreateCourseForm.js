@@ -18,6 +18,7 @@ const CREATE_COURSE = gql`
   }
 `;
 
+/* DROPDOWN OPTIONS */
 const semesterOptions = [
   {
     key: 0,
@@ -46,10 +47,8 @@ const CreateCourseForm = () => {
 
   /* HANDLER FUNCTIONS */
   const handleInputChange = (e, { name, value }) => {
-    
     input[name] = name === "inviteOnly" ? !input[name] : value;
     setInput(input);
-    console.log(input.inviteOnly);
   }
 
   const onSubmit = () => {
