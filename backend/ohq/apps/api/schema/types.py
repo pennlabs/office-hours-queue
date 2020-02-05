@@ -14,9 +14,10 @@ QuestionRejectionReasonType = graphene.Enum.from_enum(QuestionRejectionReason)
 class CourseUserNode(DjangoObjectType):
     class Meta:
         model = CourseUser
-        filter_fields = ('kind', 'is_deactivated')
+        filter_fields = ('kind', 'deactivated')
         fields = (
-            'is_deactivated',
+            'deactivated',
+            'time_created',
         )
         interfaces = (relay.Node,)
 
@@ -33,10 +34,12 @@ class InvitedCourseUserNode(DjangoObjectType):
         fields = (
             'email',
             'course',
+            'time_created',
         )
         interfaces = (relay.Node,)
 
     kind = graphene.Field(CourseUserKindType, required=True)
+    invited_by = graphene.Field(lambda: UserMetaNode, required=False)
 
 
 class UserNode(DjangoObjectType):
@@ -49,6 +52,7 @@ class UserNode(DjangoObjectType):
             'preferred_name',
             'email',
             'phone_number',
+            'time_joined',
         )
         interfaces = (relay.Node,)
 
@@ -101,6 +105,7 @@ class QuestionNode(DjangoObjectType):
             'time_answered',
             'time_withdrawn',
             'time_rejected',
+            'rejected_reason_other',
             'queue',
         )
         interfaces = (relay.Node,)
@@ -126,6 +131,7 @@ class QueueNode(DjangoObjectType):
             'estimated_wait_time',
             'start_end_times',
             'tags',
+            'archived',
         )
         interfaces = (relay.Node,)
 

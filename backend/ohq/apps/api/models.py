@@ -131,7 +131,7 @@ class CourseUser(models.Model):
     course = models.ForeignKey(Course, related_name='course_users', on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name='course_users', on_delete=models.CASCADE)
     kind = models.CharField(**CourseUserKind.choices())
-    is_deactivated = models.BooleanField(default=False)
+    deactivated = models.BooleanField(default=False)
     time_created = models.DateTimeField(auto_now_add=True)
     invited_by = models.ForeignKey(
         User,
