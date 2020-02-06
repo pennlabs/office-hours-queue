@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Grid } from 'semantic-ui-react';
 import CourseCard from './Cards/CourseCard';
 import ArchivedCourseCard from './Cards/ArchivedCourseCard';
@@ -25,6 +25,11 @@ const InstructorCourses = (props) => {
   const handleArchivedChange = () => {
     setShowArchived(!showArchived);
   }
+
+  /* UPDATE ON PROPS CHANGE */
+  useEffect(() => {
+    setCourses(props.courses);
+  }, [props.courses])
 
   return (
     <Grid style={{"width":"100%"}}>

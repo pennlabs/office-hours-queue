@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Segment, Header, Grid } from 'semantic-ui-react';
 import InstructorCourses from './InstructorCourses';
 import StudentCourses from './StudentCourses';
@@ -17,6 +17,11 @@ const Dashboard = (props) => {
     });
     return filterCourses;
   }
+
+  /* UPDATE ON PROPS CHANGE */
+  useEffect(() => {
+    setCourses(props.courses);
+  }, [props.courses])
 
   return (
     <Grid.Column width={13}>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Grid } from 'semantic-ui-react';
 import CourseCard from './Cards/CourseCard';
 import AddCard from './Cards/AddCard';
@@ -20,6 +20,10 @@ const StudentCourses = (props) => {
     props.refetch();
     triggerFunc();
   }
+
+  useEffect(() => {
+    setCourses(props.courses);
+  }, [props.courses])
 
   return (
     <Grid.Row columns={4} padded="true">
