@@ -23,7 +23,6 @@ const RosterTable = (props) => {
         direction: tableState.direction === 'ascending' ? 'descending' : 'ascending',
       })
     }
-    console.log(tableState.direction);   
   }
 
   return (

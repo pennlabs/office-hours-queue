@@ -1,13 +1,16 @@
 import React from 'react';
 import { Segment, Menu, Grid, Image } from 'semantic-ui-react';
-import { withFirebase } from '../../Firebase';
+import { withFirebase } from '../Firebase';
+import { Link } from 'react-router-dom';
 
-import SignOutButton from '../../SignOut';
+import SignOutButton from '../SignOut';
 
 const Sidebar = (props) => (
   <Grid.Column width={3}>
     <Segment basic>
-    <Image src='../../../ohq.png' size='tiny' style={{"marginTop":"10px"}}/>
+    <Link to={{pathName: '/home'}}>
+      <Image src='../../../ohq.png' size='tiny' style={{"marginTop":"10px"}}/>
+    </Link>
     <Menu vertical secondary fluid>
       <Menu.Item
         name="Dashboard"

@@ -3,9 +3,6 @@ import { Segment, Header, Grid } from 'semantic-ui-react';
 import InstructorCourses from './InstructorCourses';
 import StudentCourses from './StudentCourses';
 
-import { withAuthorization } from '../../Session';
-import { compose } from 'recompose';
-
 const Dashboard = (props) => {
   /* STATE */
   const [courses, setCourses] = useState(props.courses);
@@ -45,8 +42,4 @@ const Dashboard = (props) => {
   );
 }
 
-const condition = authUser => !!authUser;
-
-export default compose(
-  withAuthorization(condition),
-)(Dashboard);
+export default Dashboard;

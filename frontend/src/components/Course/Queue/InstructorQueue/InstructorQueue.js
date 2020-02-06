@@ -6,9 +6,6 @@ import TagModal from './TagModal';
 import EditQueueModal from './EditQueueModal';
 import { fakeCourse } from '../questiondata';
 
-import { withAuthorization } from '../../Session';
-import { compose } from 'recompose';
-
 
 class Queue extends React.Component{
 
@@ -286,7 +283,7 @@ class Queue extends React.Component{
 
       render() {
         return (
-          <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
+          <Grid.Column width={13}>
             <DeleteQuestionModal
               attrs={this.state.deleteModal}
               question={this.state.questionToDelete}
@@ -501,14 +498,10 @@ class Queue extends React.Component{
                 </Grid.Row>
               </Grid>
             </Grid.Column>
-          </Grid>
+            </Grid.Column>
         );
       }
 
 }
 
-const condition = authUser => !!authUser;
-
-export default compose(
-  withAuthorization(condition),
-)(Queue);
+export default Queue;

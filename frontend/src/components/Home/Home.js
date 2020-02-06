@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Dashboard from './Dashboard/Dashboard';
 import AccountSettings from './AccountSettings/AccountSettings';
-import Sidebar from './Sidebar'
+import HomeSidebar from './HomeSidebar'
 import { Grid } from 'semantic-ui-react';
 
 import { withAuthorization } from '../Session';
@@ -91,7 +91,7 @@ const Home = (props) => {
 
   return (
     <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
-      <Sidebar active={ active } clickFunc={ setActive }/>
+      <HomeSidebar active={ active } clickFunc={ setActive }/>
       {
         data && active === 'dashboard' &&
         <Dashboard courses={ courses } refetch={ refetch }/>

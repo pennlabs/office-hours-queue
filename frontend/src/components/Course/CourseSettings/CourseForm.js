@@ -1,23 +1,9 @@
 import React, { useState } from 'react';
 import { gql } from 'apollo-boost';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
 import { Form, Button } from 'semantic-ui-react';
 
 /* GRAPHQL QUERIES/MUTATIONS */
-const GET_COURSE = gql`
-  query Course($id: ID!) {
-    course(id: $id) {
-      id
-      department
-      name
-      description
-      year
-      semester
-      inviteOnly
-    }
-  }
-`;
-
 const UPDATE_COURSE = gql`
   mutation UpdateCourse($input: UpdateCourseInput!) {
     updateCourse(input: $input) {
@@ -47,34 +33,14 @@ const semesterOptions = [
   }
 ]
 
-const AccountForm = (props) => {
+const CourseForm = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
-  const { loading, error, data, refetch } = useQuery(GET_COURSE, {
-    variables: {
-      id: props.courseId
-    }
-  });
-  
   const [updateCourse, updateData] = useMutation(UPDATE_COURSE);
 
   /* STATE */
-  const [input, setInput] = useState(null);
-
-  if (data && data.course) {
-    var newInput = {
-      courseId: data.course.id,
-      department: data.course.department,
-      name: data.course.name,
-      description: data.course.description,
-      year: data.course.year,
-      semester: data.course.semester,
-      inviteOnly: data.course.inviteOnly
-    }
-
-    if (JSON.stringify(newInput) !== JSON.stringify(input)) {
-      setInput(newInput);
-    }
-  }
+  const [defCourse, setDefCourse] = useState(props.course);
+  const [input, setInput] = useState({ courseId: props.course.id });
+  console.log(input);
 
   /* HANDLER FUNCTIONS */
   const handleInputChange = (e, { name, value }) => {
@@ -83,48 +49,47 @@ const AccountForm = (props) => {
   }
 
   const onSubmit = () => {
-    console.log(updateCourse({
+    updateCourse({
       variables: {
         input: input
       }
-    }));
+    });
   }
 
   return (
-    input ?
     <Form>
       <Form.Field>
         <label>Department</label>
         <Form.Input
-          defaultValue={ data.course.department }
+          defaultValue={ defCourse.department }
           name='department' required
           onChange={ handleInputChange }/>
       </Form.Field>
       <Form.Field>
         <label>Course Code</label>
         <Form.Input
-          defaultValue={ data.course.name }
+          defaultValue={ defCourse.name }
           name='name' required
           onChange={ handleInputChange }/>
       </Form.Field>
       <Form.Field>
         <label>Description</label>
         <Form.Input
-          defaultValue={ data.course.description }
+          defaultValue={ defCourse.description }
           name='description' required
           onChange={ handleInputChange }/>
       </Form.Field>
       <Form.Field>
         <label>Year</label>
         <Form.Input
-          defaultValue={ data.course.year }
+          defaultValue={ defCourse.year }
           name='year' required
           onChange={ handleInputChange }/>
       </Form.Field>
       <Form.Field>
         <label>Semester</label>
         <Form.Dropdown
-          defaultValue={ data.course.semester }
+          defaultValue={ defCourse.semester }
           name="semester" required
           selection options={ semesterOptions }
           onChange={ handleInputChange } />
@@ -132,7 +97,7 @@ const AccountForm = (props) => {
       <Form.Field>
         <label>Invite Only?</label>
         <Form.Radio
-          defaultChecked={ data.course.inviteOnly }
+          defaultChecked={ defCourse.inviteOnly }
           name="inviteOnly" required
           value={true} toggle
           onChange={ handleInputChange }/>
@@ -141,9 +106,8 @@ const AccountForm = (props) => {
       {
         updateData && updateData.data && <span>Updated!</span>
       }
-    </Form> : <Form></Form>
-     
+    </Form>
   );
 }
 
-export default AccountForm;
+export default CourseForm;

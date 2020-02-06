@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Button, Tab } from 'semantic-ui-react';
+import { Modal, Button } from 'semantic-ui-react';
 import CreateCourseForm from '../Forms/CreateCourseForm';
 
 export default class ModalAddInstructorCourse extends React.Component {

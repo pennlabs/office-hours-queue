@@ -6,7 +6,7 @@ import * as ROUTES from '../../../../constants/routes';
 export default class CourseCard extends React.Component {
   render() {
     const path = {
-      pathname: ROUTES.ROSTER,
+      pathname: ROUTES.COURSE,
       state: { courseId: this.props.id }
     }
 

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
 import { Table, Segment, Menu, Header, Grid, Image } from 'semantic-ui-react';
-import * as ROUTES from '../../constants/routes';
 
 import Chart from 'chart.js';
 import { Bar } from "react-chartjs-2";
@@ -9,7 +8,6 @@ import { Bar } from "react-chartjs-2";
 import { fakePeople } from '../Roster/peopledata';
 import { dateLabels, DashboardBarChart, options, options2, options3, options4 } from './mockData';
 
-import { withAuthorization } from '../Session';
 import { compose } from 'recompose';
 
 
@@ -62,8 +60,7 @@ class Analytics extends React.Component {
     render(){
       const { column, people, direction } = this.state
         return(
-            <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
-            <Grid.Column width={12}>
+            <Grid.Column width={13}>
               <Grid padded>
                 <Segment basic padded>
                   <Header as="h1">
@@ -129,13 +126,8 @@ class Analytics extends React.Component {
                   </Grid.Row>
               </Grid>
             </Grid.Column>
-          </Grid>
         );
     }
 }
 
-const condition = authUser => !!authUser;
-
-export default compose(
-  withAuthorization(condition),
-)(Analytics);
+export default Analytics;
