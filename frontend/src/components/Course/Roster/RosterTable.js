@@ -4,24 +4,33 @@ import _ from 'lodash';
 
 const RosterTable = (props) => {
   /* STATE */
-  const [tableState, setTableState] = useState({ direction: null, column: null, users: props.users });
+  const [tableState, setTableState] = useState({ direction: null, column: null });
+  const [allUsers, setAllUsers] = useState(props.users);
+  const [filteredUsers, setFilteredUsers] = useState(allUsers);
+
+  /* TODO:
+    1. add function to filter by role (then update filteredUsers state) 
+    2. add function to search in "filteredUsers" variable by name (then update filteredUsers state)
+  */
 
   /* HANDLER FUNCTIONS */
   const handleSort = (clickedColumn) => {
     if (tableState.column !== clickedColumn) {
       setTableState({
         column: clickedColumn,
-        users: tableState.users.sort((a, b) => {
-          return a[clickedColumn] - b[clickedColumn];
-        }),
         direction: 'ascending',
-      })
+      });
+      setFilteredUsers(
+        filteredUsers.sort((a, b) => {
+          return a[clickedColumn] - b[clickedColumn];
+        })
+      );
     } else {
       setTableState({
         column: tableState.column,
-        users: tableState.users.reverse(),
         direction: tableState.direction === 'ascending' ? 'descending' : 'ascending',
-      })
+      });
+      setFilteredUsers(filteredUsers.reverse());
     }
   }
 
@@ -51,21 +60,18 @@ const RosterTable = (props) => {
           >Email</Table.HeaderCell>
         </Table.Row>
       </Table.Header>
-      {
-        props.users ?
-        <Table.Body>
-          {
-            tableState.users.map(user => (
-              <Table.Row>
-                <Table.Cell>{ user.fullName }</Table.Cell>
-                <Table.Cell>{ user.preferredName }</Table.Cell>
-                <Table.Cell>{ user.role }</Table.Cell>
-                <Table.Cell>{ user.email }</Table.Cell>
-              </Table.Row>
-            ))
-          }
-        </Table.Body> : <Table.Body></Table.Body>
-      }
+      <Table.Body>
+        {
+          filteredUsers.map(user => (
+            <Table.Row>
+              <Table.Cell>{ user.fullName }</Table.Cell>
+              <Table.Cell>{ user.preferredName }</Table.Cell>
+              <Table.Cell>{ user.role }</Table.Cell>
+              <Table.Cell>{ user.email }</Table.Cell>
+            </Table.Row>
+          ))
+        }
+      </Table.Body>
     </Table>
   )
 }

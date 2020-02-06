@@ -6,6 +6,10 @@ import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
 
 /* GRAPHQL QUERIES/MUTATIONS */
+/* TODO: 
+  1. add mutation to remove user
+  2. add mutation to invite user
+*/
 
 const Roster = (props) => {
   /* STATE */
