@@ -116,6 +116,8 @@ class QuestionNode(DjangoObjectType):
     answered_by = graphene.Field(UserMetaNode)
     feedback_answers = graphene.List(lambda: FeedbackAnswerNode)
 
+    def resolve_feedback_answers(self, info, **kwargs):
+        return FeedbackAnswer.objects.filter(question=self, **kwargs)
 
 class QueueNode(DjangoObjectType):
     class Meta:
@@ -277,8 +279,8 @@ class ShortAnswerFeedbackAnswerNode(DjangoObjectType):
         )
         interfaces = (relay.Node,)
 
-        question = graphene.Field(lambda: QuestionNode, required=True)
-        feedback_question = graphene.Field(ShortAnswerFeedbackQuestionNode, required=True)
+    question = graphene.Field(lambda: QuestionNode, required=True)
+    feedback_question = graphene.Field(ShortAnswerFeedbackQuestionNode, required=True)
 
 
 class RadioButtonFeedbackAnswerNode(DjangoObjectType):
@@ -291,8 +293,8 @@ class RadioButtonFeedbackAnswerNode(DjangoObjectType):
         )
         interfaces = (relay.Node,)
 
-        question = graphene.Field(lambda: QuestionNode, required=True)
-        feedback_question = graphene.Field(RadioButtonFeedbackQuestionNode, required=True)
+    question = graphene.Field(lambda: QuestionNode, required=True)
+    feedback_question = graphene.Field(RadioButtonFeedbackQuestionNode, required=True)
 
 
 class SliderFeedbackAnswerNode(DjangoObjectType):
@@ -305,8 +307,8 @@ class SliderFeedbackAnswerNode(DjangoObjectType):
         )
         interfaces = (relay.Node,)
 
-        question = graphene.Field(lambda: QuestionNode, required=True)
-        feedback_question = graphene.Field(SliderFeedbackQuestionNode, required=True)
+    question = graphene.Field(lambda: QuestionNode, required=True)
+    feedback_question = graphene.Field(SliderFeedbackQuestionNode, required=True)
 
 
 class FeedbackAnswerNode(graphene.Union):
