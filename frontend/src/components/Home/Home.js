@@ -44,7 +44,7 @@ const Home = (props) => {
 
   /* STATE */
   const [active, setActive] = useState('dashboard');
-  const [courses, setCourses] = useState([]);
+  const [courses,  setCourses] = useState([]);
   const [user, setUser] = useState({});
 
   /* LOAD DATA FUNCTIONS */
@@ -56,11 +56,11 @@ const Home = (props) => {
         department: courseUser.node.course.department,
         description: courseUser.node.course.description,
         id: courseUser.node.course.id,
+        year: courseUser.node.course.year,
         archived: courseUser.node.course.archived,
         kind: courseUser.node.kind
       })
     });
-
     return newCourses;
   }
 
@@ -93,9 +93,12 @@ const Home = (props) => {
     <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
       <Sidebar active={ active } clickFunc={ setActive }/>
       {
-        active === 'dashboard' ? 
-          <Dashboard courses={ courses } refetch={ refetch }/> :
-          <AccountSettings user={ user } refetch={ refetch }/>
+        data && active === 'dashboard' &&
+        <Dashboard courses={ courses } refetch={ refetch }/>
+      }
+      {
+        data && active === 'account_settings' &&
+        <AccountSettings user={ user } refetch={ refetch }/>
       }
     </Grid>
   )

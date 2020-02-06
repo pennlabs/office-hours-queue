@@ -51,7 +51,7 @@ const SignInGoogleBase = (props) => {
       })
       .then(() => {
         setError(null);
-        props.history.push(ROUTES.DASHBOARD);
+        props.history.push(ROUTES.HOME);
       })
       .catch(error => {
         setError(error);

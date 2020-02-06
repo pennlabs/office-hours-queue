@@ -55,7 +55,7 @@ const AccountForm = (props) => {
         input: newInput 
       }
     });
-    console.log(props.refetch());
+    props.refetch();
   }
 
   return (

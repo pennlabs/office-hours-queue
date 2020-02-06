@@ -1,14 +1,14 @@
 import React from 'react';
-import { Modal, Button, Tab } from 'semantic-ui-react';
-import CreateCourseForm from './CreateCourseForm';
+import { Modal, Button } from 'semantic-ui-react';
+import AddStudentForm from '../Forms/AddStudentForm';
 
-export default class ModalAddInstructorCourse extends React.Component {
+export default class ModalAddStudentCourse extends React.Component {
   render() {
     return (
       <Modal open={ this.props.open }>
-        <Modal.Header>Create New Course</Modal.Header>
+        <Modal.Header>Add New Course</Modal.Header>
         <Modal.Content>
-          <CreateCourseForm/>
+          <AddStudentForm/>
         </Modal.Content>
         <Modal.Actions>
           <Button content="Done" onClick={ this.props.closeFunc }/>

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Segment, Header, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
-import * as ROUTES from '../../../constants/routes';
+import * as ROUTES from '../../../../constants/routes';
 
 export default class CourseCard extends React.Component {
   render() {

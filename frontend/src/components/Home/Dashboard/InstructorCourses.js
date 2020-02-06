@@ -1,45 +1,16 @@
 import React, { useState } from 'react';
 import { Grid } from 'semantic-ui-react';
-import CourseCard from './CourseCard';
-import ArchivedCourseCard from './ArchivedCourseCard';
-import AddCard from './AddCard';
-import ModalAddInstructorCourse from './ModalAddInstructorCourse';
-
-
-import { gql } from 'apollo-boost';
-import { useQuery } from '@apollo/react-hooks';
-
-/* GRAPHQL QUERIES/MUTATIONS */
-const FIND_COURSES = gql`
-  {
-    currentUser {
-      courseUsers {
-        edges {
-          node {
-            course {
-              id
-              name
-              department
-              description
-              year
-              archived
-            }
-            kind
-          }
-        }
-      }
-    }
-  }
-`;
+import CourseCard from './Cards/CourseCard';
+import ArchivedCourseCard from './Cards/ArchivedCourseCard';
+import AddCard from './Cards/AddCard';
+import ModalAddInstructorCourse from './Modals/ModalAddInstructorCourse';
 
 /* FUNCTIONAL COMPONENT */
 const InstructorCourses = (props) => {
   /* STATE */
   const [open, setOpen] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
-
-  /* GRAPHQL QUERIES/MUTATIONS */
-  const { loading, error, data, refetch } = useQuery(FIND_COURSES);
+  const [courses, setCourses] = useState(props.courses);
   
   /* HANDLER FUNCTIONS */
   const triggerFunc = () => {
@@ -47,7 +18,7 @@ const InstructorCourses = (props) => {
   }
 
   const closeFunc = () => {
-    refetch();
+    props.refetch();
     triggerFunc();
   }
 
@@ -62,15 +33,14 @@ const InstructorCourses = (props) => {
             open={ open }
             closeFunc={ closeFunc }/>
         {
-          data && data.currentUser.courseUsers &&
-          data.currentUser.courseUsers.edges.map(courseUser => (
-            !courseUser.node.course.archived && courseUser.node.kind != "STUDENT" &&
+          courses.map(course => (
+            !course.archived &&
             <Grid.Column>
               <CourseCard
-                name={courseUser.node.course.name}
-                department={courseUser.node.course.department}
-                description={courseUser.node.course.description}
-                id={courseUser.node.course.id}
+                name={ course.name }
+                department={ course.department }
+                description={ course.description }
+                id={ course.id }
                 totalQueues={0}
                 openQueues={0}
               />
@@ -88,15 +58,17 @@ const InstructorCourses = (props) => {
       </a>
       <Grid.Row columns={4} padded="true">
         {
-          data && data.currentUser.courseUsers && showArchived &&
-          data.currentUser.courseUsers.edges.map(courseUser => (
-            courseUser.node.course.archived && courseUser.node.kind != "STUDENT" &&
+          courses.map(course => (
+            course.archived && showArchived &&
             <Grid.Column>
               <ArchivedCourseCard
-                name={courseUser.node.course.name}
-                department={courseUser.node.course.department}
-                description={courseUser.node.course.description}
-                year={courseUser.node.course.year}
+                name={ course.name }
+                department={ course.department }
+                description={ course.description }
+                id={ course.id }
+                year={ course.year }
+                totalQueues={0}
+                openQueues={0}
               />
             </Grid.Column>
           ))
