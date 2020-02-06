@@ -35,6 +35,13 @@ class CreateQuestion(graphene.Mutation):
                 kind=CourseUserKind.STUDENT.name,
             ).exists():
                 raise PermissionError
+            # Check for any other unanswered questions in this course
+            if Question.objects.filter(
+                user=user,
+                course=course,
+                time_answered__isnull=True,
+            ).exists():
+                raise ValueError
             # TODO limit number of questions asked
             if any(tag not in course.tags for tag in input.tags):
                 raise ValueError
