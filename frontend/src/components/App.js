@@ -11,12 +11,12 @@ import { withAuthentication } from './Session';
 const App = () => {
   return (
     <Router>
-        <Switch>
-          <Route exact path={ROUTES.LANDING} component={ LandingPage }/>
-          <Route exact path={ROUTES.HOME} component={ Home }/>
-          <Route exact path={ROUTES.COURSE} component={ Course }/>
-        </Switch>
-      </Router>
+      <Switch>
+        <Route exact path={ROUTES.LANDING} component={ LandingPage }/>
+        <Route exact path={ROUTES.HOME} component={ Home }/>
+        <Route exact path={ROUTES.COURSE} component={ Course }/>
+      </Switch>
+    </Router>
   )
 }
 

@@ -10,7 +10,7 @@ import "typeface-roboto";
 
 import * as ROUTES from '../../constants/routes';
 
-import Dashboard from '../Home/Dashboard/Dashboard';
+import Home from '../Home/Home';
 
 import AuthUserContext from '../Session/context';
 
@@ -64,7 +64,7 @@ const SignInGoogleBase = (props) => {
     <AuthUserContext.Consumer>
         {authUser =>
           condition(authUser) 
-          ? <Dashboard />
+          ? <Home />
           : <div
               style={{
                 "height":"100%",
