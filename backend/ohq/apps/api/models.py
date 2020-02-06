@@ -275,7 +275,7 @@ class Question(models.Model):
 class FeedbackQuestion(PolymorphicModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     course = models.ForeignKey(Course, related_name='feedback_questions', on_delete=models.CASCADE)
-    question_text = models.CharField(max_length=200, editable=False)
+    question_text = models.CharField(max_length=200)
     order_key = models.IntegerField()
     # TODO cannot change archived while a queue is active
     archived = models.BooleanField(default=False)
@@ -287,12 +287,12 @@ class ShortAnswerFeedbackQuestion(FeedbackQuestion):
 
 
 class RadioButtonFeedbackQuestion(FeedbackQuestion):
-    answer_choices = ArrayField(models.CharField(max_length=200), editable=False)
+    answer_choices = ArrayField(models.CharField(max_length=200))
 
 
 class SliderFeedbackQuestion(FeedbackQuestion):
-    answer_lower_bound = models.IntegerField(editable=False)
-    answer_upper_bound = models.IntegerField(editable=False)
+    answer_lower_bound = models.IntegerField()
+    answer_upper_bound = models.IntegerField()
 
 
 class FeedbackAnswer(PolymorphicModel):

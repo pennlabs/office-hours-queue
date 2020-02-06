@@ -16,15 +16,24 @@ admin.site.register(Question)
 class ShortAnswerFeedbackQuestionChildAdmin(PolymorphicChildModelAdmin):
     base_model = ShortAnswerFeedbackQuestion
 
+    def get_readonly_fields(self, request, obj=None):
+        return () if obj is None else ('question_text',)
+
 
 @admin.register(RadioButtonFeedbackQuestion)
 class RadioButtonFeedbackQuestionChildAdmin(PolymorphicChildModelAdmin):
     base_model = RadioButtonFeedbackQuestion
 
+    def get_readonly_fields(self, request, obj=None):
+        return () if obj is None else ('question_text', 'answer_choices',)
+
 
 @admin.register(SliderFeedbackQuestion)
 class SliderFeedbackQuestionChildAdmin(PolymorphicChildModelAdmin):
     base_model = SliderFeedbackQuestion
+
+    def get_readonly_fields(self, request, obj=None):
+        return () if obj is None else ('question_text', 'answer_lower_bound', 'answer_upper_bound',)
 
 
 @admin.register(FeedbackQuestion)
