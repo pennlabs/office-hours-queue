@@ -9,12 +9,14 @@ const Dashboard = (props) => {
 
   const getCourses = (allCourses, isStudent) => {
     var filterCourses = [];
-    allCourses.map((course) => {
-      if ((isStudent && course.kind === 'STUDENT') || 
-        (!isStudent && course.kind !== 'STUDENT')) {
-        filterCourses.push(course);
-      }
-    });
+    if (allCourses) {
+      allCourses.map((course) => {
+        if ((isStudent && course.kind === 'STUDENT') || 
+          (!isStudent && course.kind !== 'STUDENT')) {
+          filterCourses.push(course);
+        }
+      });
+    }
     return filterCourses;
   }
 
