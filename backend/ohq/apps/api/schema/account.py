@@ -66,11 +66,11 @@ class UpdateUser(graphene.Mutation):
             raise ValueError
         with transaction.atomic():
             user = info.context.user.get_user()
-            if input.full_name:
+            if input.full_name is not None:
                 user.full_name = input.full_name
-            if input.preferred_name:
+            if input.preferred_name is not None:
                 user.preferred_name = input.preferred_name
-            if input.phone_number:
+            if input.phone_number is not None:
                 user.phone_number = input.phone_number
             user.save()
 

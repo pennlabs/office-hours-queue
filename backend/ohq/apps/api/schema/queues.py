@@ -83,15 +83,15 @@ class UpdateQueue(graphene.Mutation):
             ).exists():
                 raise PermissionError
 
-            if input.name:
+            if input.name is not None:
                 queue.name = input.name
-            if input.description:
+            if input.description is not None:
                 queue.description = input.description
-            if input.tags:
+            if input.tags is not None:
                 queue.tags = input.tags
-            if input.start_end_times:
+            if input.start_end_times is not None:
                 queue.start_end_times = input.start_end_times
-            if input.archived:
+            if input.archived is not None:
                 queue.archived = input.archived
             queue.save()
         return UpdateQueueResponse(queue=queue)

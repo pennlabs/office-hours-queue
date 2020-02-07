@@ -82,19 +82,19 @@ class UpdateCourse(graphene.Mutation):
             ).exists():
                 raise PermissionError
 
-            if input.name:
+            if input.name is not None:
                 course.name = input.name
-            if input.department:
+            if input.department is not None:
                 course.department = input.department
-            if input.description:
+            if input.description is not None:
                 course.description = input.description
-            if input.year:
+            if input.year is not None:
                 course.year = input.year
-            if input.semester:
+            if input.semester is not None:
                 course.semester = input.semester
-            if input.invite_only:
+            if input.invite_only is not None:
                 course.invite_only = input.invite_only
-            if input.archived:
+            if input.archived is not None:
                 course.archived = input.archived
             course.save()
         return UpdateCourseResponse(course=course)
