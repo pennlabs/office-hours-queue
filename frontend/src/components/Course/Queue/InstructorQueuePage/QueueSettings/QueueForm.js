@@ -52,19 +52,19 @@ const QueueForm = (props) => {
   return (
     <Form>
       {
-        !loading && 
+        !loading && queue &&
         <div>
           <Form.Field>
             <label>Name</label>
             <Form.Input
-              defaultValue={ props.queue.name }
+              defaultValue={ queue.name }
               name='name' required
               onChange={ handleInputChange }/>
           </Form.Field>
           <Form.Field>
             <label>Description</label>
             <Form.Input
-              defaultValue={ props.queue.description }
+              defaultValue={ queue.description }
               name='description' required
               onChange={ handleInputChange }/>
           </Form.Field>

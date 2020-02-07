@@ -56,6 +56,7 @@ const QueueForm = (props) => {
       }
     });
     input.tags = newTags;
+    console.log(input);
     updateQueue({
       variables: {
         input: input
