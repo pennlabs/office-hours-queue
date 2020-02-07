@@ -52,23 +52,25 @@ const QueueForm = (props) => {
   return (
     <Form>
       {
-        !loading && queue &&
+        queue &&
         <div>
           <Form.Field>
             <label>Name</label>
             <Form.Input
               defaultValue={ input.name }
-              name='name' required
+              name='name'
+              disabled={ loading }
               onChange={ handleInputChange }/>
           </Form.Field>
           <Form.Field>
             <label>Description</label>
             <Form.Input
               defaultValue={ input.description }
-              name='description' required
+              name='description'
+              disabled={ loading }
               onChange={ handleInputChange }/>
           </Form.Field>
-          <Button type='submit' onClick={ onSubmit }>Submit</Button>
+          <Button type='submit' onClick={ () => { if (!loading) { onSubmit() } }}>Submit</Button>
         </div>
       }
       {

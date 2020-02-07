@@ -35,12 +35,12 @@ const semesterOptions = [
 
 const CourseForm = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
-  const [updateCourse, updateData] = useMutation(UPDATE_COURSE);
+  const [updateCourse, { loading, data }] = useMutation(UPDATE_COURSE);
 
   /* STATE */
   const [defCourse, setDefCourse] = useState(props.course);
   const [input, setInput] = useState({ courseId: props.course.id });
-  console.log(input);
+  const [success, setSuccess] = useState(false);
 
   /* HANDLER FUNCTIONS */
   const handleInputChange = (e, { name, value }) => {
@@ -53,6 +53,9 @@ const CourseForm = (props) => {
       variables: {
         input: input
       }
+    }).then(() => {
+      props.refetch();
+      setSuccess(true);
     });
   }
 
@@ -62,35 +65,40 @@ const CourseForm = (props) => {
         <label>Department</label>
         <Form.Input
           defaultValue={ defCourse.department }
-          name='department' required
+          name='department'
+          disabled={ loading }
           onChange={ handleInputChange }/>
       </Form.Field>
       <Form.Field>
         <label>Course Code</label>
         <Form.Input
           defaultValue={ defCourse.name }
-          name='name' required
+          name='name'
+          disabled={ loading }
           onChange={ handleInputChange }/>
       </Form.Field>
       <Form.Field>
         <label>Description</label>
         <Form.Input
           defaultValue={ defCourse.description }
-          name='description' required
+          name='description'
+          disabled={ loading }
           onChange={ handleInputChange }/>
       </Form.Field>
       <Form.Field>
         <label>Year</label>
         <Form.Input
           defaultValue={ defCourse.year }
-          name='year' required
+          name='year'
+          disabled={ loading }
           onChange={ handleInputChange }/>
       </Form.Field>
       <Form.Field>
         <label>Semester</label>
         <Form.Dropdown
           defaultValue={ defCourse.semester }
-          name="semester" required
+          name="semester"
+          disabled={ loading }
           selection options={ semesterOptions }
           onChange={ handleInputChange } />
       </Form.Field>
@@ -98,13 +106,17 @@ const CourseForm = (props) => {
         <label>Invite Only?</label>
         <Form.Radio
           defaultChecked={ defCourse.inviteOnly }
-          name="inviteOnly" required
+          name="inviteOnly"
+          disabled={ loading }
           value={true} toggle
           onChange={ handleInputChange }/>
       </Form.Field>
-      <Button type='submit' onClick={ onSubmit }>Submit</Button>
+      <Button type='submit' onClick={ () => { if (!loading) { onSubmit() } }}>Submit</Button>
       {
-        updateData && updateData.data && <span>Updated!</span>
+        success && !loading && <span>Updated!</span>
+      }
+      {
+        loading && <span>Updating...</span>
       }
     </Form>
   );

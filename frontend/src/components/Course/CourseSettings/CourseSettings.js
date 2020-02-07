@@ -14,7 +14,7 @@ const CourseSettings = (props) => {
       </Grid.Row>
       <Grid.Row>
         <Segment basic>
-          <CourseForm course={ props.course }/>
+          <CourseForm course={ props.course } refetch={ props.refetch }/>
         </Segment>
       </Grid.Row>
     </div>

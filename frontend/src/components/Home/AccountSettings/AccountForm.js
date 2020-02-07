@@ -18,7 +18,7 @@ const UPDATE_USER = gql`
 
 const AccountForm = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
-  const [updateUser, updateData] = useMutation(UPDATE_USER);
+  const [updateUser, { data, loading }] = useMutation(UPDATE_USER);
 
   /* STATE */
   const [defUser, setDefUser] = useState({
@@ -28,6 +28,7 @@ const AccountForm = (props) => {
     phoneNumber: props.user.phoneNumber
   });
   const [input, setInput] = useState({});
+  const [success, setSuccess] = useState(false);
 
   const handleInputChange = (e, { name, value }) => {
     input[name] = value;
@@ -54,8 +55,10 @@ const AccountForm = (props) => {
       variables: {
         input: newInput 
       }
+    }).then(() => {
+      props.refetch();
+      setSuccess(true);
     });
-    props.refetch();
   }
 
   return (
@@ -72,7 +75,8 @@ const AccountForm = (props) => {
         <Form.Input
           placeholder='Full Name'
           defaultValue={ defUser.fullName }
-          name='fullName' required
+          name='fullName'
+          disabled={ loading }
           onChange={ handleInputChange }/>
       </Form.Field>
       <Form.Field>
@@ -80,7 +84,8 @@ const AccountForm = (props) => {
         <Form.Input
           placeholder='Preferred Name'
           defaultValue={ defUser.preferredName }
-          name='preferredName' required
+          name='preferredName'
+          disabled={ loading }
           onChange={ handleInputChange }/>
       </Form.Field>
       <Form.Field>
@@ -89,11 +94,15 @@ const AccountForm = (props) => {
           placeholder='Cellphone Number'
           defaultValue={ defUser.phoneNumber }
           name='phoneNumber'
+          disabled={ loading }
           onChange={ handleInputChange }/>
       </Form.Field>
-      <Button type='submit' onClick={ onSubmit }>Submit</Button>
+      <Button type='submit' onClick={ () => { if (!loading) { onSubmit() } }}>Submit</Button>
       {
-        updateData && updateData.data && <span>Updated!</span>
+        !loading && success && <span>Updated!</span>
+      }
+      {
+        loading && <span>Updating...</span>
       }
     </Form>
   );

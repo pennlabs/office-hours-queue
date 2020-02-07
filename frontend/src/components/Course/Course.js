@@ -85,7 +85,7 @@ const Course = (props) => {
         }
         {
           courseQuery.data && active === 'course_settings' &&
-          <CourseSettings course={ course }/>
+          <CourseSettings course={ course } refetch={ courseQuery.refetch }/>
         }
         {
           courseQuery.data && active === 'queues' &&
