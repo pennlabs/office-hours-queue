@@ -4,6 +4,7 @@ import CourseSettings from './CourseSettings/CourseSettings';
 import InstructorQueue from './Queue/InstructorQueue/InstructorQueue';
 import Analytics from './Analytics/Analytics';
 import CourseSidebar from './CourseSidebar';
+import Summary from './Summary/Summary';
 import { Grid } from 'semantic-ui-react';
 
 import { withAuthorization } from '../Session';
@@ -111,6 +112,10 @@ const Course = (props) => {
       {
         data && active === 'analytics' &&
         <Analytics/>
+      }
+      {
+        data && active === 'summary' &&
+        <Summary/>
       }
     </Grid>
   )

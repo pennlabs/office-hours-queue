@@ -29,6 +29,12 @@ const CourseSidebar = (props) => (
         color='blue'
         onClick={ () => props.clickFunc('analytics') }/>
       <Menu.Item
+        name="Question Summary"
+        icon='list ol'
+        active={props.active === 'summary'}
+        color='blue'
+        onClick={ () => props.clickFunc('summary') }/>
+      <Menu.Item
         name="Course Settings"
         icon='settings'
         active={props.active === 'course_settings'}
