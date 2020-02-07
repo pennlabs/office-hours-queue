@@ -5,6 +5,7 @@ import * as ROUTES from '../constants/routes';
 import LandingPage from './LandingPage/LandingPage';
 import Home from './Home/Home';
 import Course from './Course/Course';
+import Student from './Student/Student';
 
 import { withAuthentication } from './Session';
 
@@ -15,6 +16,7 @@ const App = () => {
         <Route exact path={ROUTES.LANDING} component={ LandingPage }/>
         <Route exact path={ROUTES.HOME} component={ Home }/>
         <Route exact path={ROUTES.COURSE} component={ Course }/>
+        <Route exact path={ROUTES.STUDENT} component={ Student }/>
       </Switch>
     </Router>
   )

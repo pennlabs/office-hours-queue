@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
-import Roster from './Roster/Roster';
-import CourseSettings from './CourseSettings/CourseSettings';
-import InstructorQueuePage from './Queue/InstructorQueuePage/InstructorQueuePage';
-import StudentQueuePage from '../Student/StudentQueuePage/StudentQueuePage';
-import Analytics from './Analytics/Analytics';
-import CourseSidebar from './CourseSidebar';
-import Summary from './Summary/Summary';
+import StudentQueuePage from './StudentQueuePage/StudentQueuePage';
+import StudentSidebar from './StudentSidebar';
 import { Grid, Segment, Header } from 'semantic-ui-react';
 
 import { withAuthorization } from '../Session';
@@ -29,7 +24,7 @@ const GET_COURSE = gql`
   }
 `;
 
-const Course = (props) => {
+const Student = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
   const courseQuery = useQuery(GET_COURSE, { variables: {
     id: props.location.state.courseId
@@ -65,8 +60,7 @@ const Course = (props) => {
   /* UPDATE STATE ON QUERY */
   return (
     <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
-      <CourseSidebar active={ active } clickFunc={ setActive }/>
-
+      <StudentSidebar active={ active } clickFunc={ setActive }/>
       <Grid.Column width={13}>
         {
           course.department && <Grid.Row>
@@ -81,24 +75,8 @@ const Course = (props) => {
           </Grid.Row>
         }
         {
-          courseQuery.data && active === 'roster' &&
-          <Roster course={ course }/>
-        }
-        {
-          courseQuery.data && active === 'course_settings' &&
-          <CourseSettings course={ course } refetch={ courseQuery.refetch }/>
-        }
-        {
           courseQuery.data && course && active === 'queues' &&
-          <InstructorQueuePage course={ course } />
-        }
-        {
-          active === 'analytics' &&
-          <Analytics/>
-        }
-        {
-          courseQuery.data && active === 'summary' &&
-          <Summary/>
+          <StudentQueuePage course={ course } />
         }
       </Grid.Column>
     </Grid>
@@ -109,4 +87,4 @@ const condition = authUser => !!authUser;
 
 export default compose(
   withAuthorization(condition),
-)(Course);
+)(Student);

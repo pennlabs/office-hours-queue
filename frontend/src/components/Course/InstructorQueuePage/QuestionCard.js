@@ -29,7 +29,7 @@ export default class CourseCard extends React.Component {
           <Segment attached
             style={{"height":"80px",  "width":"300px"}}
             tertiary={this.props.started}>
-          {this.props.text.length < 100 ? this.props.text : this.props.text.substring(0, 99) + "..."}
+          {this.props.text && (this.props.text.length < 100 ? this.props.text : this.props.text.substring(0, 99) + "...")}
           </Segment>
           <Segment attached="bottom" secondary textAlign="right" style={{"height":"50px",  "width":"300px"}}>
             <Header as="h5" floated='left'>
@@ -62,7 +62,7 @@ export default class CourseCard extends React.Component {
                   <Icon name="tags"/>
                 }
                 content= {
-                  this.props.tags.map(tag => {
+                  this.props.tags && this.props.tags.map(tag => {
                     return ' ' + tag
                   }).toString()
                 }

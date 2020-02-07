@@ -48,6 +48,7 @@ const InstructorCourses = (props) => {
                 id={ course.id }
                 totalQueues={0}
                 openQueues={0}
+                kind={ course.kind }
               />
             </Grid.Column>
           ))

@@ -35,7 +35,7 @@ const Tags = (props) => {
           tags && tags.length > 0 ? tags.map((tag, index) => (
             <Label
               as="a"
-              color={ tag.isActive ? "blue" : "gray" }
+              color={ tag.isActive ? "blue" : ""}
               onClick={ () => handleTagClick(index) }
               content = { tag.name }/>
           )) : <Label color="blue" content="No Tags"/>

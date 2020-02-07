@@ -6,8 +6,8 @@ import * as ROUTES from '../../../../constants/routes';
 export default class CourseCard extends React.Component {
   render() {
     const path = {
-      pathname: ROUTES.COURSE,
-      state: { courseId: this.props.id }
+      pathname: this.props.kind === 'STUDENT' ? ROUTES.STUDENT : ROUTES.COURSE,
+      state: { courseId: this.props.id, }
     }
 
     return (
@@ -18,8 +18,7 @@ export default class CourseCard extends React.Component {
             content={this.props.department + " " + this.props.name}
             subheader={
               this.props.description.length <= 20 ? this.props.description :
-              this.props.description.substring(0, 20) + "..."
-            }/>
+              this.props.description.substring(0, 20) + "..." }/>
             </Link>
         </Segment>
         <Segment attached="bottom" secondary textAlign="right" style={{"height":"40px"}}>
