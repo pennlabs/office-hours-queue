@@ -22,8 +22,8 @@ const QueueForm = (props) => {
   const [success, setSuccess] = useState(false);
   const [queue, setQueue] = useState(props.queue);
   const [input, setInput] = useState({
-    name: null,
-    description: null,
+    name: queue.name,
+    description: queue.description,
     queueId: queue.id
   });
 
@@ -57,14 +57,14 @@ const QueueForm = (props) => {
           <Form.Field>
             <label>Name</label>
             <Form.Input
-              defaultValue={ queue.name }
+              defaultValue={ input.name }
               name='name' required
               onChange={ handleInputChange }/>
           </Form.Field>
           <Form.Field>
             <label>Description</label>
             <Form.Input
-              defaultValue={ queue.description }
+              defaultValue={ input.description }
               name='description' required
               onChange={ handleInputChange }/>
           </Form.Field>
