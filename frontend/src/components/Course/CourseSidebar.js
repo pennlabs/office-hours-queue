@@ -11,11 +11,11 @@ const CourseSidebar = (props) => (
     </Link>
     <Menu vertical secondary fluid>
       <Menu.Item
-        name="Queue"
+        name="Queues"
         icon='hourglass one'
-        active={props.active === 'queue'}
+        active={props.active === 'queues'}
         color='blue'
-        onClick={ () => props.clickFunc('queue') }/>
+        onClick={ () => props.clickFunc('queues') }/>
       <Menu.Item
         name="Roster"
         icon='users'

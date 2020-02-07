@@ -5,7 +5,7 @@ import _ from 'lodash';
 const RosterTable = (props) => {
   /* STATE */
   const [tableState, setTableState] = useState({ direction: null, column: null });
-  const [allUsers, setAllUsers] = useState(props.users);
+  const [allUsers, setAllUsers] = useState(_.sortBy(props.users, 'fullName'));
   const [filteredUsers, setFilteredUsers] = useState(allUsers);
 
   /* TODO:
@@ -20,11 +20,7 @@ const RosterTable = (props) => {
         column: clickedColumn,
         direction: 'ascending',
       });
-      setFilteredUsers(
-        filteredUsers.sort((a, b) => {
-          return a[clickedColumn] - b[clickedColumn];
-        })
-      );
+      setFilteredUsers(_.sortBy(filteredUsers, clickedColumn));
     } else {
       setTableState({
         column: tableState.column,

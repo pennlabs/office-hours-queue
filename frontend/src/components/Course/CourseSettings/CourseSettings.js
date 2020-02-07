@@ -4,10 +4,10 @@ import CourseForm from './CourseForm';
 
 const CourseSettings = (props) => {
   return (
-    <Grid.Column width={13}>
+    <div>
       <Grid.Row>
         <Segment basic>
-          <Header as="h1">
+          <Header as="h3">
             Course Settings
           </Header>
         </Segment>
@@ -17,7 +17,7 @@ const CourseSettings = (props) => {
           <CourseForm course={ props.course }/>
         </Segment>
       </Grid.Row>
-    </Grid.Column>
+    </div>
   );
 }
 

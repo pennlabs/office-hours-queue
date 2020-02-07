@@ -6,7 +6,7 @@ const Summary = (props) => {
     <Grid.Column width={13}>
       <Grid.Row>
         <Segment basic>
-          <Header as="h1">
+          <Header as="h3">
             Question Summary
           </Header>
         </Segment>
