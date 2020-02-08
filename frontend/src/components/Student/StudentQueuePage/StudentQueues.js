@@ -12,7 +12,7 @@ const StudentQueues = (props) => {
   return (
     <Grid.Row>
     {
-      queues && <Grid.Row columns={2}>
+      queues && <Grid.Row columns={queues.length}>
       {
         queues.length != 0 &&
         queues.map((queue, index) => (
@@ -33,6 +33,7 @@ const StudentQueues = (props) => {
         </Grid.Column>
       }
       </Grid.Row>
+      
     }
     </Grid.Row>
   );

@@ -57,7 +57,7 @@ const StudentQueuePage = (props) => {
     <Grid>
       {
         active === 'queues' &&
-        <StudentQueues queues={ queues }/>
+        <StudentQueues queues={ queues } refetch={ refetch }/>
       }
     </Grid>
   );

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Segment, Label, Header, Grid } from 'semantic-ui-react';
+import { Segment, Label, Header, Grid} from 'semantic-ui-react';
+import QuestionForm from './QuestionForm';
 
 const StudentQueue = (props) => {
   const [queue, setQueue] = useState(props.queue);
@@ -23,7 +24,7 @@ const StudentQueue = (props) => {
       />
       <Label content={ queue.estimatedWaitTime + " mins"} color="blue" icon="clock"/>
       <Grid.Row columns={1} padded="true">
-        
+        <QuestionForm queue={ queue } refetch={ props.refecth }/>
       </Grid.Row>
     </Segment>
   );
