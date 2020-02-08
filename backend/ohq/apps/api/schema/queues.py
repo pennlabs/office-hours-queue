@@ -3,13 +3,24 @@ from graphql_relay.node.node import from_global_id
 from django.db import transaction
 
 from ohq.apps.api.schema.types import *
+from ohq.apps.api.util import validateDayOfWeek, validateMinutesInDay
+
+
+class StartEndMinutesInput(graphene.InputObjectType):
+    start = graphene.Int(required=True)
+    end = graphene.Int(required=True)
+
+
+class StartEndTimesInput(graphene.InputObjectType):
+    day = graphene.Field(DaysOfWeekType, required=True)
+    times = graphene.List(StartEndMinutesInput, required=True)
 
 
 class CreateQueueInput(graphene.InputObjectType):
     name = graphene.String(required=True)
     description = graphene.String(required=False)
     tags = graphene.List(graphene.String, required=True)
-    start_end_times = graphene.String(required=True)
+    start_end_times = graphene.List(StartEndTimesInput, required=True)
     course_id = graphene.ID(required=True)
 
 
@@ -22,6 +33,21 @@ class CreateQueue(graphene.Mutation):
         input = CreateQueueInput(required=True)
 
     Output = CreateQueueResponse
+
+    @staticmethod
+    def startEndTimesInputToJSON(ss):
+        json = []
+        for s in ss:
+            if not validateDayOfWeek(s.day):
+                raise ValueError
+            if any(not validateMinutesInDay(time.start) or not validateMinutesInDay(time.end)
+                   for time in s.times):
+                raise ValueError
+            json.append({
+                "day": s.day,
+                "times": [{"start": time.start, "end": time.end} for time in s.times]
+            })
+        return json
 
     @staticmethod
     def mutate(root, info, input):
@@ -40,7 +66,7 @@ class CreateQueue(graphene.Mutation):
                     name=input.name,
                     description=input.description or "",
                     tags=input.tags,
-                    start_end_times=input.start_end_times,
+                    start_end_times=CreateQueue.startEndTimesInputToJSON(input.start_end_times),
                     course=course,
                 )
             else:
@@ -55,7 +81,7 @@ class UpdateQueueInput(graphene.InputObjectType):
     name = graphene.String(required=False)
     description = graphene.String(required=False)
     tags = graphene.List(graphene.String, required=False)
-    start_end_times = graphene.String(required=False)
+    start_end_times = graphene.List(StartEndTimesInput, required=True)
     archived = graphene.Boolean(required=False)
 
 
@@ -90,7 +116,7 @@ class UpdateQueue(graphene.Mutation):
             if input.tags is not None:
                 queue.tags = input.tags
             if input.start_end_times is not None:
-                queue.start_end_times = input.start_end_times
+                queue.start_end_times = CreateQueue.startEndTimesInputToJSON(input.start_end_times),
             if input.archived is not None:
                 queue.archived = input.archived
             queue.save()

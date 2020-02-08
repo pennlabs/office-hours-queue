@@ -4,7 +4,7 @@ from enum import Enum
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import PermissionsMixin, AbstractBaseUser, BaseUserManager
-from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.fields import ArrayField, JSONField
 from phonenumber_field.modelfields import PhoneNumberField
 from polymorphic.models import PolymorphicModel
 
@@ -190,7 +190,7 @@ class Queue(models.Model):
     archived = models.BooleanField(default=False)
 
     estimated_wait_time = models.IntegerField(default=0)
-    start_end_times = models.CharField(max_length=100)
+    start_end_times = JSONField()
 
     tags = ArrayField(models.CharField(max_length=20))
 

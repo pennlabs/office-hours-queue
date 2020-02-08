@@ -11,6 +11,16 @@ CourseUserKindType = graphene.Enum.from_enum(CourseUserKind)
 QuestionRejectionReasonType = graphene.Enum.from_enum(QuestionRejectionReason)
 
 
+class DaysOfWeekType(graphene.Enum):
+    M = "M"
+    T = "T"
+    W = "W"
+    R = "R"
+    F = "F"
+    S = "S"
+    N = "N"
+
+
 class CourseUserNode(DjangoObjectType):
     class Meta:
         model = CourseUser
@@ -119,6 +129,17 @@ class QuestionNode(DjangoObjectType):
     def resolve_feedback_answers(self, info, **kwargs):
         return FeedbackAnswer.objects.filter(question=self, **kwargs)
 
+
+class StartEndMinutes(graphene.ObjectType):
+    start = graphene.Int(required=True)
+    end = graphene.Int(required=True)
+
+
+class StartEndTimes(graphene.ObjectType):
+    day = graphene.Field(DaysOfWeekType, required=True)
+    times = graphene.List(StartEndMinutes, required=True)
+
+
 class QueueNode(DjangoObjectType):
     class Meta:
         model = Queue
@@ -131,16 +152,26 @@ class QueueNode(DjangoObjectType):
             'name',
             'description',
             'estimated_wait_time',
-            'start_end_times',
             'tags',
             'archived',
         )
         interfaces = (relay.Node,)
 
     questions = DjangoFilterConnectionField(QuestionNode)
+    start_end_times = graphene.List(StartEndTimes, required=True)
 
     def resolve_questions(self, info, **kwargs):
         return Question.objects.filter(queue=self, **kwargs)
+
+    def resolve_start_end_times(self, info, **kwargs):
+        # TODO change days of the week to an enum
+        return [
+            StartEndTimes(day=s["day"], times=[
+                StartEndMinutes(start=time["start"], end=time["end"])
+                for time in s["times"]
+            ])
+            for s in self.start_end_times
+        ]
 
 
 class CourseNode(DjangoObjectType):
