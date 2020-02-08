@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Segment, Header, Grid } from 'semantic-ui-react';
+import { Segment, Header, Grid, Form, Button } from 'semantic-ui-react';
 import RosterTable from './RosterTable';
 
 import { gql } from 'apollo-boost';
@@ -64,6 +64,21 @@ const Roster = (props) => {
             Roster
           </Header>
         </Segment>
+      </Grid.Row>
+      <Grid.Row>
+          <Form>
+            <Form.Field>
+              <Button content="Invite" color="blue" floated="right"/>
+            </Form.Field>
+            <Form.Group>
+              <Form.Field>
+                <Form.Dropdown placeholder="Filter..." selection options={[{key: 0, value: 0, text:"hello"}]}/>
+              </Form.Field>
+              <Form.Field>
+                <Form.Input placeholder="Search..." icon="search"/>
+              </Form.Field>
+            </Form.Group>
+          </Form>
       </Grid.Row>
       <Grid.Row>
         {
