@@ -30,8 +30,9 @@ const GET_COURSE = gql`
 
 const Course = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
+  const courseId = props.location.state ? props.location.state.courseId : "";
   const courseQuery = useQuery(GET_COURSE, { variables: {
-    id: props.location.state.courseId
+    id: courseId
   }});
 
   /* STATE */
@@ -40,17 +41,20 @@ const Course = (props) => {
 
   /* LOAD DATA FUNCTIONS */
   const loadCourse = (data) => {
-    var newCourse = {
-      kind: props.location.state.kind,
-      id: data.course.id,
-      department: data.course.department,
-      name: data.course.name,
-      description: data.course.description,
-      year: data.course.year,
-      semester: data.course.semester,
-      inviteOnly: data.course.inviteOnly
+    if (data && data.course) {
+      var newCourse = {
+        id: data.course.id,
+        department: data.course.department,
+        name: data.course.name,
+        description: data.course.description,
+        year: data.course.year,
+        semester: data.course.semester,
+        inviteOnly: data.course.inviteOnly
+      }
+      return newCourse;
+    } else {
+      return {}
     }
-    return newCourse;
   }
 
   /* UPDATE STATE */

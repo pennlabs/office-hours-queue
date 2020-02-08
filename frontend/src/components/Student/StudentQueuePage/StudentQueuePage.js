@@ -30,7 +30,7 @@ const StudentQueuePage = (props) => {
     id: props.course.id
   }});
 
-  const [queues, setQueues] = useState([]);
+  const [queues, setQueues] = useState(null);
   const [active, setActive] = useState('queues');
 
   const loadQueues = (data) => {
