@@ -52,6 +52,9 @@ const Roster = (props) => {
       setFilteredUsers(filteredUsers.reverse());
     }
   }
+  const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+  }
 
   /* GET USERS FROM DATA */
   const loadUsers = (data) => {
@@ -130,7 +133,7 @@ const Roster = (props) => {
                 <Table.Row>
                   <Table.Cell>{ user.fullName }</Table.Cell>
                   <Table.Cell>{ user.preferredName }</Table.Cell>
-                  <Table.Cell>{ user.role }</Table.Cell>
+                  <Table.Cell>{ capitalizeFirstLetter(user.role) }</Table.Cell>
                   <Table.Cell>{ user.email }</Table.Cell>
                 </Table.Row>
               ))
