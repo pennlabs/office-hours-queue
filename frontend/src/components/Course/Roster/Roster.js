@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Segment, Header, Grid, Form, Button } from 'semantic-ui-react';
-import RosterTable from './RosterTable';
+import { Segment, Header, Grid, Table } from 'semantic-ui-react';
+import RosterForm from './RosterForm';
+import _ from 'lodash';
 
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
@@ -33,6 +34,24 @@ const Roster = (props) => {
 
   /* STATE */
   const [users, setUsers] = useState(null);
+  const [filteredUsers, setFilteredUsers] = useState(null);
+  const [tableState, setTableState] = useState({ direction: null, column: null })
+
+  const handleSort = (clickedColumn) => {
+    if (tableState.column !== clickedColumn) {
+      setTableState({
+        column: clickedColumn,
+        direction: 'ascending',
+      });
+      setFilteredUsers(_.sortBy(filteredUsers, clickedColumn));
+    } else {
+      setTableState({
+        column: tableState.column,
+        direction: tableState.direction === 'ascending' ? 'descending' : 'ascending',
+      });
+      setFilteredUsers(filteredUsers.reverse());
+    }
+  }
 
   /* GET USERS FROM DATA */
   const loadUsers = (data) => {
@@ -48,11 +67,24 @@ const Roster = (props) => {
     return newUsers;
   }
 
+  /* FILTER USERS BASED ON INPUT */
+  const filterUsers = (input) => {
+    var newFilteredUsers = [];
+    users.map((user) => {
+      if (user.fullName.toUpperCase().includes(input.search) && (!input.role || user.role == input.role)) {
+        newFilteredUsers.push(user);
+      }
+    })
+    setFilteredUsers(newFilteredUsers);
+    setTableState({ direction: null, column: null })
+  }
+
   /* LOAD DATA */
   if (data && data.course) {
     var newUsers = loadUsers(data);
     if (JSON.stringify(newUsers) !== JSON.stringify(users)) {
       setUsers(newUsers);
+      setFilteredUsers(newUsers);
     }
   }
 
@@ -66,24 +98,46 @@ const Roster = (props) => {
         </Segment>
       </Grid.Row>
       <Grid.Row>
-          <Form>
-            <Form.Field>
-              <Button content="Invite" color="blue" floated="right"/>
-            </Form.Field>
-            <Form.Group>
-              <Form.Field>
-                <Form.Dropdown placeholder="Filter..." selection options={[{key: 0, value: 0, text:"hello"}]}/>
-              </Form.Field>
-              <Form.Field>
-                <Form.Input placeholder="Search..." icon="search"/>
-              </Form.Field>
-            </Form.Group>
-          </Form>
+        <RosterForm filterFunc={ filterUsers }/>
       </Grid.Row>
       <Grid.Row>
-        {
-          users && <RosterTable users={ users }/>
-        }
+      {
+        users &&
+        <Table sortable celled padded>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell
+                sorted={tableState.column === 'fullName' ? tableState.direction : null}
+                onClick={() => handleSort('fullName')}
+                width={3}>Full Name</Table.HeaderCell>
+              <Table.HeaderCell
+                sorted={tableState.column === 'preferredName' ? tableState.direction : null}
+                onClick={() => handleSort('preferredName')}
+                width={3}>Preferred Name</Table.HeaderCell>
+              <Table.HeaderCell
+                sorted={tableState.column === 'role' ? tableState.direction : null}
+                onClick={() => handleSort('role')}
+                width={2}>Role</Table.HeaderCell>
+              <Table.HeaderCell
+                sorted={tableState.column === 'email' ? tableState.direction : null}
+                onClick={() => handleSort('email')}
+                width={4}>Email</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {
+              filteredUsers.map(user => (
+                <Table.Row>
+                  <Table.Cell>{ user.fullName }</Table.Cell>
+                  <Table.Cell>{ user.preferredName }</Table.Cell>
+                  <Table.Cell>{ user.role }</Table.Cell>
+                  <Table.Cell>{ user.email }</Table.Cell>
+                </Table.Row>
+              ))
+            }
+          </Table.Body>
+        </Table>
+      }
       </Grid.Row>
     </div>
   );
