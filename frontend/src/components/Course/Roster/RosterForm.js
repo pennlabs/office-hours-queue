@@ -1,9 +1,45 @@
 import React, { useState } from 'react';
 import { Form, Button } from 'semantic-ui-react';
+import { gql } from 'apollo-boost';
+import { useMutation } from '@apollo/react-hooks';
+
+const INVITE_USER = gql`
+  mutation AddUserToCourse($input: AddUserToCourseInput!) {
+    addUserToCourse(input: $input) {
+      courseUser {
+        id
+      }
+    }
+  }
+`;
+
+const roleOptions = [
+  {
+    key: "PROFESSOR",
+    value: "PROFESSOR",
+    text: "Professor"
+  },
+  {
+    key: "HEAD_TA",
+    value: "HEAD_TA",
+    text: "Head TA"
+  },
+  {
+    key: "TA",
+    value: "TA",
+    text: "TA"
+  },
+  {
+    key: "STUDENT",
+    value: "STUDENT",
+    text: "Student"
+  }
+]
 
 const RosterForm = (props) => {
+  const [inviteUser, { loading, data }] = useMutation(INVITE_USER);
   const [input, setInput] = useState({
-    search: "M",
+    search: "",
     role: ""
   })
 
@@ -20,7 +56,12 @@ const RosterForm = (props) => {
       </Form.Field>
       <Form.Group>
         <Form.Field>
-          <Form.Dropdown placeholder="Filter..." selection options={[{key: 0, value: 0, text:"hello"}]}/>
+          <Form.Dropdown selection
+            clearable
+            placeholder="Filter..."
+            name="role" 
+            onChange={ handleInputChange }
+            options={ roleOptions }/>
         </Form.Field>
         <Form.Field>
           <Form.Input icon="search"
