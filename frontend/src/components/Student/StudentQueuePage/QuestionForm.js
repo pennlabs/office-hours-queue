@@ -41,15 +41,14 @@ const QuestionForm = (props) => {
   }
 
   const onSubmit = () => {
-    console.log(createQuestion({
+    createQuestion({
       variables: {
         input: input
       }
-    }));
-    /*.then(() => {
+    }).then(() => {
       props.refetch();
       setSuccess(true);
-    })*/
+    })
   }
 
   console.log(queue.id);
@@ -87,6 +86,12 @@ const QuestionForm = (props) => {
           content="Submit"
           color="blue"
           onClick={ () => { if (!loading) { onSubmit() } }}/>
+          {
+            !loading && success && <span>Added!</span>
+          }
+          {
+            loading && <span>Adding...</span>
+          }
       </Segment>
     </div>
   );

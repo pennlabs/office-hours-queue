@@ -17,7 +17,7 @@ const StudentQueues = (props) => {
         queues.length != 0 &&
         queues.map((queue, index) => (
           <Grid.Column>
-            <StudentQueue queue={ queue } editFunc={ () => props.editFunc(queue.id) }/>
+            <StudentQueue queue={ queue } refetch={ props.refetch }/>
           </Grid.Column>
         ))   
       }
