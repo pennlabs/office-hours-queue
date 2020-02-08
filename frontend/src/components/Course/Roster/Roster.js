@@ -74,7 +74,8 @@ const Roster = (props) => {
   const filterUsers = (input) => {
     var newFilteredUsers = [];
     users.map((user) => {
-      if (user.fullName.toUpperCase().includes(input.search) && (!input.role || user.role === input.role)) {
+      if ((user.fullName.toUpperCase().includes(input.search) || user.email.toUpperCase().includes(input.search))
+           && (!input.role || user.role === input.role)) {
         newFilteredUsers.push(user);
       }
     })
