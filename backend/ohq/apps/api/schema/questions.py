@@ -37,8 +37,8 @@ class CreateQuestion(graphene.Mutation):
                 raise PermissionError
             # Check for any other unanswered questions in this course
             if Question.objects.filter(
-                user=user,
-                course=course,
+                asked_by=user,
+                queue__course=course,
                 time_answered__isnull=True,
             ).exists():
                 raise ValueError

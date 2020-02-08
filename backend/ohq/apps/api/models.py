@@ -45,6 +45,9 @@ class AuthUser(AbstractBaseUser, PermissionsMixin):
     def get_user(self):
         return self.user_set.get()
 
+    def __str__(self):
+        return f"{self.firebase_uid} ({self.email})"
+
 
 class User(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
