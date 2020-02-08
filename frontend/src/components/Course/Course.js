@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import Roster from './Roster/Roster';
 import CourseSettings from './CourseSettings/CourseSettings';
-import InstructorQueuePage from './Queue/InstructorQueuePage/InstructorQueuePage';
-import StudentQueuePage from '../Student/StudentQueuePage/StudentQueuePage';
+import InstructorQueuePage from './InstructorQueuePage/InstructorQueuePage';
 import Analytics from './Analytics/Analytics';
 import CourseSidebar from './CourseSidebar';
 import Summary from './Summary/Summary';

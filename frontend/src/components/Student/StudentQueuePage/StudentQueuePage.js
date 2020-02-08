@@ -46,7 +46,6 @@ const StudentQueuePage = (props) => {
     return newQueues;
   }
 
-  console.log(queues);
   if (data && data.course) {
     var newQueues = loadQueues(data);
     if (JSON.stringify(newQueues) !== JSON.stringify(queues)) {

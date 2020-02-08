@@ -15,7 +15,6 @@ const Tags = (props) => {
   }
 
   const handleTagClick = (index) => {
-    console.log(tags);
     var newTags = tags;
     newTags[index].isActive = !newTags[index].isActive;
     setTags(newTags);

@@ -23,6 +23,7 @@ const StudentQueue = (props) => {
       />
       <Label content={ queue.estimatedWaitTime + " mins"} color="blue" icon="clock"/>
       <Grid.Row columns={1} padded="true">
+        
       </Grid.Row>
     </Segment>
   );

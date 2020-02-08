@@ -51,7 +51,6 @@ const Roster = (props) => {
   /* LOAD DATA */
   if (data && data.course) {
     var newUsers = loadUsers(data);
-    console.log(data);
     if (JSON.stringify(newUsers) !== JSON.stringify(users)) {
       setUsers(newUsers);
     }

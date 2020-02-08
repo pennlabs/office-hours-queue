@@ -77,7 +77,6 @@ const InstructorQueuePage = (props) => {
     var newQueue = {};
     queues.map((queue) => {
       if (queue.id === id) {
-        console.log(id);
         newQueue = queue;
       }
     })
