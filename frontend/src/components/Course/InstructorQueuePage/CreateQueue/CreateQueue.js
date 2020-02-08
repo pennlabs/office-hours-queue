@@ -24,7 +24,7 @@ const CreateQueue = (props) => {
     name: null,
     description: null,
     tags: [],
-    startEndTimesInput: {},
+    startEndTimes: [],
     courseId: props.courseId
   });
 
@@ -35,11 +35,14 @@ const CreateQueue = (props) => {
   }
 
   const onSubmit = () => {
-    console.log(createQueue({
+    createQueue({
       variables: {
         input: input
       }
-    }))
+    }).then(() => {
+      props.refetch();
+      setSuccess(true);
+    })
   }
 
   return (
@@ -58,22 +61,24 @@ const CreateQueue = (props) => {
               <label>Name</label>
               <Form.Input
                 placeholder="Name"
-                name='name' required
+                name='name'
+                disabled={ loading }
                 onChange={ handleInputChange }/>
             </Form.Field>
             <Form.Field>
               <label>Description</label>
               <Form.Input
                 placeholder="Description"
-                name='description' required
+                name='description'
+                disabled={ loading} 
                 onChange={ handleInputChange }/>
             </Form.Field>
-            <Button type='submit' onClick={ onSubmit }>Submit</Button>
+            <Button type='submit' onClick={ () => { if (!loading ) { onSubmit() }} }>Submit</Button>
             {
               loading && <span>Creating...</span>
             }
             {
-              success && <span>Created!</span>
+              success && !loading && <span>Created!</span>
             }
           </Form>
         </Segment>
