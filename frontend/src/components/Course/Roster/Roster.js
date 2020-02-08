@@ -16,9 +16,22 @@ query GetUsers($id: ID!) {
         node {
           kind
           user {
+            id
             fullName
             preferredName
             email
+          }
+        }
+      }
+    }
+    invitedCourseUsers {
+      edges {
+        node {
+          id
+          email
+          kind
+          invitedBy {
+            preferredName
           }
         }
       }
@@ -35,6 +48,7 @@ const Roster = (props) => {
   /* STATE */
   const [users, setUsers] = useState(null);
   const [filteredUsers, setFilteredUsers] = useState(null);
+  const [invitedUsers, setInvitedUsers] = useState(null);
   const [tableState, setTableState] = useState({ direction: null, column: null })
 
   const handleSort = (clickedColumn) => {
@@ -61,6 +75,7 @@ const Roster = (props) => {
     var newUsers = []
     data.course.courseUsers.edges.map((item) => {
       newUsers.push({
+        id: item.node.user.id,
         fullName: item.node.user.fullName,
         preferredName: item.node.user.preferredName,
         email: item.node.user.email,
@@ -68,6 +83,19 @@ const Roster = (props) => {
       })
     });
     return newUsers;
+  }
+
+  const loadInvitedUsers = (data) => {
+    var newInvitedUsers = []
+    data.course.invitedCourseUsers.edges.map((item) => {
+      newInvitedUsers.push({
+        id: item.node.user.id,
+        email: item.node.user.email,
+        role: item.node.kind,
+        invitedBy: item.node.invitedBy
+      })
+    });
+    return newInvitedUsers;
   }
 
   /* FILTER USERS BASED ON INPUT */
@@ -86,9 +114,14 @@ const Roster = (props) => {
   /* LOAD DATA */
   if (data && data.course) {
     var newUsers = loadUsers(data);
+    var newInvitedUsers = loadInvitedUsers(data);
     if (JSON.stringify(newUsers) !== JSON.stringify(users)) {
       setUsers(newUsers);
       setFilteredUsers(newUsers);
+    }
+
+    if (JSON.stringify(newInvitedUsers) !== JSON.stringify(invitedUsers)) {
+      setInvitedUsers(newInvitedUsers);
     }
   }
 
@@ -102,7 +135,7 @@ const Roster = (props) => {
         </Segment>
       </Grid.Row>
       <Grid.Row>
-        <RosterForm filterFunc={ filterUsers }/>
+      { users && <RosterForm filterFunc={ filterUsers }/> }
       </Grid.Row>
       <Grid.Row>
       {
