@@ -43,7 +43,7 @@ class CreateQuestion(graphene.Mutation):
             ).exists():
                 raise ValueError
             # TODO limit number of questions asked
-            if any(tag not in course.tags for tag in input.tags):
+            if any(tag not in queue.tags for tag in input.tags):
                 raise ValueError
             question = Question.objects.create(
                 queue=queue,
