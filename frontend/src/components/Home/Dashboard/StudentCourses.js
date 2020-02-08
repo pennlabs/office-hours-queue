@@ -26,6 +26,7 @@ const StudentCourses = (props) => {
   }, [props.courses])
 
   return (
+    <Grid style={{"width":"100%"}}>
     <Grid.Row columns={4} padded="true">
       <ModalAddStudentCourse
           open={ open }
@@ -49,6 +50,7 @@ const StudentCourses = (props) => {
         <AddCard clickFunc={ triggerFunc }/>
       </Grid.Column>
     </Grid.Row>
+    </Grid>
   );
 }
 

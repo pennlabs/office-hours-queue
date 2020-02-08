@@ -24,7 +24,7 @@ const CreateQueue = (props) => {
     name: null,
     description: null,
     tags: [],
-    startEndTimes: "",
+    startEndTimesInput: {},
     courseId: props.courseId
   });
 
@@ -35,14 +35,11 @@ const CreateQueue = (props) => {
   }
 
   const onSubmit = () => {
-    createQueue({
+    console.log(createQueue({
       variables: {
         input: input
       }
-    }).then(() => {
-        props.refetch();
-        setSuccess(true);
-    })
+    }))
   }
 
   return (
