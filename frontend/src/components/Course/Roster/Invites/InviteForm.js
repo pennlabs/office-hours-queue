@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form } from 'semantic-ui-react';
+import { Form, Message } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 
@@ -21,6 +21,16 @@ const ADD_USER = gql`
   mutation AddUserToCourse($input: AddUserToCourseInput!) {
     addUserToCourse(input: $input) {
       courseUser {
+        id
+      }
+    }
+  }
+`;
+
+const INVITE_EMAIL = gql`
+  mutation InviteEmail($input: InviteEmailInput!) {
+    inviteEmail(input: $input) {
+      invitedCourseUser {
         id
       }
     }
@@ -53,8 +63,9 @@ const roleOptions = [
 const InviteForm = (props) => {
   const [invitableUsers, invitableUsersRes] = useLazyQuery(INVITABLE_USERS);
   const [addUser, addUserRes] = useMutation(ADD_USER);
+  const [inviteEmail, inviteEmailRes] = useMutation(INVITE_EMAIL);
 
-  const [input, setInput] = useState({ email: null, fullName: null, userId: null });
+  const [input, setInput] = useState({email: null, fullName: null, userId: null, invEmail: null });
   const [results, setResults] = useState(null);
 
   const handleInputChange = (e, { name, value }) => {
@@ -93,14 +104,25 @@ const InviteForm = (props) => {
             kind: input.role
           }
         }
-      }).then((data) => {
-        
+      })
+    }
+  }
+
+  const onInvite = () => {
+    if (input.invEmail) {
+      inviteEmail({
+        variables: {
+          input: {
+          }
+        }
       })
     }
   }
 
   const isLoading = () => {
-    return (addUserRes && addUserRes.loading) || (invitableUsersRes && invitableUsersRes.loading)
+    return (addUserRes && addUserRes.loading) || 
+      (invitableUsersRes && invitableUsersRes.loading) || 
+      (inviteEmail && inviteEmail.loading);
   }
 
   if (invitableUsersRes.data && invitableUsersRes.data.invitableUsers) {
@@ -157,9 +179,30 @@ const InviteForm = (props) => {
           </Form.Field>
           <Form.Field>
             <Form.Button
-              content="Invite" color="blue"
+              content="Add" color="blue"
               disabled={ isLoading() }
               onClick={ onSubmit }/>
+          </Form.Field>
+        </div>
+      }
+      {
+        results && results.length == 0 &&
+        <div>
+          <Message header="No Results" negative
+            content="Those inputs did not return any results, but you can invite someone by email below!"/>
+          <Form.Field>
+            <label>Email</label> 
+            <Form.Input
+              name="invEmail"
+              disabled={ isLoading() }
+              onChange={ handleInputChange }
+            />
+          </Form.Field>
+          <Form.Field>
+            <Form.Button
+              content="Invite" color="blue"
+              disabled={ isLoading() }
+              onClick={ onInvite }/>
           </Form.Field>
         </div>
       }

@@ -51,8 +51,6 @@ const QuestionForm = (props) => {
     })
   }
 
-  console.log(queue.id);
-
   useEffect(() => {
     setQueue(props.queue);
   }, [props.queue]);
@@ -86,7 +84,7 @@ const QuestionForm = (props) => {
           content="Submit"
           color="blue"
           disabled={ loading } 
-          onClick={ onSubmit() }/>
+          onClick={ onSubmit }/>
           {
             !loading && success && <span>Added!</span>
           }
