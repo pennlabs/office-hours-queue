@@ -40,7 +40,7 @@ const RemoveIcon = (props) => {
         trigger={
           <Icon name="trash alternate" loading={ loading }/>
         }
-        content={<Button color='red' content='Remove' onClick={ () => { if (!loading) { onSubmit() }} }/>}
+        content={<Button color='red' content='Remove' disabled={ loading }  onClick={ onSubmit }/>}
         on='click'
         position='top center'
       />

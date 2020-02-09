@@ -70,7 +70,7 @@ const QueueForm = (props) => {
               disabled={ loading }
               onChange={ handleInputChange }/>
           </Form.Field>
-          <Button type='submit' onClick={ () => { if (!loading) { onSubmit() } }}>Submit</Button>
+          <Button type='submit' disabled={ loading }  onClick={ onSubmit }>Submit</Button>
         </div>
       }
       {

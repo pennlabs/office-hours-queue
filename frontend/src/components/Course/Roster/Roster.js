@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Segment, Header, Grid, Table } from 'semantic-ui-react';
 import RosterForm from './RosterForm';
 import RemoveIcon from './RemoveIcon';
+import InviteModal from './Invites/InviteModal';
 import _ from 'lodash';
 
 import { gql } from 'apollo-boost';
@@ -50,8 +51,15 @@ const Roster = (props) => {
   const [users, setUsers] = useState(null);
   const [filteredUsers, setFilteredUsers] = useState(null);
   const [invitedUsers, setInvitedUsers] = useState(null);
+  const [open, setOpen] = useState(false);
   const [tableState, setTableState] = useState({ direction: null, column: null })
 
+  /* MODAL FUNCTIONS */
+  const triggerModal = () => {
+    setOpen(!open);
+  }
+
+  /* TABLE FUNCTIONS */
   const handleSort = (clickedColumn) => {
     if (tableState.column !== clickedColumn) {
       setTableState({
@@ -67,6 +75,7 @@ const Roster = (props) => {
       setFilteredUsers(filteredUsers.reverse());
     }
   }
+
   const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   }
@@ -112,6 +121,11 @@ const Roster = (props) => {
     setTableState({ direction: null, column: null })
   }
 
+  const closeModal = () => {
+    refetch();
+    triggerModal();
+  }
+
   /* LOAD DATA */
   if (data && data.course) {
     var newUsers = loadUsers(data);
@@ -128,6 +142,9 @@ const Roster = (props) => {
 
   return (
     <div>
+      {
+       users && <InviteModal open={ open } closeFunc={ closeModal } courseId={ props.course.id }/>
+      }
       <Grid.Row>
         <Segment basic>
           <Header as="h3">
@@ -136,7 +153,7 @@ const Roster = (props) => {
         </Segment>
       </Grid.Row>
       <Grid.Row>
-      { users && <RosterForm filterFunc={ filterUsers }/> }
+      { users && <RosterForm filterFunc={ filterUsers } inviteFunc={ triggerModal }/> }
       </Grid.Row>
       <Grid.Row>
       {

@@ -85,7 +85,8 @@ const QuestionForm = (props) => {
         <Button compact
           content="Submit"
           color="blue"
-          onClick={ () => { if (!loading) { onSubmit() } }}/>
+          disabled={ loading } 
+          onClick={ onSubmit() }/>
           {
             !loading && success && <span>Added!</span>
           }

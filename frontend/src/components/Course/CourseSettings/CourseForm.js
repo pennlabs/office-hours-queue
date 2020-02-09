@@ -111,7 +111,7 @@ const CourseForm = (props) => {
           value={true} toggle
           onChange={ handleInputChange }/>
       </Form.Field>
-      <Button type='submit' onClick={ () => { if (!loading) { onSubmit() } }}>Submit</Button>
+      <Button type='submit' disabled={ loading } onClick={ onSubmit }>Submit</Button>
       {
         success && !loading && <span>Updated!</span>
       }

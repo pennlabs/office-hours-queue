@@ -70,10 +70,10 @@ const CreateQueue = (props) => {
               <Form.Input
                 placeholder="Description"
                 name='description'
-                disabled={ loading} 
+                disabled={ loading } 
                 onChange={ handleInputChange }/>
             </Form.Field>
-            <Button type='submit' onClick={ () => { if (!loading ) { onSubmit() }} }>Submit</Button>
+            <Button type='submit' disabled={ loading }  onClick={ onSubmit }>Submit</Button>
             {
               loading && <span>Creating...</span>
             }

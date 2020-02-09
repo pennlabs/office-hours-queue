@@ -52,7 +52,7 @@ const RosterForm = (props) => {
   return (
     <Form>
       <Form.Field>
-        <Button content="Invite" color="blue" floated="right"/>
+        <Button content="Invite" color="blue" floated="right" onClick={ props.inviteFunc }/>
       </Form.Field>
       <Form.Group>
         <Form.Field>
