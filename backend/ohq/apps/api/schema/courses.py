@@ -196,6 +196,11 @@ class InviteEmail(graphene.Mutation):
                 kind__in=CourseUserKind.leadership(),
             ).exists():
                 raise PermissionError
+            if CourseUser.objects.filter(
+                user__email=input.email,
+                course=course,
+            ):
+                raise ValueError
 
             invited_course_user = InvitedCourseUser.objects.create(
                 email=input.email,
