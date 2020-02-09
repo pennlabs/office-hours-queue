@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Segment, Header, Grid, Table } from 'semantic-ui-react';
 import RosterForm from './RosterForm';
+import RemoveIcon from './RemoveIcon';
 import _ from 'lodash';
 
 import { gql } from 'apollo-boost';
@@ -159,6 +160,8 @@ const Roster = (props) => {
                 sorted={tableState.column === 'email' ? tableState.direction : null}
                 onClick={() => handleSort('email')}
                 width={4}>Email</Table.HeaderCell>
+                <Table.HeaderCell
+                width={1}>Remove</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
           <Table.Body>
@@ -169,6 +172,9 @@ const Roster = (props) => {
                   <Table.Cell>{ user.preferredName }</Table.Cell>
                   <Table.Cell>{ capitalizeFirstLetter(user.role) }</Table.Cell>
                   <Table.Cell>{ user.email }</Table.Cell>
+                  <Table.Cell textAlign="center">
+                    <RemoveIcon courseId={ props.course.id } id={ user.id } refetch={ refetch }/>
+                  </Table.Cell>
                 </Table.Row>
               ))
             }
