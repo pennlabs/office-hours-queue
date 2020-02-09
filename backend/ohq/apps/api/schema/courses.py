@@ -244,8 +244,9 @@ class RemoveUserFromCourse(graphene.Mutation):
             )
             if (
                 course_user_to_remove.kind in CourseUserKind.leadership() and
-                CourseUser.objects.filter(course=course, kind=CourseUserKind.leadership()).count()
-                    == 1
+                CourseUser.objects.filter(
+                    course=course, kind__in=CourseUserKind.leadership()
+                ).count() == 1
             ):
                 raise ValueError
 
