@@ -14,7 +14,7 @@
       }
 
       .header-logo {
-        width: 250px;
+        width: 190px;
         padding-bottom: 15px;
         padding-top: 20px;
         padding-left: 5px;
@@ -63,21 +63,21 @@
       }
 
 
-      .code-container {
+      .link-container {
         text-align: center;
         padding: 10px;
         margin: 25px;
       }
 
-      .code-container a {
+      .link-container a {
         color: #234568;
       }
 
-      .code-container h1 {
+      .link-container h1 {
         font-family: "Lucida Console", Monaco, monospace;
         display: inline;
         padding: 10px 20px;
-        border: 3px solid #f9c33d;
+        border: 3px solid ##4285F4;
         text-decoration: none;
       }
 
@@ -85,29 +85,24 @@
   </head>
 
   <body>
-    <img src="" class="header-logo">
+    <img src="http://cdn.mcauto-images-production.sendgrid.net/d1623489cc8dbe1a/e60e7de0-8c49-4734-8109-307a3a1bd2ab/772x380.png" class="header-logo">
 
     <div class="content-box">
 
-      <h1 style="margin-top:0px">{{title}}</h1>
+      <h1 style="margin-top:0px">{{ title }}</h1>
 
-      <p>{{{ body }}}</p>
+      <p>{{ body }}</p>
 
       <p>Click below to create your account!</p>
 
-      <div class="code-container">
-        <a href="{{signUpCodeUrl}}"><h1>Get started</h1></a>
+      <div class="link-container">
+        <a href="{{ sign_up_link }}"><h1>Get started</h1></a>
       </div>
 
       <p>As always, the OHQ team is here if you have any questions, comments, or suggestions — send
           us an email anytime at <i>support@ohq.io</i><p>
-      <div class="images">
-        <img src="" class="body-img float-left">
-        <img src="" class="body-img float-right" style="width: 60px">
-       </div>
     </div>
     <div class="footer">
-      <img src="" width="50px">
       <p style="font-size:12px;">&copy; 2020 OHQ</p>
     </div>
   </body>

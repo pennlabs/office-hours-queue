@@ -130,6 +130,20 @@ class CourseUserKind(ChoicesEnum):
             CourseUserKind.HEAD_TA.name,
         )
 
+    @staticmethod
+    def to_pretty(kind):
+        if kind == CourseUserKind.STUDENT.name:
+            return "student"
+        if kind == CourseUserKind.TA.name:
+            return "TA"
+        if kind == CourseUserKind.HEAD_TA.name:
+            return "head TA"
+        if kind == CourseUserKind.PROFESSOR.name:
+            return "professor"
+        if kind == CourseUserKind.ADMIN.name:
+            return "admin"
+
+
 class CourseUser(models.Model):
     course = models.ForeignKey(Course, related_name='course_users', on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name='course_users', on_delete=models.CASCADE)
