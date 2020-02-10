@@ -143,7 +143,10 @@ const Roster = (props) => {
   return (
     <div>
       {
-       users && <InviteModal open={ open } closeFunc={ closeModal } courseId={ props.course.id }/>
+        users &&
+          <InviteModal open={ open }
+            closeFunc={ closeModal }
+            courseId={ props.course.id }/>
       }
       <Grid.Row>
         <Segment basic>
@@ -191,6 +194,19 @@ const Roster = (props) => {
                   <Table.Cell>{ user.email }</Table.Cell>
                   <Table.Cell textAlign="center">
                     <RemoveIcon courseId={ props.course.id } id={ user.id } refetch={ refetch }/>
+                  </Table.Cell>
+                </Table.Row>
+              ))
+            }
+            {
+              invitedUsers.map(user => (
+                <Table.Row>
+                  <Table.Cell><i>Invite Pending</i></Table.Cell>
+                  <Table.Cell textAlign="center">—</Table.Cell>
+                  <Table.Cell>{ capitalizeFirstLetter(user.role) }</Table.Cell>
+                  <Table.Cell>{ user.email }</Table.Cell>
+                  <Table.Cell textAlign="center">
+                    —
                   </Table.Cell>
                 </Table.Row>
               ))

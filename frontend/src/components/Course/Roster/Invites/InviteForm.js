@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Message } from 'semantic-ui-react';
+import { Form } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
 
@@ -61,6 +61,7 @@ const InviteForm = (props) => {
   }
 
   return (
+    <div>
     <Form>
       <Form.Field>
         <label>Email</label> 
@@ -85,6 +86,7 @@ const InviteForm = (props) => {
           onClick={ onSubmit }/>
       </Form.Field>
     </Form>
+    </div>
   )
 }
 
