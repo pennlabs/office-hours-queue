@@ -35,20 +35,28 @@ const Queue = (props) => {
 
   const getQuestions = (data) => {
     var newQuestions = [];
-    data && data.queue.questions.edges.map((node) => {
+    data && data.queue.questions.edges.map((item) => {
       newQuestions.push({
-        id: node.id,
-        text: node.text,
-        tags: node.tags,
-        timeAsked: node.timeAsked,
-        askedBy: node.askedBy
+        id: item.node.id,
+        text: item.node.text,
+        tags: item.node.tags,
+        timeAsked: item.node.timeAsked,
+        askedBy: item.node.askedBy
       })
     });
     return newQuestions;
   }
 
   const [queue, setQueue] = useState(props.queue);
-  const [questions, setQuestions] = useState(getQuestions(data));
+  const [questions, setQuestions] = useState();
+
+  if (data && data.queue) {
+    var newQuestions = getQuestions(data);
+    if (JSON.stringify(newQuestions) !== JSON.stringify(questions)) {
+      console.log(newQuestions);
+      setQuestions(newQuestions);
+    }
+  }
 
   return (
     <Segment basic>

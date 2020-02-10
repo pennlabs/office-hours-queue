@@ -7,20 +7,14 @@ const Questions = (props) => {
 
   useEffect(() => {
     setQuestions(props.questions);
-  }, [props.questions])
+  }, [props.questions]);
 
   return (
     <Grid.Row>
       {
         questions && questions.length != 0 && questions.map((question) => (
           <Grid.Row>
-            <QuestionCard
-              asker={question.askedBy}
-              text={question.text}
-              timeAsked={question.timeAsked}
-              tags={question.tags}
-              id={question.id}
-            />
+            <QuestionCard question={ question }/>
           </Grid.Row>
         ))
       }

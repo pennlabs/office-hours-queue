@@ -1,12 +1,15 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Segment, Header, Icon, Button, Popup} from 'semantic-ui-react';
-
+/*
 export default class CourseCard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       currentlyBeingAnswered : false
     };
+
+    var d = new Date(this.props.timeAsked);
+    console.log(d.getHours());
   }
 
   answerCard = () => this.setState( {currentlyBeingAnswered: true })
@@ -17,12 +20,12 @@ export default class CourseCard extends React.Component {
           <Segment attached="top" color="blue" style={{"height":"50px", "width":"300px"}}>
               <Header as="h5" floated='right' color="blue">
                 <Header.Content>
-                  {this.props.time_asked}
+                  {this.props.timeAsked}
                 </Header.Content>
               </Header>
               <Header as="h5" floated='left'>
                 <Header.Content>
-                  {this.props.asker}
+                  { this.props.asker.preferredName }
                 </Header.Content>
               </Header>
           </Segment>
@@ -76,3 +79,76 @@ export default class CourseCard extends React.Component {
       );
     }
 }
+*/
+
+const QuestionCard = (props) => {
+  const [question, setQuestion] = useState(props.question);
+
+  const timeString = (date) => {
+    var d = new Date(date);
+    var hour = d.getHours() > 12 ? d.getHours() - 12 : d.getHours();
+    var meridiem = d.getHours() > 12 ? "pm" : "am";
+    return `${hour}:${d.getMinutes()} ${meridiem}`;
+  }
+
+  return (
+    question && <Segment basic>
+          <Segment attached="top" color="blue" style={{"height":"50px", "width":"300px"}}>
+              <Header as="h5" floated='right' color="blue">
+                <Header.Content>
+                  { timeString(question.timeAsked) }
+                </Header.Content>
+              </Header>
+              <Header as="h5" floated='left'>
+                <Header.Content>
+                  { question.askedBy.preferredName }
+                </Header.Content>
+              </Header>
+          </Segment>
+          <Segment attached
+            style={{"height":"80px",  "width":"300px"}}
+            tertiary={props.started}>
+          { question.text && (question.text.length < 100 ? 
+            question.text : question.text.substring(0, 99) + "...") }
+          </Segment>
+          <Segment attached="bottom" secondary textAlign="right" style={{"height":"50px",  "width":"300px"}}>
+            <Header as="h5" floated='left'>
+              {
+                !props.started ?
+                <Header.Content>
+                  <Button compact
+                    size='mini'
+                    color='red'
+                    content='Delete'/>
+                  <Button compact
+                    size='mini'
+                    color='green'
+                    content='Answer'/>
+                </Header.Content>
+                  :
+                  <Header.Content>
+                    <Button compact
+                      size='mini'
+                      color='green'
+                      content='Finish'/>
+                  </Header.Content>
+              }
+              </Header>
+              <Popup
+                trigger= {
+                  <Icon name="tags"/>
+                }
+                content= {
+                  question.tags && question.tags.map(tag => {
+                    return ' ' + tag
+                  }).toString()
+                }
+                basic
+                position="bottom left"
+                inverted/>
+          </Segment>
+        </Segment>
+  );
+}
+
+export default QuestionCard;

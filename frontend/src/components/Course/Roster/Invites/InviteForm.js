@@ -65,7 +65,7 @@ const InviteForm = (props) => {
   const [addUser, addUserRes] = useMutation(ADD_USER);
   const [inviteEmail, inviteEmailRes] = useMutation(INVITE_EMAIL);
 
-  const [input, setInput] = useState({email: null, fullName: null, userId: null, invEmail: null });
+  const [input, setInput] = useState({email: null, fullName: null, userId: null, invEmail: null, invRole: null });
   const [results, setResults] = useState(null);
 
   const handleInputChange = (e, { name, value }) => {
@@ -113,16 +113,19 @@ const InviteForm = (props) => {
       inviteEmail({
         variables: {
           input: {
+            courseId: props.courseId,
+            email: input.invEmail,
+            kind: input.invRole
           }
         }
-      })
+      });
     }
   }
 
   const isLoading = () => {
     return (addUserRes && addUserRes.loading) || 
       (invitableUsersRes && invitableUsersRes.loading) || 
-      (inviteEmail && inviteEmail.loading);
+      (inviteEmailRes && inviteEmailRes.loading);
   }
 
   if (invitableUsersRes.data && invitableUsersRes.data.invitableUsers) {
@@ -197,6 +200,14 @@ const InviteForm = (props) => {
               disabled={ isLoading() }
               onChange={ handleInputChange }
             />
+          </Form.Field>
+          <Form.Field>
+            <Form.Dropdown selection
+              placeholder="Add As..."
+              name="invRole" 
+              disabled={ isLoading() }
+              onChange={ handleInputChange }
+              options={ roleOptions }/>
           </Form.Field>
           <Form.Field>
             <Form.Button

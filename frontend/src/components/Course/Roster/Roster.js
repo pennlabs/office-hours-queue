@@ -99,8 +99,8 @@ const Roster = (props) => {
     var newInvitedUsers = []
     data.course.invitedCourseUsers.edges.map((item) => {
       newInvitedUsers.push({
-        id: item.node.user.id,
-        email: item.node.user.email,
+        id: item.node.id,
+        email: item.node.email,
         role: item.node.kind,
         invitedBy: item.node.invitedBy
       })
