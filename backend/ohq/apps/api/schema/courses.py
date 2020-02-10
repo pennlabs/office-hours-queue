@@ -3,6 +3,7 @@ from graphql_relay.node.node import from_global_id
 from django.db import transaction
 
 from ohq.apps.api.schema.types import *
+from ohq.apps.api.util.sendgrid import send_invitation_email
 
 
 class CreateCourseInput(graphene.InputObjectType):
@@ -208,7 +209,7 @@ class InviteEmail(graphene.Mutation):
                 invited_by=user,
                 kind=input.kind,
             )
-
+        send_invitation_email(invited_course_user)
         return InviteEmailResponse(invited_course_user=invited_course_user)
 
 

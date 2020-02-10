@@ -2,7 +2,7 @@ import os
 from jinja2 import Template
 from decouple import config
 from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
+from sendgrid.helpers.mail import Mail, Email
 
 from django.conf import settings
 
@@ -27,7 +27,7 @@ def send_invitation_email(invited_course_user: InvitedCourseUser):
 
     html_content = template.render(title=title, body=body, sign_up_link="https://ohq.io")
     message = Mail(
-        from_email="info@ohq.io",
+        from_email=Email("info@ohq.io", "OHQ"),
         to_emails=invited_course_user.email,
         subject=subject,
         html_content=html_content)
