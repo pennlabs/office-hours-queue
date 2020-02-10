@@ -81,7 +81,7 @@ class UpdateQueueInput(graphene.InputObjectType):
     name = graphene.String(required=False)
     description = graphene.String(required=False)
     tags = graphene.List(graphene.String, required=False)
-    start_end_times = graphene.List(StartEndTimesInput, required=True)
+    start_end_times = graphene.List(StartEndTimesInput, required=False)
     archived = graphene.Boolean(required=False)
 
 
