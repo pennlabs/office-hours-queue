@@ -53,7 +53,6 @@ const Queue = (props) => {
   if (data && data.queue) {
     var newQuestions = getQuestions(data);
     if (JSON.stringify(newQuestions) !== JSON.stringify(questions)) {
-      console.log(newQuestions);
       setQuestions(newQuestions);
     }
   }

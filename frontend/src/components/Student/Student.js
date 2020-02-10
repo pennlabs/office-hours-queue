@@ -57,7 +57,6 @@ const Student = (props) => {
   if (courseQuery && courseQuery.data) {
     var newCourse = loadCourse(courseQuery.data);
     if (JSON.stringify(newCourse) !== JSON.stringify(course)) {
-      console.log("helo");
       setCourse(newCourse);
     }
   }
