@@ -44,3 +44,41 @@ export default class DeleteQuestionModal extends React.Component {
     );
   }
 }
+
+const DeleteQuestionModal = (props) => {
+  const [question, setQuestion] = useState(props.question);
+
+  return (
+    question && <Modal open={ props.open }>
+        <Modal.Header>Delete Question</Modal.Header>
+        <Modal.Content>
+          <Modal.Description>
+            You are about to delete the following question from
+            <b>{" " + question.askedBy.preferredName}</b>:<br/>
+            <Segment inverted color="blue">{'"' + question.text + '"'}</Segment>
+            <Form>
+              <Form.Field>
+                <Dropdown
+                   placeholder="Select Reason"
+                   options={deleteOptions}
+                   selection
+                   onChange={this.props.funcs.dropdownFunc}
+                   value={this.props.attrs.reason}
+                 />
+              </Form.Field>
+              <Form.Field
+                control={TextArea}
+                disabled={this.props.attrs.textDisabled}
+              />
+            </Form>
+          </Modal.Description>
+        </Modal.Content>
+        <Modal.Actions>
+          <Button content="Cancel" compact onClick={this.props.funcs.closeFunc}/>
+          <Button content="Delete" color="red" compact onClick={this.props.funcs.deleteFunc}/>
+        </Modal.Actions>
+      </Modal>
+  );
+}
+
+export default DeleteQuestionModal;
