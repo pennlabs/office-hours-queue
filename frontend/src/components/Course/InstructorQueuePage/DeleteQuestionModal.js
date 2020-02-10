@@ -4,7 +4,7 @@ import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
 
 /* GRAPHQL QUERIES/MUTATIONS */
-const DELETE_QUESTION = gql`
+const REJECT_QUESTION = gql`
   mutation RejectQuestion($input: RejectQuestionInput!) {
     rejectQuestion(input: $input) {
       question {
@@ -26,12 +26,24 @@ const DeleteQuestionModal = (props) => {
   const [question, setQuestion] = useState(props.question);
   const [input, setInput] = useState({questionId:props.question.id, rejectedReason: null});
   const [otherDisabled, setOtherDisabled] = useState(true);
+  const [rejectQuestion, { loading, error }] = useMutation(REJECT_QUESTION);
 
   const handleInputChange = (e, {name, value}) =>{
     input[name] = value;
     setInput(input);
     setOtherDisabled(name == 'rejectedReason' && value != 'OTHER');
   }
+
+  const onSubmit = () => {
+    if (input.rejectedReason) {
+      console.log(rejectQuestion({
+        variables: {
+          input: input
+        }
+      }));
+    }
+  }
+
 
   return (
     question && <Modal open={ props.open }>
@@ -61,7 +73,7 @@ const DeleteQuestionModal = (props) => {
         </Modal.Content>
         <Modal.Actions>
           <Button content="Cancel" onClick={props.closeFunc}/>
-          <Button content="Delete" color="red"/>
+          <Button content="Delete" color="red" onClick={onSubmit}/>
         </Modal.Actions>
       </Modal>
   );
