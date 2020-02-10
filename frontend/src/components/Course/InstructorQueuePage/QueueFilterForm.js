@@ -27,6 +27,13 @@ const QueueFilterForm = (props) => {
       text: tag
     }
   ));
+  const [input, setInput] = useState({ tags: [], status: null });
+
+  const handleInputChange = (e, {name, value}) => {
+    input[name] = value;
+    setInput(input);
+    props.changeFunc(input);
+  }
 
   return (
     <Form style={{"marginTop":"10px"}}>
@@ -36,13 +43,17 @@ const QueueFilterForm = (props) => {
           <label>Status</label>
           <Form.Dropdown clearable
             selection
+            name="status"
             options={ statusOptions }/>
         </Form.Field>
         <Form.Field>
           <label>Tags</label>
           <Form.Dropdown multiple
+          clearable
             selection
-            options={ tagOptions }/>
+            name="tags"
+            options={ tagOptions }
+            onChange={ handleInputChange }/>
         </Form.Field>
       </Form.Group>
       }

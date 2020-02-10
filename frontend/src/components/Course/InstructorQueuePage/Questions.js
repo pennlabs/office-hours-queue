@@ -3,16 +3,44 @@ import { Grid, Message, Segment } from 'semantic-ui-react';
 import QuestionCard from './QuestionCard';
 
 const Questions = (props) => {
+  const filter = (questions, filters) => {
+    var newFilteredQuestions = []
+    questions.forEach((question) => {
+      console.log(filters.tags.length);
+      if (filters.tags.length === 0 || intersects(question.tags, filters.tags)) {
+        newFilteredQuestions.push(question);
+      }
+    });
+    return newFilteredQuestions;
+  }
+
+  const intersects = (l1, l2) => {
+    var count = 0;
+    l1.forEach((o1) => {
+      if (l2.includes(o1)) {
+        count += 1;
+      }
+    })
+    return count > 0;
+  }
+
   const [questions, setQuestions] = useState(props.questions);
+  const [filteredQuestions, setFilteredQuestions] = useState(filter(props.questions, props.filters));
 
   useEffect(() => {
     setQuestions(props.questions);
+    setFilteredQuestions(props.questions, props.filters)
   }, [props.questions]);
+
+  useEffect(() => {
+    console.log(props.filters);
+    setFilteredQuestions(filter(questions, props.filters));
+  }, [props.filters]);
 
   return (
     <Grid.Row>
       {
-        questions && questions.length != 0 && questions.map((question) => (
+        questions && questions.length != 0 && filteredQuestions.map((question) => (
           <Grid.Row>
             <QuestionCard question={ question }/>
           </Grid.Row>

@@ -66,7 +66,7 @@ const Queue = (props) => {
   }
 
   return (
-    <Segment basic>
+    questions ? <Segment basic>
       <Header as="h3">
         { queue.name }
         <Header.Subheader>
@@ -74,7 +74,7 @@ const Queue = (props) => {
         </Header.Subheader>
       </Header>
       <Label
-        content={ questions && questions.length + " users" }
+        content={ questions.length + " users" }
         color="blue"
         icon="user"
       />
@@ -86,12 +86,12 @@ const Queue = (props) => {
         onClick={ props.editFunc }
       />
       <Grid.Row>
-        <QueueFilterForm tags={ tags }/>  
+        <QueueFilterForm tags={ tags } changeFunc={ setFilters }/>  
       </Grid.Row>
       <Grid.Row columns={1} padded="true">
-          <Questions questions={ questions }/>
+          <Questions questions={ questions } filters={ filters }/>
       </Grid.Row>
-    </Segment>
+    </Segment> : <Segment basic></Segment>
   );
 }
 
