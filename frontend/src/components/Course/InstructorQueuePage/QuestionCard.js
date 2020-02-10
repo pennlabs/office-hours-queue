@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { Segment, Header, Icon, Button, Popup} from 'semantic-ui-react';
+import DeleteQuestionModal from './DeleteQuestionModal';
+
 /*
 export default class CourseCard extends React.Component {
   constructor(props) {
@@ -83,6 +85,7 @@ export default class CourseCard extends React.Component {
 
 const QuestionCard = (props) => {
   const [question, setQuestion] = useState(props.question);
+  const [open, setOpen] = useState(false);
 
   const timeString = (date) => {
     var d = new Date(date);
@@ -91,8 +94,13 @@ const QuestionCard = (props) => {
     return `${hour}:${d.getMinutes()} ${meridiem}`;
   }
 
+  const triggerModal = () => {
+    setOpen(!open);
+  } 
+
   return (
     question && <Segment basic>
+        <DeleteQuestionModal open={open} question={question} closeFunc={triggerModal}/>
           <Segment attached="top" color="blue" style={{"height":"50px", "width":"300px"}}>
               <Header as="h5" floated='right' color="blue">
                 <Header.Content>
@@ -119,7 +127,8 @@ const QuestionCard = (props) => {
                   <Button compact
                     size='mini'
                     color='red'
-                    content='Delete'/>
+                    content='Delete'
+                    onClick={triggerModal}/>
                   <Button compact
                     size='mini'
                     color='green'
