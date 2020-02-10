@@ -201,7 +201,7 @@ const Roster = (props) => {
             {
               invitedUsers.map(user => (
                 <Table.Row>
-                  <Table.Cell><i>Invite Pending</i></Table.Cell>
+                  <Table.Cell><i>Invite Pending from: </i><b>{ user.invitedBy.preferredName }</b></Table.Cell>
                   <Table.Cell textAlign="center">—</Table.Cell>
                   <Table.Cell>{ capitalizeFirstLetter(user.role) }</Table.Cell>
                   <Table.Cell>{ user.email }</Table.Cell>

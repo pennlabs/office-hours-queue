@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { Header, Label, Grid, Segment } from 'semantic-ui-react';
+import { Header, Label, Grid, Segment, Form } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
 import Questions from './Questions';
+import QueueFilterForm from './QueueFilterForm';
 
 const GET_QUESTIONS = gql`
   query GetQuestions($id: ID!) {
     queue(id: $id) {
       id
+      tags
       questions {
         edges {
           node {
@@ -49,11 +51,17 @@ const Queue = (props) => {
 
   const [queue, setQueue] = useState(props.queue);
   const [questions, setQuestions] = useState();
+  const [tags, setTags] = useState();
+  const [filters, setFilters] = useState({ tags: [], status: null });
 
   if (data && data.queue) {
     var newQuestions = getQuestions(data);
     if (JSON.stringify(newQuestions) !== JSON.stringify(questions)) {
       setQuestions(newQuestions);
+    }
+
+    if (JSON.stringify(data.queue.tags) !== JSON.stringify(tags)) {
+      setTags(data.queue.tags);
     }
   }
 
@@ -77,6 +85,9 @@ const Queue = (props) => {
         icon="cog"
         onClick={ props.editFunc }
       />
+      <Grid.Row>
+        <QueueFilterForm tags={ tags }/>  
+      </Grid.Row>
       <Grid.Row columns={1} padded="true">
           <Questions questions={ questions }/>
       </Grid.Row>
