@@ -1,12 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react';
 import _ from 'lodash';
 import { Table, Segment, Menu, Header, Grid, Image } from 'semantic-ui-react';
 
 import Chart from 'chart.js';
-import { Bar } from "react-chartjs-2";
 
 import { fakePeople } from '../Roster/peopledata';
-import { dateLabels, DashboardBarChart, options, options2, options3, options4 } from './mockData';
+import { options, options2, options3, options4 } from './mockData';
 
 import { compose } from 'recompose';
 
@@ -32,10 +31,10 @@ class Analytics extends React.Component {
         const node3 = this.node3;
         const node4 = this.node4;
 
-        var myChart = new Chart(node, options);
-        var myChart2 = new Chart(node2, options2);
-        var myChart3 = new Chart(node3, options3);
-        var myChart4 = new Chart(node4, options4)
+        new Chart(node, options);
+        new Chart(node2, options2);
+        new Chart(node3, options3);
+        new Chart(node4, options4)
     }
 
     handleSort = (clickedColumn) => () => {
@@ -58,7 +57,7 @@ class Analytics extends React.Component {
       }
 
     render(){
-      const { column, people, direction } = this.state
+      const { column, direction } = this.state
         return(
             <Grid.Column width={13}>
               <Grid padded>
