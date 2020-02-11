@@ -47,7 +47,8 @@ const Queue = (props) => {
         timeAsked: item.node.timeAsked,
         askedBy: item.node.askedBy,
         timeWithdrawn: item.node.timeWithdrawn,
-        timeRejected: item.node.timeRejected
+        timeRejected: item.node.timeRejected,
+        timeStarted: true
       })
     });
     return newQuestions;

@@ -60,14 +60,14 @@ const QuestionCard = (props) => {
           </Segment>
           <Segment attached
             style={{"height":"80px",  "width":"300px"}}
-            tertiary={props.started}>
+            tertiary={ question.timeStarted }>
           { question.text && (question.text.length < 100 ? 
             question.text : question.text.substring(0, 99) + "...") }
           </Segment>
           <Segment attached="bottom" secondary textAlign="right" style={{"height":"50px",  "width":"300px"}}>
             <Header as="h5" floated='left'>
               {
-                !props.started ?
+                !question.timeStarted ?
                 <Header.Content>
                   <Button compact
                     size='mini'
@@ -89,6 +89,18 @@ const QuestionCard = (props) => {
                   </Header.Content>
               }
               </Header>
+              {
+                question.timeStarted &&
+                <Popup
+                  trigger= {
+                    <Icon name="sync" loading/>
+                  }
+                  content= {
+                    "Started by: Marshall"
+                  }
+                  basic inverted
+                  position="bottom right"/>
+              }
               <Popup
                 trigger= {
                   <Icon name="tags"/>
@@ -98,9 +110,8 @@ const QuestionCard = (props) => {
                     return ' ' + tag
                   }).toString()
                 }
-                basic
-                position="bottom left"
-                inverted/>
+                basic inverted
+                position="bottom left"/>
           </Segment>
         </Segment>
   );
