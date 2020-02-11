@@ -40,6 +40,8 @@ httplib2==0.17.0
 hyperlink==19.0.0
 idna==2.8
 incremental==17.5.0
+Jinja2==2.11.1
+MarkupSafe==1.1.1
 msgpack==0.6.2
 phonenumbers==8.11.3
 promise==2.3
