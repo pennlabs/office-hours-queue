@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { Segment, Header, Icon, Button, Popup} from 'semantic-ui-react';
 import DeleteQuestionModal from './DeleteQuestionModal';
+import { gql } from 'apollo-boost';
+import { useMutation } from '@apollo/react-hooks'
 
 /*
 export default class CourseCard extends React.Component {
@@ -83,20 +85,43 @@ export default class CourseCard extends React.Component {
 }
 */
 
+const START_QUESTION = gql`
+  mutation StartQuestion($input: StartQuestionInput!) {
+    startQuestion(input: $input) {
+      question {
+        id
+      }
+    }
+  }
+`
+
 const QuestionCard = (props) => {
   const [question, setQuestion] = useState(props.question);
   const [open, setOpen] = useState(false);
+  const [startQuestion, { loading, error }] = useMutation(START_QUESTION);
 
   const timeString = (date) => {
     var d = new Date(date);
     var hour = d.getHours() > 12 ? d.getHours() - 12 : d.getHours();
     var meridiem = d.getHours() > 12 ? "pm" : "am";
-    return `${hour}:${d.getMinutes()} ${meridiem}`;
+    var minutes = d.getMinutes() < 10 ? "0" + d.getMinutes() : d.getMinutes()
+    return `${hour}:${minutes} ${meridiem}`;
   }
 
   const triggerModal = () => {
     setOpen(!open);
   } 
+
+  const onAnswer = () => {
+    console.log(
+    startQuestion({
+      variables: {
+        input: {
+          questionId: question.id
+        }
+      }
+    }))
+  }
 
   return (
     question && <Segment basic>
@@ -132,7 +157,8 @@ const QuestionCard = (props) => {
                   <Button compact
                     size='mini'
                     color='green'
-                    content='Answer'/>
+                    content='Answer'
+                    onClick={onAnswer}/>
                 </Header.Content>
                   :
                   <Header.Content>
