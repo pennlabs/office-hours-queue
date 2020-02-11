@@ -4,87 +4,6 @@ import DeleteQuestionModal from './DeleteQuestionModal';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks'
 
-/*
-export default class CourseCard extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      currentlyBeingAnswered : false
-    };
-
-    var d = new Date(this.props.timeAsked);
-    console.log(d.getHours());
-  }
-
-  answerCard = () => this.setState( {currentlyBeingAnswered: true })
-
-    render() {
-      return (
-        <Segment basic>
-          <Segment attached="top" color="blue" style={{"height":"50px", "width":"300px"}}>
-              <Header as="h5" floated='right' color="blue">
-                <Header.Content>
-                  {this.props.timeAsked}
-                </Header.Content>
-              </Header>
-              <Header as="h5" floated='left'>
-                <Header.Content>
-                  { this.props.asker.preferredName }
-                </Header.Content>
-              </Header>
-          </Segment>
-          <Segment attached
-            style={{"height":"80px",  "width":"300px"}}
-            tertiary={this.props.started}>
-          {this.props.text && (this.props.text.length < 100 ? this.props.text : this.props.text.substring(0, 99) + "...")}
-          </Segment>
-          <Segment attached="bottom" secondary textAlign="right" style={{"height":"50px",  "width":"300px"}}>
-            <Header as="h5" floated='left'>
-              {
-                !this.props.started ?
-                <Header.Content>
-                  <Button compact
-                    size='mini'
-                    color='red'
-                    content='Delete'
-                    onClick={() => this.props.deleteFunc(this.props.queueIndex, this.props.id)}/>
-                  <Button compact
-                    size='mini'
-                    color='green'
-                    content='Answer'
-                    onClick={() => this.props.answerFunc(this.props.queueIndex, this.props.id)}/>
-                </Header.Content>
-                  :
-                  <Header.Content>
-                    <Button compact
-                      size='mini'
-                      color='green'
-                      content='Finish'
-                      onClick={() => this.props.finishFunc(this.props.queueIndex, this.props.id)}/>
-                  </Header.Content>
-                }
-              </Header>
-              <Popup
-                trigger= {
-                  <Icon name="tags"/>
-                }
-                content= {
-                  this.props.tags && this.props.tags.map(tag => {
-                    return ' ' + tag
-                  }).toString()
-                }
-                basic
-                position="bottom left"
-                inverted
-              />
-  
-          </Segment>
-        </Segment>
-      );
-    }
-}
-*/
-
 const START_QUESTION = gql`
   mutation StartQuestion($input: StartQuestionInput!) {
     startQuestion(input: $input) {
@@ -113,19 +32,20 @@ const QuestionCard = (props) => {
   } 
 
   const onAnswer = () => {
-    console.log(
     startQuestion({
       variables: {
         input: {
           questionId: question.id
         }
       }
-    }))
+    }).then(() => {
+      props.refetch();
+    });
   }
 
   return (
     question && <Segment basic>
-        <DeleteQuestionModal open={open} question={question} closeFunc={triggerModal}/>
+        <DeleteQuestionModal open={open} question={question} closeFunc={triggerModal} refetch={ props.refetch }/>
           <Segment attached="top" color="blue" style={{"height":"50px", "width":"300px"}}>
               <Header as="h5" floated='right' color="blue">
                 <Header.Content>

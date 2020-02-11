@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Message, Segment } from 'semantic-ui-react';
+import { Grid, Message } from 'semantic-ui-react';
 import QuestionCard from './QuestionCard';
 
 const Questions = (props) => {
+  const isVisible = (question) => {
+    return !question.timeRejected && !question.timeWithdrawn && !question.timeAnswered;
+  }
+
   const filter = (questions, filters) => {
     var newFilteredQuestions = []
     questions.forEach((question) => {
       if (filters.tags.length === 0 || intersects(question.tags, filters.tags)) {
-        console.log(!question.timeRejected)
-        if (!question.timeWithdrawn) {
+        if (isVisible(question)) {
           newFilteredQuestions.push(question);
         }
       }
@@ -26,32 +29,30 @@ const Questions = (props) => {
     return count > 0;
   }
 
-  const [questions, setQuestions] = useState(props.questions);
   const [filteredQuestions, setFilteredQuestions] = useState(filter(props.questions, props.filters));
 
   useEffect(() => {
-    setQuestions(props.questions);
-    setFilteredQuestions(props.questions, props.filters)
+    setFilteredQuestions(filter(props.questions, props.filters));
   }, [props.questions]);
 
+  /*
   useEffect(() => {
     console.log(props.filters);
     setFilteredQuestions(filter(questions, props.filters));
   }, [props.filters]);
-
-  console.log(questions);
+  */
 
   return (
     <Grid.Row>
       {
-        questions && questions.length != 0 && filteredQuestions.map((question) => (
+        filteredQuestions && filteredQuestions.length != 0 && filteredQuestions.map((question) => (
           <Grid.Row>
-            <QuestionCard question={ question }/>
+            <QuestionCard question={ question } refetch={ props.refetch }/>
           </Grid.Row>
         ))
       }
       {
-        questions && questions.length == 0 &&
+        filteredQuestions && filteredQuestions.length == 0 &&
         <Grid.Row style={{"marginTop":"10px"}}>
           <Message header="Empty Queue" content="This queue currently has no questions."/>
         </Grid.Row>

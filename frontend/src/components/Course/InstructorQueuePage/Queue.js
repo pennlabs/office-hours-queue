@@ -17,12 +17,12 @@ const GET_QUESTIONS = gql`
             text
             tags
             timeAsked
+            timeWithdrawn
+            timeRejected
             askedBy {
               id
               preferredName
             }
-            timeWithdrawn
-            timeRejected
           }
         }
       }
@@ -45,7 +45,9 @@ const Queue = (props) => {
         text: item.node.text,
         tags: item.node.tags,
         timeAsked: item.node.timeAsked,
-        askedBy: item.node.askedBy
+        askedBy: item.node.askedBy,
+        timeWithdrawn: item.node.timeWithdrawn,
+        timeRejected: item.node.timeRejected
       })
     });
     return newQuestions;
@@ -91,7 +93,7 @@ const Queue = (props) => {
         <QueueFilterForm tags={ tags } changeFunc={ setFilters }/>  
       </Grid.Row>
       <Grid.Row columns={1} padded="true">
-          <Questions questions={ questions } filters={ filters }/>
+          <Questions questions={ questions } filters={ filters } refetch={ refetch }/>
       </Grid.Row>
     </Segment> : <Segment basic></Segment>
   );

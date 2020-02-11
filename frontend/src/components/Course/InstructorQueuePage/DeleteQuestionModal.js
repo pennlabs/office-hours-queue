@@ -36,14 +36,16 @@ const DeleteQuestionModal = (props) => {
 
   const onSubmit = () => {
     if (input.rejectedReason) {
-      console.log(rejectQuestion({
+      rejectQuestion({
         variables: {
           input: input
         }
-      }));
+      }).then(() => {
+        props.refetch();
+        props.closeFunc();
+      });
     }
   }
-
 
   return (
     question && <Modal open={ props.open }>
