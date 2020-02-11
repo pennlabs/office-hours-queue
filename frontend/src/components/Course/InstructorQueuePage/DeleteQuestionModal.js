@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { Form, Modal, Button, Segment, Dropdown, TextArea } from 'semantic-ui-react';
+import { Form, Modal, Button, Segment } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
 

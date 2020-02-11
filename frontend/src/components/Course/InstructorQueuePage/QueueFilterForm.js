@@ -40,16 +40,9 @@ const QueueFilterForm = (props) => {
       {
         tagOptions && <Form.Group>
         <Form.Field>
-          <label>Status</label>
-          <Form.Dropdown clearable
-            selection
-            name="status"
-            options={ statusOptions }/>
-        </Form.Field>
-        <Form.Field>
           <label>Tags</label>
           <Form.Dropdown multiple
-          clearable
+            clearable
             selection
             name="tags"
             options={ tagOptions }

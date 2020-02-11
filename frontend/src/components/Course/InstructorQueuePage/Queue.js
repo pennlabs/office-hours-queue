@@ -21,6 +21,8 @@ const GET_QUESTIONS = gql`
               id
               preferredName
             }
+            timeWithdrawn
+            timeRejected
           }
         }
       }

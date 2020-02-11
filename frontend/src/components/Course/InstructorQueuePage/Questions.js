@@ -6,9 +6,11 @@ const Questions = (props) => {
   const filter = (questions, filters) => {
     var newFilteredQuestions = []
     questions.forEach((question) => {
-      console.log(filters.tags.length);
       if (filters.tags.length === 0 || intersects(question.tags, filters.tags)) {
-        newFilteredQuestions.push(question);
+        console.log(!question.timeRejected)
+        if (!question.timeWithdrawn) {
+          newFilteredQuestions.push(question);
+        }
       }
     });
     return newFilteredQuestions;
@@ -36,6 +38,8 @@ const Questions = (props) => {
     console.log(props.filters);
     setFilteredQuestions(filter(questions, props.filters));
   }, [props.filters]);
+
+  console.log(questions);
 
   return (
     <Grid.Row>
