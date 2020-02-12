@@ -111,9 +111,9 @@ class QuestionNode(DjangoObjectType):
             'text',
             'tags',
             'time_asked',
-            'time_last_updated',
-            'time_answered',
             'time_withdrawn',
+            'time_started'
+            'time_answered',
             'time_rejected',
             'rejected_reason_other',
             'queue',
