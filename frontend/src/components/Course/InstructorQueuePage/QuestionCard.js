@@ -12,12 +12,23 @@ const START_QUESTION = gql`
       }
     }
   }
-`
+`;
+
+const FINISH_QUESTION = gql`
+  mutation FinishQuestion($input: FinishQuestionInput!) {
+    finishQuestion(input: $input) {
+      question {
+        id
+      }
+    }
+  }
+`;
 
 const QuestionCard = (props) => {
   const [question, setQuestion] = useState(props.question);
   const [open, setOpen] = useState(false);
-  const [startQuestion, { loading, error }] = useMutation(START_QUESTION);
+  const [startQuestion, startQuestionRes] = useMutation(START_QUESTION);
+  const [finishQuestion, finishQuestionRes] = useMutation(FINISH_QUESTION);
 
   const timeString = (date) => {
     var d = new Date(date);
@@ -41,6 +52,22 @@ const QuestionCard = (props) => {
     }).then(() => {
       props.refetch();
     });
+  }
+
+  const onFinish = () => {
+    finishQuestion({
+      variables: {
+        input: {
+          questionId: question.id
+        }
+      }
+    }).then(() => {
+      props.refetch();
+    });
+  }
+
+  const isLoading = () => {
+    return startQuestionRes && startQuestionRes.loading && finishQuestionRes && finishQuestionRes.loading;
   }
 
   return (
@@ -73,19 +100,23 @@ const QuestionCard = (props) => {
                     size='mini'
                     color='red'
                     content='Delete'
-                    onClick={triggerModal}/>
+                    disabled={ isLoading() }
+                    onClick={ triggerModal }/>
                   <Button compact
                     size='mini'
                     color='green'
                     content='Answer'
-                    onClick={onAnswer}/>
+                    disabled={ isLoading() }
+                    onClick={ onAnswer }/>
                 </Header.Content>
                   :
                   <Header.Content>
                     <Button compact
                       size='mini'
                       color='green'
-                      content='Finish'/>
+                      content='Finish'
+                      disabled={ isLoading() }
+                      onClick={ onFinish }/>
                   </Header.Content>
               }
               </Header>
@@ -96,7 +127,7 @@ const QuestionCard = (props) => {
                     <Icon name="sync" loading/>
                   }
                   content= {
-                    "Started by:" + question.answeredBy.preferredName
+                    "Started by: " + question.answeredBy.preferredName
                   }
                   basic inverted
                   position="bottom right"/>
