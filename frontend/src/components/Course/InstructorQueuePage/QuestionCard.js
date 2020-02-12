@@ -43,8 +43,6 @@ const QuestionCard = (props) => {
     });
   }
 
-  console.log(question);
-
   return (
     question && <Segment basic>
         <DeleteQuestionModal open={open} question={question} closeFunc={triggerModal} refetch={ props.refetch }/>

@@ -19,6 +19,7 @@ const GET_QUESTIONS = gql`
             timeAsked
             timeWithdrawn
             timeRejected
+            timeStarted
             answeredBy {
               id
               preferredName
