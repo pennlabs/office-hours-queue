@@ -35,13 +35,6 @@ const Questions = (props) => {
     setFilteredQuestions(filter(props.questions, props.filters));
   }, [props.questions]);
 
-  /*
-  useEffect(() => {
-    console.log(props.filters);
-    setFilteredQuestions(filter(questions, props.filters));
-  }, [props.filters]);
-  */
-
   return (
     <Grid.Row>
       {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Segment, Header, Icon, Button, Popup} from 'semantic-ui-react';
 import DeleteQuestionModal from './DeleteQuestionModal';
 import { gql } from 'apollo-boost';
@@ -69,6 +69,11 @@ const QuestionCard = (props) => {
   const isLoading = () => {
     return startQuestionRes && startQuestionRes.loading && finishQuestionRes && finishQuestionRes.loading;
   }
+
+  
+  useEffect(() => {
+    setQuestion(props.question);
+  }, [props.question])
 
   return (
     question && <Segment basic>
