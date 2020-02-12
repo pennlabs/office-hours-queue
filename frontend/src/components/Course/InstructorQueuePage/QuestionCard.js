@@ -43,6 +43,8 @@ const QuestionCard = (props) => {
     });
   }
 
+  console.log(question);
+
   return (
     question && <Segment basic>
         <DeleteQuestionModal open={open} question={question} closeFunc={triggerModal} refetch={ props.refetch }/>
@@ -96,7 +98,7 @@ const QuestionCard = (props) => {
                     <Icon name="sync" loading/>
                   }
                   content= {
-                    "Started by: Marshall"
+                    "Started by:" + question.answeredBy.preferredName
                   }
                   basic inverted
                   position="bottom right"/>

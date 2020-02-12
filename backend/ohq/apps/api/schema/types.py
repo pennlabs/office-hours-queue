@@ -112,7 +112,7 @@ class QuestionNode(DjangoObjectType):
             'tags',
             'time_asked',
             'time_withdrawn',
-            'time_started'
+            'time_started',
             'time_answered',
             'time_rejected',
             'rejected_reason_other',

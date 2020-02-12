@@ -19,6 +19,10 @@ const GET_QUESTIONS = gql`
             timeAsked
             timeWithdrawn
             timeRejected
+            answeredBy {
+              id
+              preferredName
+            }
             askedBy {
               id
               preferredName
@@ -48,7 +52,8 @@ const Queue = (props) => {
         askedBy: item.node.askedBy,
         timeWithdrawn: item.node.timeWithdrawn,
         timeRejected: item.node.timeRejected,
-        timeStarted: true
+        timeStarted: item.node.timeStarted,
+        answeredBy: item.node.answeredBy
       })
     });
     return newQuestions;
