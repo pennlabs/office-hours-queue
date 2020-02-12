@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Grid, Segment, Header, Tab } from 'semantic-ui-react';
 import QueueForm from './QueueForm';
 import TagForm from './TagForm';
+import ScheduleForm from './ScheduleForm';
 
 const QueueSettings = (props) => {
   /* STATE */
@@ -32,7 +33,7 @@ const QueueSettings = (props) => {
               render: () => { return <TagForm refetch={ props.refetch } queue={ queue }/>}
             }, {
               menuItem: "Schedule",
-              render: () => {return <div>TODO</div>}
+              render: () => {return <ScheduleForm/>}
             }]}/>
         </Segment>
       </Grid.Row>
