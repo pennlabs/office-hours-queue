@@ -101,7 +101,7 @@ const Course = (props) => {
         }
         {
           courseQuery.data && active === 'summary' &&
-          <Summary/>
+          <Summary course= {course }/>
         }
       </Grid.Column>
     </Grid>
