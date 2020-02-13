@@ -100,7 +100,7 @@ const Summary = (props) => {
           text: qs.node.text,
           tags: qs.node.tags,
           queue: qs.node.queue.name,
-          timeAsked: new Date(Date.parse(qs.node.timeAsked)).toLocaleString('en-US'),
+          timeAsked: qs.node.timeAsked,
           askedBy: qs.node.askedBy.fullName,
           answeredBy: qs.node.answeredBy ? qs.node.answeredBy.fullName : "",
           rejectedBy: qs.node.rejectedBy ? qs.node.rejectedBy.fullName : ""
@@ -117,7 +117,7 @@ const Summary = (props) => {
     var newQuestions = loadQuestions(data);
     if (JSON.stringify(newQuestions) !== JSON.stringify(questions)) {
       setQuestions(newQuestions);
-      setFilteredQuestions(newQuestions);
+      setFilteredQuestions(_.sortBy(newQuestions, 'timeAsked').reverse());
     }
   }
 
@@ -144,44 +144,43 @@ const Summary = (props) => {
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell
-                sorted={tableState.column === 'fullName' ? tableState.direction : null}
-                onClick={() => handleSort('fullName')}
-                width={3}>Student Name</Table.HeaderCell>
+                sorted={tableState.column === 'asker' ? tableState.direction : null}
+                onClick={() => handleSort('asker')}
+                width={2}>Asker</Table.HeaderCell>
               <Table.HeaderCell
-                sorted={tableState.column === 'instructorName' ? tableState.direction : null}
-                onClick={() => handleSort('instructorName')}
-                width={3}>Instructor Name</Table.HeaderCell>
+                sorted={tableState.column === 'answerer' ? tableState.direction : null}
+                onClick={() => handleSort('answerer')}
+                width={2}>Answerer</Table.HeaderCell>
               <Table.HeaderCell
                 sorted={tableState.column === 'questionAsked' ? tableState.direction : null}
                 onClick={() => handleSort('questionAsked')}
-                width={3}>Question Asked</Table.HeaderCell>
-              <Table.HeaderCell
-                sorted={tableState.column === 'tags' ? tableState.direction : null}
-                onClick={() => handleSort('tags')}
-                width={3}>Tags</Table.HeaderCell>
+                width={5}>Question</Table.HeaderCell>
               <Table.HeaderCell
                 sorted={tableState.column === 'queue' ? tableState.direction : null}
                 onClick={() => handleSort('queue')}
-                width={3}>Queue</Table.HeaderCell>
+                width={2}>Queue/Tags</Table.HeaderCell>
               <Table.HeaderCell
                 sorted={tableState.column === 'timeAsked' ? tableState.direction : null}
                 onClick={() => handleSort('timeAsked')}
-                width={3}>Time Asked</Table.HeaderCell>
+                width={1}>Time Asked</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
           <Table.Body>
             {
-              filteredQuestions.map(question => (
+              filteredQuestions.map(qs => (
                 <Table.Row>
-                  <Table.Cell>{ question.askedBy }</Table.Cell>
-                  <Table.Cell>{ question.answeredBy !== '' ? question.answeredBy : 
-                                question.rejectedBy !== '' ? "Rejected by: " + question.rejectedBy :
+                  <Table.Cell>{ qs.askedBy }</Table.Cell>
+                  <Table.Cell>{ qs.answeredBy !== '' ? qs.answeredBy : 
+                                qs.rejectedBy !== '' ? "Rejected by: " + qs.rejectedBy :
                                 "" }
                   </Table.Cell>
-                  <Table.Cell>{ question.text }</Table.Cell>
-                  <Table.Cell>{ question.tags.join(', ') }</Table.Cell>
-                  <Table.Cell>{ question.queue }</Table.Cell>
-                  <Table.Cell>{ question.timeAsked }</Table.Cell>
+                  <Table.Cell>{ qs.text }</Table.Cell>
+                  <Table.Cell>{ qs.queue } <br/> 
+                                {qs.tags.length !== 0 ? qs.tags.join(', ') : ''}
+                  </Table.Cell>
+                  <Table.Cell>{new Date(Date.parse(qs.timeAsked)).toLocaleString('en-US', 
+                                {dateStyle: 'short', timeStyle: 'short'})}
+                  </Table.Cell>
                 </Table.Row>
               ))
             }
