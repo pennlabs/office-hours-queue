@@ -150,6 +150,10 @@ const Summary = (props) => {
                 onClick={() => handleSort('tags')}
                 width={3}>Tags</Table.HeaderCell>
               <Table.HeaderCell
+                sorted={tableState.column === 'queue' ? tableState.direction : null}
+                onClick={() => handleSort('queue')}
+                width={3}>Queue</Table.HeaderCell>
+              <Table.HeaderCell
                 sorted={tableState.column === 'timeAsked' ? tableState.direction : null}
                 onClick={() => handleSort('timeAsked')}
                 width={3}>Time Asked</Table.HeaderCell>
@@ -163,6 +167,7 @@ const Summary = (props) => {
                   <Table.Cell>{ question.answeredBy }</Table.Cell>
                   <Table.Cell>{ question.text }</Table.Cell>
                   <Table.Cell>{ question.tags.join(', ') }</Table.Cell>
+                  <Table.Cell>{ question.queue }</Table.Cell>
                   <Table.Cell>{ question.timeAsked }</Table.Cell>
                 </Table.Row>
               ))
