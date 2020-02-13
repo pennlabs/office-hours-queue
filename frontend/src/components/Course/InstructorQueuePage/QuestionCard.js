@@ -91,10 +91,10 @@ const QuestionCard = (props) => {
               </Header>
           </Segment>
           <Segment attached
-            style={{"height":"80px",  "width":"300px"}}
+            style={{"width":"300px"}}
             tertiary={ question.timeStarted }>
           { question.text && (question.text.length < 100 ? 
-            question.text : question.text.substring(0, 99) + "...") }
+            question.text : question.text) }
           </Segment>
           <Segment attached="bottom" secondary textAlign="right" style={{"height":"50px",  "width":"300px"}}>
             <Header as="h5" floated='left'>

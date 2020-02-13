@@ -93,11 +93,11 @@ const Home = (props) => {
     <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
       <HomeSidebar active={ active } clickFunc={ setActive }/>
       {
-        data && active === 'dashboard' &&
+        courses && active === 'dashboard' &&
         <Dashboard courses={ courses } refetch={ refetch }/>
       }
       {
-        data && active === 'account_settings' &&
+        user && active === 'account_settings' &&
         <AccountSettings user={ user } refetch={ refetch }/>
       }
     </Grid>

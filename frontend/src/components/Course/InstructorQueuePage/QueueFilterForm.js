@@ -1,24 +1,6 @@
 import React, { useState } from 'react';
 import { Form } from 'semantic-ui-react';
 
-const statusOptions = [
-  {
-    key: "UNANSWERED",
-    value: "UNANSWERED",
-    text: "Unanswered"
-  },
-  {
-    key: "STARTED",
-    value: "STARTED",
-    text: "Started"
-  },
-  {
-    key: "REJECTED",
-    value: "REJECTED",
-    text: "Rejected"
-  }
-]
-
 const QueueFilterForm = (props) => {
   const tagOptions = props.tags && props.tags.map((tag) => (
     {
@@ -27,7 +9,7 @@ const QueueFilterForm = (props) => {
       text: tag
     }
   ));
-  const [input, setInput] = useState({ tags: [], status: null });
+  const [input, setInput] = useState({ tags: [] });
 
   const handleInputChange = (e, {name, value}) => {
     input[name] = value;
@@ -42,7 +24,6 @@ const QueueFilterForm = (props) => {
         <Form.Field>
           <label>Tags</label>
           <Form.Dropdown multiple
-            clearable
             selection
             name="tags"
             options={ tagOptions }

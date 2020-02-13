@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Header, Label, Grid, Segment, Form } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
@@ -62,21 +62,60 @@ const Queue = (props) => {
     return newQuestions;
   }
 
+  /* FILTERING QUESTIONS FUNC */
+  const isVisible = (question) => {
+    return !question.timeRejected && !question.timeWithdrawn && !question.timeAnswered;
+  }
+
+  const filter = (questions, filters) => {
+    var newFilteredQuestions = []
+    questions.forEach((question) => {
+      if (filters.tags.length === 0 || intersects(question.tags, filters.tags)) {
+        if (isVisible(question)) {
+          newFilteredQuestions.push(question);
+        }
+      }
+    });
+    return newFilteredQuestions;
+  }
+
+  const intersects = (l1, l2) => {
+    var count = 0;
+    l1.forEach((o1) => {
+      if (l2.includes(o1)) {
+        count += 1;
+      }
+    })
+    return count > 0;
+  }
+
+  const handleFilterChange = (input) => {
+    setFilters(input);
+    setFilteredQuestions(filter(questions, input));
+  }
+
+  /* STATE */
   const [queue, setQueue] = useState(props.queue);
-  const [questions, setQuestions] = useState();
-  const [tags, setTags] = useState();
+  const [questions, setQuestions] = useState([]);
+  const [filteredQuestions, setFilteredQuestions] = useState([]);
+  const [tags, setTags] = useState([]);
   const [filters, setFilters] = useState({ tags: [], status: null });
 
   if (data && data.queue) {
     var newQuestions = getQuestions(data);
     if (JSON.stringify(newQuestions) !== JSON.stringify(questions)) {
       setQuestions(newQuestions);
+      setFilteredQuestions(newQuestions);
     }
 
     if (JSON.stringify(data.queue.tags) !== JSON.stringify(tags)) {
       setTags(data.queue.tags);
     }
   }
+
+  useEffect(() => {
+    setQueue(queue);
+  }, [props.queue]);
 
   return (
     questions ? <Segment basic>
@@ -87,11 +126,11 @@ const Queue = (props) => {
         </Header.Subheader>
       </Header>
       <Label
-        content={ questions.length + " users" }
+        content={ filter(questions, { tags: [] }).length + " user(s)" }
         color="blue"
         icon="user"
       />
-      <Label content="30 mins" color="blue" icon="clock"/>
+      <Label content="N/A mins" color="blue" icon="clock"/>
       <Label as="a"
         content="Edit"
         color="grey"
@@ -99,10 +138,10 @@ const Queue = (props) => {
         onClick={ props.editFunc }
       />
       <Grid.Row>
-        <QueueFilterForm tags={ tags } changeFunc={ setFilters }/>  
+        <QueueFilterForm tags={ tags } changeFunc={ handleFilterChange }/>  
       </Grid.Row>
       <Grid.Row columns={1} padded="true">
-          <Questions questions={ questions } filters={ filters } refetch={ refetch }/>
+          <Questions questions={ filteredQuestions } filters={ filters } refetch={ refetch }/>
       </Grid.Row>
     </Segment> : <Segment basic></Segment>
   );
