@@ -25,7 +25,7 @@ const QuestionForm = (props) => {
   const [charCount, setCharCount] = useState(0);
 
   const handleInputChange = (e, { name, value }) => {
-    if (name == 'text' && charCount >= 250) return;
+    if (name == 'text' && value.length > 250) return;
     input[name] = value;
     setInput(input);
     setCharCount(input.text.length)
@@ -73,7 +73,7 @@ const QuestionForm = (props) => {
               value={ input.text }
               onChange={ handleInputChange }/>
               <div style={{"textAlign":"right",
-                "color": charCount < 250 ? "" : "red"}}>
+                "color": charCount < 250 ? "" : "crimson"}}>
                   {"Characters: " +  charCount + "/250"}</div>
           </Form.Field>
           <Form.Field>
