@@ -93,8 +93,7 @@ const QuestionCard = (props) => {
           <Segment attached
             style={{"width":"300px"}}
             tertiary={ question.timeStarted }>
-          { question.text && (question.text.length < 100 ? 
-            question.text : question.text) }
+            { question.text }
           </Segment>
           <Segment attached="bottom" secondary textAlign="right" style={{"height":"50px",  "width":"300px"}}>
             <Header as="h5" floated='left'>
