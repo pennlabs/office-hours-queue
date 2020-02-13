@@ -76,8 +76,14 @@ const Roster = (props) => {
     }
   }
 
-  const capitalizeFirstLetter = (string) => {
-    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+  const formatRole = (string) => {
+    switch(string) {
+      case 'ADMIN': return 'Admin';
+      case 'PROFESSOR': return 'Professor';
+      case 'HEAD_TA': return 'Head TA';
+      case 'STUDENT': return 'Student';
+      default: return string;
+    }
   }
 
   /* GET USERS FROM DATA */
@@ -190,7 +196,7 @@ const Roster = (props) => {
                 <Table.Row>
                   <Table.Cell>{ user.fullName }</Table.Cell>
                   <Table.Cell>{ user.preferredName }</Table.Cell>
-                  <Table.Cell>{ capitalizeFirstLetter(user.role) }</Table.Cell>
+                  <Table.Cell>{ formatRole(user.role) }</Table.Cell>
                   <Table.Cell>{ user.email }</Table.Cell>
                   <Table.Cell textAlign="center">
                     <RemoveIcon courseId={ props.course.id } id={ user.id } refetch={ refetch }/>
@@ -203,7 +209,7 @@ const Roster = (props) => {
                 <Table.Row>
                   <Table.Cell><i>Invite Pending from: </i><b>{ user.invitedBy.preferredName }</b></Table.Cell>
                   <Table.Cell textAlign="center">—</Table.Cell>
-                  <Table.Cell>{ capitalizeFirstLetter(user.role) }</Table.Cell>
+                  <Table.Cell>{ formatRole(user.role) }</Table.Cell>
                   <Table.Cell>{ user.email }</Table.Cell>
                   <Table.Cell textAlign="center">
                     —
