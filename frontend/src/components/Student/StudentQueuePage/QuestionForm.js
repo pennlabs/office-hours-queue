@@ -22,10 +22,13 @@ const QuestionForm = (props) => {
     text: "",
     tags: []
   });
+  const [charCount, setCharCount] = useState(0);
 
   const handleInputChange = (e, { name, value }) => {
+    if (name == 'text' && charCount >= 250) return;
     input[name] = value;
     setInput(input);
+    setCharCount(input.text.length)
   }
 
   const getDropdownOptions = (tags) => {
@@ -64,16 +67,20 @@ const QuestionForm = (props) => {
         <Form>
           <Form.Field>
             <label>Question</label>
-            <Form.Input
+            <Form.TextArea
               name="text"
-              disabled={loading}
+              disabled={ loading }
+              value={ input.text }
               onChange={ handleInputChange }/>
+              <div style={{"textAlign":"right",
+                "color": charCount < 250 ? "" : "red"}}>
+                  {"Characters: " +  charCount + "/250"}</div>
           </Form.Field>
           <Form.Field>
             <label>Tags</label>
             <Form.Dropdown multiple selection
             name="tags"
-            disabled={loading}
+            disabled={ loading }
             onChange={ handleInputChange }
             options={ getDropdownOptions(queue.tags) } />
           </Form.Field>
