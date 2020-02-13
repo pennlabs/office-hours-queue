@@ -27,6 +27,8 @@ const Dashboard = (props) => {
 
   return (
     <Grid.Column width={13}>
+    {
+      courses &&
       <Grid padded>
         <Segment basic padded>
           <Header as="h2">
@@ -45,6 +47,7 @@ const Dashboard = (props) => {
         </Segment>
         <InstructorCourses courses={ getCourses(courses, false) } refetch={ props.refetch }/>
       </Grid>
+    }
     </Grid.Column>
   );
 }
