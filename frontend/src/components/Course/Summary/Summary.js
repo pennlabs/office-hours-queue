@@ -95,14 +95,17 @@ const Summary = (props) => {
     var questions = []
     data.course.queues.edges.map((item) => {
       item.node.questions.edges.map((qs) => {
-        questions.push({
+        if (!qs.node.timeWithdrawn) {
+          questions.push({
           text: qs.node.text,
           tags: qs.node.tags,
           queue: qs.node.queue.name,
           timeAsked: new Date(Date.parse(qs.node.timeAsked)).toLocaleString('en-US'),
           askedBy: qs.node.askedBy.fullName,
-          answeredBy: qs.node.answeredBy.fullName,
+          answeredBy: qs.node.answeredBy ? qs.node.answeredBy.fullName : "",
+          rejectedBy: qs.node.rejectedBy ? qs.node.rejectedBy.fullName : ""
         })
+        }
       })
     });
     console.log(questions)
@@ -171,7 +174,10 @@ const Summary = (props) => {
               filteredQuestions.map(question => (
                 <Table.Row>
                   <Table.Cell>{ question.askedBy }</Table.Cell>
-                  <Table.Cell>{ question.answeredBy }</Table.Cell>
+                  <Table.Cell>{ question.answeredBy !== '' ? question.answeredBy : 
+                                question.rejectedBy !== '' ? "Rejected by: " + question.rejectedBy :
+                                "" }
+                  </Table.Cell>
                   <Table.Cell>{ question.text }</Table.Cell>
                   <Table.Cell>{ question.tags.join(', ') }</Table.Cell>
                   <Table.Cell>{ question.queue }</Table.Cell>
