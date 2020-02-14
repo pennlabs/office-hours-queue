@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Segment, Header, Grid, Table } from 'semantic-ui-react';
 import _ from 'lodash';
+import SummaryForm from './SummaryForm';
 
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
@@ -73,6 +74,28 @@ const Summary = (props) => {
     setOpen(!open);
   }
 
+  /* FILTER USERS BASED ON INPUT */
+  const filterQuestions = (input) => {
+    var newFilteredQuestions = [];
+    questions.map((qs) => {
+      if ((qs.text.toUpperCase().includes(input.search) 
+        || qs.askedBy.toUpperCase().includes(input.search)
+        || qs.answeredBy.toUpperCase().includes(input.search)
+        || qs.rejectedBy.toUpperCase().includes(input.search))
+        //&& (!input.role || user.role === input.role)
+        ) {
+        newFilteredQuestions.push(qs);
+      }
+    })
+    setFilteredQuestions(newFilteredQuestions);
+    setTableState({ direction: null, column: null })
+  }
+
+  const closeModal = () => {
+    refetch();
+    triggerModal();
+  }
+
   /* TABLE FUNCTIONS */
   const handleSort = (clickedColumn) => {
     if (tableState.column !== clickedColumn) {
@@ -91,9 +114,14 @@ const Summary = (props) => {
   }
 
   /* GET QUESTIONS FROM DATA */
+  var queues = []
   const loadQuestions = (data) => {
     var questions = []
     data.course.queues.edges.map((item) => {
+      queues.push({
+        name: item.node.name,
+        tags: item.node.tags
+      })
       item.node.questions.edges.map((qs) => {
         if (!qs.node.timeWithdrawn) {
           questions.push({
@@ -108,16 +136,19 @@ const Summary = (props) => {
         }
       })
     });
-    console.log(questions)
     return questions;
   }
 
-  /* LOAD DATA */
+  /* LOAD DATA AND SORT BY TIME ASKED */
   if (data && data.course) {
     var newQuestions = loadQuestions(data);
     if (JSON.stringify(newQuestions) !== JSON.stringify(questions)) {
       setQuestions(newQuestions);
       setFilteredQuestions(_.sortBy(newQuestions, 'timeAsked').reverse());
+      setTableState({
+        column: 'timeAsked',
+        direction: 'ascending',
+      });
     }
   }
 
@@ -136,6 +167,9 @@ const Summary = (props) => {
             Question Summary
           </Header>
         </Segment>
+      </Grid.Row>
+      <Grid.Row>
+      { questions && <SummaryForm filterFunc={ filterQuestions } queues={ queues } /> }
       </Grid.Row>
       <Grid.Row>
       {
