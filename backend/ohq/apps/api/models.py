@@ -1,7 +1,7 @@
 import uuid
 from enum import Enum
 
-from django.db import models
+from django.db import models, transaction
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import PermissionsMixin, AbstractBaseUser, BaseUserManager
 from django.contrib.postgres.fields import ArrayField, JSONField
@@ -284,6 +284,15 @@ class Question(models.Model):
         blank=True,
         null=True,
     )
+
+    order_key = models.IntegerField(default=0, editable=False)
+
+    def save(self, *args, **kwargs):
+        # Model is not saved to the database yet
+        with transaction.atomic():
+            if self._state.adding:
+                self.order_key = Question.objects.count()
+        super(Question, self).save(*args, **kwargs)
 
     def __str__(self):
         return str(self.time_asked)
