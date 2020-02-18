@@ -1,10 +1,11 @@
 import graphene
 from graphene import relay
+from graphql_relay.node.node import from_global_id
 from graphene_django.filter import DjangoFilterConnectionField
 
 from ohq.apps.api.schema import account, courses, queues, feedback_questions, questions, types
 
-from ohq.apps.api.models import Course, CourseUser
+from ohq.apps.api.models import Course, CourseUser, Question
 
 
 class Query(graphene.ObjectType):
@@ -24,6 +25,18 @@ class Query(graphene.ObjectType):
     # courses = DjangoFilterField(CourseNode)
 
     course = relay.Node.Field(types.CourseNode)
+
+    current_question = graphene.Field(types.QuestionNode, course_id=graphene.ID(required=True))
+
+    def resolve_current_question(self, info, course_id):
+        user = info.context.user.get_user()
+        course = Course.objects.get(pk=from_global_id(course_id)[1])
+        return Question.objects.filter(
+            asked_by=user,
+            queue__course=course,
+            time_answered__isnull=True
+        ).get()
+
 
     # Course search for students joining
     joinable_courses = DjangoFilterConnectionField(types.CourseMetaNode)
