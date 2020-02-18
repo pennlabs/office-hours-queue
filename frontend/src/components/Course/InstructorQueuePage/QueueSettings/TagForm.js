@@ -78,13 +78,16 @@ const QueueForm = (props) => {
       <Segment basic>
       <Header content="Current Tags"/>
       {
-        queue && queue.tags.length > 0 ? queue.tags.map(tag => (
+        queue && queue.tags.length > 0 && queue.tags.map(tag => (
           <Label as="a"
             onClick={() => { if (!loading) { onDelete(tag) } }}>
             { tag }
             <Icon name="delete"/>
           </Label>
-        )) : <Label color="blue" content="No Tags"/>
+        ))
+      }
+      {
+        queue && queue.tags.length == 0 && !newTag && <Label color="blue" content="No Tags"/>
       }
       { 
         !loading && newTag && <Label color="green" content={ newTag }/>
