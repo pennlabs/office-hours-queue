@@ -3,6 +3,7 @@ from graphql_relay.node.node import from_global_id
 from django.db import transaction
 
 from ohq.apps.api.schema.types import *
+from ohq.apps.api.util.errors import *
 from ohq.apps.api.util.sendgrid import send_invitation_email
 
 
@@ -72,7 +73,7 @@ class UpdateCourse(graphene.Mutation):
     @staticmethod
     def mutate(root, info, input):
         if not input:
-            raise ValueError
+            raise empty_update_error
         with transaction.atomic():
             user = info.context.user.get_user()
             course = Course.objects.get(pk=from_global_id(input.course_id)[1])
@@ -81,7 +82,7 @@ class UpdateCourse(graphene.Mutation):
                 course=course,
                 kind__in=CourseUserKind.leadership(),
             ).exists():
-                raise PermissionError
+                raise user_not_leadership_error
 
             if input.name is not None:
                 course.name = input.name
@@ -127,7 +128,7 @@ class AddUserToCourse(graphene.Mutation):
                 course=course,
                 kind__in=CourseUserKind.leadership(),
             ).exists():
-                raise PermissionError
+                raise user_not_leadership_error
 
             course_user = CourseUser.objects.create(
                 user=User.objects.get(pk=from_global_id(input.user_id)[1]),
@@ -158,8 +159,7 @@ class JoinCourse(graphene.Mutation):
         with transaction.atomic():
             course = Course.objects.get(pk=from_global_id(input.course_id)[1])
             if course.invite_only:
-                # TODO better error
-                raise PermissionError
+                raise course_invite_only_error
 
             course_user = CourseUser.objects.create(
                 user=info.context.user.get_user(),
@@ -196,12 +196,12 @@ class InviteEmail(graphene.Mutation):
                 course=course,
                 kind__in=CourseUserKind.leadership(),
             ).exists():
-                raise PermissionError
+                raise user_not_leadership_error
             if CourseUser.objects.filter(
                 user__email=input.email,
                 course=course,
             ):
-                raise ValueError
+                raise user_in_course_error
 
             invited_course_user = InvitedCourseUser.objects.create(
                 email=input.email,
@@ -237,7 +237,7 @@ class RemoveUserFromCourse(graphene.Mutation):
                 course=course,
                 kind__in=CourseUserKind.leadership(),
             ).exists():
-                raise PermissionError
+                raise user_not_leadership_error
 
             course_user_to_remove = CourseUser.objects.get(
                 user=User.objects.get(pk=from_global_id(input.user_id)[1]),
@@ -249,7 +249,7 @@ class RemoveUserFromCourse(graphene.Mutation):
                     course=course, kind__in=CourseUserKind.leadership()
                 ).count() == 1
             ):
-                raise ValueError
+                raise remove_only_leadership_error
 
             course_user_to_remove.delete()
 

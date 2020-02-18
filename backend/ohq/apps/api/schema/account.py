@@ -1,6 +1,7 @@
 from django.db import transaction
 
 from ohq.apps.api.schema.types import *
+from ohq.apps.api.util.errors import empty_update_error
 
 
 class CreateUserInput(graphene.InputObjectType):
@@ -63,7 +64,7 @@ class UpdateUser(graphene.Mutation):
     @staticmethod
     def mutate(root, info, input):
         if not input:
-            raise ValueError
+            raise empty_update_error
         with transaction.atomic():
             user = info.context.user.get_user()
             if input.full_name is not None:

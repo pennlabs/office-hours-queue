@@ -4,6 +4,7 @@ from django.db import transaction
 from django.db.models import F
 
 from ohq.apps.api.schema.types import *
+from ohq.apps.api.util.errors import *
 
 
 class CreateShortAnswerFeedbackQuestionInput(graphene.InputObjectType):
@@ -33,7 +34,7 @@ class CreateShortAnswerFeedbackQuestion(graphene.Mutation):
                 course=course,
                 kind__in=CourseUserKind.leadership(),
             ).exists():
-                raise PermissionError
+                raise user_not_leadership_error
             feedback_question = ShortAnswerFeedbackQuestion.objects.create(
                 course=course,
                 question_text=input.question_text,
@@ -72,7 +73,7 @@ class CreateRadioButtonFeedbackQuestion(graphene.Mutation):
                 course=course,
                 kind__in=CourseUserKind.leadership(),
             ).exists():
-                raise PermissionError
+                raise user_not_leadership_error
             feedback_question = RadioButtonFeedbackQuestion.objects.create(
                 course=course,
                 question_text=input.question_text,
@@ -113,7 +114,7 @@ class CreateSliderFeedbackQuestion(graphene.Mutation):
                 course=course,
                 kind__in=CourseUserKind.leadership(),
             ).exists():
-                raise PermissionError
+                raise user_not_leadership_error
             feedback_question = SliderFeedbackQuestion.objects.create(
                 course=course,
                 question_text=input.question_text,
@@ -146,7 +147,7 @@ class UpdateFeedbackQuestion(graphene.Mutation):
     @staticmethod
     def mutate(root, info, input):
         if not input:
-            raise ValueError
+            raise empty_update_error
         with transaction.atomic():
             user = info.context.user.get_user()
             feedback_question = FeedbackQuestion.objects.get(
@@ -158,7 +159,7 @@ class UpdateFeedbackQuestion(graphene.Mutation):
                 course=course,
                 kind__in=CourseUserKind.leadership(),
             ).exists():
-                raise PermissionError
+                raise user_not_leadership_error
 
             if input.archived:
                 feedback_question.archived = input.archived
@@ -222,14 +223,10 @@ class AnswerFeedbackQuestions(graphene.Mutation):
         with transaction.atomic():
             user = info.context.user.get_user()
             question = Question.objects.get(pk=from_global_id(input.question_id)[1])
-            # if not CourseUser.objects.filter(
-            #     user=user,
-            #     course=question.queue.course,
-            #     kind__in=CourseUserKind.student.name,
-            # ).exists():
-            #     raise PermissionError
             if question.asked_by != user:
-                raise PermissionError
+                raise user_not_asker_error
+            if question.state is not QuestionState.ANSWERED:
+                raise question_not_answered_error
 
             # TODO make these queries more efficient
 
@@ -247,7 +244,7 @@ class AnswerFeedbackQuestions(graphene.Mutation):
             )
 
             if (id not in provided_feedback_question_ids for id in required_feedback_question_ids):
-                raise ValueError
+                raise all_required_feedback_questions_not_answered_error
 
             feedback_answers = []
             for answer in input.short_answer_feedback_answers:

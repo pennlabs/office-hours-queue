@@ -5,6 +5,7 @@ from graphql_relay.node.node import from_global_id
 from django.db import transaction
 
 from ohq.apps.api.schema.types import *
+from ohq.apps.api.util.errors import *
 
 
 class CreateQuestionInput(graphene.InputObjectType):
@@ -34,16 +35,16 @@ class CreateQuestion(graphene.Mutation):
                 course=course,
                 kind=CourseUserKind.STUDENT.name,
             ).exists():
-                raise PermissionError
+                raise user_not_student_error
             # Check for any other unanswered questions in this course
             if Question.objects.filter(
                 asked_by=user,
                 queue__course=course,
                 time_answered__isnull=True,
             ).exists():
-                raise ValueError
+                raise too_many_questions_error
             if any(tag not in queue.tags for tag in input.tags):
-                raise ValueError
+                raise unrecognized_tag_error
             question = Question.objects.create(
                 queue=queue,
                 text=input.text,
@@ -73,16 +74,10 @@ class WithdrawQuestion(graphene.Mutation):
         with transaction.atomic():
             user = info.context.user.get_user()
             question = Question.objects.get(pk=from_global_id(input.question_id)[1])
-            # if not CourseUser.objects.filter(
-            #     user=user,
-            #     course=question.queue.course,
-            #     kind__in=CourseUserKind.student.name,
-            # ).exists():
-            #     raise PermissionError
             if question.asked_by != user:
-                raise PermissionError
-            if question.time_started or question.time_rejected:
-                raise ValueError
+                raise user_not_asker_error
+            if question.state is not QuestionState.ACTIVE:
+                raise question_not_active_error
 
             question.time_withdrawn = datetime.now()
             question.save()
@@ -116,14 +111,16 @@ class RejectQuestion(graphene.Mutation):
                 course=question.queue.course,
                 kind__in=CourseUserKind.staff(),
             ).exists():
-                raise PermissionError
+                raise user_not_staff_error
             if (
                 (input.rejected_reason == QuestionRejectionReason.OTHER.name and
                  input.rejected_reason_other is None) or
                 (input.rejected_reason != QuestionRejectionReason.OTHER.name and
                  input.rejected_reason_other is not None)
             ):
-                raise ValueError
+                raise other_rejection_reason_required_error
+            if question.state is not QuestionState.ACTIVE:
+                raise question_not_active_error
             question.rejected_reason = input.rejected_reason
             question.rejected_reason_other = input.rejected_reason_other
             question.rejected_by = user
@@ -157,9 +154,9 @@ class StartQuestion(graphene.Mutation):
                 course=question.queue.course,
                 kind__in=CourseUserKind.staff(),
             ).exists():
-                raise PermissionError
-            if question.time_withdrawn:
-                raise ValueError
+                raise user_not_staff_error
+            if question.state is not QuestionState.ACTIVE:
+                raise question_not_active_error
             question.time_started = datetime.now()
             question.answered_by = user
             question.save()
@@ -186,14 +183,10 @@ class UndoStartQuestion(graphene.Mutation):
         with transaction.atomic():
             user = info.context.user.get_user()
             question = Question.objects.get(pk=from_global_id(input.question_id)[1])
-            if not CourseUser.objects.filter(
-                    user=user,
-                    course=question.queue.course,
-                    kind__in=CourseUserKind.staff(),
-            ).exists():
-                raise PermissionError
-            if question.time_withdrawn:
-                raise ValueError
+            if question.answered_by != user:
+                raise user_not_answerer_error
+            if question.state is not QuestionState.STARTED:
+                raise question_not_started_error
             question.time_started = None
             question.answered_by = None
             question.save()
@@ -220,14 +213,10 @@ class FinishQuestion(graphene.Mutation):
         with transaction.atomic():
             user = info.context.user.get_user()
             question = Question.objects.get(pk=from_global_id(input.question_id)[1])
-            # if not CourseUser.objects.filter(
-            #     user=user,
-            #     course=question.queue.course,
-            #     kind__in=CourseUserKind.staff(),
-            # ).exists():
-            #     raise PermissionError
             if question.answered_by != user:
-                raise PermissionError
+                raise user_not_answerer_error
+            if question.state is not QuestionState.STARTED:
+                raise question_not_started_error
             question.time_answered = datetime.now()
             question.save()
 

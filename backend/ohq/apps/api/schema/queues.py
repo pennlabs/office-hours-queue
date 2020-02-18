@@ -3,6 +3,7 @@ from graphql_relay.node.node import from_global_id
 from django.db import transaction
 
 from ohq.apps.api.schema.types import *
+from ohq.apps.api.util.errors import *
 from ohq.apps.api.util import validateDayOfWeek, validateMinutesInDay
 
 
@@ -39,10 +40,10 @@ class CreateQueue(graphene.Mutation):
         json = []
         for s in ss:
             if not validateDayOfWeek(s.day):
-                raise ValueError
+                raise invalid_day_of_week_error
             if any(not validateMinutesInDay(time.start) or not validateMinutesInDay(time.end)
                    for time in s.times):
-                raise ValueError
+                raise invalid_time_of_day_error
             json.append({
                 "day": s.day,
                 "times": [{"start": time.start, "end": time.end} for time in s.times]
@@ -59,20 +60,20 @@ class CreateQueue(graphene.Mutation):
                 course=course,
                 kind__in=CourseUserKind.leadership(),
             ).exists():
-                raise PermissionError
+                raise user_not_leadership_error
 
-            if Queue.objects.filter(course=course, archived=False).count() < Queue.MAX_NUMBER_QUEUES:
-                queue = Queue.objects.create(
-                    name=input.name,
-                    description=input.description or "",
-                    tags=input.tags,
-                    start_end_times=CreateQueue.startEndTimesInputToJSON(input.start_end_times),
-                    course=course,
-                )
-            else:
-                # TODO raise exception
-                queue = None
-
+            if (
+                Queue.objects.filter(course=course, archived=False).count() >=
+                Queue.MAX_NUMBER_QUEUES
+            ):
+                raise too_many_queues_error
+            queue = Queue.objects.create(
+                name=input.name,
+                description=input.description or "",
+                tags=input.tags,
+                start_end_times=CreateQueue.startEndTimesInputToJSON(input.start_end_times),
+                course=course,
+            )
         return CreateQueueResponse(queue=queue)
 
 
@@ -98,7 +99,7 @@ class UpdateQueue(graphene.Mutation):
     @staticmethod
     def mutate(root, info, input):
         if not input:
-            raise ValueError
+            raise empty_update_error
         with transaction.atomic():
             user = info.context.user.get_user()
             queue = Queue.objects.get(pk=from_global_id(input.queue_id)[1])
@@ -107,7 +108,7 @@ class UpdateQueue(graphene.Mutation):
                 course=queue.course,
                 kind__in=CourseUserKind.leadership(),
             ).exists():
-                raise PermissionError
+                raise user_not_leadership_error
 
             if input.name is not None:
                 queue.name = input.name
@@ -121,4 +122,3 @@ class UpdateQueue(graphene.Mutation):
                 queue.archived = input.archived
             queue.save()
         return UpdateQueueResponse(queue=queue)
-

@@ -3,12 +3,15 @@ from graphene import relay
 from graphene_django.types import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 
+import django_filters
+
 from ohq.apps.api.models import *
 
 
 SemesterType = graphene.Enum.from_enum(Semester)
 CourseUserKindType = graphene.Enum.from_enum(CourseUserKind)
 QuestionRejectionReasonType = graphene.Enum.from_enum(QuestionRejectionReason)
+QuestionStateType = graphene.Enum.from_enum(QuestionState)
 
 
 class DaysOfWeekType(graphene.Enum):
