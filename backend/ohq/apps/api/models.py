@@ -237,6 +237,14 @@ class QuestionRejectionReason(ChoicesEnum):
     WRONG_QUEUE = "WRONG_QUEUE"
 
 
+class QuestionState(ChoicesEnum):
+    ACTIVE = "ACTIVE"
+    WITHDRAWN = "WITHDRAWN"
+    REJECTED = "REJECTED"
+    STARTED = "STARTED"
+    ANSWERED = "ANSWERED"
+
+
 class Question(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     text = models.TextField()
@@ -287,6 +295,25 @@ class Question(models.Model):
 
     order_key = models.IntegerField(default=0, editable=False)
 
+    @property
+    def state(self):
+        if (
+            self.time_started is None and
+            self.time_answered is None and
+            self.time_rejected is None and
+            self.time_withdrawn is None
+        ):
+            return QuestionState.ACTIVE
+        if self.time_started is not None:
+            return QuestionState.STARTED
+        if self.time_answered is not None:
+            return QuestionState.ANSWERED
+        if self.time_rejected is not None:
+            return QuestionState.REJECTED
+        if self.time_withdrawn is not None:
+            return QuestionState.WITHDRAWN
+        return None
+
     def save(self, *args, **kwargs):
         # Model is not saved to the database yet
         with transaction.atomic():
@@ -295,7 +322,7 @@ class Question(models.Model):
         super(Question, self).save(*args, **kwargs)
 
     def __str__(self):
-        return str(self.time_asked)
+        return f"{self.time_asked} - {self.queue.course} - {self.queue.name}"
 
 
 class FeedbackQuestion(PolymorphicModel):
