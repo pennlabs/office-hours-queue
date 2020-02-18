@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Segment, Label, Header, Grid} from 'semantic-ui-react';
+import { Segment, Label, Header, Grid, Message } from 'semantic-ui-react';
 import QuestionForm from './QuestionForm';
+import QuestionCard from './QuestionCard';
 
 const StudentQueue = (props) => {
   const [queue, setQueue] = useState(props.queue);
@@ -33,10 +34,11 @@ const StudentQueue = (props) => {
           !props.hasQuestion && <QuestionForm queue={ queue } refetch={ props.refetch }/>
         }
         {
-          props.hasQuestion && !question && <div>{"you already asked a question fool"}</div>
+          props.hasQuestion && !question && 
+          <Message style={{"marginTop":"10px"}}info header="Question In Queue" content="You already have asked a question in another queue!"/>
         }
         {
-          props.hasQuestion && question && <div>{question.text}</div>
+          props.hasQuestion && question && <QuestionCard question={ question }/>
         }
       </Grid.Row>
     </Segment>

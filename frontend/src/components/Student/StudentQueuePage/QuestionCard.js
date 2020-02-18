@@ -1,68 +1,56 @@
-import React from 'react'
-import { Segment, Header, Button } from 'semantic-ui-react';
+import React, { useState } from 'react'
+import { Segment, Header, Button, Popup, Icon } from 'semantic-ui-react';
 
-// Shows current state of the question asked (which queue it is on, when it was asked)
-export default class QuestionCard extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      currentlyBeingAnswered: false
-    };
-  } ß
+const QuestionCard = (props) => {
+  const [question, setQuestion] = useState(props.question);
 
-  answerCard = () => this.setState({ currentlyBeingAnswered: true })
-
-  render() {
-    return (
-      <Segment basic>
-        <Segment attached="top" color="blue" style={{ "height": "50px", "width": "900px" }}>
+  const timeString = (date) => {
+    var d = new Date(date);
+    var hour = d.getHours() > 12 ? d.getHours() - 12 : d.getHours();
+    var meridiem = d.getHours() > 12 ? "pm" : "am";
+    var minutes = d.getMinutes() < 10 ? "0" + d.getMinutes() : d.getMinutes()
+    return `${hour}:${minutes} ${meridiem}`;
+  }
+  return (
+    <Segment basic>
+      <Segment attached="top" color="blue" style={{"height":"50px"}}>
           <Header as="h5" floated='right' color="blue">
             <Header.Content>
-              {this.props.timeAsked}
+              { timeString(question.timeAsked) }
             </Header.Content>
           </Header>
-          <Header as="h5" floated='left'>
-            <Header.Content>
-              Asked on {this.props.queueName}
-            </Header.Content>
-          </Header>
-        </Segment>
-        <Segment attached>
-          You are #__ in line, ETA:
-          </Segment>
-        <Segment attached>
-          <b>Question</b>: {this.props.text} <br/>
-          <b>Tags</b>: {
-            this.props.tags.length > 0 ? this.props.tags.map((tag, index) => (
-              tag.isActive ?
-                <Header.Content>
-                  {tag.name}
-                </Header.Content> :
-                null
-            )) : null
-          }
-        </Segment>
-        <Segment attached="bottom" secondary textAlign="right" style={{ "height": "50px", "width": "900px" }}>
-          <Header as="h5" floated='right'>
-            {
-              <Header.Content>
-                <Button compact
-                  size='mini'
-                  color='red'
-                  content='Delete'
-                  onClick={() => this.props.deleteFunc()}
-                />
-                <Button compact
-                  size='mini'
-                  color='green'
-                  content='Edit'
-                  onClick={() => this.props.editFunc()}
-                />
-              </Header.Content>
-            }
-          </Header>
-        </Segment>
       </Segment>
-    );
-  }
+      <Segment attached
+        tertiary={ question.timeStarted }>
+        { question.text }
+      </Segment>
+      <Segment attached="bottom" secondary textAlign="right" style={{"height":"50px"}}>
+        <Header as="h5" floated='left'>
+          <Header.Content>
+            <Button compact
+              size='mini'
+              color='red'
+              content='Delete'/>
+            <Button compact
+              size='mini'
+              color='green'
+              content='Edit'/>
+          </Header.Content>
+        </Header>
+          <Popup
+            trigger= {
+              <Icon name="tags"/>
+            }
+            content= {
+              question.tags && question.tags.map(tag => {
+                return ' ' + tag
+              }).toString()
+            }
+            basic inverted
+            position="bottom left"/>
+      </Segment>
+    </Segment>
+  );
 }
+
+export default QuestionCard;

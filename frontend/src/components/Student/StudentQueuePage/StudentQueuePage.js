@@ -86,7 +86,7 @@ const StudentQueuePage = (props) => {
     <Grid>
       {
         active === 'queues' &&
-        <StudentQueues queues={ queues } refetch={ getQueuesRes.refetch } question={ currentQuestion }/>
+        <StudentQueues queues={ queues } refetch={ () => { getQueuesRes.refetch(); getQuestionRes.refetch()} } question={ currentQuestion }/>
       }
     </Grid>
   );

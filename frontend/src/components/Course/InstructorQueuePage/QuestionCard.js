@@ -77,78 +77,78 @@ const QuestionCard = (props) => {
 
   return (
     question && <Segment basic>
-        <DeleteQuestionModal open={open} question={question} closeFunc={triggerModal} refetch={ props.refetch }/>
-          <Segment attached="top" color="blue" style={{"height":"50px", "width":"300px"}}>
-              <Header as="h5" floated='right' color="blue">
-                <Header.Content>
-                  { timeString(question.timeAsked) }
-                </Header.Content>
-              </Header>
-              <Header as="h5" floated='left'>
-                <Header.Content>
-                  { question.askedBy.preferredName }
-                </Header.Content>
-              </Header>
-          </Segment>
-          <Segment attached
-            style={{"width":"300px"}}
-            tertiary={ question.timeStarted }>
-            { question.text }
-          </Segment>
-          <Segment attached="bottom" secondary textAlign="right" style={{"height":"50px",  "width":"300px"}}>
+      <DeleteQuestionModal open={open} question={question} closeFunc={triggerModal} refetch={ props.refetch }/>
+        <Segment attached="top" color="blue" style={{"height":"50px", "width":"300px"}}>
+            <Header as="h5" floated='right' color="blue">
+              <Header.Content>
+                { timeString(question.timeAsked) }
+              </Header.Content>
+            </Header>
             <Header as="h5" floated='left'>
-              {
-                !question.timeStarted ?
+              <Header.Content>
+                { question.askedBy.preferredName }
+              </Header.Content>
+            </Header>
+        </Segment>
+        <Segment attached
+          style={{"width":"300px"}}
+          tertiary={ question.timeStarted }>
+          { question.text }
+        </Segment>
+        <Segment attached="bottom" secondary textAlign="right" style={{"height":"50px",  "width":"300px"}}>
+          <Header as="h5" floated='left'>
+            {
+              !question.timeStarted ?
+              <Header.Content>
+                <Button compact
+                  size='mini'
+                  color='red'
+                  content='Delete'
+                  disabled={ isLoading() }
+                  onClick={ triggerModal }/>
+                <Button compact
+                  size='mini'
+                  color='green'
+                  content='Answer'
+                  disabled={ isLoading() }
+                  onClick={ onAnswer }/>
+              </Header.Content>
+                :
                 <Header.Content>
-                  <Button compact
-                    size='mini'
-                    color='red'
-                    content='Delete'
-                    disabled={ isLoading() }
-                    onClick={ triggerModal }/>
                   <Button compact
                     size='mini'
                     color='green'
-                    content='Answer'
+                    content='Finish'
                     disabled={ isLoading() }
-                    onClick={ onAnswer }/>
+                    onClick={ onFinish }/>
                 </Header.Content>
-                  :
-                  <Header.Content>
-                    <Button compact
-                      size='mini'
-                      color='green'
-                      content='Finish'
-                      disabled={ isLoading() }
-                      onClick={ onFinish }/>
-                  </Header.Content>
-              }
-              </Header>
-              {
-                question.timeStarted &&
-                <Popup
-                  trigger= {
-                    <Icon name="sync" loading/>
-                  }
-                  content= {
-                    "Started by: " + question.answeredBy.preferredName
-                  }
-                  basic inverted
-                  position="bottom right"/>
-              }
+            }
+            </Header>
+            {
+              question.timeStarted &&
               <Popup
                 trigger= {
-                  <Icon name="tags"/>
+                  <Icon name="sync" loading/>
                 }
                 content= {
-                  question.tags && question.tags.map(tag => {
-                    return ' ' + tag
-                  }).toString()
+                  "Started by: " + question.answeredBy.preferredName
                 }
                 basic inverted
-                position="bottom left"/>
-          </Segment>
+                position="bottom right"/>
+            }
+            <Popup
+              trigger= {
+                <Icon name="tags"/>
+              }
+              content= {
+                question.tags && question.tags.map(tag => {
+                  return ' ' + tag
+                }).toString()
+              }
+              basic inverted
+              position="bottom left"/>
         </Segment>
+      </Segment>
   );
 }
 
