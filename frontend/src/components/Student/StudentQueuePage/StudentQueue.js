@@ -4,6 +4,11 @@ import QuestionForm from './QuestionForm';
 
 const StudentQueue = (props) => {
   const [queue, setQueue] = useState(props.queue);
+  const [question, setQuestion] = useState(props.question);
+  
+  useEffect(() => {
+    setQuestion(props.question);
+  }, [props.question]);
 
   useEffect(() => {
     setQueue(props.queue);
@@ -24,7 +29,15 @@ const StudentQueue = (props) => {
       />
       <Label content={ queue.estimatedWaitTime + " mins"} color="blue" icon="clock"/>
       <Grid.Row padded="true">
-        <QuestionForm queue={ queue } refetch={ props.refetch }/>
+        {
+          !props.hasQuestion && <QuestionForm queue={ queue } refetch={ props.refetch }/>
+        }
+        {
+          props.hasQuestion && !question && <div>{"you already asked a question fool"}</div>
+        }
+        {
+          props.hasQuestion && question && <div>{question.text}</div>
+        }
       </Grid.Row>
     </Segment>
   );

@@ -7,30 +7,53 @@ import { useQuery } from '@apollo/react-hooks';
 
 /* GRAPHQL QUERIES/MUTATIONS */
 const GET_QUEUES = gql`
-query GetQueues($id: ID!) {
-  course(id: $id) {
-    id
-    queues {
-      edges {
-        node {
-          id
-          name
-          description
-          tags
-          estimatedWaitTime
+  query GetQueues($id: ID!) {
+    course(id: $id) {
+      id
+      queues {
+        edges {
+          node {
+            id
+            name
+            description
+            tags
+            estimatedWaitTime
+          }
         }
       }
     }
   }
-}
+`;
+
+const CURRENT_QUESTION = gql`
+  query CurrentQuestion($courseId: ID!) {
+    currentQuestion(courseId: $courseId) {
+      id
+      text
+      tags
+      timeAsked
+      queue {
+        id
+      }
+    }
+  }
 `;
 
 const StudentQueuePage = (props) => {
-  const { loading, error, data, refetch } = useQuery(GET_QUEUES, { variables: {
-    id: props.course.id
-  }});
+  const getQueuesRes = useQuery(GET_QUEUES, { 
+    variables: {
+      id: props.course.id
+    }
+  });
+
+  const getQuestionRes = useQuery(CURRENT_QUESTION, {
+    variables: {
+      courseId: props.course.id
+    }
+  });
 
   const [queues, setQueues] = useState(null);
+  const [currentQuestion, setCurrentQuestion] = useState(null);
   const [active, setActive] = useState('queues');
 
   const loadQueues = (data) => {
@@ -46,10 +69,16 @@ const StudentQueuePage = (props) => {
     return newQueues;
   }
 
-  if (data && data.course) {
-    var newQueues = loadQueues(data);
+  if (getQueuesRes.data && getQueuesRes.data.course) {
+    var newQueues = loadQueues(getQueuesRes.data);
     if (JSON.stringify(newQueues) !== JSON.stringify(queues)) {
       setQueues(newQueues);
+    }
+  }
+
+  if (getQuestionRes.data && getQuestionRes.data.currentQuestion) {
+    if (JSON.stringify(getQuestionRes.data.currentQuestion) !== JSON.stringify(currentQuestion)) {
+      setCurrentQuestion(getQuestionRes.data.currentQuestion);
     }
   }
 
@@ -57,7 +86,7 @@ const StudentQueuePage = (props) => {
     <Grid>
       {
         active === 'queues' &&
-        <StudentQueues queues={ queues } refetch={ refetch }/>
+        <StudentQueues queues={ queues } refetch={ getQueuesRes.refetch } question={ currentQuestion }/>
       }
     </Grid>
   );

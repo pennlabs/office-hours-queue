@@ -4,18 +4,28 @@ import StudentQueue from './StudentQueue';
 
 const StudentQueues = (props) => {
   const [queues, setQueues] = useState(props.queues);
+  const [question, setQuestion] = useState(props.question);
+
+  useEffect(() => {
+    setQuestion(props.question);
+  }, [props.question]);
+  
 
   useEffect(() => {
     setQueues(props.queues);
   }, [props.queues]);
-  
+
   return (
     queues && <Grid.Row columns={queues.length}>
     {
       queues.length != 0 ?
         queues.map((queue, index) => (
           <Grid.Column>
-            <StudentQueue queue={ queue } refetch={ props.refetch }/>
+            <StudentQueue key={ queue.id }
+              queue={ queue }
+              hasQuestion={ question !== null }
+              question={ question && question.queue.id === queue.id ? question : null }
+              refetch={ props.refetch }/>
           </Grid.Column>
         )) :
         <Grid.Column>
