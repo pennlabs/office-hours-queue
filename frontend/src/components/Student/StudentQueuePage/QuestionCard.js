@@ -12,13 +12,18 @@ const QuestionCard = (props) => {
     return `${hour}:${minutes} ${meridiem}`;
   }
   return (
-    <Segment basic>
+    <div style={{"marginTop":"10px"}}>
       <Segment attached="top" color="blue" style={{"height":"50px"}}>
           <Header as="h5" floated='right' color="blue">
             <Header.Content>
               { timeString(question.timeAsked) }
             </Header.Content>
           </Header>
+          <Header as="h5" floated='left'>
+              <Header.Content>
+                { "Position: #" + (question.questionsAhead + 1) }
+              </Header.Content>
+            </Header>
       </Segment>
       <Segment attached
         tertiary={ question.timeStarted }>
@@ -49,7 +54,7 @@ const QuestionCard = (props) => {
             basic inverted
             position="bottom left"/>
       </Segment>
-    </Segment>
+    </div>
   );
 }
 

@@ -76,9 +76,9 @@ const QuestionCard = (props) => {
   }, [props.question])
 
   return (
-    question && <Segment basic>
+    question && <div style={{"marginTop":"10px"}}>
       <DeleteQuestionModal open={open} question={question} closeFunc={triggerModal} refetch={ props.refetch }/>
-        <Segment attached="top" color="blue" style={{"height":"50px", "width":"300px"}}>
+        <Segment attached="top" color="blue" style={{"height":"50px"}}>
             <Header as="h5" floated='right' color="blue">
               <Header.Content>
                 { timeString(question.timeAsked) }
@@ -91,11 +91,10 @@ const QuestionCard = (props) => {
             </Header>
         </Segment>
         <Segment attached
-          style={{"width":"300px"}}
           tertiary={ question.timeStarted }>
           { question.text }
         </Segment>
-        <Segment attached="bottom" secondary textAlign="right" style={{"height":"50px",  "width":"300px"}}>
+        <Segment attached="bottom" secondary textAlign="right" style={{"height":"50px"}}>
           <Header as="h5" floated='left'>
             {
               !question.timeStarted ?
@@ -148,7 +147,7 @@ const QuestionCard = (props) => {
               basic inverted
               position="bottom left"/>
         </Segment>
-      </Segment>
+      </div>
   );
 }
 
