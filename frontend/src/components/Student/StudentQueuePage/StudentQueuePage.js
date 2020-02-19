@@ -32,6 +32,8 @@ const CURRENT_QUESTION = gql`
       text
       tags
       timeAsked
+      questionsAhead
+      state
       queue {
         id
       }
