@@ -95,10 +95,6 @@ const InstructorQueuePage = (props) => {
     <Grid>
       {
         active === 'queues' && data &&
-        <Tags tags={ getTags(queues) }/>
-      }
-      {
-        active === 'queues' && data &&
         <InstructorQueues queues={ queues }
           editFunc={ onQueueSettings }
           createFunc={ () => { setActive('create') } }/>
