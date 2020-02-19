@@ -19,28 +19,10 @@ var fakePeople = [
       email: "cdf@seas.upenn.edu"
   },
   {
-      fullName: "Samuel Fleischer",
-      preferredName: "Sam",
-      role: "Student",
-      email: "fls@seas.upenn.edu"
-  },
-  {
       fullName: "Monal Garg",
       preferredName: "Monal",
       role: "TA",
       email: "mgarg@seas.upenn.edu"
-  },
-  {
-      fullName: "Hyewon Lee",
-      preferredName: "Hyewon",
-      role: "Student",
-      email: "hyewon98@seas.upenn.edu"
-  },
-  {
-      fullName: "Wellington Lee",
-      preferredName: "Welly",
-      role: "Student",
-      email: "wtnlee@seas.upenn.edu"
   },
   {
       fullName: "Chris Murphy",
