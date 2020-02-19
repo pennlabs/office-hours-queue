@@ -16,7 +16,7 @@ const InstructorQueues = (props) => {
       {
         queues.length != 0 &&
         queues.map((queue, index) => (
-          <Grid.Column>
+          !queue.archived && <Grid.Column>
             <Queue queue={ queue } editFunc={ () => props.editFunc(queue.id) }/>
           </Grid.Column>
         ))   

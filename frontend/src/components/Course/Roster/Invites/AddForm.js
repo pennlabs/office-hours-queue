@@ -4,8 +4,8 @@ import { gql } from 'apollo-boost';
 import { useLazyQuery, useMutation } from '@apollo/react-hooks';
 
 const INVITABLE_USERS = gql`
-  query InvitableUsers($email_Icontains: String, $fullName_Icontains: String) {
-    invitableUsers(email_Icontains: $email_Icontains, fullName_Icontains: $fullName_Icontains) {
+  query InvitableUsers($email_Icontains: String, $fullName_Icontains: String, $courseId: ID!) {
+    invitableUsers(email_Icontains: $email_Icontains, fullName_Icontains: $fullName_Icontains, courseId: $courseId) {
       edges {
         node {
           id
@@ -74,12 +74,13 @@ const AddForm = (props) => {
   }
 
   const onSearch = () => {
-    invitableUsers({
+    console.log(invitableUsers({
       variables: {
         email_Icontains: input.email,
-        fullName_Icontains: input.fullName
+        fullName_Icontains: input.fullName,
+        courseId: props.courseId
       }
-    });
+    }));
   }
 
   const getResults = (data) => {

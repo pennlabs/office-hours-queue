@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Grid } from 'semantic-ui-react';
-import Tags from './Tags';
 import InstructorQueues from './InstructorQueues';
 import QueueSettings from './QueueSettings/QueueSettings';
 import CreateQueue from './CreateQueue/CreateQueue';
@@ -17,6 +16,7 @@ query GetQueues($id: ID!) {
       edges {
         node {
           id
+          archived
           name
           description
           tags
