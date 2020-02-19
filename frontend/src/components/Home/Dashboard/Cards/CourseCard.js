@@ -12,7 +12,7 @@ export default class CourseCard extends React.Component {
 
     return (
       <Segment basic>
-        <Segment attached="top" color="blue" style={{"height":"70px", "width":"205px"}}>
+        <Segment attached="top" color="blue" style={{"height":"70px", "width":"192px"}}>
           <Link to={ path }>
           <Header
             content={this.props.department + " " + this.props.name}
@@ -21,7 +21,7 @@ export default class CourseCard extends React.Component {
               this.props.description.substring(0, 20) + "..." }/>
             </Link>
         </Segment>
-        <Segment attached="bottom" secondary textAlign="right" style={{"height":"40px", "width":"205px"}}>
+        <Segment attached="bottom" secondary textAlign="right" style={{"height":"40px", "width":"192px"}}>
           <Header as="h6">
             <Header.Content>
               <Icon name="circle" color={ this.props.openQueues == 0 ? "red" : "green" }/>

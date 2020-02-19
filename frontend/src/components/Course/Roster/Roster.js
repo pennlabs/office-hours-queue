@@ -52,7 +52,8 @@ const Roster = (props) => {
   const [filteredUsers, setFilteredUsers] = useState(null);
   const [invitedUsers, setInvitedUsers] = useState(null);
   const [open, setOpen] = useState(false);
-  const [tableState, setTableState] = useState({ direction: null, column: null })
+  const [tableState, setTableState] = useState({ direction: null, column: null });
+  const [showInvited, setShowInvited] = useState(false);
 
   /* MODAL FUNCTIONS */
   const triggerModal = () => {
@@ -155,18 +156,62 @@ const Roster = (props) => {
             courseId={ props.course.id }/>
       }
       <Grid.Row>
-        <Segment basic>
-          <Header as="h3">
-            Roster
-          </Header>
-        </Segment>
+      { 
+        users && 
+        <RosterForm showInvited={ showInvited }
+          filterFunc={ filterUsers } inviteFunc={ triggerModal } 
+          showFunc={ () => { setShowInvited(!showInvited) } }/> 
+      }
       </Grid.Row>
       <Grid.Row>
-      { users && <RosterForm filterFunc={ filterUsers } inviteFunc={ triggerModal }/> }
+      {
+        showInvited &&
+        <div style={{"marginTop":"40px"}}>
+          <Grid.Row>
+            <Header as="h3">
+              Invited Users
+            </Header>
+         </Grid.Row>
+        <Table sortable celled padded>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell
+                width={3}>Email</Table.HeaderCell>
+              <Table.HeaderCell
+                width={2}>Role</Table.HeaderCell>
+              <Table.HeaderCell
+                width={3}>Invited By</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+          {
+            invitedUsers.length != 0 ? invitedUsers.map(user => (
+              <Table.Row>
+                <Table.Cell>{ user.email }</Table.Cell>
+                <Table.Cell>{ formatRole(user.role) }</Table.Cell>
+                <Table.Cell>{ user.invitedBy.preferredName }</Table.Cell>
+              </Table.Row>
+            )) : 
+            <Table.Row>
+              <Table.Cell>{ "No invited users!" }</Table.Cell>
+              <Table.Cell>—</Table.Cell>
+              <Table.Cell>—</Table.Cell>
+            </Table.Row>
+          }
+          </Table.Body>
+        </Table>
+        </div>
+      }
       </Grid.Row>
       <Grid.Row>
       {
         users &&
+        <div style={{"marginTop":"40px"}}>
+          <Grid.Row>
+            <Header as="h3">
+              Roster
+            </Header>
+         </Grid.Row>
         <Table sortable celled padded>
           <Table.Header>
             <Table.Row>
@@ -204,21 +249,9 @@ const Roster = (props) => {
                 </Table.Row>
               ))
             }
-            {
-              invitedUsers.map(user => (
-                <Table.Row>
-                  <Table.Cell><i>Invite Pending from: </i><b>{ user.invitedBy.preferredName }</b></Table.Cell>
-                  <Table.Cell textAlign="center">—</Table.Cell>
-                  <Table.Cell>{ formatRole(user.role) }</Table.Cell>
-                  <Table.Cell>{ user.email }</Table.Cell>
-                  <Table.Cell textAlign="center">
-                    —
-                  </Table.Cell>
-                </Table.Row>
-              ))
-            }
           </Table.Body>
         </Table>
+        </div>
       }
       </Grid.Row>
     </div>
