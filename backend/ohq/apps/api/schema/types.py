@@ -119,18 +119,30 @@ class QuestionNode(DjangoObjectType):
             'time_answered',
             'time_rejected',
             'rejected_reason_other',
+            'state',
             'queue',
+            'order_key',
         )
         interfaces = (relay.Node,)
 
+    state = graphene.Field(QuestionStateType)
     rejected_reason = graphene.Field(QuestionRejectionReasonType)
     rejected_by = graphene.Field(UserMetaNode)
     asked_by = graphene.Field(UserMetaNode)
     answered_by = graphene.Field(UserMetaNode)
     feedback_answers = graphene.List(lambda: FeedbackAnswerNode)
 
+    questions_ahead = graphene.Int()
+
     def resolve_feedback_answers(self, info, **kwargs):
         return FeedbackAnswer.objects.filter(question=self, **kwargs)
+
+    def resolve_questions_ahead(self, info, **kwargs):
+        return Question.objects.filter(
+            queue=self.queue,
+            order_key__lt=self.order_key,
+            time_started__isnull=True,
+        ).count()
 
 
 class StartEndMinutes(graphene.ObjectType):
