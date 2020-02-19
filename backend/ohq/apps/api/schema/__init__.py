@@ -16,7 +16,7 @@ class Query(graphene.ObjectType):
         return info.context.user.get_user()
 
     # User search for invitation
-    invitable_users = DjangoFilterConnectionField(types.UserMetaNode)
+    invitable_users = DjangoFilterConnectionField(types.UserMetaNode, course_id=graphene.ID(required=True))
 
     # course_user = graphene.Field(CourseUserNode)
     # course_users = DjangoFilterField(CourseUserNode)

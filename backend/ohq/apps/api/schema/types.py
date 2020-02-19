@@ -104,11 +104,18 @@ class UserMetaNode(DjangoObjectType):
         interfaces = (relay.Node,)
 
 
+# class UserMetaFilter(django_filters.FilterSet):
+#     @property
+#     def qs(self):
+#         # The query context can be found in self.request.
+#         return super(UserMetaFilter, self).qs.filter(owner=self.request.user)
+
+
 class QuestionNode(DjangoObjectType):
     class Meta:
         model = Question
         # TODO better filtering class
-        filter_fields = ('id', 'time_asked', 'asked_by')
+        filter_fields = ('id',)
         fields = (
             'id',
             'text',
