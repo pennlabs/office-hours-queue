@@ -16,6 +16,7 @@ query GetUsers($id: ID!) {
     courseUsers {
       edges {
         node {
+          id
           kind
           user {
             id
