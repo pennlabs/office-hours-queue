@@ -103,8 +103,8 @@ class UpdateCourse(graphene.Mutation):
 
 
 class AddUserToCourseInput(graphene.InputObjectType):
-    user_id = graphene.ID(required=True)
     course_id = graphene.ID(required=True)
+    user_id = graphene.ID(required=True)
     kind = graphene.Field(CourseUserKindType, required=True)
 
 
@@ -114,7 +114,7 @@ class AddUserToCourseResponse(graphene.ObjectType):
 
 class AddUserToCourse(graphene.Mutation):
     class Arguments:
-        input = AddUserToCourseInput(required=False)
+        input = AddUserToCourseInput(required=True)
 
     Output = AddUserToCourseResponse
 
@@ -150,7 +150,7 @@ class JoinCourseResponse(graphene.ObjectType):
 
 class JoinCourse(graphene.Mutation):
     class Arguments:
-        input = JoinCourseInput(required=False)
+        input = JoinCourseInput(required=True)
 
     Output = JoinCourseResponse
 
@@ -171,8 +171,8 @@ class JoinCourse(graphene.Mutation):
 
 
 class InviteEmailInput(graphene.InputObjectType):
-    email = graphene.String(required=True)
     course_id = graphene.ID(required=True)
+    email = graphene.String(required=True)
     kind = graphene.Field(CourseUserKindType, required=True)
 
 
@@ -182,7 +182,7 @@ class InviteEmailResponse(graphene.ObjectType):
 
 class InviteEmail(graphene.Mutation):
     class Arguments:
-        input = InviteEmailInput(required=False)
+        input = InviteEmailInput(required=True)
 
     Output = InviteEmailResponse
 
@@ -214,8 +214,7 @@ class InviteEmail(graphene.Mutation):
 
 
 class RemoveUserFromCourseInput(graphene.InputObjectType):
-    user_id = graphene.ID(required=True)
-    course_id = graphene.ID(required=True)
+    course_user_id = graphene.ID(required=True)
 
 
 class RemoveUserFromCourseResponse(graphene.ObjectType):
@@ -224,29 +223,29 @@ class RemoveUserFromCourseResponse(graphene.ObjectType):
 
 class RemoveUserFromCourse(graphene.Mutation):
     class Arguments:
-        input = RemoveUserFromCourseInput(required=False)
+        input = RemoveUserFromCourseInput(required=True)
 
     Output = RemoveUserFromCourseResponse
 
     @staticmethod
     def mutate(root, info, input):
         with transaction.atomic():
-            course = Course.objects.get(pk=from_global_id(input.course_id)[1])
+            course_user_to_remove = CourseUser.objects.get(
+                pk=from_global_id(input.course_user_id)[1],
+            )
             if not CourseUser.objects.filter(
                 user= info.context.user.get_user(),
-                course=course,
+                course=course_user_to_remove.course,
                 kind__in=CourseUserKind.leadership(),
             ).exists():
                 raise user_not_leadership_error
 
-            course_user_to_remove = CourseUser.objects.get(
-                user=User.objects.get(pk=from_global_id(input.user_id)[1]),
-                course=course,
-            )
+            # Prevent removal of last leadership user
             if (
                 course_user_to_remove.kind in CourseUserKind.leadership() and
                 CourseUser.objects.filter(
-                    course=course, kind__in=CourseUserKind.leadership()
+                    course=course_user_to_remove.course,
+                    kind__in=CourseUserKind.leadership()
                 ).count() == 1
             ):
                 raise remove_only_leadership_error
@@ -254,3 +253,65 @@ class RemoveUserFromCourse(graphene.Mutation):
             course_user_to_remove.delete()
 
         return RemoveUserFromCourseResponse(success=True)
+
+
+class RemoveInvitedUserFromCourseInput(graphene.InputObjectType):
+    invited_course_user_id = graphene.ID(required=True)
+
+
+class RemoveInvitedUserFromCourseResponse(graphene.ObjectType):
+    success = graphene.Boolean(required=True)
+
+
+class RemoveInvitedUserFromCourse(graphene.Mutation):
+    class Arguments:
+        input = RemoveInvitedUserFromCourseInput(required=True)
+
+    Output = RemoveInvitedUserFromCourseResponse
+
+    @staticmethod
+    def mutate(root, info, input):
+        with transaction.atomic():
+            invited_course_user_to_remove = InvitedCourseUser.objects.get(
+                pk=from_global_id(input.invited_course_user_id)[1],
+            )
+            if not CourseUser.objects.filter(
+                user= info.context.user.get_user(),
+                course=invited_course_user_to_remove.course,
+                kind__in=CourseUserKind.leadership(),
+            ).exists():
+                raise user_not_leadership_error
+            invited_course_user_to_remove.delete()
+        return RemoveInvitedUserFromCourseResponse(success=True)
+
+
+class ResendInviteEmailInput(graphene.InputObjectType):
+    invited_course_user_id = graphene.ID(required=True)
+
+
+class ResendInviteEmailResponse(graphene.ObjectType):
+    success = graphene.Boolean(required=True)
+
+
+class ResendInviteEmail(graphene.Mutation):
+    class Arguments:
+        input = ResendInviteEmailInput(required=True)
+
+    Output = ResendInviteEmailResponse
+
+    @staticmethod
+    def mutate(root, info, input):
+        with transaction.atomic():
+            user = info.context.user.get_user()
+            invited_course_user = InvitedCourseUser.objects.get(
+                pk=from_global_id(input.invited_course_user_id)[1],
+            )
+            if not CourseUser.objects.filter(
+                user=user,
+                course=invited_course_user,
+                kind__in=CourseUserKind.leadership(),
+            ).exists():
+                raise user_not_leadership_error
+
+        send_invitation_email(invited_course_user)
+        return ResendInviteEmailResponse(success=True)
