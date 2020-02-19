@@ -46,6 +46,7 @@ const InstructorCourses = (props) => {
                 department={ course.department }
                 description={ course.description }
                 semester={ course.semester }
+                year={ course.year }
                 id={ course.id }
                 kind={ course.kind }
               />

@@ -24,7 +24,7 @@ export default class CourseCard extends React.Component {
         <Segment attached="bottom" secondary textAlign="right" style={{"height":"40px", "width":"192px"}}>
           <Header as="h6">
             <Header.Content>
-              { this.props.semester }
+              { this.props.semester } { this.props.year }
             </Header.Content>
           </Header>
         </Segment>

@@ -25,6 +25,7 @@ const CURRENT_USER = gql`
             course {
               id
               name
+              semester
               department
               description
               year
@@ -55,6 +56,7 @@ const Home = (props) => {
       newCourses.push({
         name: courseUser.node.course.name,
         department: courseUser.node.course.department,
+        semester: courseUser.node.course.semester,
         description: courseUser.node.course.description,
         id: courseUser.node.course.id,
         year: courseUser.node.course.year,
