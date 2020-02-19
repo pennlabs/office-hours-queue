@@ -45,9 +45,8 @@ const InstructorCourses = (props) => {
                 name={ course.name }
                 department={ course.department }
                 description={ course.description }
+                semester={ course.semester }
                 id={ course.id }
-                totalQueues={0}
-                openQueues={0}
                 kind={ course.kind }
               />
             </Grid.Column>

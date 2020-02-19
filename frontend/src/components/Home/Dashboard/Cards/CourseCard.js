@@ -24,8 +24,7 @@ export default class CourseCard extends React.Component {
         <Segment attached="bottom" secondary textAlign="right" style={{"height":"40px", "width":"192px"}}>
           <Header as="h6">
             <Header.Content>
-              <Icon name="circle" color={ this.props.openQueues == 0 ? "red" : "green" }/>
-              {this.props.openQueues} / { this.props.totalQueues } Queues
+              this.props.course.semester
             </Header.Content>
           </Header>
         </Segment>

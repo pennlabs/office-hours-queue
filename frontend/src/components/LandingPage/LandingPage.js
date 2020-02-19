@@ -37,7 +37,6 @@ const SignInGoogleBase = (props) => {
     props.firebase
       .doSignInWithGoogle()
       .then(socialAuthUser => {
-        console.log("Wooo!!! I got " + socialAuthUser.user.email + " with name " + socialAuthUser.user.displayName);
         if (socialAuthUser.additionalUserInfo.isNewUser) {
           createUser({
             variables: { 
