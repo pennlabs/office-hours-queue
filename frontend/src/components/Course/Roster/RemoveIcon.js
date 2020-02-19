@@ -14,15 +14,13 @@ const REMOVE_USER = gql`
 const RemoveIcon = (props) => {
   const [removeUser, { loading, data }] = useMutation(REMOVE_USER);
 
-  const [userId, setUserId] = useState(props.id);
-  const [courseId, setCourseId] = useState(props.courseId);
+  const [courseUserId, setCourseUserId] = useState(props.id);
 
   const onSubmit = () => {
     removeUser({
       variables: {
         input: {
-          userId: userId,
-          courseId: courseId
+          courseUserId: courseUserId
         }
       }
     }).then(data => {
@@ -31,8 +29,7 @@ const RemoveIcon = (props) => {
   }
 
   useEffect(() => {
-    setUserId(props.id)
-    setCourseId(props.courseId);
+    setCourseUserId(props.id)
   }, [props.id])
 
   return (

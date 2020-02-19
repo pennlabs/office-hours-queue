@@ -92,7 +92,7 @@ const Roster = (props) => {
     var newUsers = []
     data.course.courseUsers.edges.map((item) => {
       newUsers.push({
-        id: item.node.user.id,
+        id: item.node.id,
         fullName: item.node.user.fullName,
         preferredName: item.node.user.preferredName,
         email: item.node.user.email,
@@ -244,7 +244,7 @@ const Roster = (props) => {
                   <Table.Cell>{ formatRole(user.role) }</Table.Cell>
                   <Table.Cell>{ user.email }</Table.Cell>
                   <Table.Cell textAlign="center">
-                    <RemoveIcon courseId={ props.course.id } id={ user.id } refetch={ refetch }/>
+                    <RemoveIcon id={ user.id } refetch={ refetch }/>
                   </Table.Cell>
                 </Table.Row>
               ))
