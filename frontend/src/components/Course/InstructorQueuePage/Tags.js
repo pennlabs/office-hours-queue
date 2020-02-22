@@ -7,18 +7,16 @@ const Tags = (props) => {
 
   /* HANDLER FUNCTIONS */
   const clearTags = () => {
-    var newTags = tags;
-    newTags.map((tag) => {
+    tags.forEach((tag) => {
       tag.isActive = false;
     });
-    setTags(newTags);
-  }
+    setTags(tags);
+  };
 
   const handleTagClick = (index) => {
-    var newTags = tags;
-    newTags[index].isActive = !newTags[index].isActive;
-    setTags(newTags);
-  }
+    tags[index].isActive = !tags[index].isActive;
+    setTags(tags);
+  };
 
   /* PROPS UPDATE */
   useEffect(() => {
@@ -49,6 +47,6 @@ const Tags = (props) => {
       </Grid.Column>
     </Grid.Row>
   );
-}
+};
 
 export default Tags;

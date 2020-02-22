@@ -58,20 +58,26 @@ const roleOptions = [
     value: "STUDENT",
     text: "Student"
   }
-]
+];
 
 const AddForm = (props) => {
   const [invitableUsers, invitableUsersRes] = useLazyQuery(INVITABLE_USERS);
   const [addUser, addUserRes] = useMutation(ADD_USER);
   const [inviteEmail, inviteEmailRes] = useMutation(INVITE_EMAIL);
 
-  const [input, setInput] = useState({email: null, fullName: null, userId: null, invEmail: null, invRole: null });
+  const [input, setInput] = useState({
+    email: null,
+    fullName: null,
+    userId: null,
+    invEmail: null,
+    invRole: null,
+  });
   const [results, setResults] = useState(null);
 
   const handleInputChange = (e, { name, value }) => {
     input[name] = value;
     setInput(input);
-  }
+  };
 
   const onSearch = () => {
     console.log(invitableUsers({
@@ -81,61 +87,56 @@ const AddForm = (props) => {
         courseId: props.courseId
       }
     }));
-  }
+  };
 
   const getResults = (data) => {
-    var newResults = [];
-    data.invitableUsers.edges.forEach((item) => {
-      newResults.push({
+    return data.invitableUsers.edges.map((item) => {
+      return {
         key: item.node.id,
         value: item.node.id,
-        text: item.node.fullName + ` (${item.node.email})`
-      })
-    })
-    return newResults;
-  }
+        text: `${item.node.fullName} (${item.node.email})`,
+      };
+    });
+  };
 
-  const onSubmit = () => {
-    if (input.userId) {
-      addUser({
-        variables: {
-          input: {
-            userId: input.userId,
-            courseId: props.courseId,
-            kind: input.role
-          }
+  const onSubmit = async () => {
+    if (!input.userId) { return }
+    await addUser({
+      variables: {
+        input: {
+          userId: input.userId,
+          courseId: props.courseId,
+          kind: input.role
         }
-      })
-    }
-  }
+      }
+    });
+  };
 
-  const onInvite = () => {
-    if (input.invEmail) {
-      inviteEmail({
-        variables: {
-          input: {
-            courseId: props.courseId,
-            email: input.invEmail,
-            kind: input.invRole
-          }
+  const onInvite = async () => {
+    if (!input.invEmail) { return }
+    await inviteEmail({
+      variables: {
+        input: {
+          courseId: props.courseId,
+          email: input.invEmail,
+          kind: input.invRole
         }
-      });
-    }
-  }
+      }
+    });
+  };
 
   const isLoading = () => {
-    return (addUserRes && addUserRes.loading) || 
-      (invitableUsersRes && invitableUsersRes.loading) || 
+    return (addUserRes && addUserRes.loading) ||
+      (invitableUsersRes && invitableUsersRes.loading) ||
       (inviteEmailRes && inviteEmailRes.loading);
-  }
+  };
 
   if (invitableUsersRes.data && invitableUsersRes.data.invitableUsers) {
-    var newResults = getResults(invitableUsersRes.data);
+    const newResults = getResults(invitableUsersRes.data);
     if (JSON.stringify(newResults) !== JSON.stringify(results)) {
       setResults(newResults);
     }
   }
-
 
   return (
     <Form>
@@ -174,7 +175,7 @@ const AddForm = (props) => {
           <Form.Field>
             <Form.Dropdown selection
               placeholder="Add As..."
-              name="role" 
+              name="role"
               disabled={ isLoading() }
               onChange={ handleInputChange }
               options={ roleOptions }/>
@@ -188,12 +189,12 @@ const AddForm = (props) => {
         </div>
       }
       {
-        results && results.length == 0 &&
+        results && results.length === 0 &&
         <Message header="No Results" negative
           content="Those inputs did not return any results, but you can invite someone by email instead!"/>
       }
     </Form>
   )
-}
+};
 
 export default AddForm;

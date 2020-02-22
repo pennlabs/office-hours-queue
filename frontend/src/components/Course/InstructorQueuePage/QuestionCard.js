@@ -31,16 +31,16 @@ const QuestionCard = (props) => {
   const [finishQuestion, finishQuestionRes] = useMutation(FINISH_QUESTION);
 
   const timeString = (date) => {
-    var d = new Date(date);
-    var hour = d.getHours() > 12 ? d.getHours() - 12 : d.getHours();
-    var meridiem = d.getHours() > 12 ? "pm" : "am";
-    var minutes = d.getMinutes() < 10 ? "0" + d.getMinutes() : d.getMinutes()
+    const d = new Date(date);
+    const hour = d.getHours() > 12 ? d.getHours() - 12 : d.getHours();
+    const meridiem = d.getHours() > 12 ? "pm" : "am";
+    const minutes = d.getMinutes() < 10 ? "0" + d.getMinutes() : d.getMinutes();
     return `${hour}:${minutes} ${meridiem}`;
-  }
+  };
 
   const triggerModal = () => {
     setOpen(!open);
-  } 
+  };
 
   const onAnswer = () => {
     startQuestion({
@@ -52,7 +52,7 @@ const QuestionCard = (props) => {
     }).then(() => {
       props.refetch();
     });
-  }
+  };
 
   const onFinish = () => {
     finishQuestion({
@@ -64,16 +64,16 @@ const QuestionCard = (props) => {
     }).then(() => {
       props.refetch();
     });
-  }
+  };
 
   const isLoading = () => {
     return startQuestionRes && startQuestionRes.loading && finishQuestionRes && finishQuestionRes.loading;
-  }
+  };
 
-  
+
   useEffect(() => {
     setQuestion(props.question);
-  }, [props.question])
+  }, [props.question]);
 
   return (
     question && <div style={{"marginTop":"10px"}}>
@@ -141,7 +141,7 @@ const QuestionCard = (props) => {
               }
               content= {
                 question.tags && question.tags.map(tag => {
-                  return ' ' + tag
+                  return " " + tag
                 }).toString()
               }
               basic inverted

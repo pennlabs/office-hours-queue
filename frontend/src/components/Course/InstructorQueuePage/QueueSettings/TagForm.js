@@ -16,7 +16,7 @@ const UPDATE_QUEUE = gql`
 
 const QueueForm = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
-  const [updateQueue, { data, loading }] = useMutation(UPDATE_QUEUE); 
+  const [updateQueue, { data, loading }] = useMutation(UPDATE_QUEUE);
 
   /* STATE */
   const [success, setSuccess] = useState(false);
@@ -30,10 +30,10 @@ const QueueForm = (props) => {
   /* HANDLER FUNCTIONS */
   const handleInputChange = (e, { name, value }) => {
     setNewTag(value);
-  }
+  };
 
   const onSubmit = () => {
-    if (newTag && newTag.length != 0) {
+    if (newTag && newTag.length !== 0) {
       input.tags.push(newTag);
       setInput(input);
       updateQueue({
@@ -46,16 +46,10 @@ const QueueForm = (props) => {
         setNewTag("");
       })
     }
-  }
+  };
 
   const onDelete = (oldTag) => {
-    var newTags = [];
-    queue.tags.map((tag) => {
-      if (tag !== oldTag) {
-        newTags.push(tag);
-      }
-    });
-    input.tags = newTags;
+    input.tags = queue.tags.filter((tag) => tag !== oldTag);
 
     updateQueue({
       variables: {
@@ -66,12 +60,12 @@ const QueueForm = (props) => {
       setSuccess(true);
       setNewTag(newTag);
     })
-  }
+  };
 
   /* PROPS UPDATE */
   useEffect(() => {
     setQueue(props.queue);
-  }, [props.queue])
+  }, [props.queue]);
 
   return (
     <div>
@@ -87,9 +81,9 @@ const QueueForm = (props) => {
         ))
       }
       {
-        queue && queue.tags.length == 0 && !newTag && <Label color="blue" content="No Tags"/>
+        queue && queue.tags.length === 0 && !newTag && <Label color="blue" content="No Tags"/>
       }
-      { 
+      {
         !loading && newTag && <Label color="green" content={ newTag }/>
       }
     </Segment>
@@ -118,6 +112,6 @@ const QueueForm = (props) => {
       </Segment>
     </div>
   )
-}
+};
 
 export default QueueForm;

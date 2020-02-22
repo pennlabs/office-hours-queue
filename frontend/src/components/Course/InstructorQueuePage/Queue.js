@@ -16,6 +16,7 @@ const GET_QUESTIONS = gql`
             id
             text
             tags
+            state
             timeAsked
             timeWithdrawn
             timeRejected
@@ -44,12 +45,13 @@ const Queue = (props) => {
   });
 
   const getQuestions = (data) => {
-    var newQuestions = [];
-    data && data.queue.questions.edges.map((item) => {
-      newQuestions.push({
+    if (!data) { return [] }
+    return data.queue.questions.edges.map((item) => {
+      return {
         id: item.node.id,
         text: item.node.text,
         tags: item.node.tags,
+        state: item.node.state,
         timeAsked: item.node.timeAsked,
         askedBy: item.node.askedBy,
         timeWithdrawn: item.node.timeWithdrawn,
@@ -57,42 +59,31 @@ const Queue = (props) => {
         timeStarted: item.node.timeStarted,
         timeAnswered: item.node.timeAnswered,
         answeredBy: item.node.answeredBy
-      })
+      };
     });
-    return newQuestions;
-  }
+  };
 
   /* FILTERING QUESTIONS FUNC */
   const isVisible = (question) => {
-    return !question.timeRejected && !question.timeWithdrawn && !question.timeAnswered;
-  }
+    return question.state === "ACTIVE" || question.state === "STARTED";
+  };
 
   const filter = (questions, filters) => {
-    var newFilteredQuestions = []
-    questions.forEach((question) => {
-      if (filters.tags.length === 0 || intersects(question.tags, filters.tags)) {
-        if (isVisible(question)) {
-          newFilteredQuestions.push(question);
-        }
-      }
+    return questions.filter((question) => {
+      return isSubset(question.tags, filters.tags) && isVisible(question);
     });
-    return newFilteredQuestions;
-  }
+  };
 
-  const intersects = (l1, l2) => {
-    var count = 0;
-    l1.forEach((o1) => {
-      if (l2.includes(o1)) {
-        count += 1;
-      }
-    })
-    return count > 0;
-  }
+  // Returns true if l1 is a subset of l2
+  const isSubset = (l1, l2) => {
+    if (l1.length === 0) { return true; }
+    return l1.filter(value => l2.includes(value)).length > 0;
+  };
 
   const handleFilterChange = (input) => {
     setFilters(input);
     setFilteredQuestions(filter(questions, input));
-  }
+  };
 
   /* STATE */
   const [queue, setQueue] = useState(props.queue);
@@ -102,7 +93,7 @@ const Queue = (props) => {
   const [filters, setFilters] = useState({ tags: [], status: null });
 
   if (data && data.queue) {
-    var newQuestions = getQuestions(data);
+    const newQuestions = getQuestions(data);
     if (JSON.stringify(newQuestions) !== JSON.stringify(questions)) {
       setQuestions(newQuestions);
       setFilteredQuestions(newQuestions);
@@ -138,13 +129,13 @@ const Queue = (props) => {
         onClick={ props.editFunc }
       />
       <Grid.Row>
-        <QueueFilterForm tags={ tags } changeFunc={ handleFilterChange }/>  
+        <QueueFilterForm tags={ tags } changeFunc={ handleFilterChange }/>
       </Grid.Row>
       <Grid.Row columns={1} padded="true">
           <Questions questions={ filteredQuestions } filters={ filters } refetch={ refetch }/>
       </Grid.Row>
     </Segment> : <Segment basic></Segment>
   );
-}
+};
 
 export default Queue;

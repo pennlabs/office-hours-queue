@@ -5,12 +5,13 @@ const QuestionCard = (props) => {
   const [question, setQuestion] = useState(props.question);
 
   const timeString = (date) => {
-    var d = new Date(date);
-    var hour = d.getHours() > 12 ? d.getHours() - 12 : d.getHours();
-    var meridiem = d.getHours() > 12 ? "pm" : "am";
-    var minutes = d.getMinutes() < 10 ? "0" + d.getMinutes() : d.getMinutes()
+    const d = new Date(date);
+    const hour = d.getHours() > 12 ? d.getHours() - 12 : d.getHours();
+    const meridiem = d.getHours() > 12 ? "pm" : "am";
+    const minutes = d.getMinutes() < 10 ? "0" + d.getMinutes() : d.getMinutes();
     return `${hour}:${minutes} ${meridiem}`;
-  }
+  };
+
   return (
     <div style={{"marginTop":"10px"}}>
       <Segment attached="top" color="blue" style={{"height":"50px"}}>
@@ -56,6 +57,6 @@ const QuestionCard = (props) => {
       </Segment>
     </div>
   );
-}
+};
 
 export default QuestionCard;

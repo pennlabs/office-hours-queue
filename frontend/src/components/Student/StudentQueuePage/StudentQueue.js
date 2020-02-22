@@ -6,7 +6,7 @@ import QuestionCard from './QuestionCard';
 const StudentQueue = (props) => {
   const [queue, setQueue] = useState(props.queue);
   const [question, setQuestion] = useState(props.question);
-  
+
   useEffect(() => {
     setQuestion(props.question);
   }, [props.question]);
@@ -34,7 +34,7 @@ const StudentQueue = (props) => {
           !props.hasQuestion && <QuestionForm queue={ queue } refetch={ props.refetch }/>
         }
         {
-          props.hasQuestion && !question && 
+          props.hasQuestion && !question &&
           <Message style={{"marginTop":"10px"}}info header="Question In Queue" content="You already have asked a question in another queue!"/>
         }
         {
@@ -43,6 +43,6 @@ const StudentQueue = (props) => {
       </Grid.Row>
     </Segment>
   );
-}
+};
 
 export default StudentQueue;

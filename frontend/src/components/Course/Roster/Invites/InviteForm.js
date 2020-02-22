@@ -34,7 +34,7 @@ const roleOptions = [
     value: "STUDENT",
     text: "Student"
   }
-]
+];
 
 const InviteForm = (props) => {
   const [inviteEmail, { loading, error }] = useMutation(INVITE_EMAIL);
@@ -44,27 +44,26 @@ const InviteForm = (props) => {
   const handleInputChange = (e, { name, value }) => {
     input[name] = value;
     setInput(input);
-  }
+  };
 
-  const onSubmit = () => {
-    if (input.email) {
-      inviteEmail({
-        variables: {
-          input: {
-            courseId: props.courseId,
-            email: input.email,
-            kind: input.role
-          }
+  const onSubmit = async () => {
+    if (!input.email) { return }
+    await inviteEmail({
+      variables: {
+        input: {
+          courseId: props.courseId,
+          email: input.email,
+          kind: input.role,
         }
-      });
-    }
-  }
+      }
+    });
+  };
 
   return (
     <div>
     <Form>
       <Form.Field>
-        <label>Email</label> 
+        <label>Email</label>
         <Form.Input
           name="email"
           disabled={ loading }
@@ -74,7 +73,7 @@ const InviteForm = (props) => {
       <Form.Field>
         <Form.Dropdown selection
           placeholder="Add As..."
-          name="role" 
+          name="role"
           disabled={ loading }
           onChange={ handleInputChange }
           options={ roleOptions }/>
@@ -88,6 +87,6 @@ const InviteForm = (props) => {
     </Form>
     </div>
   )
-}
+};
 
 export default InviteForm;

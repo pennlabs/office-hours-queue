@@ -39,6 +39,6 @@ const QueueSettings = (props) => {
       </Grid.Row>
     </Grid.Column>
   );
-}
+};
 
 export default QueueSettings;

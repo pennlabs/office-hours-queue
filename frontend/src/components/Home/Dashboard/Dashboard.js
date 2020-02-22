@@ -8,22 +8,17 @@ const Dashboard = (props) => {
   const [courses, setCourses] = useState(props.courses);
 
   const getCourses = (allCourses, isStudent) => {
-    var filterCourses = [];
-    if (allCourses) {
-      allCourses.map((course) => {
-        if ((isStudent && course.kind === 'STUDENT') || 
-          (!isStudent && course.kind !== 'STUDENT')) {
-          filterCourses.push(course);
-        }
-      });
-    }
-    return filterCourses;
-  }
+    if (!allCourses) { return [] }
+    return allCourses.filter((course) => {
+      return (isStudent && course.kind === 'STUDENT') ||
+        (!isStudent && course.kind !== 'STUDENT');
+    });
+  };
 
   /* UPDATE ON PROPS CHANGE */
   useEffect(() => {
     setCourses(props.courses);
-  }, [props.courses])
+  }, [props.courses]);
 
   return (
     <Grid.Column width={13}>
@@ -50,6 +45,6 @@ const Dashboard = (props) => {
     }
     </Grid.Column>
   );
-}
+};
 
 export default Dashboard;

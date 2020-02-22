@@ -4,30 +4,20 @@ import QuestionCard from './QuestionCard';
 
 const Questions = (props) => {
   const isVisible = (question) => {
-    return !question.timeRejected && !question.timeWithdrawn && !question.timeAnswered;
-  }
+    return question.state === "ACTIVE" || question.state === "STARTED";
+  };
 
   const filter = (questions, filters) => {
-    var newFilteredQuestions = []
-    questions.forEach((question) => {
-      if (filters.tags.length === 0 || intersects(question.tags, filters.tags)) {
-        if (isVisible(question)) {
-          newFilteredQuestions.push(question);
-        }
-      }
+    return questions.filter((question) => {
+      return isSubset(question.tags, filters.tags) && isVisible(question);
     });
-    return newFilteredQuestions;
-  }
+  };
 
-  const intersects = (l1, l2) => {
-    var count = 0;
-    l1.forEach((o1) => {
-      if (l2.includes(o1)) {
-        count += 1;
-      }
-    })
-    return count > 0;
-  }
+  // Returns true if l1 is a subset of l2
+  const isSubset = (l1, l2) => {
+    if (l1.length === 0) { return true; }
+    return l1.filter(value => l2.includes(value)).length > 0;
+  };
 
   const [filteredQuestions, setFilteredQuestions] = useState(filter(props.questions, props.filters));
 
@@ -38,20 +28,20 @@ const Questions = (props) => {
   return (
     <Grid.Row>
       {
-        filteredQuestions && filteredQuestions.length != 0 && filteredQuestions.map((question) => (
+        filteredQuestions && filteredQuestions.length !== 0 && filteredQuestions.map((question) => (
           <Grid.Row>
             <QuestionCard question={ question } refetch={ props.refetch }/>
           </Grid.Row>
         ))
       }
       {
-        filteredQuestions && filteredQuestions.length == 0 &&
+        filteredQuestions && filteredQuestions.length === 0 &&
         <Grid.Row style={{"marginTop":"10px"}}>
           <Message header="Empty Queue" content="This queue currently has no questions."/>
         </Grid.Row>
       }
     </Grid.Row>
   );
-}
+};
 
 export default Questions;

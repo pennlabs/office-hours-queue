@@ -14,12 +14,12 @@ const InstructorQueues = (props) => {
   return (
     queues && <Grid.Row columns={2}>
       {
-        queues.length != 0 &&
-        queues.map((queue, index) => (
+        queues.length !== 0 &&
+        queues.map((queue) => (
           !queue.archived && <Grid.Column>
             <Queue queue={ queue } editFunc={ () => props.editFunc(queue.id) }/>
           </Grid.Column>
-        ))   
+        ))
       }
       {
         queues.length < 2 &&
@@ -34,6 +34,6 @@ const InstructorQueues = (props) => {
       }
     </Grid.Row>
   );
-}
+};
 
 export default InstructorQueues;

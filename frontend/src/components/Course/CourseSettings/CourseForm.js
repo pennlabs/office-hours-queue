@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
 import { Form, Button } from 'semantic-ui-react';
+import { semesterOptions } from "../../../utils/enums";
 
 /* GRAPHQL QUERIES/MUTATIONS */
 const UPDATE_COURSE = gql`
@@ -13,25 +14,6 @@ const UPDATE_COURSE = gql`
     }
   }
 `;
-
-/* DROPDOWN OPTIONS */
-const semesterOptions = [
-  {
-    key: 0,
-    text: "Fall",
-    value: "FALL"
-  },
-  {
-    key: 1,
-    text: "Spring",
-    value: "SPRING"
-  },
-  {
-    key: 2,
-    text: "Summer",
-    value: "SUMMER"
-  }
-]
 
 const CourseForm = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
@@ -46,7 +28,7 @@ const CourseForm = (props) => {
   const handleInputChange = (e, { name, value }) => {
     input[name] = name === "inviteOnly" ? !input[name] : value;
     setInput(input);
-  }
+  };
 
   const onSubmit = () => {
     updateCourse({
@@ -57,7 +39,7 @@ const CourseForm = (props) => {
       props.refetch();
       setSuccess(true);
     });
-  }
+  };
 
   return (
     <Form>
@@ -72,16 +54,16 @@ const CourseForm = (props) => {
       <Form.Field>
         <label>Course Code</label>
         <Form.Input
-          defaultValue={ defCourse.name }
-          name='name'
+          defaultValue={ defCourse.courseCode }
+          name='courseCode'
           disabled={ loading }
           onChange={ handleInputChange }/>
       </Form.Field>
       <Form.Field>
-        <label>Description</label>
+        <label>Course Title</label>
         <Form.Input
-          defaultValue={ defCourse.description }
-          name='description'
+          defaultValue={ defCourse.courseTitle }
+          name='courseTitle'
           disabled={ loading }
           onChange={ handleInputChange }/>
       </Form.Field>

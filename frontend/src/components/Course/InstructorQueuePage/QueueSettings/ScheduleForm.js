@@ -8,6 +8,6 @@ const ScheduleForm = (props) => {
     <Segment basic>
     </Segment>
   )
-}
+};
 
 export default ScheduleForm;

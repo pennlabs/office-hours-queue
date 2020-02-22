@@ -11,44 +11,45 @@ const InstructorCourses = (props) => {
   const [open, setOpen] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
   const [courses, setCourses] = useState(props.courses);
-  
+
   /* HANDLER FUNCTIONS */
   const triggerFunc = () => {
     setOpen(!open);
-  }
+  };
 
   const closeFunc = () => {
     props.refetch();
     triggerFunc();
-  }
+  };
 
   const handleArchivedChange = () => {
     setShowArchived(!showArchived);
-  }
+  };
 
   /* UPDATE ON PROPS CHANGE */
   useEffect(() => {
     setCourses(props.courses);
-  }, [props.courses])
+  }, [props.courses]);
 
   return (
     <Grid style={{"width":"100%"}}>
       <Grid.Row columns={4} padded="true">
         <ModalAddInstructorCourse
-            open={ open }
-            closeFunc={ closeFunc }/>
+          open={ open }
+          closeFunc={ closeFunc }/>
         {
           courses.map(course => (
             !course.archived &&
             <Grid.Column>
               <CourseCard
-                name={ course.name }
-                department={ course.department }
-                description={ course.description }
-                semester={ course.semester }
-                year={ course.year }
-                id={ course.id }
-                kind={ course.kind }
+                department={course.department}
+                courseCode={course.courseCode}
+                courseTitle={course.courseTitle}
+                description={course.description}
+                semester={course.semester}
+                year={course.year}
+                id={course.id}
+                kind={course.kind}
               />
             </Grid.Column>
           ))
@@ -68,11 +69,12 @@ const InstructorCourses = (props) => {
             course.archived && showArchived &&
             <Grid.Column>
               <ArchivedCourseCard
-                name={ course.name }
-                department={ course.department }
-                description={ course.description }
-                id={ course.id }
-                year={ course.year }
+                department={course.department}
+                courseCode={course.courseCode}
+                courseTitle={course.courseTitle}
+                description={course.description}
+                id={course.id}
+                year={course.year}
                 totalQueues={0}
                 openQueues={0}
               />

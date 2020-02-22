@@ -9,7 +9,7 @@ const StudentQueues = (props) => {
   useEffect(() => {
     setQuestion(props.question);
   }, [props.question]);
-  
+
 
   useEffect(() => {
     setQueues(props.queues);
@@ -18,7 +18,7 @@ const StudentQueues = (props) => {
   return (
     queues && <Grid.Row columns={queues.length}>
     {
-      queues.length != 0 ?
+      queues.length !== 0 ?
         queues.map((queue, index) => (
           <Grid.Column>
             <StudentQueue key={ queue.id }
@@ -35,10 +35,10 @@ const StudentQueues = (props) => {
             This course currently has no queues!
           </Message>
           </Segment>
-        </Grid.Column>        
+        </Grid.Column>
     }
     </Grid.Row>
   );
-}
+};
 
 export default StudentQueues;

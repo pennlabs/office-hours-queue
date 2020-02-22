@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Segment, Form, Header, Button } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
-import { useMutation } from '@apollo/react-hooks'; 
+import { useMutation } from '@apollo/react-hooks';
 
 const CREATE_QUESTION = gql`
   mutation CreateQuestion($input: CreateQuestionInput!) {
@@ -20,28 +20,26 @@ const QuestionForm = (props) => {
   const [input, setInput] = useState({
     queueId: props.queue.id,
     text: "",
-    tags: []
+    tags: [],
   });
   const [charCount, setCharCount] = useState(0);
 
   const handleInputChange = (e, { name, value }) => {
-    if (name == 'text' && value.length > 250) return;
+    if (name === 'text' && value.length > 250) return;
     input[name] = value;
     setInput(input);
     setCharCount(input.text.length)
-  }
+  };
 
   const getDropdownOptions = (tags) => {
-    var options = [];
-    tags.map((tag) => {
-      options.push({
+    return tags.map((tag) => {
+      return {
         key: tag,
         value: tag,
-        text: tag
-      });
+        text: tag,
+      };
     });
-    return options
-  }
+  };
 
   const onSubmit = () => {
     createQuestion({
@@ -52,7 +50,7 @@ const QuestionForm = (props) => {
       props.refetch();
       setSuccess(true);
     })
-  }
+  };
 
   useEffect(() => {
     setQueue(props.queue);
@@ -90,7 +88,7 @@ const QuestionForm = (props) => {
         <Button compact
           content="Submit"
           color="blue"
-          disabled={ loading } 
+          disabled={ loading }
           onClick={ onSubmit }/>
           {
             !loading && success && <span>Added!</span>
@@ -101,6 +99,6 @@ const QuestionForm = (props) => {
       </Segment>
     </div>
   );
-}
+};
 
 export default QuestionForm;

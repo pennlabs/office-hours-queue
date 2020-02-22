@@ -3,6 +3,7 @@ import { Form, Modal, Button } from 'semantic-ui-react';
 
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
+import { semesterOptions } from "../../../../utils/enums";
 
 /* GRAPHQL QUERIES/MUTATIONS */
 const CREATE_COURSE = gql`
@@ -18,29 +19,17 @@ const CREATE_COURSE = gql`
   }
 `;
 
-/* DROPDOWN OPTIONS */
-const semesterOptions = [
-  {
-    key: 0,
-    text: "Fall",
-    value: "FALL"
-  },
-  {
-    key: 1,
-    text: "Spring",
-    value: "SPRING"
-  },
-  {
-    key: 2,
-    text: "Summer",
-    value: "SUMMER"
-  }
-]
-
 /* FUNCTIONAL COMPONENT */
 const CreateCourseForm = () => {
   /* STATE */
-  const [input, setInput] = useState({ department: null, name: null, year: null, semester: null, inviteOnly: false })
+  const [input, setInput] = useState({
+    department: null,
+    courseCode: null,
+    courseTitle: null,
+    year: null,
+    semester: null,
+    inviteOnly: false
+  });
 
   /* GRAPHQL QUERIES/MUTATIONS */
   const [createCourse, { data }] = useMutation(CREATE_COURSE);
@@ -49,15 +38,15 @@ const CreateCourseForm = () => {
   const handleInputChange = (e, { name, value }) => {
     input[name] = name === "inviteOnly" ? !input[name] : value;
     setInput(input);
-  }
+  };
 
-  const onSubmit = () => {
-    createCourse({
+  const onSubmit = async () => {
+    await createCourse({
       variables: {
         input: input
       }
     });
-  }
+  };
 
   return (
     <Form>
@@ -87,7 +76,7 @@ const CreateCourseForm = () => {
       </Form.Field>
       <Form.Field>
           <Button content="Create" color = "green" onClick={onSubmit}/>
-          { 
+          {
             data &&
             <span style={{"margin-left":"20px"}}>Created!</span>
           }

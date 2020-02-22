@@ -15,7 +15,8 @@ const GET_COURSE = gql`
     course(id: $id) {
       id
       department
-      name
+      courseCode
+      courseTitle
       description
       year
       semester
@@ -38,24 +39,24 @@ const Student = (props) => {
   /* LOAD DATA FUNCTIONS */
   const loadCourse = (data) => {
     if (data && data.course) {
-      var newCourse = {
+      return {
         id: data.course.id,
         department: data.course.department,
-        name: data.course.name,
+        courseCode: data.course.courseCode,
+        courseTitle: data.course.courseTitle,
         description: data.course.description,
         year: data.course.year,
         semester: data.course.semester,
         inviteOnly: data.course.inviteOnly
-      }
-      return newCourse;
+      };
     } else {
       return {}
     }
-  }
+  };
 
   /* UPDATE STATE */
   if (courseQuery && courseQuery.data) {
-    var newCourse = loadCourse(courseQuery.data);
+    const newCourse = loadCourse(courseQuery.data);
     if (JSON.stringify(newCourse) !== JSON.stringify(course)) {
       setCourse(newCourse);
     }
@@ -70,9 +71,9 @@ const Student = (props) => {
           course.department && <Grid.Row>
             <Segment basic>
               <Header as="h1">
-                { course.department + " " + course.name }
+                { course.department + " " + course.courseCode }
                 <Header.Subheader>
-                  { course.description }
+                  { course.courseTitle }
                 </Header.Subheader>
               </Header>
             </Segment>
@@ -85,7 +86,7 @@ const Student = (props) => {
       </Grid.Column>
     </Grid>
   )
-}
+};
 
 const condition = authUser => !!authUser;
 

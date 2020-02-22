@@ -1,5 +1,5 @@
 // take course roster data
-var fakePeople = [
+const fakePeople = [
   {
       fullName: "Steven Bursztyn",
       preferredName: "Steven",
@@ -42,6 +42,6 @@ var fakePeople = [
       role: "TA",
       email: "vailm@seas.upenn.edu"
   }
-]
+];
 
 export { fakePeople };

@@ -8,31 +8,31 @@ const SummaryForm = (props) => {
     search: "",
     showRejected: false,
     queues: []
-  })
+  });
 
   const handleInputChange = (e, {name, value}) => {
     input[name] = value;
     setInput(input);
     props.filterFunc(input);
-  }
+  };
 
-  var tagOptions = []
-  props.queues.map((queue) => {
+  const tagOptions = [];
+  props.queues.forEach((queue) => {
     tagOptions.push({
       key: queue.name,
       value: queue.name,
       text: queue.name
-    })
-    queue.tags.map((tag) => {
+    });
+    queue.tags.forEach((tag) => {
       tagOptions.push({
         key: queue.name + " - " + tag,
         value: queue.name + " - " + tag,
         text: queue.name + " - " + tag
-      })
-    })
-  })
+      });
+    });
+  });
 
-  console.log(tagOptions)
+  console.log(tagOptions);
 
   return (
     <Form>
@@ -54,6 +54,6 @@ const SummaryForm = (props) => {
       </Form.Group>
     </Form>
   )
-}
+};
 
 export default SummaryForm;

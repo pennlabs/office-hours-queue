@@ -24,6 +24,7 @@ const GET_QUESTIONS = gql`
                   id
                   text
                   tags
+                  state
                   queue {
                     name
                   }
@@ -72,29 +73,27 @@ const Summary = (props) => {
   /* MODAL FUNCTIONS */
   const triggerModal = () => {
     setOpen(!open);
-  }
+  };
 
   /* FILTER USERS BASED ON INPUT */
   const filterQuestions = (input) => {
-    var newFilteredQuestions = [];
-    questions.map((qs) => {
-      if ((qs.text.toUpperCase().includes(input.search) 
-        || qs.askedBy.toUpperCase().includes(input.search)
-        || qs.answeredBy.toUpperCase().includes(input.search)
-        || qs.rejectedBy.toUpperCase().includes(input.search))
+    const newFilteredQuestions = questions.filter((qs) => {
+      return (
+        qs.text.toUpperCase().includes(input.search) ||
+        qs.askedBy.toUpperCase().includes(input.search) ||
+        qs.answeredBy.toUpperCase().includes(input.search) ||
+        qs.rejectedBy.toUpperCase().includes(input.search)
         //&& (!input.role || user.role === input.role)
-        ) {
-        newFilteredQuestions.push(qs);
-      }
-    })
+      );
+    });
     setFilteredQuestions(newFilteredQuestions);
     setTableState({ direction: null, column: null })
-  }
+  };
 
-  const closeModal = () => {
-    refetch();
+  const closeModal = async () => {
+    await refetch();
     triggerModal();
-  }
+  };
 
   /* TABLE FUNCTIONS */
   const handleSort = (clickedColumn) => {
@@ -111,37 +110,37 @@ const Summary = (props) => {
       });
       setFilteredQuestions(filteredQuestions.reverse());
     }
-  }
+  };
 
   /* GET QUESTIONS FROM DATA */
-  var queues = []
+  const queues = [];
   const loadQuestions = (data) => {
-    var questions = []
-    data.course.queues.edges.map((item) => {
+    const questions = [];
+    data.course.queues.edges.forEach((item) => {
       queues.push({
         name: item.node.name,
         tags: item.node.tags
-      })
-      item.node.questions.edges.map((qs) => {
-        if (!qs.node.timeWithdrawn) {
+      });
+      item.node.questions.edges.forEach((qs) => {
+        if (qs.node.state !== "WITHDRAWN") {
           questions.push({
-          text: qs.node.text,
-          tags: qs.node.tags,
-          queue: qs.node.queue.name,
-          timeAsked: qs.node.timeAsked,
-          askedBy: qs.node.askedBy.fullName,
-          answeredBy: qs.node.answeredBy ? qs.node.answeredBy.fullName : "",
-          rejectedBy: qs.node.rejectedBy ? qs.node.rejectedBy.fullName : ""
-        })
+            text: qs.node.text,
+            tags: qs.node.tags,
+            queue: qs.node.queue.name,
+            timeAsked: qs.node.timeAsked,
+            askedBy: qs.node.askedBy.fullName,
+            answeredBy: qs.node.answeredBy ? qs.node.answeredBy.fullName : "",
+            rejectedBy: qs.node.rejectedBy ? qs.node.rejectedBy.fullName : ""
+          })
         }
       })
     });
     return questions;
-  }
+  };
 
   /* LOAD DATA AND SORT BY TIME ASKED */
   if (data && data.course) {
-    var newQuestions = loadQuestions(data);
+    const newQuestions = loadQuestions(data);
     if (JSON.stringify(newQuestions) !== JSON.stringify(questions)) {
       setQuestions(newQuestions);
       setFilteredQuestions(_.sortBy(newQuestions, 'timeAsked').reverse());
@@ -153,7 +152,7 @@ const Summary = (props) => {
   }
 
   /*
-    Still TODO: 
+    Still TODO:
       - Add a couple more fields to table (rejected, etc.)
       - Add filtering abilities
       - Format the table nicely.
@@ -204,16 +203,23 @@ const Summary = (props) => {
               filteredQuestions.map(qs => (
                 <Table.Row>
                   <Table.Cell>{ qs.askedBy }</Table.Cell>
-                  <Table.Cell>{ qs.answeredBy !== '' ? qs.answeredBy : 
-                                qs.rejectedBy !== '' ? "Rejected by: " + qs.rejectedBy :
-                                "" }
+                  <Table.Cell>
+                    {
+                      qs.answeredBy !== '' ? qs.answeredBy :
+                      qs.rejectedBy !== '' ? "Rejected by: " + qs.rejectedBy : ""
+                    }
                   </Table.Cell>
                   <Table.Cell>{ qs.text }</Table.Cell>
-                  <Table.Cell>{ qs.queue } <br/> 
-                                {qs.tags.length !== 0 ? qs.tags.join(', ') : ''}
+                  <Table.Cell>
+                    { qs.queue }
+                    <br/>
+                    {qs.tags.length !== 0 ? qs.tags.join(', ') : ''}
                   </Table.Cell>
-                  <Table.Cell>{new Date(Date.parse(qs.timeAsked)).toLocaleString('en-US', 
-                                {dateStyle: 'short', timeStyle: 'short'})}
+                  <Table.Cell>
+                    {
+                      new Date(Date.parse(qs.timeAsked))
+                        .toLocaleString('en-US', {dateStyle: 'short', timeStyle: 'short'})
+                    }
                   </Table.Cell>
                 </Table.Row>
               ))
@@ -224,6 +230,6 @@ const Summary = (props) => {
       </Grid.Row>
     </div>
   );
-}
+};
 
 export default Summary;

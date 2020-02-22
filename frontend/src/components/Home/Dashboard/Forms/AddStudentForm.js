@@ -4,17 +4,20 @@ import { Form, Button } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useMutation } from '@apollo/react-hooks';
+import { prettifySemester } from "../../../../utils/enums";
 
 /* GRAPHQL QUERIES/MUTATIONS */
 const JOINABLE_COURSES = gql`
-  query JoinableCourses($department: String, $name: String) {
-    joinableCourses(department: $department, name: $name) {
+  query JoinableCourses($department: String, $courseCode: String) {
+    joinableCourses(department: $department, courseCode: $courseCode) {
       edges {
         node {
           id
           department
-          name
-          description
+          courseCode
+          courseTitle
+          year
+          semester
         }
       }
     }
@@ -35,26 +38,30 @@ const JOIN_COURSE = gql`
 /* FUNCTIONAL COMPONENT */
 const AddStudentForm = () => {
   /* STATE */
-  const [input, setInput] = useState({ department: null, name: null, courseId: null });
+  const [input, setInput] = useState({
+    department: null,
+    courseCode: null,
+    courseTitle: null,
+    courseId: null,
+  });
   const [results, setResults] = useState(null);
-  
+
   /* GRAPHQL QUERIES/MUTATIONS */
   const [joinableCourses, { loading, data }] = useLazyQuery(JOINABLE_COURSES);
   const [joinCourse, joinData] = useMutation(JOIN_COURSE);
 
   /* LOADING SEARCH RESULTS */
   if (data) {
-    var new_results = [];
-    data.joinableCourses.edges.map((course, index) => {
-      new_results.push({
+    const newResults = data.joinableCourses.edges.map((course) => {
+      return {
         key: course.node.id,
-        text: course.node.department + " " + course.node.name + " (" + course.node.description + ")",
+        text: `${course.node.department} ${course.node.courseCode} (${course.node.courseTitle}, ${prettifySemester(course.node.semester)} ${course.node.year})`,
         value: course.node.id
-      })
+      };
     });
-    if (!results || new_results.length != results.length || 
-        JSON.stringify(new_results) != JSON.stringify(results)) {
-      setResults(new_results);
+    if (!results || newResults.length !== results.length ||
+        JSON.stringify(newResults) !== JSON.stringify(results)) {
+      setResults(newResults);
     }
   }
 
@@ -62,24 +69,24 @@ const AddStudentForm = () => {
   const handleInputChange = (e, { name, value }) => {
     input[name] = value;
     setInput(input);
-  }
+  };
 
   const onSearch = () => {
     joinableCourses({ variables: {
       department: input.department,
-      name: input.name
+      courseCode: input.courseCode,
     }});
-  }
-  
-  const onSubmit = () => {
-    joinCourse({
+  };
+
+  const onSubmit = async () => {
+    await joinCourse({
       variables: {
         input: {
           courseId: input.courseId
         }
       }
     });
-  }
+  };
 
   return (
     <Form>
@@ -89,7 +96,7 @@ const AddStudentForm = () => {
       </Form.Field>
       <Form.Field>
         <label>Course Code</label>
-        <Form.Input name="name" onChange={ handleInputChange }/>
+        <Form.Input name="courseCode" onChange={ handleInputChange }/>
       </Form.Field>
       <Form.Field>
         <Button content="Search" color="blue" onClick={ onSearch }/>
@@ -109,7 +116,7 @@ const AddStudentForm = () => {
           </Form.Field>
           <Form.Field>
             <Button content="Add" color="green" onClick={ onSubmit }/>
-            { 
+            {
               joinData && joinData.data &&
               <span style={{"margin-left":"20px"}}>Added!</span>
             }
@@ -118,6 +125,6 @@ const AddStudentForm = () => {
       }
     </Form>
   );
-}
+};
 
 export default AddStudentForm;

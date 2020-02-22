@@ -42,7 +42,7 @@ const CURRENT_QUESTION = gql`
 `;
 
 const StudentQueuePage = (props) => {
-  const getQueuesRes = useQuery(GET_QUEUES, { 
+  const getQueuesRes = useQuery(GET_QUEUES, {
     variables: {
       id: props.course.id
     }
@@ -59,20 +59,18 @@ const StudentQueuePage = (props) => {
   const [active, setActive] = useState('queues');
 
   const loadQueues = (data) => {
-    var newQueues = [];
-    data.course.queues.edges.map((item) => {
-      newQueues.push({
+    return data.course.queues.edges.map((item) => {
+      return {
         id: item.node.id,
         name: item.node.name,
         description: item.node.description,
-        tags: item.node.tags
-      })
-    })
-    return newQueues;
-  }
+        tags: item.node.tags,
+      };
+    });
+  };
 
   if (getQueuesRes.data && getQueuesRes.data.course) {
-    var newQueues = loadQueues(getQueuesRes.data);
+    const newQueues = loadQueues(getQueuesRes.data);
     if (JSON.stringify(newQueues) !== JSON.stringify(queues)) {
       setQueues(newQueues);
     }
@@ -88,10 +86,13 @@ const StudentQueuePage = (props) => {
     <Grid>
       {
         active === 'queues' &&
-        <StudentQueues queues={ queues } refetch={ () => { getQueuesRes.refetch(); getQuestionRes.refetch()} } question={ currentQuestion }/>
+        <StudentQueues
+          queues={queues}
+          refetch={() => { getQueuesRes.refetch(); getQuestionRes.refetch() }}
+          question={currentQuestion}/>
       }
     </Grid>
   );
-}
+};
 
 export default StudentQueuePage;

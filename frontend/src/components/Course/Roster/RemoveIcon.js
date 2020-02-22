@@ -23,14 +23,14 @@ const RemoveIcon = (props) => {
           courseUserId: courseUserId
         }
       }
-    }).then(data => {
+    }).then((data) => {
       props.refetch();
     });
-  }
+  };
 
   useEffect(() => {
     setCourseUserId(props.id)
-  }, [props.id])
+  }, [props.id]);
 
   return (
     <Popup
@@ -41,8 +41,8 @@ const RemoveIcon = (props) => {
         on='click'
         position='top center'
       />
-    
+
   );
-}
+};
 
 export default RemoveIcon;

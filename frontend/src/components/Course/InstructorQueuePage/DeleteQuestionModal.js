@@ -20,7 +20,7 @@ const deleteOptions = [
   {key: 'NOT_SPECIFIC', value: 'NOT_SPECIFIC', text: 'Not Specific'},
   {key: 'WRONG_QUEUE', value: 'WRONG_QUEUE', text: 'Wrong Queue'},
   {key: 'OTHER', value: 'OTHER', text: 'Other'}
-]
+];
 
 const DeleteQuestionModal = (props) => {
   const [question, setQuestion] = useState(props.question);
@@ -31,8 +31,8 @@ const DeleteQuestionModal = (props) => {
   const handleInputChange = (e, {name, value}) =>{
     input[name] = value;
     setInput(input);
-    setOtherDisabled(name == 'rejectedReason' && value != 'OTHER');
-  }
+    setOtherDisabled(name === 'rejectedReason' && value !== 'OTHER');
+  };
 
   const onSubmit = () => {
     if (input.rejectedReason) {
@@ -45,7 +45,7 @@ const DeleteQuestionModal = (props) => {
         props.closeFunc();
       });
     }
-  }
+  };
 
   return (
     question && <Modal open={ props.open }>
@@ -79,6 +79,6 @@ const DeleteQuestionModal = (props) => {
         </Modal.Actions>
       </Modal>
   );
-}
+};
 
 export default DeleteQuestionModal;

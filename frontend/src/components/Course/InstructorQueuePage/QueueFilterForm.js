@@ -15,7 +15,7 @@ const QueueFilterForm = (props) => {
     input[name] = value;
     setInput(input);
     props.changeFunc(input);
-  }
+  };
 
   return (
     <Form style={{"marginTop":"10px"}}>
@@ -33,6 +33,6 @@ const QueueFilterForm = (props) => {
       }
     </Form>
   )
-}
+};
 
 export default QueueFilterForm;

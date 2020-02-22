@@ -20,6 +20,6 @@ const App = () => {
       </Switch>
     </Router>
   )
-}
+};
 
 export default withAuthentication(App);

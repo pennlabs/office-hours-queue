@@ -23,6 +23,6 @@ const InviteModal = (props) => {
       </Modal.Actions>
     </Modal>
   )
-}
+};
 
 export default InviteModal;

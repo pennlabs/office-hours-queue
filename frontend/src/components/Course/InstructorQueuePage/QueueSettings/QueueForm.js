@@ -16,7 +16,7 @@ const UPDATE_QUEUE = gql`
 
 const QueueForm = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
-  const [updateQueue, { data, loading }] = useMutation(UPDATE_QUEUE); 
+  const [updateQueue, { data, loading }] = useMutation(UPDATE_QUEUE);
 
   /* STATE */
   const [success, setSuccess] = useState(false);
@@ -31,7 +31,7 @@ const QueueForm = (props) => {
   const handleInputChange = (e, { name, value }) => {
     input[name] = value;
     setInput(input);
-  }
+  };
 
   const onSubmit = () => {
     updateQueue({
@@ -42,12 +42,12 @@ const QueueForm = (props) => {
       props.refetch();
       setSuccess(true);
     })
-  }
+  };
 
   /* PROPS UPDATE */
   useEffect(() => {
     setQueue(props.queue);
-  }, [props.queue])
+  }, [props.queue]);
 
   return (
     <Form>
@@ -81,6 +81,6 @@ const QueueForm = (props) => {
       }
     </Form>
   )
-}
+};
 
 export default QueueForm;

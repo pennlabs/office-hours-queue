@@ -19,7 +19,7 @@ const AccountSettings = (props) => {
         </Grid.Row>
     </Grid.Column>
   );
-  }
+};
 
 const condition = authUser => !!authUser;
 

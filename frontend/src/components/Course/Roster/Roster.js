@@ -90,54 +90,49 @@ const Roster = (props) => {
 
   /* GET USERS FROM DATA */
   const loadUsers = (data) => {
-    var newUsers = []
-    data.course.courseUsers.edges.map((item) => {
-      newUsers.push({
+    return data.course.courseUsers.edges.map((item) => {
+      return {
         id: item.node.id,
         fullName: item.node.user.fullName,
         preferredName: item.node.user.preferredName,
         email: item.node.user.email,
         role: item.node.kind
-      })
+      };
     });
-    return newUsers;
-  }
+  };
 
   const loadInvitedUsers = (data) => {
-    var newInvitedUsers = []
-    data.course.invitedCourseUsers.edges.map((item) => {
-      newInvitedUsers.push({
+    return data.course.invitedCourseUsers.edges.map((item) => {
+      return {
         id: item.node.id,
         email: item.node.email,
         role: item.node.kind,
         invitedBy: item.node.invitedBy
-      })
+      };
     });
-    return newInvitedUsers;
-  }
+  };
 
   /* FILTER USERS BASED ON INPUT */
   const filterUsers = (input) => {
-    var newFilteredUsers = [];
-    users.map((user) => {
-      if ((user.fullName.toUpperCase().includes(input.search) || user.email.toUpperCase().includes(input.search))
-           && (!input.role || user.role === input.role)) {
-        newFilteredUsers.push(user);
-      }
-    })
+    const newFilteredUsers = users.filter((user) => {
+      return (
+        user.fullName.toUpperCase().includes(input.search) ||
+        user.email.toUpperCase().includes(input.search)
+      ) && (!input.role || user.role === input.role);
+    });
     setFilteredUsers(newFilteredUsers);
     setTableState({ direction: null, column: null })
-  }
+  };
 
-  const closeModal = () => {
-    refetch();
+  const closeModal = async () => {
+    await refetch();
     triggerModal();
-  }
+  };
 
   /* LOAD DATA */
   if (data && data.course) {
-    var newUsers = loadUsers(data);
-    var newInvitedUsers = loadInvitedUsers(data);
+    const newUsers = loadUsers(data);
+    const newInvitedUsers = loadInvitedUsers(data);
     if (JSON.stringify(newUsers) !== JSON.stringify(users)) {
       setUsers(newUsers);
       setFilteredUsers(newUsers);
@@ -157,11 +152,11 @@ const Roster = (props) => {
             courseId={ props.course.id }/>
       }
       <Grid.Row>
-      { 
-        users && 
+      {
+        users &&
         <RosterForm showInvited={ showInvited }
-          filterFunc={ filterUsers } inviteFunc={ triggerModal } 
-          showFunc={ () => { setShowInvited(!showInvited) } }/> 
+          filterFunc={ filterUsers } inviteFunc={ triggerModal }
+          showFunc={ () => { setShowInvited(!showInvited) } }/>
       }
       </Grid.Row>
       <Grid.Row>
@@ -186,13 +181,13 @@ const Roster = (props) => {
           </Table.Header>
           <Table.Body>
           {
-            invitedUsers.length != 0 ? invitedUsers.map(user => (
+            invitedUsers.length !== 0 ? invitedUsers.map(user => (
               <Table.Row>
                 <Table.Cell>{ user.email }</Table.Cell>
                 <Table.Cell>{ formatRole(user.role) }</Table.Cell>
                 <Table.Cell>{ user.invitedBy.preferredName }</Table.Cell>
               </Table.Row>
-            )) : 
+            )) :
             <Table.Row>
               <Table.Cell>{ "No invited users!" }</Table.Cell>
               <Table.Cell>—</Table.Cell>
@@ -257,6 +252,6 @@ const Roster = (props) => {
       </Grid.Row>
     </div>
   );
-}
+};
 
 export default Roster;

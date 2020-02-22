@@ -21,9 +21,9 @@ import { useMutation } from '@apollo/react-hooks';
 const CREATE_USER = gql`
   mutation CreateUser($input: CreateUserInput!) {
     createUser(input: $input) {
-        user {
-          id
-        }
+      user {
+        id
+      }
     }
   }
 `;
@@ -33,14 +33,14 @@ const SignInGoogleBase = (props) => {
   const condition = authUser => !!authUser;
   const [createUser, { data }] = useMutation(CREATE_USER);
 
-  const onSubmit = event => {
+  const onSubmit = (event) => {
     props.firebase
       .doSignInWithGoogle()
-      .then(socialAuthUser => {
+      .then(async (socialAuthUser) => {
         if (socialAuthUser.additionalUserInfo.isNewUser) {
-          createUser({
-            variables: { 
-              input:{ 
+          await createUser({
+            variables: {
+              input:{
                 fullName: socialAuthUser.user.displayName,
                 preferredName: socialAuthUser.user.displayName.split("/[ ,]+/")[0]
               }
@@ -61,26 +61,26 @@ const SignInGoogleBase = (props) => {
 
   return (
     <AuthUserContext.Consumer>
-        {authUser =>
-          condition(authUser) 
+      {authUser =>
+        condition(authUser)
           ? <Home />
           : <div
-              style={{
-                "height":"100%",
-                "width":"100%",
-                "display":"flex",
-                "alignItems": "center",
-                "justifyContent":"center"
-              }}>
-              <Grid columns={1} textAlign="center">
-                <Grid.Row><img src="ohq-login.png" width="600px" alt=""/></Grid.Row>
-                <Grid.Row><GoogleButton onClick={onSubmit}/></Grid.Row>
-              </Grid>
-            </div> 
-        }
+            style={{
+              "height":"100%",
+              "width":"100%",
+              "display":"flex",
+              "alignItems": "center",
+              "justifyContent":"center"
+            }}>
+            <Grid columns={1} textAlign="center">
+              <Grid.Row><img src="ohq-login.png" width="600px" alt=""/></Grid.Row>
+              <Grid.Row><GoogleButton onClick={onSubmit}/></Grid.Row>
+            </Grid>
+          </div>
+      }
     </AuthUserContext.Consumer>
   );
-}
+};
 
 const SignInGoogle = compose(
   withRouter,
@@ -88,7 +88,7 @@ const SignInGoogle = compose(
 )(SignInGoogleBase);
 
 const LandingPage = () => {
-    return <SignInGoogle />
+  return <SignInGoogle />
 };
 
 export default LandingPage;

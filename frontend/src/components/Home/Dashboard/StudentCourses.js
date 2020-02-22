@@ -9,21 +9,21 @@ const StudentCourses = (props) => {
   /* STATE */
   const [open, setOpen] = useState(false);
   const [courses, setCourses] = useState(props.courses);
-  
+
   /* OPENING/CLOSING MODAL */
   const triggerFunc = () => {
     setOpen(!open);
-  }
+  };
 
   /* CLOSING MODAL AND REFECTHING DATA */
   const closeFunc = () => {
     props.refetch();
     triggerFunc();
-  }
+  };
 
   useEffect(() => {
     setCourses(props.courses);
-  }, [props.courses])
+  }, [props.courses]);
 
   return (
     <Grid style={{"width":"100%"}}>
@@ -35,9 +35,9 @@ const StudentCourses = (props) => {
           courses.map(course => (
             <Grid.Column>
               <CourseCard
-                name={course.name}
                 department={course.department}
-                description={course.description}
+                courseCode={course.courseCode}
+                courseTitle={course.courseTitle}
                 semester={course.semester}
                 year={course.year}
                 id={course.id}
@@ -52,6 +52,6 @@ const StudentCourses = (props) => {
     </Grid.Row>
     </Grid>
   );
-}
+};
 
 export default StudentCourses;

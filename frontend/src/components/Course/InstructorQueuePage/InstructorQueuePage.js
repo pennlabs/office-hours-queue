@@ -40,10 +40,10 @@ const InstructorQueuePage = (props) => {
 
   /* TAG FUNCTION */
   const getTags = (queues) => {
-    var newTags = [];
-    var tagNames = [];
-    queues.map((queue) => {
-      queue.tags.map((tag) => {
+    const newTags = [];
+    const tagNames = [];
+    queues.forEach((queue) => {
+      queue.tags.forEach((tag) => {
         if (!tagNames.includes(tag)) {
           newTags.push({ name: tag, isActive: false });
           tagNames.push(tag);
@@ -51,41 +51,37 @@ const InstructorQueuePage = (props) => {
       });
     });
     return newTags;
-  }
+  };
 
   /* QUEUE FUNCTION */
   const loadQueues = (data) => {
-    var newQueues = [];
-    data.course.queues.edges.map((item) => {
-      newQueues.push({
+    return data.course.queues.edges.map((item) => {
+      return {
         id: item.node.id,
         name: item.node.name,
         description: item.node.description,
         tags: item.node.tags
-      })
-    })
-    return newQueues;
-  }
+      };
+    });
+  };
 
   /* HANDLER FUNCTIONS */
   const onQueueSettings = (id) => {
     setActiveQueueId(id);
     setActive('settings');
-  }
+  };
 
   const getQueue = (id) => {
-    var newQueue = {};
-    queues.map((queue) => {
+    for (const queue of queues) {
       if (queue.id === id) {
-        newQueue = queue;
+        return queue
       }
-    })
-    return newQueue;
-  }
+    }
+  };
 
   /* LOAD DATA */
   if (data && data.course) {
-    var newQueues = loadQueues(data);
+    const newQueues = loadQueues(data);
     if (JSON.stringify(newQueues) !== JSON.stringify(queues)) {
       setQueues(newQueues);
     }
@@ -113,6 +109,6 @@ const InstructorQueuePage = (props) => {
       }
     </Grid>
   );
-}
+};
 
 export default InstructorQueuePage;

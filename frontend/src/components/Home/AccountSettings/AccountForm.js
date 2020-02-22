@@ -33,14 +33,14 @@ const AccountForm = (props) => {
   const handleInputChange = (e, { name, value }) => {
     input[name] = value;
     setInput(input);
-  }
+  };
 
   const onSubmit = () => {
-    var fullName = input.fullName ? input.fullName : defUser.fullName;
-    var preferredName = input.preferredName ? input.preferredName : defUser.preferredName;
-    var phoneNumber = input.phoneNumber ? input.phoneNumber : defUser.phoneNumber;
+    const fullName = input.fullName ? input.fullName : defUser.fullName;
+    const preferredName = input.preferredName ? input.preferredName : defUser.preferredName;
+    const phoneNumber = input.phoneNumber ? input.phoneNumber : defUser.phoneNumber;
 
-    var newInput = (phoneNumber ? 
+    const newInput = (phoneNumber ?
       {
         fullName: fullName,
         preferredName: preferredName,
@@ -53,13 +53,13 @@ const AccountForm = (props) => {
 
     updateUser({
       variables: {
-        input: newInput 
+        input: newInput
       }
     }).then(() => {
       props.refetch();
       setSuccess(true);
     });
-  }
+  };
 
   return (
     <Form>
@@ -106,6 +106,6 @@ const AccountForm = (props) => {
       }
     </Form>
   );
-}
+};
 
 export default AccountForm;

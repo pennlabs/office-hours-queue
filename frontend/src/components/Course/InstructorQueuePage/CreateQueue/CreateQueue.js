@@ -32,7 +32,7 @@ const CreateQueue = (props) => {
   const handleInputChange = (e, { name, value }) => {
     input[name] = value;
     setInput(input);
-  }
+  };
 
   const onSubmit = () => {
     createQueue({
@@ -43,7 +43,7 @@ const CreateQueue = (props) => {
       props.refetch();
       setSuccess(true);
     })
-  }
+  };
 
   return (
     <Grid.Column width={13}>
@@ -70,7 +70,7 @@ const CreateQueue = (props) => {
               <Form.Input
                 placeholder="Description"
                 name='description'
-                disabled={ loading } 
+                disabled={ loading }
                 onChange={ handleInputChange }/>
             </Form.Field>
             <Button type='submit' disabled={ loading }  onClick={ onSubmit }>Submit</Button>
@@ -85,6 +85,6 @@ const CreateQueue = (props) => {
       </Grid.Row>
     </Grid.Column>
   );
-}
+};
 
 export default CreateQueue;

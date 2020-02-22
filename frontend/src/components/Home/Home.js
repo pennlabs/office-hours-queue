@@ -24,10 +24,11 @@ const CURRENT_USER = gql`
           node {
             course {
               id
-              name
-              semester
               department
+              courseCode
+              courseTitle
               description
+              semester
               year
               archived
             }
@@ -51,44 +52,42 @@ const Home = (props) => {
   /* LOAD DATA FUNCTIONS */
   const loadCourses = (data) => {
     if (!data) return;
-    var newCourses = [];
-    data.currentUser.courseUsers.edges.map(courseUser => {
-      newCourses.push({
-        name: courseUser.node.course.name,
-        department: courseUser.node.course.department,
-        semester: courseUser.node.course.semester,
-        description: courseUser.node.course.description,
+    return data.currentUser.courseUsers.edges.map((courseUser) => {
+      return {
         id: courseUser.node.course.id,
+        department: courseUser.node.course.department,
+        courseCode: courseUser.node.course.courseCode,
+        courseTitle: courseUser.node.course.courseTitle,
+        description: courseUser.node.course.description,
+        semester: courseUser.node.course.semester,
         year: courseUser.node.course.year,
         archived: courseUser.node.course.archived,
         kind: courseUser.node.kind
-      })
+      };
     });
-    return newCourses;
-  }
+  };
 
   const loadUser = (data) => {
     if (!data) return;
-    var newUser = {
+    return {
       id: data.currentUser.id,
       email: data.currentUser.email,
       fullName: data.currentUser.fullName,
       preferredName: data.currentUser.preferredName,
       phoneNumber: data.currentUser.phoneNumber
-    }
-    return newUser;
-  }
+    };
+  };
 
   /* UPDATE STATE ON QUERY */
   if (data && data.currentUser) {
-    var newCourses = loadCourses(data);
-    var newUser = loadUser(data);
+    const newCourses = loadCourses(data);
+    const newUser = loadUser(data);
 
-    if (JSON.stringify(newCourses) != JSON.stringify(courses)) {
+    if (JSON.stringify(newCourses) !== JSON.stringify(courses)) {
       setCourses(newCourses);
     }
 
-    if(JSON.stringify(newUser) != JSON.stringify(user)) {
+    if (JSON.stringify(newUser) !== JSON.stringify(user)) {
       setUser(newUser);
     }
   }
@@ -96,7 +95,7 @@ const Home = (props) => {
   useEffect(() => {
     setCourses(loadCourses(data));
     setUser(loadUser(data));
-  }, [])
+  }, []);
 
   return (
     <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
@@ -111,7 +110,7 @@ const Home = (props) => {
       }
     </Grid>
   )
-}
+};
 
 const condition = authUser => !!authUser;
 

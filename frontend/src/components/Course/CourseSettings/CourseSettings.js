@@ -24,6 +24,6 @@ const CourseSettings = (props) => {
       }
     </div>
   );
-}
+};
 
 export default CourseSettings;

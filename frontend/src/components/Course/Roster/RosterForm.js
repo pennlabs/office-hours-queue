@@ -34,33 +34,41 @@ const roleOptions = [
     value: "STUDENT",
     text: "Student"
   }
-]
+];
 
 const RosterForm = (props) => {
   const [inviteUser, { loading, data }] = useMutation(INVITE_USER);
   const [input, setInput] = useState({
     search: "",
     role: ""
-  })
+  });
 
   const handleInputChange = (e, { name, value }) => {
     input[name] = value.toUpperCase();
     setInput(input);
     props.filterFunc(input);
-  }
+  };
 
   return (
     <Form>
       <Form.Field>
-        <Button content="Invite" color="blue" floated="right" onClick={ props.inviteFunc }/>
-        <Button content={props.showInvited ? "Hide Invited" : "Show Invited"} color="grey" floated="right" onClick={ props.showFunc }/>
+        <Button
+          content="Invite"
+          color="blue"
+          floated="right"
+          onClick={ props.inviteFunc }/>
+        <Button
+          content={props.showInvited ? "Hide Invited" : "Show Invited"}
+          color="grey"
+          floated="right"
+          onClick={ props.showFunc }/>
       </Form.Field>
       <Form.Group>
         <Form.Field>
           <Form.Dropdown selection
             clearable
             placeholder="Filter..."
-            name="role" 
+            name="role"
             onChange={ handleInputChange }
             options={ roleOptions }/>
         </Form.Field>
@@ -73,6 +81,6 @@ const RosterForm = (props) => {
       </Form.Group>
     </Form>
   )
-}
+};
 
 export default RosterForm;
