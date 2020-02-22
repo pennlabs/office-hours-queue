@@ -15,7 +15,7 @@ const StudentCourses = (props) => {
     setOpen(!open);
   };
 
-  /* CLOSING MODAL AND REFECTHING DATA */
+  /* CLOSING MODAL AND REFETCHING DATA */
   const closeFunc = () => {
     props.refetch();
     triggerFunc();
@@ -32,7 +32,7 @@ const StudentCourses = (props) => {
           open={ open }
           closeFunc={ closeFunc }/>
         {
-          courses.map(course => (
+          courses.map((course) => (
             <Grid.Column>
               <CourseCard
                 department={course.department}

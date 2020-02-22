@@ -8,8 +8,8 @@ import { prettifySemester } from "../../../../utils/enums";
 
 /* GRAPHQL QUERIES/MUTATIONS */
 const JOINABLE_COURSES = gql`
-  query JoinableCourses($department: String, $courseCode: String) {
-    joinableCourses(department: $department, courseCode: $courseCode) {
+  query JoinableCourses($searchableName_Icontains: String) {
+    joinableCourses(searchableName_Icontains: $searchableName_Icontains) {
       edges {
         node {
           id
@@ -39,9 +39,7 @@ const JOIN_COURSE = gql`
 const AddStudentForm = () => {
   /* STATE */
   const [input, setInput] = useState({
-    department: null,
-    courseCode: null,
-    courseTitle: null,
+    name: null,
     courseId: null,
   });
   const [results, setResults] = useState(null);
@@ -69,13 +67,21 @@ const AddStudentForm = () => {
   const handleInputChange = (e, { name, value }) => {
     input[name] = value;
     setInput(input);
+    if (name === 'name') {
+      onSearch();
+    }
   };
 
   const onSearch = () => {
-    joinableCourses({ variables: {
-      department: input.department,
-      courseCode: input.courseCode,
-    }});
+    if (input.name.length < 2) {
+      setResults(null);
+      return;
+    }
+    joinableCourses({
+      variables: {
+        searchableName_Icontains: input.name,
+      }
+    });
   };
 
   const onSubmit = async () => {
@@ -91,16 +97,12 @@ const AddStudentForm = () => {
   return (
     <Form>
       <Form.Field>
-        <label>Department</label>
-        <Form.Input name="department" onChange={ handleInputChange }/>
+        <label>Course Name</label>
+        <Form.Input name="name" onChange={ handleInputChange }/>
       </Form.Field>
-      <Form.Field>
-        <label>Course Code</label>
-        <Form.Input name="courseCode" onChange={ handleInputChange }/>
-      </Form.Field>
-      <Form.Field>
+      {/* <Form.Field>
         <Button content="Search" color="blue" onClick={ onSearch }/>
-      </Form.Field>
+      </Form.Field> */}
       {
         results &&
         <div>
