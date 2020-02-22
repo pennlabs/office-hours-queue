@@ -31,14 +31,14 @@ class CreateUser(graphene.Mutation):
                 auth_user=info.context.user,
             )
             invites = InvitedCourseUser.objects.filter(email=info.context.user.email)
-            new_course_users = []
-            for invite in invites:
-                new_course_users.append(CourseUser(
+            new_course_users = [
+                CourseUser(
                     user=user,
-                    course = invite.course,
+                    course=invite.course,
                     kind=invite.kind,
                     invited_by=invite.invited_by,
-                ))
+                ) for invite in invites
+            ]
             CourseUser.objects.bulk_create(new_course_users)
             invites.delete()
 
