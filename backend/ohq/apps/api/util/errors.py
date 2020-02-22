@@ -22,13 +22,16 @@ other_rejection_reason_required_error = GraphQLError("Must provide other rejecti
 
 all_required_feedback_questions_not_answered_error = GraphQLError("Must answer all required "
                                                                   "feedback questions")
-too_many_queues_error = GraphQLError("Too many queues already created")
 
-invalid_day_of_week_error = GraphQLError("Invalid day of the week")
-invalid_time_of_day_error = GraphQLError("Invalid time of day")
+too_many_queues_error = GraphQLError("Too many queues already created")
+queue_active_error = GraphQLError("Queue is already active")
+queue_inactive_error = GraphQLError("Queue is already inactive")
 
 course_invite_only_error = GraphQLError("Course is invite only")
 user_in_course_error = GraphQLError("User is already in course")
 remove_only_leadership_error = GraphQLError("Cannot remove only leadership user")
+
+invalid_day_of_week_error = GraphQLError("Invalid day of the week")
+invalid_time_of_day_error = GraphQLError("Invalid time of day")
 
 empty_update_error = GraphQLError("Update cannot be empty")

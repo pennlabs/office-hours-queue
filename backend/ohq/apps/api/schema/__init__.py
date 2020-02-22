@@ -61,6 +61,8 @@ class Mutation(graphene.ObjectType):
 
     create_queue = queues.CreateQueue.Field()
     update_queue = queues.UpdateQueue.Field()
+    manually_activate_queue = queues.ManuallyActivateQueue.Field()
+    manually_deactivate_queue = queues.ManuallyDeactivateQueue.Field()
 
     create_short_answer_feedback_question = (
         feedback_questions.CreateShortAnswerFeedbackQuestion.Field()

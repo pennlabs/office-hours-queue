@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from graphql_relay.node.node import from_global_id
 
 from django.db import transaction
@@ -122,3 +124,69 @@ class UpdateQueue(graphene.Mutation):
                 queue.archived = input.archived
             queue.save()
         return UpdateQueueResponse(queue=queue)
+
+
+class ManuallyActivateQueueInput(graphene.InputObjectType):
+    queue_id = graphene.ID(required=True)
+
+
+class ManuallyActivateQueueResponse(graphene.ObjectType):
+    queue = graphene.Field(QueueNode, required=False)
+
+
+class ManuallyActivateQueue(graphene.Mutation):
+    class Arguments:
+        input = ManuallyActivateQueueInput(required=True)
+
+    Output = ManuallyActivateQueueResponse
+
+    @staticmethod
+    def mutate(root, info, input):
+        with transaction.atomic():
+            user = info.context.user.get_user()
+            queue = Queue.objects.get(pk=from_global_id(input.course_id)[1])
+            if not CourseUser.objects.filter(
+                user=user,
+                course=queue.course,
+                kind__in=CourseUserKind.staff(),
+            ).exists():
+                raise user_not_staff_error
+            if queue.active_override_time is not None:
+                raise queue_active_error
+            queue.active_override_time = datetime.now()
+            queue.save()
+
+        return ManuallyActivateQueueResponse(queue=queue)
+
+
+class ManuallyDeactivateQueueInput(graphene.InputObjectType):
+    queue_id = graphene.ID(required=True)
+
+
+class ManuallyDeactivateQueueResponse(graphene.ObjectType):
+    queue = graphene.Field(QueueNode, required=False)
+
+
+class ManuallyDeactivateQueue(graphene.Mutation):
+    class Arguments:
+        input = ManuallyDeactivateQueueInput(required=True)
+
+    Output = ManuallyDeactivateQueueResponse
+
+    @staticmethod
+    def mutate(root, info, input):
+        with transaction.atomic():
+            user = info.context.user.get_user()
+            queue = Queue.objects.get(pk=from_global_id(input.course_id)[1])
+            if not CourseUser.objects.filter(
+                user=user,
+                course=queue.course,
+                kind__in=CourseUserKind.staff(),
+            ).exists():
+                raise user_not_staff_error
+            if queue.active_override_time is None:
+                raise queue_inactive_error
+            queue.active_override_time = None
+            queue.save()
+
+        return ManuallyDeactivateQueueResponse(queue=queue)

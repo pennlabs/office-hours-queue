@@ -176,6 +176,7 @@ class QueueNode(DjangoObjectType):
             'estimated_wait_time',
             'tags',
             'archived',
+            'active_override_time',
         )
         interfaces = (relay.Node,)
 
