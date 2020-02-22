@@ -35,6 +35,8 @@ class CreateShortAnswerFeedbackQuestion(graphene.Mutation):
                 kind__in=CourseUserKind.leadership(),
             ).exists():
                 raise user_not_leadership_error
+            if course.archived:
+                raise course_archived_error
             feedback_question = ShortAnswerFeedbackQuestion.objects.create(
                 course=course,
                 question_text=input.question_text,
@@ -74,6 +76,8 @@ class CreateRadioButtonFeedbackQuestion(graphene.Mutation):
                 kind__in=CourseUserKind.leadership(),
             ).exists():
                 raise user_not_leadership_error
+            if course.archived:
+                raise course_archived_error
             feedback_question = RadioButtonFeedbackQuestion.objects.create(
                 course=course,
                 question_text=input.question_text,
@@ -115,6 +119,8 @@ class CreateSliderFeedbackQuestion(graphene.Mutation):
                 kind__in=CourseUserKind.leadership(),
             ).exists():
                 raise user_not_leadership_error
+            if course.archived:
+                raise course_archived_error
             feedback_question = SliderFeedbackQuestion.objects.create(
                 course=course,
                 question_text=input.question_text,
@@ -160,6 +166,8 @@ class UpdateFeedbackQuestion(graphene.Mutation):
                 kind__in=CourseUserKind.leadership(),
             ).exists():
                 raise user_not_leadership_error
+            if course.archived:
+                raise course_archived_error
 
             if input.archived:
                 feedback_question.archived = input.archived

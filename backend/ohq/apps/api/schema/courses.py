@@ -83,6 +83,8 @@ class UpdateCourse(graphene.Mutation):
                 kind__in=CourseUserKind.leadership(),
             ).exists():
                 raise user_not_leadership_error
+            if course.archived:
+                raise course_archived_error
 
             if input.name is not None:
                 course.name = input.name
@@ -160,6 +162,8 @@ class JoinCourse(graphene.Mutation):
             course = Course.objects.get(pk=from_global_id(input.course_id)[1])
             if course.invite_only:
                 raise course_invite_only_error
+            if course.archived:
+                raise course_archived_error
 
             course_user = CourseUser.objects.create(
                 user=info.context.user.get_user(),

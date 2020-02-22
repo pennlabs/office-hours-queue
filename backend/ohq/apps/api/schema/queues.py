@@ -63,7 +63,8 @@ class CreateQueue(graphene.Mutation):
                 kind__in=CourseUserKind.leadership(),
             ).exists():
                 raise user_not_leadership_error
-
+            if course.archived:
+                raise course_archived_error
             if (
                 Queue.objects.filter(course=course, archived=False).count() >=
                 Queue.MAX_NUMBER_QUEUES
@@ -111,7 +112,8 @@ class UpdateQueue(graphene.Mutation):
                 kind__in=CourseUserKind.leadership(),
             ).exists():
                 raise user_not_leadership_error
-
+            if queue.course.archived:
+                raise course_archived_error
             if input.name is not None:
                 queue.name = input.name
             if input.description is not None:
@@ -151,6 +153,8 @@ class ManuallyActivateQueue(graphene.Mutation):
                 kind__in=CourseUserKind.staff(),
             ).exists():
                 raise user_not_staff_error
+            if queue.course.archived:
+                raise course_archived_error
             if queue.active_override_time is not None:
                 raise queue_active_error
             queue.active_override_time = datetime.now()
@@ -184,6 +188,8 @@ class ManuallyDeactivateQueue(graphene.Mutation):
                 kind__in=CourseUserKind.staff(),
             ).exists():
                 raise user_not_staff_error
+            if queue.course.archived:
+                raise course_archived_error
             if queue.active_override_time is None:
                 raise queue_inactive_error
             queue.active_override_time = None

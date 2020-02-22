@@ -28,6 +28,7 @@ queue_active_error = GraphQLError("Queue is already active")
 queue_inactive_error = GraphQLError("Queue is already inactive")
 
 course_invite_only_error = GraphQLError("Course is invite only")
+course_archived_error = GraphQLError("Course is archived")
 user_in_course_error = GraphQLError("User is already in course")
 remove_only_leadership_error = GraphQLError("Cannot remove only leadership user")
 

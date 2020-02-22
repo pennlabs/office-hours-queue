@@ -36,6 +36,8 @@ class CreateQuestion(graphene.Mutation):
                 kind=CourseUserKind.STUDENT.name,
             ).exists():
                 raise user_not_student_error
+            if course.archived:
+                raise course_archived_error
             # Check for any other unanswered questions in this course
             if Question.objects.filter(
                 asked_by=user,
@@ -76,6 +78,8 @@ class WithdrawQuestion(graphene.Mutation):
             question = Question.objects.get(pk=from_global_id(input.question_id)[1])
             if question.asked_by != user:
                 raise user_not_asker_error
+            if question.queue.course.archived:
+                raise course_archived_error
             if question.state is not QuestionState.ACTIVE:
                 raise question_not_active_error
 
@@ -112,6 +116,8 @@ class RejectQuestion(graphene.Mutation):
                 kind__in=CourseUserKind.staff(),
             ).exists():
                 raise user_not_staff_error
+            if question.queue.course.archived:
+                raise course_archived_error
             if (
                 (input.rejected_reason == QuestionRejectionReason.OTHER.name and
                  input.rejected_reason_other is None) or
@@ -155,6 +161,8 @@ class StartQuestion(graphene.Mutation):
                 kind__in=CourseUserKind.staff(),
             ).exists():
                 raise user_not_staff_error
+            if question.queue.course.archived:
+                raise course_archived_error
             if question.state is not QuestionState.ACTIVE:
                 raise question_not_active_error
             question.time_started = datetime.now()
@@ -185,6 +193,8 @@ class UndoStartQuestion(graphene.Mutation):
             question = Question.objects.get(pk=from_global_id(input.question_id)[1])
             if question.answered_by != user:
                 raise user_not_answerer_error
+            if question.queue.course.archived:
+                raise course_archived_error
             if question.state is not QuestionState.STARTED:
                 raise question_not_started_error
             question.time_started = None
@@ -215,6 +225,8 @@ class FinishQuestion(graphene.Mutation):
             question = Question.objects.get(pk=from_global_id(input.question_id)[1])
             if question.answered_by != user:
                 raise user_not_answerer_error
+            if question.queue.course.archived:
+                raise course_archived_error
             if question.state is not QuestionState.STARTED:
                 raise question_not_started_error
             question.time_answered = datetime.now()
