@@ -75,7 +75,7 @@ class Course(models.Model):
     course_code = models.CharField(max_length=10)
     department = models.CharField(max_length=10)
     course_title = models.CharField(max_length=50)
-    description = models.CharField(max_length=250, default="")
+    description = models.CharField(max_length=250, blank=True, default="")
     year = models.IntegerField()
     semester = models.CharField(**Semester.choices())
     archived = models.BooleanField(default=False)

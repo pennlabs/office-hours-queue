@@ -241,13 +241,14 @@ class CourseNode(DjangoObjectType):
 class CourseMetaNode(DjangoObjectType):
     class Meta:
         model = Course
-        filter_fields = (
-            'course_code',
-            'department',
-            'course_title',
-            'year',
-            'semester',
-        )
+        filter_fields = {
+            'course_code': ['exact'],
+            'department': ['exact'],
+            'course_title': ['exact'],
+            'year': ['exact'],
+            'semester': ['exact'],
+            'searchable_name': ['icontains'],
+        }
         fields = (
             'id',
             'course_code',
