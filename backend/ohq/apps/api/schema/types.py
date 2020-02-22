@@ -202,8 +202,9 @@ class CourseNode(DjangoObjectType):
         model = Course
         filter_fields = (
             'id',
-            'name',
+            'course_code',
             'department',
+            'course_title',
             'year',
             'semester',
             'archived',
@@ -211,8 +212,9 @@ class CourseNode(DjangoObjectType):
         )
         fields = (
             'id',
-            'name',
+            'course_code',
             'department',
+            'course_title',
             'description',
             'year',
             'archived',
@@ -240,15 +242,17 @@ class CourseMetaNode(DjangoObjectType):
     class Meta:
         model = Course
         filter_fields = (
-            'name',
+            'course_code',
             'department',
+            'course_title',
             'year',
             'semester',
         )
         fields = (
             'id',
-            'name',
+            'course_code',
             'department',
+            'course_title',
             'description',
             'year',
             'invite_only',

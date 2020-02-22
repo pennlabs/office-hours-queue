@@ -72,18 +72,21 @@ class Semester(ChoicesEnum):
 class Course(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    name = models.CharField(max_length=100)
-    department = models.CharField(max_length=100)
+    course_code = models.CharField(max_length=10)
+    department = models.CharField(max_length=10)
+    course_title = models.CharField(max_length=50)
     description = models.CharField(max_length=250, default="")
     year = models.IntegerField()
     semester = models.CharField(**Semester.choices())
     archived = models.BooleanField(default=False)
     invite_only = models.BooleanField(default=False)
 
+    searchable_name = models.CharField(max_length=72, editable=False)
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["name", "department", "year", "semester"],
+                fields=["course_code", "department", "year", "semester"],
                 name="unique_course_name",
             )
         ]
@@ -104,8 +107,12 @@ class Course(models.Model):
     def professor_users(self):
         return self.course_users.filter(kind=CourseUserKind.PROFESSOR.name)
 
+    def save(self, *args, **kwargs):
+        self.searchable_name = f"{self.department} {self.course_code} {self.course_title}"
+        super(Course, self).save(*args, **kwargs)
+
     def __str__(self):
-        return self.department + " " + self.name
+        return self.department + " " + self.course_code
 
 
 class CourseUserKind(ChoicesEnum):
