@@ -47,7 +47,11 @@ class Query(graphene.ObjectType):
                 .filter(user=info.context.user.get_user())
                 .values_list('course_id', flat=True)
         )
-        return Course.objects.exclude(id__in=course_ids).filter(invite_only=False, **kwargs)
+        return Course.objects.exclude(id__in=course_ids).filter(
+            invite_only=False,
+            archived=False,
+            **kwargs
+        )
 
     queue = relay.Node.Field(types.QueueNode)
 
