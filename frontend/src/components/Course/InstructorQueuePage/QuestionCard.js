@@ -140,9 +140,9 @@ const QuestionCard = (props) => {
                 <Icon name="tags"/>
               }
               content= {
-                question.tags && question.tags.map(tag => {
+                question.tags && question.tags.length > 0 ? question.tags.map(tag => {
                   return " " + tag
-                }).toString()
+                }).toString() : <i>No Tags</i>
               }
               basic inverted
               position="bottom left"/>

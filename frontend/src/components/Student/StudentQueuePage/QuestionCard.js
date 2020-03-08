@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
 import { Segment, Header, Button, Popup, Icon } from 'semantic-ui-react';
+import EditQuestionModal from './EditQuestionModal';
 
 const QuestionCard = (props) => {
   const [question, setQuestion] = useState(props.question);
+  const [open, setOpen] = useState(false);
 
   const timeString = (date) => {
     const d = new Date(date);
@@ -14,6 +16,7 @@ const QuestionCard = (props) => {
 
   return (
     <div style={{"marginTop":"10px"}}>
+      <EditQuestionModal open={ open } queue={ props.queue } question={ props.question }/>
       <Segment attached="top" color="blue" style={{"height":"50px"}}>
           <Header as="h5" floated='right' color="blue">
             <Header.Content>
@@ -40,7 +43,8 @@ const QuestionCard = (props) => {
             <Button compact
               size='mini'
               color='green'
-              content='Edit'/>
+              content='Edit'
+              onClick={ () => setOpen(true) }/>
           </Header.Content>
         </Header>
           <Popup

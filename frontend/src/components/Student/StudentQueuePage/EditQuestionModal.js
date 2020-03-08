@@ -1,40 +1,67 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Modal, Form, Button, Header, Label } from 'semantic-ui-react';
 
-// Form through which students can change the question they asked
-export default class EditQuestionModal extends React.Component {
-  render() {
-    return (
-      <Modal open={this.props.attrs.open}>
-        <Modal.Header>Edit Question</Modal.Header>
-        <Modal.Content>
-          <Form>
-            <Form.Field>
-              <label>Question</label>
-              <Form.Input placeholder={this.props.attrs.prevQuestion} name="text" onChange={this.props.funcs.changeFunc} />
-            </Form.Field>
-          </Form>
-        </Modal.Content>
-        <Modal.Content>
-          <Header as="h3" content="Select Tag(s)" />
-          {
-            this.props.attrs.allTags.length > 0 ? this.props.attrs.allTags.map((tag, index) => (
-              <Label
-                as="a"
-                color={tag.isActive ? "blue" : ""}
-                onClick={() => this.props.funcs.tagQuestionFunc(index)}
-              >
-                {tag.name}
-              </Label>
-            )) : <Label color="blue">No Tags</Label>
-          }
-        </Modal.Content>
-        <Modal.Actions>
-          <Button content="Cancel" compact onClick={this.props.funcs.closeFunc} />
-          <Button content="Submit" color="green" compact onClick={this.props.funcs.submitFunc} />
-        </Modal.Actions>
-      </Modal>
-    );
-  }
+const EditQuestionModal = (props) => {
+  const [queue, setQueue] = useState(props.queue);
+  const [question, setQuestion] = useState(props.question);
+  const [success, setSuccess] = useState(false);
+  const [input, setInput] = useState({
+    text: question.text,
+    tags: question.tags,
+  });
+  const [charCount, setCharCount] = useState(0);
 
+  const handleInputChange = (e, { name, value }) => {
+    if (name === 'text' && value.length > 250) return;
+    input[name] = value;
+    setInput(input);
+    setCharCount(input.text.length)
+  };
+
+  const getDropdownOptions = (tags) => {
+    return tags.map((tag) => {
+      return {
+        key: tag,
+        value: tag,
+        text: tag,
+      };
+    });
+  };
+
+  const onSubmit = () => {
+  };
+
+  return (
+    <Modal open={ props.open }>
+      <Modal.Header>Edit Question</Modal.Header>
+      <Modal.Content>
+        <Form>
+          <Form.Field>
+            <label>Question</label>
+            <Form.TextArea
+              name="text"
+              value={ input.text }
+              onChange={ handleInputChange }/>
+              <div style={{"textAlign":"right",
+                "color": charCount < 250 ? "" : "crimson"}}>
+                  {"Characters: " +  charCount + "/250"}</div>
+          </Form.Field>
+          <Form.Field>
+            <label>Tags</label>
+            <Form.Dropdown multiple selection
+              name="tags"
+              onChange={ handleInputChange }
+              value={ input.tags }
+              options={ getDropdownOptions(queue.tags) } />
+          </Form.Field>
+        </Form>
+      </Modal.Content>
+      <Modal.Actions>
+        <Button content="Cancel" />
+        <Button content="Submit" color="green"/>
+      </Modal.Actions>
+    </Modal>
+  );
 }
+
+export default EditQuestionModal;
