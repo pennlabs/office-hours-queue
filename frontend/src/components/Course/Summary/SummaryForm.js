@@ -38,14 +38,34 @@ const SummaryForm = (props) => {
     <Form>
       <Form.Group>
         <Form.Field>
-          <Form.Dropdown multiple
+          <label>Queue</label>
+          <Form.Dropdown
             selection
             placeholder="Filter..."
-            name="tags"
+            name="type"
             onChange={ handleInputChange }
             options={ tagOptions }/>
         </Form.Field>
         <Form.Field>
+          <label>Tags</label>
+          <Form.Dropdown
+            selection
+            placeholder="Filter..."
+            name="type"
+            onChange={ handleInputChange }
+            options={ tagOptions }/>
+        </Form.Field>
+        <Form.Field>
+          <label>Result</label>
+          <Form.Dropdown
+            selection
+            placeholder="Filter..."
+            name="type"
+            onChange={ handleInputChange }
+            options={ tagOptions }/>
+        </Form.Field>
+        <Form.Field>
+          <label>Search</label>
           <Form.Input icon="search"
             placeholder="Search..."
             name="search"

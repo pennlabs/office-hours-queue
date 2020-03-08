@@ -125,18 +125,16 @@ const Summary = (props) => {
         tags: item.node.tags
       });
       item.node.questions.edges.forEach(qs => {
-        if (qs.node.state !== "WITHDRAWN") {
-          questions.push({
-            text: qs.node.text,
-            tags: qs.node.tags,
-            queue: qs.node.queue.name,
-            timeAsked: qs.node.timeAsked,
-            askedBy: qs.node.askedBy.fullName,
-            answeredBy: qs.node.answeredBy ? qs.node.answeredBy.fullName : "",
-            rejectedBy: qs.node.rejectedBy ? qs.node.rejectedBy.fullName : "",
-            state: qs.node.state
-          })
-        }
+        questions.push({
+          text: qs.node.text,
+          tags: qs.node.tags,
+          queue: qs.node.queue.name,
+          timeAsked: qs.node.timeAsked,
+          askedBy: qs.node.askedBy.fullName,
+          answeredBy: qs.node.answeredBy ? qs.node.answeredBy.fullName : "",
+          rejectedBy: qs.node.rejectedBy ? qs.node.rejectedBy.fullName : "",
+          state: qs.node.state
+        })
       })
     });
     return questions;
@@ -182,15 +180,15 @@ const Summary = (props) => {
                 <Table.HeaderCell
                   sorted={tableState.column === 'asker' ? tableState.direction : null}
                   onClick={() => handleSort('asker')}
-                  width={2}>Asker</Table.HeaderCell>
+                  width={2}>Asked By</Table.HeaderCell>
                 <Table.HeaderCell
                   sorted={tableState.column === 'answerer' ? tableState.direction : null}
                   onClick={() => handleSort('answerer')}
-                  width={2}>Answerer</Table.HeaderCell>
+                  width={2}>Answered By</Table.HeaderCell>
                 <Table.HeaderCell
                   sorted={tableState.column === 'questionAsked' ? tableState.direction : null}
                   onClick={() => handleSort('questionAsked')}
-                  width={5}>Question</Table.HeaderCell>
+                  width={4}>Question</Table.HeaderCell>
                 <Table.HeaderCell
                   sorted={tableState.column === 'queue' ? tableState.direction : null}
                   onClick={() => handleSort('queue')}
@@ -198,7 +196,7 @@ const Summary = (props) => {
                 <Table.HeaderCell
                   sorted={tableState.column === 'timeAsked' ? tableState.direction : null}
                   onClick={() => handleSort('timeAsked')}
-                  width={1}>Time Asked</Table.HeaderCell>
+                  width={2}>Time Asked</Table.HeaderCell>
                 <Table.HeaderCell
                   sorted={tableState.column === 'state' ? tableState.direction : null}
                   onClick={() => handleSort('state')}

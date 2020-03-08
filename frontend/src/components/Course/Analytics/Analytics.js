@@ -7,8 +7,38 @@ import Chart from 'chart.js';
 import { fakePeople } from '../Roster/peopledata';
 import { options, options2, options3, options4 } from './mockData';
 
-import { compose } from 'recompose';
+import { useQuery } from '@apollo/react-hooks';
+import { gql } from 'apollo-boost';
 
+const GET_COURSE = gql`
+  query GetCourse($id: ID!) {
+    course(id: $id) {
+      id
+      queues {
+        edges {
+          node {
+            id
+            name
+            archived
+            tags
+            questions {
+              edges {
+                node {
+                  id
+                  tags
+                  timeAsked
+                  askedBy
+                  answeredBy
+                  state
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 
 class Analytics extends React.Component {
 

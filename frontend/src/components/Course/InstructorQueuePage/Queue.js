@@ -22,6 +22,7 @@ const GET_QUESTIONS = gql`
             timeRejected
             timeStarted
             timeAnswered
+            orderKey
             answeredBy {
               id
               preferredName
@@ -50,6 +51,7 @@ const Queue = (props) => {
     return data.queue.questions.edges.map((item) => {
       return {
         id: item.node.id,
+        orderKey: item.node.orderKey,
         text: item.node.text,
         tags: item.node.tags,
         state: item.node.state,
