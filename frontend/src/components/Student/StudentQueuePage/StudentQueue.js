@@ -38,7 +38,7 @@ const StudentQueue = (props) => {
           <Message style={{"marginTop":"10px"}}info header="Question In Queue" content="You already have asked a question in another queue!"/>
         }
         {
-          props.hasQuestion && question && <QuestionCard question={ question } queue={ queue }/>
+          props.hasQuestion && question && <QuestionCard question={ question } queue={ queue } refetch={ props.refetch }/>
         }
       </Grid.Row>
     </Segment>

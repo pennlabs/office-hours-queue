@@ -32,6 +32,7 @@ const CURRENT_QUESTION = gql`
       text
       tags
       timeAsked
+      timeWithdrawn
       questionsAhead
       state
       queue {
@@ -82,13 +83,15 @@ const StudentQueuePage = (props) => {
     }
   }
 
+  console.log(currentQuestion);
+
   return (
     <Grid>
       {
         active === 'queues' &&
         <StudentQueues
           queues={queues}
-          refetch={() => { getQueuesRes.refetch(); getQuestionRes.refetch() }}
+          refetch={ getQuestionRes.refetch }
           question={currentQuestion}/>
       }
     </Grid>

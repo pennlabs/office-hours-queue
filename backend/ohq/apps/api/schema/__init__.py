@@ -34,7 +34,8 @@ class Query(graphene.ObjectType):
         return Question.objects.filter(
             asked_by=user,
             queue__course=course,
-            time_answered__isnull=True
+            time_answered__isnull=True,
+            time_withdrawn__isnull=True
         ).get()
 
 

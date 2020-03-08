@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Modal, Form, Button, Header, Label } from 'semantic-ui-react';
+import { Modal, Form, Button } from 'semantic-ui-react';
+import { useMutation } from '@apollo/react-hooks';
+import { gql } from 'apollo-boost';
 
 const EditQuestionModal = (props) => {
   const [queue, setQueue] = useState(props.queue);
@@ -9,7 +11,7 @@ const EditQuestionModal = (props) => {
     text: question.text,
     tags: question.tags,
   });
-  const [charCount, setCharCount] = useState(0);
+  const [charCount, setCharCount] = useState(input.text.length);
 
   const handleInputChange = (e, { name, value }) => {
     if (name === 'text' && value.length > 250) return;
@@ -23,7 +25,7 @@ const EditQuestionModal = (props) => {
       return {
         key: tag,
         value: tag,
-        text: tag,
+        text: tag
       };
     });
   };
@@ -57,7 +59,7 @@ const EditQuestionModal = (props) => {
         </Form>
       </Modal.Content>
       <Modal.Actions>
-        <Button content="Cancel" />
+        <Button content="Cancel" onClick={() => { props.setOpen(false) }}/>
         <Button content="Submit" color="green"/>
       </Modal.Actions>
     </Modal>

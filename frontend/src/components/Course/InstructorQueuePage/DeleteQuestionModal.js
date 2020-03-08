@@ -54,7 +54,7 @@ const DeleteQuestionModal = (props) => {
           <Modal.Description>
             You are about to delete the following question from
             <b>{" " + question.askedBy.preferredName}</b>:<br/>
-            <Segment inverted color="blue">{'"' + question.text + '"'}</Segment>
+            <Segment inverted color="blue">{`"${question.text}"`}</Segment>
             <Form>
               <Form.Field>
                 <Form.Dropdown

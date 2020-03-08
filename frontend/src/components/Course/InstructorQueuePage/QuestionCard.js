@@ -130,7 +130,8 @@ const QuestionCard = (props) => {
                   <Icon name="sync" loading/>
                 }
                 content= {
-                  "Started by: " + question.answeredBy.preferredName
+                  `Started by ${question.answeredBy.preferredName} 
+                  at ${timeString(question.timeStarted)}`
                 }
                 basic inverted
                 position="bottom right"/>

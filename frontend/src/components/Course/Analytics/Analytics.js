@@ -59,72 +59,62 @@ class Analytics extends React.Component {
   render(){
     const { column, direction } = this.state
     return(
-      <Grid.Column width={13}>
-        <Grid padded>
-          <Segment basic padded>
-            <Header as="h1">
-              CIS 121
-              <Header.Subheader>
-                Introduction to Data Structures and Algorithms
-              </Header.Subheader>
-            </Header>
-          </Segment>
-          <Grid.Row>
-            <Header as="h3">Usage Trends of Queues</Header>
-            <canvas
-              style={{ width: 800, height: 300 }}
-              ref={node => (this.node = node)}
-            />
-            <Header as="h3">Other Usage Trends</Header>
-            <canvas
-              style={{ width: 800, height: 300 }}
-              ref={node2 => (this.node2 = node2)}
-            />
-            <Header as="h3">Questions by Type</Header>
-            <canvas
-              style={{ width: 800, height: 300 }}
-              ref={node3 => (this.node3 = node3)}
-            />
-            <Header as="h3">Questions by Lecture Topic</Header>
-            <canvas
-              style={{ width: 800, height: 300 }}
-              ref={node4 => (this.node4 = node4)}
-            />
+      <Grid.Row>
+        <Segment basic>
+          <Header as="h3">Usage Trends of Queues</Header>
+          <canvas
+            style={{ width: 800, height: 300 }}
+            ref={node => (this.node = node)}
+          />
+          <Header as="h3">Other Usage Trends</Header>
+          <canvas
+            style={{ width: 800, height: 300 }}
+            ref={node2 => (this.node2 = node2)}
+          />
+          <Header as="h3">Questions by Type</Header>
+          <canvas
+            style={{ width: 800, height: 300 }}
+            ref={node3 => (this.node3 = node3)}
+          />
+          <Header as="h3">Questions by Lecture Topic</Header>
+          <canvas
+            style={{ width: 800, height: 300 }}
+            ref={node4 => (this.node4 = node4)}
+          />
 
-            {/* add person information */}
-            <Header as="h3">Student Participation</Header>
-            <Table celled>
-              <Table.Header>
+          {/* add person information */}
+          <Header as="h3">Student Participation</Header>
+          <Table celled>
+            <Table.Header>
+              <Table.Row>
+                <Table.HeaderCell
+                  sorted={column === 'fullName' ? direction : null}
+                  onClick={this.handleSort('fullName')}
+                >
+                  Full Name</Table.HeaderCell>
+                <Table.HeaderCell
+                  sorted={column === 'preferredName' ? direction : null}
+                  onClick={this.handleSort('preferredName')}
+                >Email</Table.HeaderCell>
+                <Table.HeaderCell
+                  sorted={column === 'email' ? direction : null}
+                  onClick={this.handleSort('email')}
+                >Number of Questions Asked</Table.HeaderCell>
+              </Table.Row>
+            </Table.Header>
+
+            <Table.Body>
+              {this.state.people.map(person => (
                 <Table.Row>
-                  <Table.HeaderCell
-                    sorted={column === 'fullName' ? direction : null}
-                    onClick={this.handleSort('fullName')}
-                  >
-                    Full Name</Table.HeaderCell>
-                  <Table.HeaderCell
-                    sorted={column === 'preferredName' ? direction : null}
-                    onClick={this.handleSort('preferredName')}
-                  >Email</Table.HeaderCell>
-                  <Table.HeaderCell
-                    sorted={column === 'email' ? direction : null}
-                    onClick={this.handleSort('email')}
-                  >Number of Questions Asked</Table.HeaderCell>
+                  <Table.Cell>{person.fullName}</Table.Cell>
+                  <Table.Cell>{person.email}</Table.Cell>
+                  <Table.Cell>{3}</Table.Cell>
                 </Table.Row>
-              </Table.Header>
-
-              <Table.Body>
-                {this.state.people.map(person => (
-                  <Table.Row>
-                    <Table.Cell>{person.fullName}</Table.Cell>
-                    <Table.Cell>{person.email}</Table.Cell>
-                    <Table.Cell>{3}</Table.Cell>
-                  </Table.Row>
-                ))}
-              </Table.Body>
-            </Table>
-          </Grid.Row>
-        </Grid>
-      </Grid.Column>
+              ))}
+            </Table.Body>
+          </Table>
+        </Segment>
+      </Grid.Row>
     );
   }
 }
