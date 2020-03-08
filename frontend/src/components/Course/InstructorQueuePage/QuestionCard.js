@@ -42,28 +42,26 @@ const QuestionCard = (props) => {
     setOpen(!open);
   };
 
-  const onAnswer = () => {
-    startQuestion({
+  const onAnswer = async () => {
+    await startQuestion({
       variables: {
         input: {
           questionId: question.id
         }
       }
-    }).then(() => {
-      props.refetch();
-    });
+    })
+    props.refetch();
   };
 
-  const onFinish = () => {
-    finishQuestion({
+  const onFinish = async () => {
+    await finishQuestion({
       variables: {
         input: {
           questionId: question.id
         }
       }
-    }).then(() => {
-      props.refetch();
-    });
+    })
+    props.refetch();
   };
 
   const isLoading = () => {
@@ -91,7 +89,7 @@ const QuestionCard = (props) => {
             </Header>
         </Segment>
         <Segment attached
-          tertiary={ question.timeStarted }>
+          tertiary={ question.timeStarted != null }>
           { question.text }
         </Segment>
         <Segment attached="bottom" secondary textAlign="right" style={{"height":"50px"}}>

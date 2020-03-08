@@ -41,15 +41,14 @@ const QuestionForm = (props) => {
     });
   };
 
-  const onSubmit = () => {
-    createQuestion({
+  const onSubmit = async () => {
+    await createQuestion({
       variables: {
         input: input
       }
-    }).then(() => {
-      props.refetch();
-      setSuccess(true);
-    })
+    });
+    await props.refetch();
+    setSuccess(true);
   };
 
   useEffect(() => {

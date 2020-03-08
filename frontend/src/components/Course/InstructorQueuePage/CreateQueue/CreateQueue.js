@@ -34,15 +34,14 @@ const CreateQueue = (props) => {
     setInput(input);
   };
 
-  const onSubmit = () => {
-    createQueue({
+  const onSubmit = async () => {
+    await createQueue({
       variables: {
         input: input
       }
-    }).then(() => {
-      props.refetch();
-      setSuccess(true);
     })
+    await props.refetch();
+    setSuccess(true);
   };
 
   return (

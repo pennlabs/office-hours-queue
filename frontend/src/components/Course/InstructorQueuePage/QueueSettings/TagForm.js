@@ -32,34 +32,31 @@ const QueueForm = (props) => {
     setNewTag(value);
   };
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     if (newTag && newTag.length !== 0) {
       input.tags.push(newTag);
       setInput(input);
-      updateQueue({
+      await updateQueue({
         variables: {
           input: input
         }
-      }).then(() => {
-        props.refetch();
-        setSuccess(true);
-        setNewTag("");
       })
+      await props.refetch();
+      setSuccess(true);
+      setNewTag("");
     }
   };
 
-  const onDelete = (oldTag) => {
+  const onDelete = async (oldTag) => {
     input.tags = queue.tags.filter((tag) => tag !== oldTag);
-
-    updateQueue({
+    await updateQueue({
       variables: {
         input: input
       }
-    }).then(() => {
-      props.refetch();
-      setSuccess(true);
-      setNewTag(newTag);
     })
+    await props.refetch();
+    setSuccess(true);
+    setNewTag(newTag);
   };
 
   /* PROPS UPDATE */

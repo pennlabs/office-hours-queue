@@ -35,7 +35,7 @@ const AccountForm = (props) => {
     setInput(input);
   };
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     const fullName = input.fullName ? input.fullName : defUser.fullName;
     const preferredName = input.preferredName ? input.preferredName : defUser.preferredName;
     const phoneNumber = input.phoneNumber ? input.phoneNumber : defUser.phoneNumber;
@@ -51,14 +51,13 @@ const AccountForm = (props) => {
       }
     );
 
-    updateUser({
+    await updateUser({
       variables: {
         input: newInput
       }
-    }).then(() => {
-      props.refetch();
-      setSuccess(true);
-    });
+    })
+    await props.refetch();
+    setSuccess(true);
   };
 
   return (

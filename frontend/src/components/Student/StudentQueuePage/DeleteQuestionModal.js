@@ -18,18 +18,16 @@ const DeleteQuestionModal = (props) => {
   const [queue, setQueue] = useState(props.queue);
   const [withdrawQuestion, { loading, error, data }] = useMutation(WITHDRAW_QUESTION);
 
-  const onDelete = () => {
-    withdrawQuestion({
+  const onDelete = async () => {
+    await withdrawQuestion({
       variables: {
         input: {
           questionId: question.id
         }
       }
-    }).then(() => {
-      props.refetch().then(() => {
-        props.setOpen(false);
-      })
     })
+    await props.refetch();
+    props.setOpen(false);
   }
 
   return (

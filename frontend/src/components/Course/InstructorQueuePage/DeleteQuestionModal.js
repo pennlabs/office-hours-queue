@@ -34,16 +34,15 @@ const DeleteQuestionModal = (props) => {
     setOtherDisabled(name === 'rejectedReason' && value !== 'OTHER');
   };
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     if (input.rejectedReason) {
-      rejectQuestion({
+      await rejectQuestion({
         variables: {
           input: input
         }
-      }).then(() => {
-        props.refetch();
-        props.closeFunc();
-      });
+      })
+      await props.refetch();
+      props.closeFunc();
     }
   };
 

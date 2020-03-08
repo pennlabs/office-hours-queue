@@ -52,7 +52,8 @@ const StudentQueuePage = (props) => {
   const getQuestionRes = useQuery(CURRENT_QUESTION, {
     variables: {
       courseId: props.course.id
-    }
+    },
+    pollInterval: 1000
   });
 
   const [queues, setQueues] = useState(null);
@@ -78,8 +79,9 @@ const StudentQueuePage = (props) => {
   }
 
   if (getQuestionRes.data && getQuestionRes.data.currentQuestion) {
-    if (JSON.stringify(getQuestionRes.data.currentQuestion) !== JSON.stringify(currentQuestion)) {
-      setCurrentQuestion(getQuestionRes.data.currentQuestion);
+    var newCurrentQuestion = getQuestionRes.data.currentQuestion;
+    if (JSON.stringify(newCurrentQuestion) !== JSON.stringify(currentQuestion)) {
+      setCurrentQuestion(newCurrentQuestion);
     }
   }
 

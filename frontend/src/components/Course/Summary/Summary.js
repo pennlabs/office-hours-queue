@@ -11,7 +11,6 @@ const GET_QUESTIONS = gql`
   query GetQuestions($id: ID!) {
     course(id: $id) {
       id
-      name
       queues {
         edges {
           node {
@@ -95,6 +94,10 @@ const Summary = (props) => {
     triggerModal();
   };
 
+  const formatState = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+  }
+
   /* TABLE FUNCTIONS */
   const handleSort = (clickedColumn) => {
     if (tableState.column !== clickedColumn) {
@@ -116,12 +119,12 @@ const Summary = (props) => {
   const queues = [];
   const loadQuestions = (data) => {
     const questions = [];
-    data.course.queues.edges.forEach((item) => {
+    data.course.queues.edges.forEach(item => {
       queues.push({
         name: item.node.name,
         tags: item.node.tags
       });
-      item.node.questions.edges.forEach((qs) => {
+      item.node.questions.edges.forEach(qs => {
         if (qs.node.state !== "WITHDRAWN") {
           questions.push({
             text: qs.node.text,
@@ -130,7 +133,8 @@ const Summary = (props) => {
             timeAsked: qs.node.timeAsked,
             askedBy: qs.node.askedBy.fullName,
             answeredBy: qs.node.answeredBy ? qs.node.answeredBy.fullName : "",
-            rejectedBy: qs.node.rejectedBy ? qs.node.rejectedBy.fullName : ""
+            rejectedBy: qs.node.rejectedBy ? qs.node.rejectedBy.fullName : "",
+            state: qs.node.state
           })
         }
       })
@@ -168,64 +172,73 @@ const Summary = (props) => {
         </Segment>
       </Grid.Row>
       <Grid.Row>
-      { questions && <SummaryForm filterFunc={ filterQuestions } queues={ queues } /> }
-      </Grid.Row>
-      <Grid.Row>
       {
         questions &&
-        <Table sortable celled padded>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell
-                sorted={tableState.column === 'asker' ? tableState.direction : null}
-                onClick={() => handleSort('asker')}
-                width={2}>Asker</Table.HeaderCell>
-              <Table.HeaderCell
-                sorted={tableState.column === 'answerer' ? tableState.direction : null}
-                onClick={() => handleSort('answerer')}
-                width={2}>Answerer</Table.HeaderCell>
-              <Table.HeaderCell
-                sorted={tableState.column === 'questionAsked' ? tableState.direction : null}
-                onClick={() => handleSort('questionAsked')}
-                width={5}>Question</Table.HeaderCell>
-              <Table.HeaderCell
-                sorted={tableState.column === 'queue' ? tableState.direction : null}
-                onClick={() => handleSort('queue')}
-                width={2}>Queue/Tags</Table.HeaderCell>
-              <Table.HeaderCell
-                sorted={tableState.column === 'timeAsked' ? tableState.direction : null}
-                onClick={() => handleSort('timeAsked')}
-                width={1}>Time Asked</Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {
-              filteredQuestions.map(qs => (
-                <Table.Row>
-                  <Table.Cell>{ qs.askedBy }</Table.Cell>
-                  <Table.Cell>
-                    {
-                      qs.answeredBy !== '' ? qs.answeredBy :
-                      qs.rejectedBy !== '' ? "Rejected by: " + qs.rejectedBy : ""
-                    }
-                  </Table.Cell>
-                  <Table.Cell>{ qs.text }</Table.Cell>
-                  <Table.Cell>
-                    { qs.queue }
-                    <br/>
-                    {qs.tags.length !== 0 ? qs.tags.join(', ') : ''}
-                  </Table.Cell>
-                  <Table.Cell>
-                    {
-                      new Date(Date.parse(qs.timeAsked))
-                        .toLocaleString('en-US', {dateStyle: 'short', timeStyle: 'short'})
-                    }
-                  </Table.Cell>
-                </Table.Row>
-              ))
-            }
-          </Table.Body>
-        </Table>
+        <Segment basic>
+           { questions && <SummaryForm filterFunc={ filterQuestions } queues={ queues } /> }
+          <Table sortable celled padded>
+            <Table.Header>
+              <Table.Row>
+                <Table.HeaderCell
+                  sorted={tableState.column === 'asker' ? tableState.direction : null}
+                  onClick={() => handleSort('asker')}
+                  width={2}>Asker</Table.HeaderCell>
+                <Table.HeaderCell
+                  sorted={tableState.column === 'answerer' ? tableState.direction : null}
+                  onClick={() => handleSort('answerer')}
+                  width={2}>Answerer</Table.HeaderCell>
+                <Table.HeaderCell
+                  sorted={tableState.column === 'questionAsked' ? tableState.direction : null}
+                  onClick={() => handleSort('questionAsked')}
+                  width={5}>Question</Table.HeaderCell>
+                <Table.HeaderCell
+                  sorted={tableState.column === 'queue' ? tableState.direction : null}
+                  onClick={() => handleSort('queue')}
+                  width={2}>Queue/Tags</Table.HeaderCell>
+                <Table.HeaderCell
+                  sorted={tableState.column === 'timeAsked' ? tableState.direction : null}
+                  onClick={() => handleSort('timeAsked')}
+                  width={1}>Time Asked</Table.HeaderCell>
+                <Table.HeaderCell
+                  sorted={tableState.column === 'state' ? tableState.direction : null}
+                  onClick={() => handleSort('state')}
+                  width={1}>Result</Table.HeaderCell>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              {
+                filteredQuestions.map(qs => (
+                  <Table.Row>
+                    <Table.Cell>{ qs.askedBy }</Table.Cell>
+                    <Table.Cell>
+                      {
+                        qs.answeredBy !== '' ? qs.answeredBy :
+                        qs.rejectedBy !== '' ? "Rejected by: " + qs.rejectedBy : ""
+                      }
+                    </Table.Cell>
+                    <Table.Cell>{ qs.text }</Table.Cell>
+                    <Table.Cell>
+                      { qs.queue }
+                      <br/>
+                      {qs.tags.length !== 0 ? qs.tags.join(', ') : ''}
+                    </Table.Cell>
+                    <Table.Cell>
+                      {
+                        new Date(Date.parse(qs.timeAsked))
+                          .toLocaleString('en-US', {dateStyle: 'short', timeStyle: 'short'})
+                      }
+                    </Table.Cell>
+                    <Table.Cell>
+                      {
+                        formatState(qs.state)
+                      }
+                    </Table.Cell>
+                  </Table.Row>
+                ))
+              }
+            </Table.Body>
+          </Table>
+        </Segment>
       }
       </Grid.Row>
     </div>

@@ -41,7 +41,8 @@ const Queue = (props) => {
   const { loading, error, data, refetch } = useQuery(GET_QUESTIONS, {
     variables: {
       id: props.queue.id
-    }
+    },
+    pollInterval: 1000
   });
 
   const getQuestions = (data) => {
@@ -69,14 +70,14 @@ const Queue = (props) => {
   };
 
   const filter = (questions, filters) => {
-    return questions.filter((question) => {
+    return questions.filter(question => {
       return isSubset(question.tags, filters.tags) && isVisible(question);
     });
   };
 
   // Returns true if l1 is a subset of l2
   const isSubset = (l1, l2) => {
-    if (l1.length === 0) { return true; }
+    if (l2.length === 0)  return true;
     return l1.filter(value => l2.includes(value)).length > 0;
   };
 

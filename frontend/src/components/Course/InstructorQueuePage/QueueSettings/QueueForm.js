@@ -33,30 +33,27 @@ const QueueForm = (props) => {
     setInput(input);
   };
 
-  const onSubmit = () => {
-    updateQueue({
+  const onSubmit = async () => {
+    await updateQueue({
       variables: {
         input: input
       }
-    }).then(() => {
-      props.refetch();
-      setSuccess(true);
     })
+    await props.refetch();
+    setSuccess(true);
   };
 
-  const onArchived = () => {
-    updateQueue({
+  const onArchived = async () => {
+    await updateQueue({
       variables: {
         input: {
           queueId: queue.id,
           archived: true
         }
       }
-    }).then(() => {
-      props.refetch().then(() => {
-        props.backFunc('queues');
-      });
     })
+    await props.refetch();
+    props.backFunc('queues');
   }
 
   /* PROPS UPDATE */

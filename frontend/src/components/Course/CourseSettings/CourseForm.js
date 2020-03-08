@@ -30,15 +30,14 @@ const CourseForm = (props) => {
     setInput(input);
   };
 
-  const onSubmit = () => {
-    updateCourse({
+  const onSubmit = async () => {
+    await updateCourse({
       variables: {
         input: input
       }
-    }).then(() => {
-      props.refetch();
-      setSuccess(true);
     });
+    await props.refetch();
+    setSuccess(true);
   };
 
   return (
