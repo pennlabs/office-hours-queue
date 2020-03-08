@@ -30,7 +30,7 @@ const Questions = (props) => {
       {
         filteredQuestions && filteredQuestions.length !== 0 && filteredQuestions.map((question) => (
           <Grid.Row>
-            <QuestionCard question={ question } refetch={ props.refetch }/>
+            <QuestionCard key={ question.id } question={ question } refetch={ props.refetch }/>
           </Grid.Row>
         ))
       }

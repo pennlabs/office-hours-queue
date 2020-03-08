@@ -41,7 +41,6 @@ const RemoveIcon = (props) => {
         on='click'
         position='top center'
       />
-
   );
 };
 

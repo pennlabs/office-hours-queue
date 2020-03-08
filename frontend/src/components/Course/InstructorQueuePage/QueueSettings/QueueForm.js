@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button } from 'semantic-ui-react';
+import { Form, Button, Popup } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
 
@@ -44,6 +44,21 @@ const QueueForm = (props) => {
     })
   };
 
+  const onArchived = () => {
+    updateQueue({
+      variables: {
+        input: {
+          queueId: queue.id,
+          archived: true
+        }
+      }
+    }).then(() => {
+      props.refetch().then(() => {
+        props.backFunc('queues');
+      });
+    })
+  }
+
   /* PROPS UPDATE */
   useEffect(() => {
     setQueue(props.queue);
@@ -71,6 +86,15 @@ const QueueForm = (props) => {
               onChange={ handleInputChange }/>
           </Form.Field>
           <Button type='submit' disabled={ loading }  onClick={ onSubmit }>Submit</Button>
+          <Popup on='click'
+            position='right center'
+            trigger={
+              <a style={{"textDecoration":"underline", "cursor":"pointer"}}>Archive</a>
+            }
+            content={
+              <Button disabled={ loading }  onClick={ onArchived } color="red">Archive</Button>
+            }/>
+          
         </div>
       }
       {

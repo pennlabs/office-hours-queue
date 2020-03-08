@@ -18,7 +18,10 @@ const QueueSettings = (props) => {
       <Grid.Row>
         <Segment basic>
           <Header as="h3">
-            { "Queue Settings: " + queue.name  }
+            Queue Settings
+            <Header.Subheader>
+              { queue.name }
+            </Header.Subheader>
           </Header>
         </Segment>
       </Grid.Row>
@@ -27,7 +30,7 @@ const QueueSettings = (props) => {
           <Tab menu={{ pointing: true, secondary: true }} panes={
             [{
               menuItem: "General",
-              render: () => { return <QueueForm refetch={ props.refetch } queue={ queue }/> }
+              render: () => { return <QueueForm refetch={ props.refetch } queue={ queue } backFunc={ props.backFunc }/> }
             }, {
               menuItem: "Tags",
               render: () => { return <TagForm refetch={ props.refetch } queue={ queue }/>}

@@ -11,23 +11,29 @@ const InstructorQueues = (props) => {
     setQueues(props.queues);
   }, [props.queues]);
 
+  const numActive = () => {
+    return queues.reduce((count, queue) => {
+      return count + (queue.archived ? 0 : 1)
+    }, 0)
+  }
+
   return (
     queues && <Grid.Row columns={2}>
       {
         queues.length !== 0 &&
         queues.map((queue) => (
           !queue.archived && <Grid.Column>
-            <Queue queue={ queue } editFunc={ () => props.editFunc(queue.id) }/>
+            <Queue key={ queue.id } queue={ queue } editFunc={ () => props.editFunc(queue.id) }/>
           </Grid.Column>
         ))
       }
       {
-        queues.length < 2 &&
+        queues && numActive() < 2 &&
         <Grid.Column>
           <Segment basic>
           <Message info>
             <Message.Header>Create a Queue</Message.Header>
-            <a onClick={ props.createFunc } style={{"cursor":"pointer"}}>Create</a> a queue and augment OHQ experience!
+            <a onClick={ props.createFunc } style={{"cursor":"pointer"}}>Create</a> a queue and augment your OHQ experience!
           </Message>
           </Segment>
         </Grid.Column>

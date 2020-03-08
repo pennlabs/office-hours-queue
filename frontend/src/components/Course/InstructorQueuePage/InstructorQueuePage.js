@@ -60,7 +60,8 @@ const InstructorQueuePage = (props) => {
         id: item.node.id,
         name: item.node.name,
         description: item.node.description,
-        tags: item.node.tags
+        tags: item.node.tags,
+        archived: item.node.archived
       };
     });
   };
@@ -98,7 +99,7 @@ const InstructorQueuePage = (props) => {
       {
         active === 'settings' &&
         <Grid.Row>
-          <QueueSettings queue={ getQueue(activeQueueId) } refetch={ refetch }/>
+          <QueueSettings queue={ getQueue(activeQueueId) } refetch={ refetch } backFunc={ setActive }/>
         </Grid.Row>
       }
       {
