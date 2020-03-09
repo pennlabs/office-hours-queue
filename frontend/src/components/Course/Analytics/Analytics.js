@@ -1,11 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import _ from 'lodash';
-import { Table, Segment, Menu, Header, Grid, Image } from 'semantic-ui-react';
-
-import Chart from 'chart.js';
-
-import { fakePeople } from '../Roster/peopledata';
-import { options, options2, options3, options4 } from './mockData';
+import { Segment, Header, Grid } from 'semantic-ui-react';
+import MyPieChart from './MyPieChart';
 
 import { useQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
@@ -27,8 +23,14 @@ const GET_COURSE = gql`
                   id
                   tags
                   timeAsked
-                  askedBy
-                  answeredBy
+                  askedBy {
+                    id
+                    preferredName
+                  }
+                  answeredBy {
+                    id
+                    preferredName
+                  }
                   state
                 }
               }
@@ -40,6 +42,91 @@ const GET_COURSE = gql`
   }
 `;
 
+const Analytics = (props) => {
+  const { loading, error, data } = useQuery(GET_COURSE, {
+    variables: {
+      id: props.course.id
+    }
+  });
+  const [pieChartData, setPieChartData] = useState(null);
+
+  const getRandomColor = () => {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
+
+  const getPieChartData = (node) => {
+    const counts = {};
+    let noTagCount = 0;
+    node.questions.edges.forEach(question => {
+      if (question.node.tags.length == 0) noTagCount += 1
+
+      question.node.tags.forEach(tag => {
+        counts[tag] = counts[tag] ? counts[tag] + 1 : 1;
+      });
+    });
+
+    const labels = Object.keys(counts).sort();
+    
+    const datapoints = labels.map(label => {
+      return counts[label]
+    });
+
+    if (noTagCount > 0) {
+      labels.push("N/A");
+      datapoints.push(noTagCount);
+    }
+    
+
+    return {
+      data: {
+        labels: labels,
+        datasets: [{ 
+          data: datapoints,
+          backgroundColor: [...Array(datapoints.length)].map(item => {
+            return getRandomColor();
+          })
+        }]
+      },
+      type: 'pie',
+      options: {
+        title: {
+          display: true,
+          text: `Tag Categories: ${node.name}`
+        }
+      }
+    };
+  }
+
+  if (data && data.course) {
+    if (!pieChartData) {
+      setPieChartData(data.course.queues.edges.filter(item => {
+        return !item.node.archived
+      }).map(item => {
+        return getPieChartData(item.node)
+      }));
+    }
+  }
+
+  return (
+    <Grid.Row>
+        <Segment basic>
+          <Header as="h3">Questions by Type</Header>
+          {
+            pieChartData && pieChartData.map(dataset => {
+              return <MyPieChart dataset={ dataset } />
+            })
+          }
+        </Segment>
+      </Grid.Row>
+  );
+}
+
+/*
 class Analytics extends React.Component {
 
   constructor(props) {
@@ -112,7 +199,6 @@ class Analytics extends React.Component {
             ref={node4 => (this.node4 = node4)}
           />
 
-          {/* add person information */}
           <Header as="h3">Student Participation</Header>
           <Table celled>
             <Table.Header>
@@ -147,6 +233,6 @@ class Analytics extends React.Component {
       </Grid.Row>
     );
   }
-}
+}*/
 
 export default Analytics;

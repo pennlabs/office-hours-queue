@@ -49,8 +49,8 @@ const AddStudentForm = () => {
   const [joinCourse, joinData] = useMutation(JOIN_COURSE);
 
   /* LOADING SEARCH RESULTS */
-  if (data) {
-    const newResults = data.joinableCourses.edges.map((course) => {
+  if (data && data.joinableCourses) {
+    const newResults = data.joinableCourses.edges.map(course => {
       return {
         key: course.node.id,
         text: `${course.node.department} ${course.node.courseCode} (${course.node.courseTitle}, ${prettifySemester(course.node.semester)} ${course.node.year})`,
@@ -100,11 +100,8 @@ const AddStudentForm = () => {
         <label>Course Name</label>
         <Form.Input name="name" onChange={ handleInputChange }/>
       </Form.Field>
-      {/* <Form.Field>
-        <Button content="Search" color="blue" onClick={ onSearch }/>
-      </Form.Field> */}
       {
-        results &&
+        results && input.name.length > 1 && 
         <div>
           <Form.Field>
             <label>Results</label>
@@ -117,7 +114,7 @@ const AddStudentForm = () => {
               onChange={ handleInputChange }/>
           </Form.Field>
           <Form.Field>
-            <Button content="Add" color="green" onClick={ onSubmit }/>
+            <Button content="Add" color="green" disabled={ !input.courseId } onClick={ onSubmit }/>
             {
               joinData && joinData.data &&
               <span style={{"margin-left":"20px"}}>Added!</span>

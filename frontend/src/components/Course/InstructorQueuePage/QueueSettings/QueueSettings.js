@@ -60,7 +60,7 @@ const QueueSettings = (props) => {
   }, [props.queue]);
 
   return (
-    <Grid.Column width={13}>
+    <Grid.Column>
       <Grid.Row>
         <Segment basic>
           <Header as="h3">
