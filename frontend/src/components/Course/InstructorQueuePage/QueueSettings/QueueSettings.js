@@ -16,13 +16,35 @@ const ACTIVATE_QUEUE = gql`
   }
 `;
 
+const DEACTIVATE_QUEUE = gql`
+mutation ManuallyDeactivateQueue($input: ManuallyDeactivateQueueInput!) {
+  manuallyDeactivateQueue(input: $input) {
+    queue {
+      id
+    }
+  }
+}
+`;
+
 const QueueSettings = (props) => {
   /* STATE */
   const [queue, setQueue] = useState(props.queue);
   const [activateQueue, activateQueueRes] = useMutation(ACTIVATE_QUEUE);
+  const [deactivateQueue, deactivateQueueRes] = useMutation(DEACTIVATE_QUEUE);
 
   const onOpen = async () => {
     await activateQueue({
+      variables: {
+        input: {
+          queueId: queue.id
+        }
+      }
+    });
+    props.refetch();
+  }
+
+  const onClose = async () => {
+    await deactivateQueue({
       variables: {
         input: {
           queueId: queue.id
@@ -50,7 +72,8 @@ const QueueSettings = (props) => {
             <Button content="Close"
               floated="right"
               color="red"
-              disabled={ queue.activeOverrideTime == null }/>
+              disabled={ queue.activeOverrideTime == null }
+              onClick={ onClose }/>
             Queue Settings
             <Header.Subheader>
               { queue.name }

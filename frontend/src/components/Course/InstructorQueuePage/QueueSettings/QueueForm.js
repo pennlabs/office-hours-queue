@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button, Popup } from 'semantic-ui-react';
+import { Form, Button, Modal } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
 
@@ -21,6 +21,7 @@ const QueueForm = (props) => {
   /* STATE */
   const [success, setSuccess] = useState(false);
   const [queue, setQueue] = useState(props.queue);
+  const [open, setOpen] = useState(false);
   const [input, setInput] = useState({
     name: queue.name,
     description: queue.description,
@@ -53,6 +54,7 @@ const QueueForm = (props) => {
       }
     })
     await props.refetch();
+    setOpen(false);
     props.backFunc('queues');
   }
 
@@ -83,15 +85,23 @@ const QueueForm = (props) => {
               onChange={ handleInputChange }/>
           </Form.Field>
           <Button type='submit' disabled={ loading }  onClick={ onSubmit }>Submit</Button>
-          <Popup on='click'
-            position='right center'
+          <Modal open={ open }
             trigger={
-              <a style={{"textDecoration":"underline", "cursor":"pointer"}}>Archive</a>
-            }
-            content={
-              <Button disabled={ loading }  onClick={ onArchived } color="red">Archive</Button>
-            }/>
-          
+              <a style={{"textDecoration":"underline", "cursor":"pointer"}}
+                onClick={ () => setOpen(true) }>Archive</a>
+            }>
+            <Modal.Header>Archive Queue</Modal.Header>
+            <Modal.Content>You are about to archive this queue: <b>{queue.name}</b>. This cannot be undone!</Modal.Content>
+            <Modal.Actions>
+              <Button content="Cancel"
+                disabled={ loading }
+                onClick={ () => setOpen(false) }/>
+              <Button content="Archive"
+                onClick={ onArchived }
+                disabled={ loading }
+                color="red"/>
+            </Modal.Actions>
+          </Modal>
         </div>
       }
       {
