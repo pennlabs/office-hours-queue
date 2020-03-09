@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
 import { Form, Button } from 'semantic-ui-react';
+import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
 
 /* GRAPHQL QUERIES/MUTATIONS */
 const UPDATE_USER = gql`
@@ -97,12 +99,11 @@ const AccountForm = (props) => {
           onChange={ handleInputChange }/>
       </Form.Field>
       <Button type='submit' disabled={ loading }  onClick={ onSubmit }>Submit</Button>
-      {
-        !loading && success && <span>Updated!</span>
-      }
-      {
-        loading && <span>Updating...</span>
-      }
+      <Snackbar open={ !loading && success }>
+        <Alert severity="success">
+          Your account has been updated!
+        </Alert>
+      </Snackbar>
     </Form>
   );
 };

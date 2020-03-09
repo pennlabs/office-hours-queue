@@ -43,7 +43,7 @@ const QueueForm = (props) => {
       })
       await props.refetch();
       setSuccess(true);
-      setNewTag("");
+      setNewTag(null);
     }
   };
 
@@ -86,7 +86,6 @@ const QueueForm = (props) => {
     </Segment>
     <Segment basic>
       <Header content="Add New Tags"/>
-      {
         <Input icon="tag"
           iconPosition="left"
           placeholder="New Tag Here..."
@@ -99,13 +98,6 @@ const QueueForm = (props) => {
           disabled={ loading }
           value={ newTag }
           onChange={ handleInputChange }/>
-      }
-      {
-        loading && <span>Updating...</span>
-      }
-      {
-        success && !loading && <span>Updated!</span>
-      }
       </Segment>
     </div>
   )

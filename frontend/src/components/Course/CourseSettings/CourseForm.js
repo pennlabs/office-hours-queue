@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
-import { Form, Button } from 'semantic-ui-react';
+import { Form, Button, Modal } from 'semantic-ui-react';
 import { semesterOptions } from "../../../utils/enums";
 
 /* GRAPHQL QUERIES/MUTATIONS */
@@ -23,6 +23,7 @@ const CourseForm = (props) => {
   const [defCourse, setDefCourse] = useState(props.course);
   const [input, setInput] = useState({ courseId: props.course.id });
   const [success, setSuccess] = useState(false);
+  const [open, setOpen] = useState(false);
 
   /* HANDLER FUNCTIONS */
   const handleInputChange = (e, { name, value }) => {
@@ -39,6 +40,19 @@ const CourseForm = (props) => {
     await props.refetch();
     setSuccess(true);
   };
+
+  const onArchived = async () => {
+    await updateCourse({
+      variables: {
+        input: {
+          courseId: defCourse.courseId,
+          archived: true
+        }
+      }
+    });
+    await props.refetch();
+    setOpen(false);
+  }
 
   return (
     <Form>
@@ -93,6 +107,25 @@ const CourseForm = (props) => {
           onChange={ handleInputChange }/>
       </Form.Field>
       <Button type='submit' disabled={ loading } onClick={ onSubmit }>Submit</Button>
+      <Modal open={ open }
+        trigger={
+          <a style={{"textDecoration":"underline", "cursor":"pointer"}}
+            onClick={ () => setOpen(true) }>Archive</a>
+        }>
+        <Modal.Header>Archive Course</Modal.Header>
+        <Modal.Content>You are about to archive this course:
+          <b>{`${defCourse.department} ${defCourse.courseCode}`}</b>. This cannot be undone!
+        </Modal.Content>
+        <Modal.Actions>
+          <Button content="Cancel"
+            disabled={ loading }
+            onClick={ () => setOpen(false) }/>
+          <Button content="Archive"
+            onClick={ onArchived }
+            disabled={ loading }
+            color="red"/>
+        </Modal.Actions>
+      </Modal>
       {
         success && !loading && <span>Updated!</span>
       }

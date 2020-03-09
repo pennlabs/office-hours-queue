@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Form, Button, Modal } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
+import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
 
 /* GRAPHQL QUERIES/MUTATIONS */
 const UPDATE_QUEUE = gql`
@@ -104,12 +106,11 @@ const QueueForm = (props) => {
           </Modal>
         </div>
       }
-      {
-        loading && <span>Updating...</span>
-      }
-      {
-        success && !loading && <span>Updated!</span>
-      }
+      <Snackbar open={ !loading && success }>
+        <Alert severity="success">
+          <span><b>{queue.name}</b> has been updated!</span>
+        </Alert>
+      </Snackbar>
     </Form>
   )
 };

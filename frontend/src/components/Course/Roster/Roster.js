@@ -147,22 +147,24 @@ const Roster = (props) => {
     <div>
       {
         users &&
-          <InviteModal open={ open }
-            closeFunc={ closeModal }
-            courseId={ props.course.id }/>
+        <InviteModal open={ open }
+          closeFunc={ closeModal }
+          courseId={ props.course.id }/>
       }
       <Grid.Row>
       {
         users &&
-        <RosterForm showInvited={ showInvited }
-          filterFunc={ filterUsers } inviteFunc={ triggerModal }
-          showFunc={ () => { setShowInvited(!showInvited) } }/>
+        <Segment basic>
+          <RosterForm showInvited={ showInvited }
+            filterFunc={ filterUsers } inviteFunc={ triggerModal }
+            showFunc={ () => { setShowInvited(!showInvited) } }/>
+        </Segment>
       }
       </Grid.Row>
       <Grid.Row>
       {
         showInvited &&
-        <div style={{"marginTop":"40px"}}>
+        <Segment basic>
           <Grid.Row>
             <Header as="h3">
               Invited Users
@@ -196,58 +198,58 @@ const Roster = (props) => {
           }
           </Table.Body>
         </Table>
-        </div>
+        </Segment>
       }
       </Grid.Row>
       <Grid.Row>
       {
         users &&
-        <div style={{"marginTop":"40px"}}>
+        <Segment basic>
           <Grid.Row>
             <Header as="h3">
               Roster
             </Header>
          </Grid.Row>
-        <Table sortable celled padded>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell
-                sorted={tableState.column === 'fullName' ? tableState.direction : null}
-                onClick={() => handleSort('fullName')}
-                width={3}>Full Name</Table.HeaderCell>
-              <Table.HeaderCell
-                sorted={tableState.column === 'preferredName' ? tableState.direction : null}
-                onClick={() => handleSort('preferredName')}
-                width={3}>Preferred Name</Table.HeaderCell>
-              <Table.HeaderCell
-                sorted={tableState.column === 'role' ? tableState.direction : null}
-                onClick={() => handleSort('role')}
-                width={2}>Role</Table.HeaderCell>
-              <Table.HeaderCell
-                sorted={tableState.column === 'email' ? tableState.direction : null}
-                onClick={() => handleSort('email')}
-                width={4}>Email</Table.HeaderCell>
+          <Table sortable celled padded>
+            <Table.Header>
+              <Table.Row>
                 <Table.HeaderCell
-                width={1}>Remove</Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {
-              filteredUsers.map(user => (
-                <Table.Row>
-                  <Table.Cell>{ user.fullName }</Table.Cell>
-                  <Table.Cell>{ user.preferredName }</Table.Cell>
-                  <Table.Cell>{ formatRole(user.role) }</Table.Cell>
-                  <Table.Cell>{ user.email }</Table.Cell>
-                  <Table.Cell textAlign="center">
-                    <RemoveIcon id={ user.id } refetch={ refetch }/>
-                  </Table.Cell>
-                </Table.Row>
-              ))
-            }
-          </Table.Body>
-        </Table>
-        </div>
+                  sorted={tableState.column === 'fullName' ? tableState.direction : null}
+                  onClick={() => handleSort('fullName')}
+                  width={3}>Full Name</Table.HeaderCell>
+                <Table.HeaderCell
+                  sorted={tableState.column === 'preferredName' ? tableState.direction : null}
+                  onClick={() => handleSort('preferredName')}
+                  width={3}>Preferred Name</Table.HeaderCell>
+                <Table.HeaderCell
+                  sorted={tableState.column === 'role' ? tableState.direction : null}
+                  onClick={() => handleSort('role')}
+                  width={2}>Role</Table.HeaderCell>
+                <Table.HeaderCell
+                  sorted={tableState.column === 'email' ? tableState.direction : null}
+                  onClick={() => handleSort('email')}
+                  width={4}>Email</Table.HeaderCell>
+                  <Table.HeaderCell
+                  width={1}>Remove</Table.HeaderCell>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              {
+                filteredUsers.map(user => (
+                  <Table.Row>
+                    <Table.Cell>{ user.fullName }</Table.Cell>
+                    <Table.Cell>{ user.preferredName }</Table.Cell>
+                    <Table.Cell>{ formatRole(user.role) }</Table.Cell>
+                    <Table.Cell>{ user.email }</Table.Cell>
+                    <Table.Cell textAlign="center">
+                      <RemoveIcon id={ user.id } refetch={ refetch }/>
+                    </Table.Cell>
+                  </Table.Row>
+                ))
+              }
+            </Table.Body>
+          </Table>
+        </Segment>
       }
       </Grid.Row>
     </div>
