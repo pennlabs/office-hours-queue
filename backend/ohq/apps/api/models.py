@@ -313,10 +313,10 @@ class Question(models.Model):
             self.time_withdrawn is None
         ):
             return QuestionState.ACTIVE
-        if self.time_started is not None:
-            return QuestionState.STARTED
         if self.time_answered is not None:
             return QuestionState.ANSWERED
+        if self.time_started is not None:
+            return QuestionState.STARTED
         if self.time_rejected is not None:
             return QuestionState.REJECTED
         if self.time_withdrawn is not None:
