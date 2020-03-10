@@ -32,6 +32,7 @@ const GET_COURSE = gql`
 const Course = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
   const courseId = props.location.state ? props.location.state.courseId : "";
+  const courseUserKind = props.location.state ? props.location.state.kind : "";
   const courseQuery = useQuery(GET_COURSE, { variables: {
     id: courseId
   }});
@@ -69,7 +70,7 @@ const Course = (props) => {
   /* UPDATE STATE ON QUERY */
   return (
     <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
-      <CourseSidebar active={ active } clickFunc={ setActive }/>
+      <CourseSidebar active={ active } clickFunc={ setActive } kind={ courseUserKind }/>
 
       <Grid.Column width={13}>
         {

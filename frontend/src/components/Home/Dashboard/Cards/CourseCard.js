@@ -7,7 +7,7 @@ export default class CourseCard extends React.Component {
   render() {
     const path = {
       pathname: this.props.kind === 'STUDENT' ? ROUTES.STUDENT : ROUTES.COURSE,
-      state: { courseId: this.props.id, }
+      state: { courseId: this.props.id, kind: this.props.kind }
     };
 
     return (

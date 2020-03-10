@@ -3,23 +3,15 @@ import { Grid } from 'semantic-ui-react';
 import CourseCard from './Cards/CourseCard';
 import AddCard from './Cards/AddCard';
 import ModalAddStudentCourse from './Modals/ModalAddStudentCourse';
+import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
 
 /* FUNCTIONAL COMPONENT */
 const StudentCourses = (props) => {
   /* STATE */
   const [open, setOpen] = useState(false);
   const [courses, setCourses] = useState(props.courses);
-
-  /* OPENING/CLOSING MODAL */
-  const triggerFunc = () => {
-    setOpen(!open);
-  };
-
-  /* CLOSING MODAL AND REFETCHING DATA */
-  const closeFunc = () => {
-    props.refetch();
-    triggerFunc();
-  };
+  const [success, setSuccess] = useState(false); //opening snackbar
 
   useEffect(() => {
     setCourses(props.courses);
@@ -30,7 +22,9 @@ const StudentCourses = (props) => {
     <Grid.Row columns={4} padded="true">
       <ModalAddStudentCourse
           open={ open }
-          closeFunc={ closeFunc }/>
+          closeFunc={ () => setOpen(false) }
+          refetch={ props.refetch }
+          successFunc={ setSuccess }/>
         {
           courses.map((course) => (
             <Grid.Column>
@@ -47,9 +41,14 @@ const StudentCourses = (props) => {
           ))
         }
       <Grid.Column>
-        <AddCard clickFunc={ triggerFunc }/>
+        <AddCard clickFunc={ () => setOpen(true) }/>
       </Grid.Column>
     </Grid.Row>
+    <Snackbar open={ success } onClose={ () => setSuccess(false) }>
+        <Alert severity="success" onClose={ () => setSuccess(false) }>
+          Course added!
+        </Alert>
+      </Snackbar>
     </Grid>
   );
 };

@@ -36,7 +36,7 @@ const JOIN_COURSE = gql`
 `;
 
 /* FUNCTIONAL COMPONENT */
-const AddStudentForm = () => {
+const AddStudentForm = (props) => {
   /* STATE */
   const [input, setInput] = useState({
     name: null,
@@ -85,6 +85,7 @@ const AddStudentForm = () => {
   };
 
   const onSubmit = async () => {
+    if (!input.courseId) return;
     await joinCourse({
       variables: {
         input: {
@@ -92,6 +93,14 @@ const AddStudentForm = () => {
         }
       }
     });
+    /*
+    await joinableCourses({
+      variables: {
+        searchableName_Icontains: input.name,
+      }
+    });*/
+    props.refetch();
+    props.successFunc(true); //trigger snackbar
   };
 
   return (
@@ -114,11 +123,10 @@ const AddStudentForm = () => {
               onChange={ handleInputChange }/>
           </Form.Field>
           <Form.Field>
-            <Button content="Add" color="green" disabled={ !input.courseId } onClick={ onSubmit }/>
-            {
-              joinData && joinData.data &&
-              <span style={{"margin-left":"20px"}}>Added!</span>
-            }
+            <Button content="Add"
+              color="green"
+              disabled={ joinData.loading || loading }
+              onClick={ onSubmit }/>
           </Form.Field>
         </div>
       }

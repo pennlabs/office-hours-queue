@@ -8,7 +8,7 @@ export default class ModalAddStudentCourse extends React.Component {
       <Modal open={ this.props.open }>
         <Modal.Header>Add New Course</Modal.Header>
         <Modal.Content>
-          <AddStudentForm/>
+          <AddStudentForm refetch={ this.props.refetch } successFunc={ this.props.successFunc }/>
         </Modal.Content>
         <Modal.Actions>
           <Button content="Done" onClick={ this.props.closeFunc }/>
