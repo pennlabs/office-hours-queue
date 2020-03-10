@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Grid } from 'semantic-ui-react';
 import StudentQueues from './StudentQueues';
+import RejectedQuestionModal from './RejectedQuestionModal';
 
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
@@ -34,6 +35,8 @@ const CURRENT_QUESTION = gql`
       timeAsked
       timeWithdrawn
       questionsAhead
+      rejectedReason
+      rejectedReasonOther
       state
       queue {
         id
@@ -53,12 +56,13 @@ const StudentQueuePage = (props) => {
     variables: {
       courseId: props.course.id
     },
-    //pollInterval: 1000
+    pollInterval: 2000
   });
 
   const [queues, setQueues] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [active, setActive] = useState('queues');
+  const [rejectedOpen, setRejectedOpen] = useState(false);
 
   const loadQueues = (data) => {
     return data.course.queues.edges.map((item) => {
@@ -86,19 +90,26 @@ const StudentQueuePage = (props) => {
     var newCurrentQuestion = getQuestionRes.data.currentQuestion;
     if (JSON.stringify(newCurrentQuestion) !== JSON.stringify(currentQuestion)) {
       setCurrentQuestion(newCurrentQuestion);
+      if (currentQuestion && currentQuestion.state !== newCurrentQuestion.state) {
+        if (newCurrentQuestion.state === "REJECTED") {
+          setRejectedOpen(true);
+        }
+      }
     }
   }
 
-  console.log(currentQuestion);
-
   return (
     <Grid>
+      <RejectedQuestionModal
+        question={ currentQuestion }
+        closeFunc={ () => setRejectedOpen(false) }
+        open={ rejectedOpen }/>
       {
         active === 'queues' &&
         <StudentQueues
           queues={ queues }
-          refetch={ getQuestionRes.refetch }
-          question={ showQuestion(currentQuestion) ? currentQuestion : null }/>
+          question={ showQuestion(currentQuestion) ? currentQuestion : null }
+          refetch={ getQuestionRes.refetch }/>
       }
     </Grid>
   );

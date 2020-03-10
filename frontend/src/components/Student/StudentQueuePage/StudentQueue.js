@@ -27,11 +27,11 @@ const StudentQueue = (props) => {
         </Header.Subheader>
       </Header>
       <Label
-        content={ "5 users" }
+        content={ `N/A user(s)` }
         color="blue"
         icon="user"
       />
-      <Label content={ queue.estimatedWaitTime + " mins"} color="blue" icon="clock"/>
+      <Label content={ `${queue.estimatedWaitTime} mins`} color="blue" icon="clock"/>
       <Grid.Row padded="true">
         {
           !props.hasQuestion && <QuestionForm queue={ queue } refetch={ props.refetch } successFunc={ setSuccess }/>
