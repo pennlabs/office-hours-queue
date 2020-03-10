@@ -68,6 +68,7 @@ const Queue = (props) => {
 
   /* FILTERING QUESTIONS FUNC */
   const isVisible = (question) => {
+    console.log(question)
     return question.state === "ACTIVE" || question.state === "STARTED";
   };
 
@@ -99,7 +100,7 @@ const Queue = (props) => {
     const newQuestions = getQuestions(data);
     if (JSON.stringify(newQuestions) !== JSON.stringify(questions)) {
       setQuestions(newQuestions);
-      setFilteredQuestions(newQuestions);
+      setFilteredQuestions(filter(newQuestions, filters));
     }
 
     if (JSON.stringify(data.queue.tags) !== JSON.stringify(tags)) {
