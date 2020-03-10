@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Form, Button, Modal } from 'semantic-ui-react';
+import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
+import { semesterOptions } from "../../../utils/enums";
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
-import { Form, Button, Modal } from 'semantic-ui-react';
-import { semesterOptions } from "../../../utils/enums";
 
 /* GRAPHQL QUERIES/MUTATIONS */
 const UPDATE_COURSE = gql`
@@ -53,6 +55,10 @@ const CourseForm = (props) => {
     await props.refetch();
     setOpen(false);
   }
+
+  useEffect(() => {
+    setDefCourse(props.course);
+  }, [props.course])
 
   return (
     <Form>
@@ -126,12 +132,11 @@ const CourseForm = (props) => {
             color="red"/>
         </Modal.Actions>
       </Modal>
-      {
-        success && !loading && <span>Updated!</span>
-      }
-      {
-        loading && <span>Updating...</span>
-      }
+      <Snackbar open={ success } onClose={ () => setSuccess(false) }>
+        <Alert severity="success" onClose={ () => setSuccess(false) }>
+          <span><b>{`${defCourse.department} ${defCourse.courseCode}`}</b> has been updated!</span>
+        </Alert>
+      </Snackbar>
     </Form>
   );
 }

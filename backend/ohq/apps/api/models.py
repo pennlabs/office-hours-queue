@@ -71,7 +71,6 @@ class Semester(ChoicesEnum):
 
 class Course(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
     course_code = models.CharField(max_length=10)
     department = models.CharField(max_length=10)
     course_title = models.CharField(max_length=50)

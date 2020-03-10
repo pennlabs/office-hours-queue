@@ -8,7 +8,7 @@ from ohq.apps.api.util.sendgrid import send_invitation_email
 
 
 class CreateCourseInput(graphene.InputObjectType):
-    name = graphene.String(required=True)
+    course_code = graphene.String(required=True)
     department = graphene.String(required=True)
     description = graphene.String(required=False)
     year = graphene.Int(required=True)
@@ -33,7 +33,7 @@ class CreateCourse(graphene.Mutation):
         with transaction.atomic():
             user = info.context.user.get_user()
             course = Course.objects.create(
-                name=input.name,
+                course_code=input.course_code,
                 department=input.department,
                 description=input.description or "",
                 year=input.year,
@@ -51,7 +51,7 @@ class CreateCourse(graphene.Mutation):
 
 class UpdateCourseInput(graphene.InputObjectType):
     course_id = graphene.ID(required=True)
-    name = graphene.String(required=False)
+    course_code = graphene.String(required=False)
     department = graphene.String(required=False)
     description = graphene.String(required=False)
     year = graphene.Int(required=False)
@@ -86,8 +86,8 @@ class UpdateCourse(graphene.Mutation):
             if course.archived:
                 raise course_archived_error
 
-            if input.name is not None:
-                course.name = input.name
+            if input.course_code is not None:
+                course.course_code = input.course_code
             if input.department is not None:
                 course.department = input.department
             if input.description is not None:

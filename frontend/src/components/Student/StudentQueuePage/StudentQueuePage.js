@@ -85,8 +85,6 @@ const StudentQueuePage = (props) => {
     }
   }
 
-  console.log(currentQuestion);
-
   return (
     <Grid>
       {

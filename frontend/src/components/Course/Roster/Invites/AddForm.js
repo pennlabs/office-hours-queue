@@ -80,13 +80,13 @@ const AddForm = (props) => {
   };
 
   const onSearch = () => {
-    console.log(invitableUsers({
+    invitableUsers({
       variables: {
         email_Icontains: input.email,
         fullName_Icontains: input.fullName,
         courseId: props.courseId
       }
-    }));
+    });
   };
 
   const getResults = (data) => {

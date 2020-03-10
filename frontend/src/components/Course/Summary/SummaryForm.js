@@ -32,8 +32,6 @@ const SummaryForm = (props) => {
     });
   });
 
-  console.log(tagOptions);
-
   return (
     <Form>
       <Form.Group>

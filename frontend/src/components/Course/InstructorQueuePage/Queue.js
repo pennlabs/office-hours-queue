@@ -68,7 +68,6 @@ const Queue = (props) => {
 
   /* FILTERING QUESTIONS FUNC */
   const isVisible = (question) => {
-    console.log(question)
     return question.state === "ACTIVE" || question.state === "STARTED";
   };
 
