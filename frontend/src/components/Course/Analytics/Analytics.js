@@ -49,6 +49,7 @@ const Analytics = (props) => {
     }
   });
   const [pieChartData, setPieChartData] = useState(null);
+  const [lineChartData, setLineChartData] = useState(null);
 
   const getRandomColor = () => {
     var letters = '0123456789ABCDEF';
@@ -62,25 +63,21 @@ const Analytics = (props) => {
   const getPieChartData = (node) => {
     const counts = {};
     let noTagCount = 0;
+
     node.questions.edges.forEach(question => {
       if (question.node.tags.length == 0) noTagCount += 1
-
       question.node.tags.forEach(tag => {
         counts[tag] = counts[tag] ? counts[tag] + 1 : 1;
       });
     });
 
     const labels = Object.keys(counts).sort();
-    
-    const datapoints = labels.map(label => {
-      return counts[label]
-    });
+    const datapoints = labels.map(label => counts[label]);
 
     if (noTagCount > 0) {
       labels.push("N/A");
       datapoints.push(noTagCount);
     }
-    
 
     return {
       data: {
@@ -102,27 +99,107 @@ const Analytics = (props) => {
     };
   }
 
+  const lineChartHelper = (node) => {
+    const counts = {}
+    node.questions.edges.forEach(question => {
+      const dateAsked = new Date(question.node.timeAsked);
+      counts[dateAsked.toDateString()] = counts[dateAsked.toDateString()] ?
+        counts[dateAsked.toDateString()] + 1 : 1;
+    });
+
+    return counts;
+  }
+
+  const getLineChartData = (edges) => {
+    const countMaps = edges.filter(item => !item.node.archived).map(item => lineChartHelper(item.node));
+    const allCounts = {};
+
+    countMaps.forEach(map => {
+      Object.keys(map).forEach(key => allCounts[key] = map[key])
+    });
+
+    const stringLabels = Object.keys(allCounts).sort();
+    const dateLabels = stringLabels.map(label => new Date(label));
+    const datasets = edges.filter(item => !item.node.archived).map((item, i) =>{
+      const color = getRandomColor();
+      return {
+        fill: false,
+        label: item.node.name,
+        data: stringLabels.map(label => {
+          return countMaps[i][label] ? countMaps[i][label] : 0;
+        }),
+        borderColor: color,
+        backgroundColor: color,
+        lineTension: 0
+      }
+    });
+
+    return {
+      data: {
+        labels: dateLabels,
+        datasets: datasets
+      },
+      type: 'scatter',
+      options: {
+        fill: false,
+        responsive: true,
+        scales: {
+          xAxes: [{
+            type: 'time',
+            time: {
+              displayFormats: {
+                hour: 'MMM D hA'
+              }
+            },
+            scaleLabel: {
+              display: true,
+              labelString: "Date"
+            }
+          }],
+          yAxes: [{
+            ticks: {
+              beginAtZero: true,
+            },
+            display: true,
+            scaleLabel: {
+              display: true,
+              labelString: "Number of Students",
+            }
+          }]
+        }
+      }
+    }
+  }
+
   if (data && data.course) {
     if (!pieChartData) {
-      setPieChartData(data.course.queues.edges.filter(item => {
-        return !item.node.archived
-      }).map(item => {
+      setPieChartData(data.course.queues.edges.filter(item => !item.node.archived).map(item => {
         return getPieChartData(item.node)
       }));
+    }
+
+    if (!lineChartData) {
+      setLineChartData(getLineChartData(data.course.queues.edges));
     }
   }
 
   return (
     <Grid.Row>
-        <Segment basic>
-          <Header as="h3">Questions by Type</Header>
-          {
-            pieChartData && pieChartData.map(dataset => {
-              return <MyPieChart dataset={ dataset } />
-            })
-          }
-        </Segment>
-      </Grid.Row>
+      <Segment basic>
+        <Header as="h3">Questions by Type</Header>
+        {
+          pieChartData && pieChartData.map(dataset => {
+            return <MyPieChart dataset={ dataset } />
+          })
+        }
+      </Segment>
+      <Segment basic>
+        <Header as="h3">Queue Traffic</Header>
+        {
+          lineChartData &&  <MyPieChart dataset={ lineChartData } />
+        }
+      </Segment>
+    </Grid.Row>
   );
 }
 

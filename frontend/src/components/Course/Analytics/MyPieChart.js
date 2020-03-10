@@ -12,7 +12,6 @@ export default class MyPieChart extends React.Component {
 
   componentDidMount() {
     const node = this.node;
-
     new Chart(node, this.state.dataset);
   }
 
