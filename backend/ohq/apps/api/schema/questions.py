@@ -43,6 +43,7 @@ class CreateQuestion(graphene.Mutation):
                 asked_by=user,
                 queue__course=course,
                 time_answered__isnull=True,
+                time_withdrawn__isnull=True
             ).exists():
                 raise too_many_questions_error
             if any(tag not in queue.tags for tag in input.tags):

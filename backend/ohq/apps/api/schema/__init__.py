@@ -33,10 +33,8 @@ class Query(graphene.ObjectType):
         course = Course.objects.get(pk=from_global_id(course_id)[1])
         return Question.objects.filter(
             asked_by=user,
-            queue__course=course,
-            time_answered__isnull=True,
-            time_withdrawn__isnull=True
-        ).get()
+            queue__course=course
+        ).order_by('-time_asked')[:1].get()
 
 
     # Course search for students joining

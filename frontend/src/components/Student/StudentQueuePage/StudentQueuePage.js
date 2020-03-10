@@ -53,7 +53,7 @@ const StudentQueuePage = (props) => {
     variables: {
       courseId: props.course.id
     },
-    pollInterval: 1000
+    //pollInterval: 1000
   });
 
   const [queues, setQueues] = useState(null);
@@ -71,6 +71,10 @@ const StudentQueuePage = (props) => {
     });
   };
 
+  const showQuestion = (question) => {
+    return question && (question.state === "ACTIVE" || question.state === "STARTED")
+  }
+
   if (getQueuesRes.data && getQueuesRes.data.course) {
     const newQueues = loadQueues(getQueuesRes.data);
     if (JSON.stringify(newQueues) !== JSON.stringify(queues)) {
@@ -85,14 +89,16 @@ const StudentQueuePage = (props) => {
     }
   }
 
+  console.log(currentQuestion);
+
   return (
     <Grid>
       {
         active === 'queues' &&
         <StudentQueues
-          queues={queues}
+          queues={ queues }
           refetch={ getQuestionRes.refetch }
-          question={currentQuestion}/>
+          question={ showQuestion(currentQuestion) ? currentQuestion : null }/>
       }
     </Grid>
   );
