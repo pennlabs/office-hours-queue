@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Segment, Label, Header, Grid, Message } from 'semantic-ui-react';
 import QuestionForm from './QuestionForm';
 import QuestionCard from './QuestionCard';
+import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
 
 const StudentQueue = (props) => {
   const [queue, setQueue] = useState(props.queue);
   const [question, setQuestion] = useState(props.question);
+  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     setQuestion(props.question);
@@ -31,7 +34,7 @@ const StudentQueue = (props) => {
       <Label content={ queue.estimatedWaitTime + " mins"} color="blue" icon="clock"/>
       <Grid.Row padded="true">
         {
-          !props.hasQuestion && <QuestionForm queue={ queue } refetch={ props.refetch }/>
+          !props.hasQuestion && <QuestionForm queue={ queue } refetch={ props.refetch } successFunc={ setSuccess }/>
         }
         {
           props.hasQuestion && !question &&
@@ -41,6 +44,11 @@ const StudentQueue = (props) => {
           props.hasQuestion && question && <QuestionCard question={ question } queue={ queue } refetch={ props.refetch }/>
         }
       </Grid.Row>
+      <Snackbar open={ success } autoHideDuration={2000} onClose={ () => setSuccess(false) }>
+        <Alert severity="success" onClose={ () => setSuccess(false) }>
+          <span>Question added to <b>{`${queue.name}!`}</b></span>
+        </Alert>
+      </Snackbar>
     </Segment>
   );
 };

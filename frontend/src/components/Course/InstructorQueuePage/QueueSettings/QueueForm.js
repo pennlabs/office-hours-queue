@@ -106,7 +106,7 @@ const QueueForm = (props) => {
           </Modal>
         </div>
       }
-      <Snackbar open={ success } onClose={ () => setSuccess(false) }>
+      <Snackbar open={ success } autoHideDuration={2000} onClose={ () => setSuccess(false) }>
         <Alert severity="success" onClose={ () => setSuccess(false) }>
           <span><b>{queue.name}</b> has been updated!</span>
         </Alert>

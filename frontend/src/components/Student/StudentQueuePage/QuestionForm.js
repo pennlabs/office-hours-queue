@@ -16,7 +16,6 @@ const CREATE_QUESTION = gql`
 const QuestionForm = (props) => {
   const [createQuestion, { loading, data }] = useMutation(CREATE_QUESTION);
   const [queue, setQueue] = useState(props.queue);
-  const [success, setSuccess] = useState(false);
   const [input, setInput] = useState({
     queueId: props.queue.id,
     text: "",
@@ -48,7 +47,7 @@ const QuestionForm = (props) => {
       }
     });
     await props.refetch();
-    setSuccess(true);
+    props.successFunc(true);
   };
 
   useEffect(() => {
@@ -89,12 +88,6 @@ const QuestionForm = (props) => {
           color="blue"
           disabled={ loading }
           onClick={ onSubmit }/>
-          {
-            !loading && success && <span>Added!</span>
-          }
-          {
-            loading && <span>Adding...</span>
-          }
       </Segment>
     </div>
   );
