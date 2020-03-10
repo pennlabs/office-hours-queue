@@ -19,32 +19,32 @@ const StudentCourses = (props) => {
 
   return (
     <Grid style={{"width":"100%"}}>
-    <Grid.Row columns={4} padded="true">
-      <ModalAddStudentCourse
-          open={ open }
-          closeFunc={ () => setOpen(false) }
-          refetch={ props.refetch }
-          successFunc={ setSuccess }/>
-        {
-          courses.map((course) => (
-            <Grid.Column>
-              <CourseCard
-                department={course.department}
-                courseCode={course.courseCode}
-                courseTitle={course.courseTitle}
-                semester={course.semester}
-                year={course.year}
-                id={course.id}
-                kind={course.kind}
-                archived={course.archived}/>
-            </Grid.Column>
-          ))
-        }
-      <Grid.Column>
-        <AddCard clickFunc={ () => setOpen(true) }/>
-      </Grid.Column>
-    </Grid.Row>
-    <Snackbar open={ success } onClose={ () => setSuccess(false) }>
+      <Grid.Row columns={4} padded="true">
+        <ModalAddStudentCourse
+            open={ open }
+            closeFunc={ () => setOpen(false) }
+            refetch={ props.refetch }
+            successFunc={ setSuccess }/>
+          {
+            courses.map((course) => (
+              <Grid.Column>
+                <CourseCard
+                  department={course.department}
+                  courseCode={course.courseCode}
+                  courseTitle={course.courseTitle}
+                  semester={course.semester}
+                  year={course.year}
+                  id={course.id}
+                  kind={course.kind}
+                  archived={course.archived}/>
+              </Grid.Column>
+            ))
+          }
+        <Grid.Column>
+          <AddCard clickFunc={ () => setOpen(true) }/>
+        </Grid.Column>
+      </Grid.Row>
+      <Snackbar open={ success } onClose={ () => setSuccess(false) }>
         <Alert severity="success" onClose={ () => setSuccess(false) }>
           Course added!
         </Alert>

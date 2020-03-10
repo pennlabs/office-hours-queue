@@ -4,6 +4,8 @@ import CourseCard from './Cards/CourseCard';
 import ArchivedCourseCard from './Cards/ArchivedCourseCard';
 import AddCard from './Cards/AddCard';
 import ModalAddInstructorCourse from './Modals/ModalAddInstructorCourse';
+import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
 
 /* FUNCTIONAL COMPONENT */
 const InstructorCourses = (props) => {
@@ -11,16 +13,7 @@ const InstructorCourses = (props) => {
   const [open, setOpen] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
   const [courses, setCourses] = useState(props.courses);
-
-  /* HANDLER FUNCTIONS */
-  const triggerFunc = () => {
-    setOpen(!open);
-  };
-
-  const closeFunc = () => {
-    props.refetch();
-    triggerFunc();
-  };
+  const [success, setSuccess] = useState(false);
 
   const handleArchivedChange = () => {
     setShowArchived(!showArchived);
@@ -36,7 +29,9 @@ const InstructorCourses = (props) => {
       <Grid.Row columns={4} padded="true">
         <ModalAddInstructorCourse
           open={ open }
-          closeFunc={ closeFunc }/>
+          closeFunc={ () => setOpen(false) }
+          successFunc={ setSuccess }
+          refetch={ props.refetch }/>
         {
           courses.map(course => (
             !course.archived &&
@@ -54,7 +49,7 @@ const InstructorCourses = (props) => {
           ))
         }
         <Grid.Column>
-          <AddCard clickFunc={ triggerFunc }/>
+          <AddCard clickFunc={ () => setOpen(true) }/>
         </Grid.Column>
       </Grid.Row>
 
@@ -80,7 +75,12 @@ const InstructorCourses = (props) => {
             </Grid.Column>
           ))
         }
-    </Grid.Row>
+      </Grid.Row>
+      <Snackbar open={ success } onClose={ () => setSuccess(false) }>
+        <Alert severity="success" onClose={ () => setSuccess(false) }>
+          Course added!
+        </Alert>
+      </Snackbar>
     </Grid>
   );
 }

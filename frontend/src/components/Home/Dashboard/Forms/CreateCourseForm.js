@@ -19,17 +19,9 @@ const CREATE_COURSE = gql`
   }
 `;
 
-/* FUNCTIONAL COMPONENT */
-const CreateCourseForm = () => {
+const CreateCourseForm = (props) => {
   /* STATE */
-  const [input, setInput] = useState({
-    department: null,
-    courseCode: null,
-    courseTitle: null,
-    year: null,
-    semester: null,
-    inviteOnly: false
-  });
+  const [input, setInput] = useState({ inviteOnly: false });
 
   /* GRAPHQL QUERIES/MUTATIONS */
   const [createCourse, { data }] = useMutation(CREATE_COURSE);
@@ -46,6 +38,8 @@ const CreateCourseForm = () => {
         input: input
       }
     });
+    await props.refetch();
+    props.successFunc(true); //trigger snackbar
   };
 
   return (
@@ -56,11 +50,11 @@ const CreateCourseForm = () => {
       </Form.Field>
       <Form.Field>
         <label>Course Code</label>
-        <Form.Input name="name" onChange={ handleInputChange } placeholder="121"/>
+        <Form.Input name="courseCode" onChange={ handleInputChange } placeholder="121"/>
       </Form.Field>
       <Form.Field>
         <label>Course Title</label>
-        <Form.Input name="description" onChange={ handleInputChange } placeholder="Data Structures and Algorithms"/>
+        <Form.Input name="courseTitle" onChange={ handleInputChange } placeholder="Data Structures and Algorithms"/>
       </Form.Field>
       <Form.Field>
         <label>Year</label>
@@ -76,10 +70,6 @@ const CreateCourseForm = () => {
       </Form.Field>
       <Form.Field>
           <Button content="Create" color = "green" onClick={onSubmit}/>
-          {
-            data &&
-            <span style={{"margin-left":"20px"}}>Created!</span>
-          }
       </Form.Field>
     </Form>
   );

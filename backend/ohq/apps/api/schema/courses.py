@@ -10,6 +10,7 @@ from ohq.apps.api.util.sendgrid import send_invitation_email
 class CreateCourseInput(graphene.InputObjectType):
     course_code = graphene.String(required=True)
     department = graphene.String(required=True)
+    course_title = graphene.String(require=True)
     description = graphene.String(required=False)
     year = graphene.Int(required=True)
     semester = graphene.Field(SemesterType, required=True)
@@ -35,6 +36,7 @@ class CreateCourse(graphene.Mutation):
             course = Course.objects.create(
                 course_code=input.course_code,
                 department=input.department,
+                course_title=input.course_title,
                 description=input.description or "",
                 year=input.year,
                 semester=input.semester,
