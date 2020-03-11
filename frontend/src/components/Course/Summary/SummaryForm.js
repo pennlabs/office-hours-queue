@@ -2,13 +2,10 @@ import React, { useState } from 'react';
 import { Form, Button } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
+import TextField from '@material-ui/core/TextField';
 
 const SummaryForm = (props) => {
-  const [input, setInput] = useState({
-    search: "",
-    showRejected: false,
-    queues: []
-  });
+  const [input, setInput] = useState({ search: "" });
 
   const handleInputChange = (e, {name, value}) => {
     input[name] = value;
@@ -16,51 +13,30 @@ const SummaryForm = (props) => {
     props.filterFunc(input);
   };
 
-  const tagOptions = [];
-  props.queues.forEach((queue) => {
-    tagOptions.push({
-      key: queue.name,
-      value: queue.name,
-      text: queue.name
-    });
-    queue.tags.forEach((tag) => {
-      tagOptions.push({
-        key: queue.name + " - " + tag,
-        value: queue.name + " - " + tag,
-        text: queue.name + " - " + tag
-      });
-    });
-  });
-
   return (
     <Form>
       <Form.Group>
         <Form.Field>
-          <label>Queue</label>
-          <Form.Dropdown
-            selection
-            placeholder="Filter..."
-            name="type"
-            onChange={ handleInputChange }
-            options={ tagOptions }/>
+          <label>After</label>
+          <TextField
+            type="date"
+            onChange={ (event) => {
+              input.after = event.target.value;
+              setInput(input);
+              props.filterFunc(input);
+            } }
+            InputLabelProps={{ shrink: true }}/>
         </Form.Field>
         <Form.Field>
-          <label>Tags</label>
-          <Form.Dropdown
-            selection
-            placeholder="Filter..."
-            name="type"
-            onChange={ handleInputChange }
-            options={ tagOptions }/>
-        </Form.Field>
-        <Form.Field>
-          <label>Result</label>
-          <Form.Dropdown
-            selection
-            placeholder="Filter..."
-            name="type"
-            onChange={ handleInputChange }
-            options={ tagOptions }/>
+          <label>Before</label>
+          <TextField
+            type="date"
+            onChange={ (event) => {
+              input.before = event.target.value;
+              setInput(input);
+              props.filterFunc(input);
+            } }
+            InputLabelProps={{ shrink: true }}/>
         </Form.Field>
         <Form.Field>
           <label>Search</label>

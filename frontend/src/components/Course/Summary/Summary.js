@@ -69,29 +69,22 @@ const Summary = (props) => {
   const [open, setOpen] = useState(false);
   const [tableState, setTableState] = useState({ direction: null, column: null })
 
-  /* MODAL FUNCTIONS */
-  const triggerModal = () => {
-    setOpen(!open);
-  };
-
   /* FILTER USERS BASED ON INPUT */
   const filterQuestions = (input) => {
-    const newFilteredQuestions = questions.filter((qs) => {
+    const newFilteredQuestions = questions.filter(question => {
       return (
-        qs.text.toUpperCase().includes(input.search) ||
-        qs.askedBy.toUpperCase().includes(input.search) ||
-        qs.answeredBy.toUpperCase().includes(input.search) ||
-        qs.rejectedBy.toUpperCase().includes(input.search)
-        //&& (!input.role || user.role === input.role)
+        (
+          question.text.toUpperCase().includes(input.search.toUpperCase()) ||
+          question.askedBy.toUpperCase().includes(input.search.toUpperCase()) ||
+          question.answeredBy.toUpperCase().includes(input.search.toUpperCase())
+        ) && (
+          (!input.before || new Date(question.timeAsked).getTime() <= new Date(input.before).getTime()) &&
+          (!input.after || new Date(question.timeAsked).getTime() >= new Date(input.after).getTime())
+        )
       );
     });
     setFilteredQuestions(newFilteredQuestions);
     setTableState({ direction: null, column: null })
-  };
-
-  const closeModal = async () => {
-    await refetch();
-    triggerModal();
   };
 
   const formatState = (string) => {
@@ -178,21 +171,21 @@ const Summary = (props) => {
             <Table.Header>
               <Table.Row>
                 <Table.HeaderCell
-                  sorted={tableState.column === 'asker' ? tableState.direction : null}
-                  onClick={() => handleSort('asker')}
+                  sorted={tableState.column === 'askedBy' ? tableState.direction : null}
+                  onClick={() => handleSort('askedBy')}
                   width={2}>Asked By</Table.HeaderCell>
                 <Table.HeaderCell
-                  sorted={tableState.column === 'answerer' ? tableState.direction : null}
-                  onClick={() => handleSort('answerer')}
+                  sorted={tableState.column === 'answeredBy' ? tableState.direction : null}
+                  onClick={() => handleSort('answeredBy')}
                   width={2}>Answered By</Table.HeaderCell>
                 <Table.HeaderCell
-                  sorted={tableState.column === 'questionAsked' ? tableState.direction : null}
-                  onClick={() => handleSort('questionAsked')}
+                  sorted={tableState.column === 'text' ? tableState.direction : null}
+                  onClick={() => handleSort('text')}
                   width={4}>Question</Table.HeaderCell>
                 <Table.HeaderCell
                   sorted={tableState.column === 'queue' ? tableState.direction : null}
                   onClick={() => handleSort('queue')}
-                  width={2}>Queue/Tags</Table.HeaderCell>
+                  width={2}>Queue</Table.HeaderCell>
                 <Table.HeaderCell
                   sorted={tableState.column === 'timeAsked' ? tableState.direction : null}
                   onClick={() => handleSort('timeAsked')}
@@ -215,15 +208,10 @@ const Summary = (props) => {
                       }
                     </Table.Cell>
                     <Table.Cell>{ qs.text }</Table.Cell>
-                    <Table.Cell>
-                      { qs.queue }
-                      <br/>
-                      {qs.tags.length !== 0 ? qs.tags.join(', ') : ''}
-                    </Table.Cell>
+                    <Table.Cell>{ qs.queue }</Table.Cell>
                     <Table.Cell>
                       {
-                        new Date(Date.parse(qs.timeAsked))
-                          .toLocaleString('en-US', {dateStyle: 'short', timeStyle: 'short'})
+                        new Date(qs.timeAsked).toLocaleString('en-US', {dateStyle: 'short', timeStyle: 'short'})
                       }
                     </Table.Cell>
                     <Table.Cell>
