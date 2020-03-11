@@ -8,7 +8,7 @@ const StudentQueues = (props) => {
   const [question, setQuestion] = useState(props.question);
 
   const showQuestion = (question) => {
-    return question.state === "ACTIVE" || question.state === "STARTED"
+    return question.state === "ACTIVE" || question.state === "STARTED";
   }
 
   useEffect(() => {

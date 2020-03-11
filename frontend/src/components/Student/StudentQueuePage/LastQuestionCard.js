@@ -19,6 +19,14 @@ const LastQuestionCard = (props) => {
     }
   }
 
+  const segmentColor = (state) => {
+    switch (state) {
+      case "REJECTED": return "red";
+      case "ANSWERED": return "green";
+      default: return "blue"
+    }
+  }
+
   useEffect(() => {
     setQuestion(props.question);
   }, [props.question]);
@@ -26,17 +34,28 @@ const LastQuestionCard = (props) => {
   return (
     <Segment basic>
       <Segment padded attached="top"
-        color={ question.state === "REJECTED" ? "red" : "green" }>
+        color={ segmentColor(question.state) }>
         {
-          question.state === "REJECTED" ?
+          question.state === "REJECTED" &&
           <div>
             The following question you asked on <b>{ timeString(question.timeAsked) }</b> was rejected by <b>{question.rejectedBy.preferredName}</b>:<br/>
             <Message error>{`"${question.text}"`}</Message>
             The rejected reason was: 
             <b>{ ` ${formatReason(question.rejectedReason, question.rejectedReasonOther)}` }</b>
-          </div> : <div>
-            The following question you asked at <b>{timeString(question.timeAsked)}</b> was answered by <b>{question.answeredBy.preferredName}</b>:<br/>
+          </div>
+        }
+        {
+          question.state === "ANSWERED" &&
+          <div>
+            The following question you asked on <b>{timeString(question.timeAsked)}</b> was answered by <b>{question.answeredBy.preferredName}</b>:<br/>
             <Message success>{`"${question.text}"`}</Message>
+          </div>
+        }
+        {
+          question.state === "WITHDRAWN" &&
+          <div>
+            You withdrew the following question on <b>{timeString(question.timeWithdrawn)}</b>:
+            <Message info>{`"${question.text}"`}</Message>
           </div>
         }
       </Segment>
