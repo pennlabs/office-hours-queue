@@ -35,8 +35,15 @@ const CURRENT_QUESTION = gql`
       timeAsked
       timeWithdrawn
       questionsAhead
+      timeRejected
       rejectedReason
       rejectedReasonOther
+      rejectedBy {
+        preferredName
+      }
+      answeredBy {
+        preferredName
+      }
       state
       queue {
         id
@@ -75,8 +82,22 @@ const StudentQueuePage = (props) => {
     });
   };
 
-  const showQuestion = (question) => {
-    return question && (question.state === "ACTIVE" || question.state === "STARTED")
+  const newState = (state) => {
+    switch(state) {
+      case "REJECTED": setRejectedOpen(true);
+      case "STARTED": return;
+      case "ANSWERED": return;
+      default: return;
+    }
+  }
+
+  const showLastQuestion = (question) => {
+    switch(question.state) {
+      case "REJECTED": setRejectedOpen(true);
+      case "STARTED": return;
+      case "ANSWERED": return;
+      default: return;
+    }
   }
 
   if (getQueuesRes.data && getQueuesRes.data.course) {
@@ -91,9 +112,7 @@ const StudentQueuePage = (props) => {
     if (JSON.stringify(newCurrentQuestion) !== JSON.stringify(currentQuestion)) {
       setCurrentQuestion(newCurrentQuestion);
       if (currentQuestion && currentQuestion.state !== newCurrentQuestion.state) {
-        if (newCurrentQuestion.state === "REJECTED") {
-          setRejectedOpen(true);
-        }
+        newState(newCurrentQuestion.state);
       }
     }
   }
@@ -107,8 +126,9 @@ const StudentQueuePage = (props) => {
       {
         active === 'queues' &&
         <StudentQueues
+          showFunc={ showLastQuestion }
           queues={ queues }
-          question={ showQuestion(currentQuestion) ? currentQuestion : null }
+          question={ currentQuestion }
           refetch={ getQuestionRes.refetch }/>
       }
     </Grid>

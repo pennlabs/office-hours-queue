@@ -28,17 +28,17 @@ const QuestionCard = (props) => {
         question={ props.question }
         setOpen={ setOpenDelete }
         refetch={ props.refetch }/>
-      <Segment attached="top" color="blue" style={{"height":"50px"}}>
+      <Segment attached="top" color="blue" style={{height:"50px"}}>
           <Header as="h5" floated='right' color="blue">
             <Header.Content>
               { timeString(question.timeAsked) }
             </Header.Content>
           </Header>
           <Header as="h5" floated='left'>
-              <Header.Content>
-                { "Position: #" + (question.questionsAhead + 1) }
-              </Header.Content>
-            </Header>
+            <Header.Content>
+              { "Position: #" + (question.questionsAhead + 1) }
+            </Header.Content>
+          </Header>
       </Segment>
       <Segment attached
         tertiary={ question.timeStarted }>

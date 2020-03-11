@@ -15,6 +15,14 @@ const RejectedQuestionModal = (props) => {
     }
   }
 
+  const timeString = (date) => {
+    const d = new Date(date);
+    const hour = d.getHours() > 12 ? d.getHours() - 12 : d.getHours();
+    const meridiem = d.getHours() > 12 ? "pm" : "am";
+    const minutes = d.getMinutes() < 10 ? "0" + d.getMinutes() : d.getMinutes();
+    return `${hour}:${minutes} ${meridiem}`;
+  };
+
   useEffect(() => {
     setQuestion(props.question);
   }, [props.question])
@@ -25,7 +33,7 @@ const RejectedQuestionModal = (props) => {
       {
         question &&
         <Modal.Content>
-          The following question was rejected:<br/>
+          The following question asked at {timeString(question.timeAsked)} was rejected:<br/>
           <Segment inverted color="blue">{`"${question.text}"`}</Segment>
           The rejected reason was: 
           <b>{ ` ${formatReason(question.rejectedReason, question.rejectedReasonOther)}` }</b><br/>

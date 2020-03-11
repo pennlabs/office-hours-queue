@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Segment, Grid, Message } from 'semantic-ui-react';
+import { Segment, Grid, Message, Header } from 'semantic-ui-react';
 import StudentQueue from './StudentQueue';
+import LastQuestionCard from './LastQuestionCard'
 
 const StudentQueues = (props) => {
   const [queues, setQueues] = useState(props.queues);
   const [question, setQuestion] = useState(props.question);
+
+  const showQuestion = (question) => {
+    return question.state === "ACTIVE" || question.state === "STARTED"
+  }
 
   useEffect(() => {
     setQuestion(props.question);
@@ -16,28 +21,54 @@ const StudentQueues = (props) => {
   }, [props.queues]);
 
   return (
-    queues && <Grid.Row columns={queues.length}>
-    {
-      queues.length !== 0 ?
-        queues.map((queue, index) => (
+    queues &&
+    <Grid columns={queues.length}>
+        {
+          /*
+          question && !showQuestion(question) &&
+          <Button basic
+          content="Last Question" 
+          color="blue" compact
+          onClick={ () => props.showFunc(question) }
+          floated="right"/>
+          */
+        }
+      <Grid.Row columns={queues.length}>
+        {
+          queues.length !== 0 ?
+            queues.map(queue => (
+              <Grid.Column>
+                <StudentQueue key={ queue.id }
+                  queue={ queue }
+                  hasQuestion={ question !== null && showQuestion(question)  }
+                  question={ question && showQuestion(question) && question.queue.id === queue.id ? question : null }
+                  refetch={ props.refetch }/>
+              </Grid.Column>
+            )) :
+            <Grid.Column>
+              <Segment basic>
+              <Message info>
+                <Message.Header>No Queues</Message.Header>
+                This course currently has no queues!
+              </Message>
+              </Segment>
+            </Grid.Column>
+        }
+      </Grid.Row>
+      <Grid.Row columns={1}>
+        {
+          question && !showQuestion(question) &&
           <Grid.Column>
-            <StudentQueue key={ queue.id }
-              queue={ queue }
-              hasQuestion={ question !== null }
-              question={ question && question.queue.id === queue.id ? question : null }
-              refetch={ props.refetch }/>
+            <Segment basic>
+              <Header as="h3">
+                Question History
+              </Header>
+            </Segment>
+            <LastQuestionCard question={ question }/>
           </Grid.Column>
-        )) :
-        <Grid.Column>
-          <Segment basic>
-          <Message info>
-            <Message.Header>No Queues</Message.Header>
-            This course currently has no queues!
-          </Message>
-          </Segment>
-        </Grid.Column>
-    }
-    </Grid.Row>
+        }
+      </Grid.Row>
+    </Grid>
   );
 };
 

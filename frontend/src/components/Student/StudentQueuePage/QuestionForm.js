@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Segment, Form, Header, Button } from 'semantic-ui-react';
+import { Segment, Form, Header, Button, Icon } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
 
@@ -55,7 +55,8 @@ const QuestionForm = (props) => {
   }, [props.queue]);
 
   return (
-    queue && <div>
+    queue &&
+    <div>
       <Segment style={{"marginTop":"20px"}} attached="top" color="blue">
         <Header content="Add a Question"/>
       </Segment>
