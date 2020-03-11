@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Segment, Header, Button, Popup, Icon } from 'semantic-ui-react';
+import React, { useState, useEffect } from 'react'
+import { Segment, Header, Button, Popup, Icon, Message } from 'semantic-ui-react';
 import EditQuestionModal from './EditQuestionModal';
 import DeleteQuestionModal from './DeleteQuestionModal';
 
@@ -15,6 +15,10 @@ const QuestionCard = (props) => {
     const minutes = d.getMinutes() < 10 ? "0" + d.getMinutes() : d.getMinutes();
     return `${hour}:${minutes} ${meridiem}`;
   };
+
+  useEffect(() => {
+    setQuestion(props.question);
+  }, [props.question]);
 
   return (
     <div style={{"marginTop":"10px"}}>
@@ -41,35 +45,50 @@ const QuestionCard = (props) => {
           </Header>
       </Segment>
       <Segment attached
-        tertiary={ question.timeStarted }>
+        tertiary={ question.timeStarted !== null }>
         { question.text }
       </Segment>
       <Segment attached="bottom" secondary textAlign="right" style={{"height":"50px"}}>
         <Header as="h5" floated='left'>
-          <Header.Content>
-            <Button compact
-              size='mini'
-              color='red'
-              content='Delete'
-              onClick={ () => setOpenDelete(true) }/>
-            <Button compact
-              size='mini'
-              color='green'
-              content='Edit'
-              onClick={ () => setOpenEdit(true) }/>
-          </Header.Content>
+          {
+            !question.timeStarted &&
+            <Header.Content>
+              <Button compact
+                size='mini'
+                color='red'
+                content='Delete'
+                onClick={ () => setOpenDelete(true) }/>
+              <Button compact
+                size='mini'
+                color='green'
+                content='Edit'
+                onClick={ () => setOpenEdit(true) }/>
+            </Header.Content>
+          }
         </Header>
-          <Popup
-            trigger= {
-              <Icon name="tags"/>
-            }
-            content= {
-              question.tags && question.tags.map(tag => {
-                return ' ' + tag
-              }).toString()
-            }
-            basic inverted
-            position="bottom left"/>
+          {
+            !question.timeStarted && 
+            <Popup
+              trigger= { <Icon name="tags"/> }
+              content= {
+                question.tags && question.tags.map(tag => {
+                  return ' ' + tag
+                }).toString()
+              }
+              basic inverted
+              position="bottom left"/>
+          }
+          {
+            question.timeStarted && 
+            <Popup
+              trigger= { <Icon name="sync" loading/> }
+              content= {
+                `Started by ${question.answeredBy.preferredName} 
+                at ${timeString(question.timeStarted)}`
+              }
+              basic inverted
+              position="bottom right"/>
+          }
       </Segment>
     </div>
   );

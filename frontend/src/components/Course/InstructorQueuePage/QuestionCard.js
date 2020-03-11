@@ -89,7 +89,7 @@ const QuestionCard = (props) => {
             </Header>
         </Segment>
         <Segment attached
-          tertiary={ question.timeStarted != null }>
+          tertiary={ question.timeStarted !== null }>
           { question.text }
         </Segment>
         <Segment attached="bottom" secondary textAlign="right" style={{"height":"50px"}}>

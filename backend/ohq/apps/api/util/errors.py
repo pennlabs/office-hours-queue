@@ -26,6 +26,7 @@ all_required_feedback_questions_not_answered_error = GraphQLError("Must answer a
 too_many_queues_error = GraphQLError("Too many queues already created")
 queue_active_error = GraphQLError("Queue is already active")
 queue_inactive_error = GraphQLError("Queue is already inactive")
+queue_closed_error = GraphQLError("Queue is currently inactive")
 
 course_invite_only_error = GraphQLError("Course is invite only")
 course_archived_error = GraphQLError("Course is archived")

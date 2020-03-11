@@ -59,11 +59,6 @@ const StudentQueues = (props) => {
         {
           question && !showQuestion(question) &&
           <Grid.Column>
-            <Segment basic>
-              <Header as="h3">
-                Question History
-              </Header>
-            </Segment>
             <LastQuestionCard question={ question }/>
           </Grid.Column>
         }

@@ -5,11 +5,7 @@ const LastQuestionCard = (props) => {
   const [question, setQuestion] = useState(props.question);
 
   const timeString = (date) => {
-    const d = new Date(date);
-    const hour = d.getHours() > 12 ? d.getHours() - 12 : d.getHours();
-    const meridiem = d.getHours() > 12 ? "pm" : "am";
-    const minutes = d.getMinutes() < 10 ? "0" + d.getMinutes() : d.getMinutes();
-    return `${hour}:${minutes} ${meridiem}`;
+    return new Date(date).toLocaleString('en-US', {dateStyle: 'short', timeStyle: 'short'})
   };
 
   const formatReason = (reason, other) => {
@@ -34,12 +30,12 @@ const LastQuestionCard = (props) => {
         {
           question.state === "REJECTED" ?
           <div>
-            The following question was rejected by <b>{question.rejectedBy.preferredName}</b>:<br/>
+            The following question you asked on <b>{ timeString(question.timeAsked) }</b> was rejected by <b>{question.rejectedBy.preferredName}</b>:<br/>
             <Message error>{`"${question.text}"`}</Message>
             The rejected reason was: 
             <b>{ ` ${formatReason(question.rejectedReason, question.rejectedReasonOther)}` }</b>
           </div> : <div>
-            The following question was answered by <b>{question.answeredBy.preferredName}</b>:<br/>
+            The following question you asked at <b>{timeString(question.timeAsked)}</b> was answered by <b>{question.answeredBy.preferredName}</b>:<br/>
             <Message success>{`"${question.text}"`}</Message>
           </div>
         }

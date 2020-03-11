@@ -32,10 +32,13 @@ const CURRENT_QUESTION = gql`
       id
       text
       tags
-      timeAsked
-      timeWithdrawn
       questionsAhead
+      state
+      timeAsked
+      timeAnswered
       timeRejected
+      timeStarted
+      timeWithdrawn
       rejectedReason
       rejectedReasonOther
       rejectedBy {
@@ -44,7 +47,6 @@ const CURRENT_QUESTION = gql`
       answeredBy {
         preferredName
       }
-      state
       queue {
         id
       }
@@ -63,7 +65,7 @@ const StudentQueuePage = (props) => {
     variables: {
       courseId: props.course.id
     },
-    pollInterval: 2000
+    pollInterval: 5000
   });
 
   const [queues, setQueues] = useState(null);

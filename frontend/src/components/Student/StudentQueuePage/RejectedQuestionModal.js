@@ -33,7 +33,7 @@ const RejectedQuestionModal = (props) => {
       {
         question &&
         <Modal.Content>
-          The following question asked at {timeString(question.timeAsked)} was rejected:<br/>
+          The following question asked at { new Date(question.timeAsked).toLocaleString('en-US', {dateStyle: 'short', timeStyle: 'short'}) } was rejected:<br/>
           <Segment inverted color="blue">{`"${question.text}"`}</Segment>
           The rejected reason was: 
           <b>{ ` ${formatReason(question.rejectedReason, question.rejectedReasonOther)}` }</b><br/>
