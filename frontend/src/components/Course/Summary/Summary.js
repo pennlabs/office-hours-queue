@@ -173,11 +173,11 @@ const Summary = (props) => {
                 <Table.HeaderCell
                   sorted={tableState.column === 'askedBy' ? tableState.direction : null}
                   onClick={() => handleSort('askedBy')}
-                  width={2}>Asked By</Table.HeaderCell>
+                  width={2}>Student</Table.HeaderCell>
                 <Table.HeaderCell
                   sorted={tableState.column === 'answeredBy' ? tableState.direction : null}
                   onClick={() => handleSort('answeredBy')}
-                  width={2}>Answered By</Table.HeaderCell>
+                  width={2}>Instructor</Table.HeaderCell>
                 <Table.HeaderCell
                   sorted={tableState.column === 'text' ? tableState.direction : null}
                   onClick={() => handleSort('text')}
@@ -204,7 +204,7 @@ const Summary = (props) => {
                     <Table.Cell>
                       {
                         qs.answeredBy !== '' ? qs.answeredBy :
-                        qs.rejectedBy !== '' ? "Rejected by: " + qs.rejectedBy : ""
+                        qs.rejectedBy !== '' ? qs.rejectedBy : ""
                       }
                     </Table.Cell>
                     <Table.Cell>{ qs.text }</Table.Cell>
