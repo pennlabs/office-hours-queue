@@ -67,12 +67,12 @@ const QueueSettings = (props) => {
             <Button content="Open"
               floated="right"
               color="green"
-              disabled={ queue.activeOverrideTime != null }
+              disabled={ queue.activeOverrideTime !== null }
               onClick={ onOpen }/>
             <Button content="Close"
               floated="right"
               color="red"
-              disabled={ queue.activeOverrideTime == null }
+              disabled={ queue.activeOverrideTime === null }
               onClick={ onClose }/>
             Queue Settings
             <Header.Subheader>

@@ -181,7 +181,7 @@ class ManuallyDeactivateQueue(graphene.Mutation):
     def mutate(root, info, input):
         with transaction.atomic():
             user = info.context.user.get_user()
-            queue = Queue.objects.get(pk=from_global_id(input.course_id)[1])
+            queue = Queue.objects.get(pk=from_global_id(input.queue_id)[1])
             if not CourseUser.objects.filter(
                 user=user,
                 course=queue.course,

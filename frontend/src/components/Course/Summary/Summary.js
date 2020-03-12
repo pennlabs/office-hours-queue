@@ -145,23 +145,9 @@ const Summary = (props) => {
       });
     }
   }
-
-  /*
-    Still TODO:
-      - Add a couple more fields to table (rejected, etc.)
-      - Add filtering abilities
-      - Format the table nicely.
-  */
-
+  
   return (
     <div>
-      <Grid.Row>
-        <Segment basic>
-          <Header as="h3">
-            Question Summary
-          </Header>
-        </Segment>
-      </Grid.Row>
       <Grid.Row>
       {
         questions &&
