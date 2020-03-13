@@ -112,7 +112,7 @@ const Queue = (props) => {
   }, [props.queue]);
 
   return (
-    questions ? <Segment basic>
+    <Segment basic>
       <Header as="h3">
         { queue.name }
         <Header.Subheader>
@@ -122,22 +122,24 @@ const Queue = (props) => {
       <Label
         content={ filter(questions, { tags: [] }).length + " user(s)" }
         color="blue"
-        icon="user"
-      />
+        icon="user"/>
       <Label content="N/A mins" color="blue" icon="clock"/>
       <Label as="a"
         content="Edit"
         color="grey"
         icon="cog"
-        onClick={ props.editFunc }
-      />
+        onClick={ props.editFunc }/>
       <Grid.Row>
         <QueueFilterForm tags={ tags } changeFunc={ handleFilterChange }/>
       </Grid.Row>
       <Grid.Row columns={1} padded="true">
-          <Questions questions={ filteredQuestions } filters={ filters } refetch={ refetch }/>
+          <Questions
+            questions={ filteredQuestions }
+            filters={ filters }
+            refetch={ refetch }
+            active={ queue.activeOverrideTime !== null }/>
       </Grid.Row>
-    </Segment> : <Segment basic></Segment>
+    </Segment>
   );
 };
 

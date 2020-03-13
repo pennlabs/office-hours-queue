@@ -4,24 +4,36 @@ import QuestionCard from './QuestionCard';
 
 const Questions = (props) => {
   const [filteredQuestions, setFilteredQuestions] = useState(props.questions);
+  const [active, setActive] = useState(props.active);
 
   useEffect(() => {
     setFilteredQuestions(props.questions);
   }, [props.questions]);
 
+  useEffect(() => {
+    setActive(active);
+  }, [props.active])
+
   return (
     <Grid.Row>
       {
-        filteredQuestions && filteredQuestions.length !== 0 && filteredQuestions.map(question => (
+        active && filteredQuestions && filteredQuestions.length !== 0 &&
+        filteredQuestions.map(question => (
           <Grid.Row>
             <QuestionCard key={ question.id } question={ question } refetch={ props.refetch }/>
           </Grid.Row>
         ))
       }
       {
-        filteredQuestions && filteredQuestions.length === 0 &&
+        active && filteredQuestions && filteredQuestions.length === 0 &&
         <Grid.Row style={{"marginTop":"10px"}}>
           <Message header="Empty Queue" content="This queue currently has no questions."/>
+        </Grid.Row>
+      }
+      {
+        !active &&
+        <Grid.Row style={{"marginTop":"10px"}}>
+          <Message header="Closed Queue" content="This queue currently closed. You can open it by editing the queue." error/>
         </Grid.Row>
       }
     </Grid.Row>
