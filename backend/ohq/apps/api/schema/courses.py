@@ -55,7 +55,7 @@ class UpdateCourseInput(graphene.InputObjectType):
     course_id = graphene.ID(required=True)
     course_code = graphene.String(required=False)
     department = graphene.String(required=False)
-    description = graphene.String(required=False)
+    course_title = graphene.String(required=False)
     year = graphene.Int(required=False)
     semester = graphene.Field(SemesterType, required=False)
     invite_only = graphene.Boolean(required=False)
@@ -87,13 +87,12 @@ class UpdateCourse(graphene.Mutation):
                 raise user_not_leadership_error
             if course.archived:
                 raise course_archived_error
-
             if input.course_code is not None:
                 course.course_code = input.course_code
             if input.department is not None:
                 course.department = input.department
-            if input.description is not None:
-                course.description = input.description
+            if input.course_title is not None:
+                course.course_title = input.course_title
             if input.year is not None:
                 course.year = input.year
             if input.semester is not None:

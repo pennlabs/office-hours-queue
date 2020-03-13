@@ -25,6 +25,7 @@ const CourseForm = (props) => {
   const [defCourse, setDefCourse] = useState(props.course);
   const [input, setInput] = useState({ courseId: props.course.id });
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(false);
   const [open, setOpen] = useState(false);
 
   /* HANDLER FUNCTIONS */
@@ -34,13 +35,17 @@ const CourseForm = (props) => {
   };
 
   const onSubmit = async () => {
-    await updateCourse({
-      variables: {
-        input: input
-      }
-    });
-    await props.refetch();
-    setSuccess(true);
+    try {
+      await updateCourse({
+        variables: {
+          input: input
+        }
+      });
+      await props.refetch();
+      setSuccess(true);
+    } catch (e) {
+      setError(true);
+    }
   };
 
   const onArchived = async () => {
@@ -132,9 +137,14 @@ const CourseForm = (props) => {
             color="red"/>
         </Modal.Actions>
       </Modal>
-      <Snackbar open={ success } autoHideDuration={2000} onClose={ () => setSuccess(false) }>
+      <Snackbar open={ success } autoHideDuration={6000} onClose={ () => setSuccess(false) }>
         <Alert severity="success" onClose={ () => setSuccess(false) }>
           <span><b>{`${defCourse.department} ${defCourse.courseCode}`}</b> has been updated!</span>
+        </Alert>
+      </Snackbar>
+      <Snackbar open={ error } autoHideDuration={6000} onClose={ () => setError(false) }>
+        <Alert severity="error" onClose={ () => setError(false) }>
+          <span>There was an error updating <b>{`${defCourse.department} ${defCourse.courseCode}`}</b>!</span>
         </Alert>
       </Snackbar>
     </Form>
