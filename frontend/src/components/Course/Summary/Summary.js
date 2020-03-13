@@ -80,6 +80,8 @@ const Summary = (props) => {
         ) && (
           (!input.before || new Date(question.timeAsked).getTime() <= new Date(input.before).getTime()) &&
           (!input.after || new Date(question.timeAsked).getTime() >= new Date(input.after).getTime())
+        ) && (
+          input.state.length == 0 || input.state.includes(question.state)
         )
       );
     });
@@ -145,15 +147,15 @@ const Summary = (props) => {
       });
     }
   }
-  
+
   return (
     <div>
       <Grid.Row>
       {
         questions &&
         <Segment basic>
-           { questions && <SummaryForm filterFunc={ filterQuestions } queues={ queues } /> }
-          <Table sortable celled padded>
+            { questions && <SummaryForm filterFunc={ filterQuestions } queues={ queues } /> }
+          <Table sortable celled padded striped>
             <Table.Header>
               <Table.Row>
                 <Table.HeaderCell
@@ -209,6 +211,16 @@ const Summary = (props) => {
                 ))
               }
             </Table.Body>
+            <Table.Footer>
+              <Table.Row textAlign="center">
+                <Table.HeaderCell><b>{`${filteredQuestions.length} Question(s)`}</b></Table.HeaderCell>
+                <Table.HeaderCell/>
+                <Table.HeaderCell/>
+                <Table.HeaderCell/>
+                <Table.HeaderCell/>
+                <Table.HeaderCell/>
+              </Table.Row>
+            </Table.Footer>
           </Table>
         </Segment>
       }

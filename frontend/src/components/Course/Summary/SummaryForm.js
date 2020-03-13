@@ -5,9 +5,27 @@ import { useMutation } from '@apollo/react-hooks';
 import TextField from '@material-ui/core/TextField';
 
 const SummaryForm = (props) => {
-  const [input, setInput] = useState({ search: "" });
+  const [input, setInput] = useState({ search: "", state: [] });
+  const stateOptions = [{
+    key: "ACTIVE",
+    value: "ACTIVE",
+    text: "Active"
+  }, {
+    key: "WITHDRAWN",
+    value: "WITHDRAWN",
+    text: "Withdrawn",
+  }, {
+    key: "REJECTED",
+    value: "REJECTED",
+    text: "Rejected",
+  }, {
+    key: "ANSWERED",
+    value: "ANSWERED",
+    text: "Answered",
+  }]
 
   const handleInputChange = (e, {name, value}) => {
+    console.log(value);
     input[name] = value;
     setInput(input);
     props.filterFunc(input);
@@ -37,6 +55,14 @@ const SummaryForm = (props) => {
               props.filterFunc(input);
             } }
             InputLabelProps={{ shrink: true }}/>
+        </Form.Field>
+        <Form.Field>
+          <label>Result</label>
+          <Form.Dropdown multiple
+            selection
+            name="state"
+            options={ stateOptions }
+            onChange={ handleInputChange }/>
         </Form.Field>
         <Form.Field>
           <label>Search</label>

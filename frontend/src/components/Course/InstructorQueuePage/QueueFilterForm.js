@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Form } from 'semantic-ui-react';
 
 const QueueFilterForm = (props) => {
-  const tagOptions = props.tags && props.tags.map((tag) => (
+  const tagOptions = props.tags && props.tags.map(tag => (
     {
       key: tag,
       value: tag,
