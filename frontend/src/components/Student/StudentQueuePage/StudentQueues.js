@@ -35,7 +35,7 @@ const StudentQueues = (props) => {
         }
       <Grid.Row columns={queues.length}>
         {
-          queues.length !== 0 ?
+          queues.length !== 0 &&
             queues.map(queue => (
               <Grid.Column>
                 <StudentQueue key={ queue.id }
@@ -44,15 +44,18 @@ const StudentQueues = (props) => {
                   question={ question && showQuestion(question) && question.queue.id === queue.id ? question : null }
                   refetch={ props.refetch }/>
               </Grid.Column>
-            )) :
-            <Grid.Column>
-              <Segment basic>
-              <Message info>
-                <Message.Header>No Queues</Message.Header>
-                This course currently has no queues!
-              </Message>
-              </Segment>
-            </Grid.Column>
+            ))
+        }
+        {
+          queues.length === 0 &&
+          <Grid.Column>
+            <Segment basic>
+            <Message info>
+              <Message.Header>No Queues</Message.Header>
+              This course currently has no queues!
+            </Message>
+            </Segment>
+          </Grid.Column>
         }
       </Grid.Row>
       <Grid.Row columns={1}>

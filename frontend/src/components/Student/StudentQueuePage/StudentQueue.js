@@ -34,17 +34,24 @@ const StudentQueue = (props) => {
       <Label content={ `${queue.estimatedWaitTime} mins`} color="blue" icon="clock"/>
       <Grid.Row>
         {
-          !props.hasQuestion && <QuestionForm queue={ queue } refetch={ props.refetch } successFunc={ setSuccess }/>
+          !queue.activeOverrideTime &&
+          <Message style={{"marginTop":"10px"}} info header="Queue Closed" error
+            content="This queue is currently closed. Contact course staff if you think this is an error."/>
         }
         {
-          props.hasQuestion && !question &&
+          queue.activeOverrideTime && !props.hasQuestion &&
+          <QuestionForm queue={ queue } refetch={ props.refetch } successFunc={ setSuccess }/>
+        }
+        {
+          queue.activeOverrideTime && props.hasQuestion && !question &&
           <Message style={{"marginTop":"10px"}}info header="Question In Queue" content="You already have asked a question in another queue!"/>
         }
         {
-          props.hasQuestion && question && <QuestionCard question={ question } queue={ queue } refetch={ props.refetch }/>
+          queue.activeOverrideTime && props.hasQuestion && question &&
+          <QuestionCard question={ question } queue={ queue } refetch={ props.refetch }/>
         }
       </Grid.Row>
-      <Snackbar open={ success } autoHideDuration={2000} onClose={ () => setSuccess(false) }>
+      <Snackbar open={ success } autoHideDuration={6000} onClose={ () => setSuccess(false) }>
         <Alert severity="success" onClose={ () => setSuccess(false) }>
           <span>Question added to <b>{`${queue.name}!`}</b></span>
         </Alert>

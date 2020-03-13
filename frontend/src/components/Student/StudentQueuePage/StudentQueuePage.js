@@ -19,6 +19,7 @@ const GET_QUEUES = gql`
             description
             tags
             estimatedWaitTime
+            activeOverrideTime
           }
         }
       }
@@ -80,6 +81,7 @@ const StudentQueuePage = (props) => {
         name: item.node.name,
         description: item.node.description,
         tags: item.node.tags,
+        activeOverrideTime: item.node.activeOverrideTime
       };
     });
   };
