@@ -95,7 +95,7 @@ const StudentQueuePage = (props) => {
 
   const showLastQuestion = (question) => {
     switch(question.state) {
-      case "REJECTED": setRejectedOpen(true);
+      case "REJECTED": return; //setRejectedOpen(true);
       case "STARTED": return;
       case "ANSWERED": return;
       default: return;

@@ -25,7 +25,6 @@ const SummaryForm = (props) => {
   }]
 
   const handleInputChange = (e, {name, value}) => {
-    console.log(value);
     input[name] = value;
     setInput(input);
     props.filterFunc(input);

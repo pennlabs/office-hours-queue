@@ -30,7 +30,9 @@ const QuestionCard = (props) => {
   const [startQuestion, startQuestionRes] = useMutation(START_QUESTION);
   const [finishQuestion, finishQuestionRes] = useMutation(FINISH_QUESTION);
 
-  const timeString = (date) => {
+  const timeString = (date, isLong) => {
+    if (isLong) return new Date(date).toLocaleString('en-US', {dateStyle: 'short', timeStyle: 'short'});
+
     const d = new Date(date);
     const hour = d.getHours() > 12 ? d.getHours() - 12 : d.getHours();
     const meridiem = d.getHours() > 12 ? "pm" : "am";
@@ -79,7 +81,7 @@ const QuestionCard = (props) => {
         <Segment attached="top" color="blue" style={{"height":"50px"}}>
             <Header as="h5" floated='right' color="blue">
               <Header.Content>
-                { timeString(question.timeAsked) }
+                { timeString(question.timeAsked, false) }
               </Header.Content>
             </Header>
             <Header as="h5" floated='left'>
@@ -123,13 +125,12 @@ const QuestionCard = (props) => {
             </Header>
             {
               question.timeStarted &&
-              <Popup
+              <Popup wide
                 trigger= {
                   <Icon name="sync" loading/>
                 }
                 content= {
-                  `Started by ${question.answeredBy.preferredName} 
-                  at ${timeString(question.timeStarted)}`
+                  `Started by ${question.answeredBy.preferredName} on ${timeString(question.timeStarted, true)}`
                 }
                 basic inverted
                 position="bottom right"/>

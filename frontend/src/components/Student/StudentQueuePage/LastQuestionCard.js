@@ -5,7 +5,7 @@ const LastQuestionCard = (props) => {
   const [question, setQuestion] = useState(props.question);
 
   const timeString = (date) => {
-    return new Date(date).toLocaleString('en-US', {dateStyle: 'short', timeStyle: 'short'})
+    return new Date(date).toLocaleString('en-US', {dateStyle: 'short', timeStyle: 'short'});
   };
 
   const formatReason = (reason, other) => {
