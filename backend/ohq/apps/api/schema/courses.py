@@ -86,7 +86,7 @@ class UpdateCourse(graphene.Mutation):
         if (
             (input.course_code is not None and not input.course_code) or
             (input.department is not None and not input.department) or
-            (input.department is not None and not input.course_title)
+            (input.course_title is not None and not input.course_title)
         ):
             raise empty_string_error
         with transaction.atomic():
