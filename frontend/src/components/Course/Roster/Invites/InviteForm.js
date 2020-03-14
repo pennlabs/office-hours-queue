@@ -4,7 +4,7 @@ import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
 
 const INVITE_EMAIL = gql`
-  mutation InviteEmail($input: InviteEmailInput!) {
+  mutation InviteEmail($input: InviteEmailsInput!) {
     inviteEmail(input: $input) {
       invitedCourseUsers {
         id
@@ -47,15 +47,19 @@ const InviteForm = (props) => {
   };
 
   const isValidEmail = (email) => {
-    const pattern = /^[a-zA-Z0-9\-_]+(\.[a-zA-Z0-9\-_]+)*@[a-z0-9]+(\-[a-z0-9]+)*(\.[a-z0-9]+(\-[a-z0-9]+)*)*\.[a-z]{2,4}$/;
+    const pattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return pattern.test(email)
   }
 
   const onSubmit = async () => {
     if (!input.emails || !input.role) return;
 
-    const validEmails = Array.from(new Set(input.emails.split(',').map(email => email.trim()).filter(email => isValidEmail(email))));
-    if (validEmails.length == 0) return;
+    const validEmails = Array.from(new Set(
+      input.emails.split(',')
+        .map((email) => email.trim())
+        .filter((email) => isValidEmail(email))
+    ));
+    if (validEmails.length === 0) return;
 
     await inviteEmail({
       variables: {

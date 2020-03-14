@@ -28,7 +28,7 @@ const ADD_USER = gql`
 `;
 
 const INVITE_EMAIL = gql`
-  mutation InviteEmail($input: InviteEmailInput!) {
+  mutation InviteEmail($input: InviteEmailsInput!) {
     inviteEmail(input: $input) {
       invitedCourseUser {
         id
