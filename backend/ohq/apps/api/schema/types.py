@@ -6,6 +6,7 @@ from graphene_django.filter import DjangoFilterConnectionField
 import django_filters
 
 from ohq.apps.api.models import *
+from ohq.apps.api.util.errors import user_not_staff_error
 
 
 SemesterType = graphene.Enum.from_enum(Semester)
@@ -186,6 +187,13 @@ class QueueNode(DjangoObjectType):
     start_end_times = graphene.List(StartEndTimes, required=True)
 
     def resolve_questions(self, info, **kwargs):
+        # Restrict questions to staff
+        if not CourseUser.objects.filter(
+                user=info.context.user.get_user(),
+                course=self.course,
+                kind__in=CourseUserKind.staff(),
+        ).exists():
+            raise user_not_staff_error
         return Question.objects.filter(queue=self, **kwargs)
 
     def resolve_start_end_times(self, info, **kwargs):
@@ -231,6 +239,13 @@ class CourseNode(DjangoObjectType):
     feedback_questions = graphene.List(lambda: FeedbackQuestionNode)
 
     def resolve_course_users(self, info, **kwargs):
+        # Restrict roster to staff
+        if not CourseUser.objects.filter(
+                user=info.context.user.get_user(),
+                course=self,
+                kind__in=CourseUserKind.staff(),
+        ).exists():
+            raise user_not_staff_error
         return CourseUser.objects.filter(course=self, **kwargs)
 
     def resolve_queues(self, info, **kwargs):
