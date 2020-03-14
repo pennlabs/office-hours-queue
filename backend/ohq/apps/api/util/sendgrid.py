@@ -2,12 +2,19 @@ import os
 from jinja2 import Template
 from decouple import config
 from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail, Email
+from sendgrid.helpers.mail import (
+    Mail,
+    Email,
+    Attachment,
+    FileContent,
+    FileName,
+    FileType,
+    ContentId,
+)
 
 from django.conf import settings
 
 from ..models import InvitedCourseUser, CourseUserKind
-
 
 def send_invitation_email(invited_course_user: InvitedCourseUser):
     path = os.path.join(settings.BASE_DIR, 'ohq/apps/api/emails/invitation.html')
@@ -30,7 +37,8 @@ def send_invitation_email(invited_course_user: InvitedCourseUser):
         from_email=Email("info@ohq.io", "Office Hour Queue"),
         to_emails=invited_course_user.email,
         subject=subject,
-        html_content=html_content)
+        html_content=html_content,
+    )
     try:
         sg = SendGridAPIClient(config('SENDGRID_API_KEY'))
         sg.send(message)
