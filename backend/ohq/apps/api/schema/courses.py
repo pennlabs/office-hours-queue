@@ -175,21 +175,21 @@ class JoinCourse(graphene.Mutation):
         return JoinCourseResponse(course_user=course_user)
 
 
-class InviteEmailInput(graphene.InputObjectType):
+class InviteEmailsInput(graphene.InputObjectType):
     course_id = graphene.ID(required=True)
     emails = graphene.List(graphene.String, required=True)
     kind = graphene.Field(CourseUserKindType, required=True)
 
 
-class InviteEmailResponse(graphene.ObjectType):
+class InviteEmailsResponse(graphene.ObjectType):
     invited_course_users = graphene.List(InvitedCourseUserNode, required=False)
 
 
-class InviteEmail(graphene.Mutation):
+class InviteEmails(graphene.Mutation):
     class Arguments:
-        input = InviteEmailInput(required=True)
+        input = InviteEmailsInput(required=True)
 
-    Output = InviteEmailResponse
+    Output = InviteEmailsResponse
 
     @staticmethod
     def mutate(root, info, input):
@@ -207,16 +207,18 @@ class InviteEmail(graphene.Mutation):
                 course=course,
             ):
                 raise user_in_course_error
-            invited_course_users = map(lambda email: InvitedCourseUser.objects.create(
-                email=email,
-                course=course,
-                invited_by=user,
-                kind=input.kind,
-            ), input.emails)
+            invited_course_users = [
+                InvitedCourseUser(
+                    email=email,
+                    course=course,
+                    invited_by=user,
+                    kind=input.kind,
+                ) for email in input.emails
+            ]
+            InvitedCourseUser.objects.bulk_create(invited_course_users)
         for invited_course_user in invited_course_users:
-            print(invited_course_user)
             send_invitation_email(invited_course_user)
-        return InviteEmailResponse(invited_course_users=invited_course_users)
+        return InviteEmailsResponse(invited_course_users=invited_course_users)
 
 
 class RemoveUserFromCourseInput(graphene.InputObjectType):
