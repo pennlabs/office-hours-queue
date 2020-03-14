@@ -6,7 +6,7 @@ import { useMutation } from '@apollo/react-hooks';
 const INVITE_EMAIL = gql`
   mutation InviteEmail($input: InviteEmailInput!) {
     inviteEmail(input: $input) {
-      invitedCourseUser {
+      invitedCourseUsers {
         id
       }
     }
@@ -39,36 +39,45 @@ const roleOptions = [
 const InviteForm = (props) => {
   const [inviteEmail, { loading, error }] = useMutation(INVITE_EMAIL);
 
-  const [input, setInput] = useState({ email: null, role: null });
+  const [input, setInput] = useState({ emails: null, role: null });
 
   const handleInputChange = (e, { name, value }) => {
     input[name] = value;
     setInput(input);
   };
 
+  const isValidEmail = (email) => {
+    const pattern = /^[a-zA-Z0-9\-_]+(\.[a-zA-Z0-9\-_]+)*@[a-z0-9]+(\-[a-z0-9]+)*(\.[a-z0-9]+(\-[a-z0-9]+)*)*\.[a-z]{2,4}$/;
+    return pattern.test(email)
+  }
+
   const onSubmit = async () => {
-    if (!input.email) { return }
+    if (!input.emails || !input.role) return;
+
+    const validEmails = Array.from(new Set(input.emails.split(',').map(email => email.trim()).filter(email => isValidEmail(email))));
+    if (validEmails.length == 0) return;
+
     await inviteEmail({
       variables: {
         input: {
           courseId: props.courseId,
-          email: input.email,
+          emails: validEmails,
           kind: input.role,
         }
       }
     });
+    props.successFunc(true);
   };
 
   return (
     <div>
     <Form>
       <Form.Field>
-        <label>Email</label>
+        <label>Email(s)</label>
         <Form.Input
-          name="email"
+          name="emails"
           disabled={ loading }
-          onChange={ handleInputChange }
-        />
+          onChange={ handleInputChange }/>
       </Form.Field>
       <Form.Field>
         <Form.Dropdown selection
@@ -82,6 +91,7 @@ const InviteForm = (props) => {
         <Form.Button
           content="Invite" color="blue"
           disabled={ loading }
+          loading={ loading }
           onClick={ onSubmit }/>
       </Form.Field>
     </Form>

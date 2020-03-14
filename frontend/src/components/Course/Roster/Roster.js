@@ -4,6 +4,8 @@ import RosterForm from './RosterForm';
 import RemoveIcon from './RemoveIcon';
 import InviteModal from './Invites/InviteModal';
 import _ from 'lodash';
+import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
 
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
@@ -55,6 +57,7 @@ const Roster = (props) => {
   const [open, setOpen] = useState(false);
   const [tableState, setTableState] = useState({ direction: null, column: null });
   const [showInvited, setShowInvited] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   /* MODAL FUNCTIONS */
   const triggerModal = () => {
@@ -149,7 +152,8 @@ const Roster = (props) => {
         users &&
         <InviteModal open={ open }
           closeFunc={ closeModal }
-          courseId={ props.course.id }/>
+          courseId={ props.course.id }
+          successFunc={ setSuccess }/>
       }
       <Grid.Row>
       {
@@ -252,6 +256,11 @@ const Roster = (props) => {
         </Segment>
       }
       </Grid.Row>
+      <Snackbar open={ success } autoHideDuration={6000} onClose={ () => setSuccess(false) }>
+        <Alert severity="success" onClose={ () => setSuccess(false) }>
+          <span>Roster updated!</span>
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

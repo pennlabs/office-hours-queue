@@ -12,10 +12,10 @@ const InviteModal = (props) => {
         <Tab menu={{ pointing: true, secondary: true }} panes={
           [{
             menuItem: "Invite",
-            render: () => { return <InviteForm courseId={ props.courseId }/>}
+            render: () => { return <InviteForm courseId={ props.courseId } successFunc={ props.successFunc }/>}
           },{
             menuItem: "Add",
-            render: () => { return <AddForm courseId={ props.courseId }/> }
+            render: () => { return <AddForm courseId={ props.courseId } successFunc={ props.successFunc }/> }
           }]}/>
       </Modal.Content>
       <Modal.Actions>

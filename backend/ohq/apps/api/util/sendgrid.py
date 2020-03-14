@@ -15,7 +15,7 @@ def send_invitation_email(invited_course_user: InvitedCourseUser):
         template = Template(f.read())
 
     formatted_course_name = (
-        f"{invited_course_user.course.department} {invited_course_user.course.name}"
+        f"{invited_course_user.course.department} {invited_course_user.course.course_code}"
     )
 
     subject = f"Invitation to join {formatted_course_name}"

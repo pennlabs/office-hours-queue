@@ -177,12 +177,12 @@ class JoinCourse(graphene.Mutation):
 
 class InviteEmailInput(graphene.InputObjectType):
     course_id = graphene.ID(required=True)
-    email = graphene.String(required=True)
+    emails = graphene.List(graphene.String, required=True)
     kind = graphene.Field(CourseUserKindType, required=True)
 
 
 class InviteEmailResponse(graphene.ObjectType):
-    invited_course_user = graphene.Field(InvitedCourseUserNode, required=False)
+    invited_course_users = graphene.List(InvitedCourseUserNode, required=False)
 
 
 class InviteEmail(graphene.Mutation):
@@ -203,19 +203,20 @@ class InviteEmail(graphene.Mutation):
             ).exists():
                 raise user_not_leadership_error
             if CourseUser.objects.filter(
-                user__email=input.email,
+                user__email__in=input.emails,
                 course=course,
             ):
                 raise user_in_course_error
-
-            invited_course_user = InvitedCourseUser.objects.create(
-                email=input.email,
+            invited_course_users = map(lambda email: InvitedCourseUser.objects.create(
+                email=email,
                 course=course,
                 invited_by=user,
                 kind=input.kind,
-            )
-        send_invitation_email(invited_course_user)
-        return InviteEmailResponse(invited_course_user=invited_course_user)
+            ), input.emails)
+        for invited_course_user in invited_course_users:
+            print(invited_course_user)
+            send_invitation_email(invited_course_user)
+        return InviteEmailResponse(invited_course_users=invited_course_users)
 
 
 class RemoveUserFromCourseInput(graphene.InputObjectType):
