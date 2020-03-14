@@ -26,6 +26,8 @@ class CreateShortAnswerFeedbackQuestion(graphene.Mutation):
 
     @staticmethod
     def mutate(root, info, input):
+        if not input.question_text:
+            raise empty_string_error
         with transaction.atomic():
             user = info.context.user.get_user()
             course = Course.objects.get(pk=from_global_id(input.course_id)[1])
@@ -67,6 +69,11 @@ class CreateRadioButtonFeedbackQuestion(graphene.Mutation):
 
     @staticmethod
     def mutate(root, info, input):
+        if (
+            not input.question_text or
+            any(not answer_choice for answer_choice in input.answer_choices)
+        ):
+            raise empty_string_error
         with transaction.atomic():
             user = info.context.user.get_user()
             course = Course.objects.get(pk=from_global_id(input.course_id)[1])
@@ -110,6 +117,8 @@ class CreateSliderFeedbackQuestion(graphene.Mutation):
 
     @staticmethod
     def mutate(root, info, input):
+        if not input.question_text:
+            raise empty_string_error
         with transaction.atomic():
             user = info.context.user.get_user()
             course = Course.objects.get(pk=from_global_id(input.course_id)[1])
@@ -228,6 +237,8 @@ class AnswerFeedbackQuestions(graphene.Mutation):
 
     @staticmethod
     def mutate(root, info, input):
+        if any(not answer.answer_text for answer in input.short_answer_feedback_answers):
+            raise empty_string_error
         with transaction.atomic():
             user = info.context.user.get_user()
             question = Question.objects.get(pk=from_global_id(input.question_id)[1])

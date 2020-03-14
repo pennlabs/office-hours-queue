@@ -54,6 +54,8 @@ class CreateQueue(graphene.Mutation):
 
     @staticmethod
     def mutate(root, info, input):
+        if not input.name:
+            raise empty_string_error
         with transaction.atomic():
             user = info.context.user.get_user()
             course = Course.objects.get(pk=from_global_id(input.course_id)[1])
@@ -103,6 +105,8 @@ class UpdateQueue(graphene.Mutation):
     def mutate(root, info, input):
         if not input:
             raise empty_update_error
+        if input.name is not None and not input.name:
+            raise empty_string_error
         with transaction.atomic():
             user = info.context.user.get_user()
             queue = Queue.objects.get(pk=from_global_id(input.queue_id)[1])

@@ -26,6 +26,10 @@ class CreateQuestion(graphene.Mutation):
 
     @staticmethod
     def mutate(root, info, input):
+        if not input.text:
+            raise empty_string_error
+        if len(input.text) > 250:
+            raise question_too_long_error
         with transaction.atomic():
             user = info.context.user.get_user()
             queue = Queue.objects.get(pk=from_global_id(input.queue_id)[1])
@@ -111,6 +115,8 @@ class RejectQuestion(graphene.Mutation):
 
     @staticmethod
     def mutate(root, info, input):
+        if not input.rejected_reason_other:
+            raise empty_string_error
         with transaction.atomic():
             user = info.context.user.get_user()
             question = Question.objects.get(pk=from_global_id(input.question_id)[1])

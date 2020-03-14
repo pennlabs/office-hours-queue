@@ -1,5 +1,7 @@
 from graphql import GraphQLError
 
+empty_string_error = GraphQLError("Required string input must not be empty")
+
 course_does_not_exist_error = GraphQLError("Course does not exist")
 queue_does_not_exist_error = GraphQLError("Queue does not exist")
 question_does_not_exist_error = GraphQLError("Question does not exist")
@@ -13,6 +15,7 @@ user_not_answerer_error = GraphQLError("User is not the question answerer")
 
 too_many_questions_error = GraphQLError("Too many questions already asked")
 unrecognized_tag_error = GraphQLError("Tag not recognized")
+question_too_long_error = GraphQLError("Question must be at most 250 characters")
 
 question_not_active_error = GraphQLError("Question state is not active")
 question_not_started_error = GraphQLError("Question state is not started")

@@ -31,12 +31,19 @@ class CreateCourse(graphene.Mutation):
 
     @staticmethod
     def mutate(root, info, input):
+        if (
+            not input.course_code or
+            not input.department or
+            not input.course_title
+        ):
+            raise empty_string_error
         with transaction.atomic():
             user = info.context.user.get_user()
+            course_title = input.course_title[0].upper() + input.course_title[1:]
             course = Course.objects.create(
                 course_code=input.course_code,
-                department=input.department,
-                course_title=input.course_title,
+                department=input.department.upper(),
+                course_title=course_title,
                 description=input.description or "",
                 year=input.year,
                 semester=input.semester,
@@ -76,6 +83,12 @@ class UpdateCourse(graphene.Mutation):
     def mutate(root, info, input):
         if not input:
             raise empty_update_error
+        if (
+            (input.course_code is not None and not input.course_code) or
+            (input.department is not None and not input.department) or
+            (input.department is not None and not input.course_title)
+        ):
+            raise empty_string_error
         with transaction.atomic():
             user = info.context.user.get_user()
             course = Course.objects.get(pk=from_global_id(input.course_id)[1])
@@ -90,9 +103,9 @@ class UpdateCourse(graphene.Mutation):
             if input.course_code is not None:
                 course.course_code = input.course_code
             if input.department is not None:
-                course.department = input.department
+                course.department = input.department.upper()
             if input.course_title is not None:
-                course.course_title = input.course_title
+                course.course_title = input.course_title[0].upper() + input.course_title[1:]
             if input.year is not None:
                 course.year = input.year
             if input.semester is not None:
