@@ -20,6 +20,7 @@ const GET_QUEUES = gql`
             tags
             estimatedWaitTime
             activeOverrideTime
+            archived
           }
         }
       }
@@ -75,7 +76,7 @@ const StudentQueuePage = (props) => {
   const [rejectedOpen, setRejectedOpen] = useState(false);
 
   const loadQueues = (data) => {
-    return data.course.queues.edges.map((item) => {
+    return data.course.queues.edges.filter(item => !item.node.archived).map(item => {
       return {
         id: item.node.id,
         name: item.node.name,
