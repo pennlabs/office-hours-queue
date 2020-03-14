@@ -52,7 +52,7 @@ const CourseForm = (props) => {
     await updateCourse({
       variables: {
         input: {
-          courseId: defCourse.courseId,
+          courseId: input.courseId,
           archived: true
         }
       }
@@ -124,8 +124,8 @@ const CourseForm = (props) => {
             onClick={ () => setOpen(true) }>Archive</a>
         }>
         <Modal.Header>Archive Course</Modal.Header>
-        <Modal.Content>You are about to archive this course: 
-          <b>{` ${defCourse.department} ${defCourse.courseCode}`}</b>. This cannot be undone!
+        <Modal.Content>
+          You are about to archive <b>{ defCourse.department } { defCourse.courseCode }</b>.
         </Modal.Content>
         <Modal.Actions>
           <Button content="Cancel"

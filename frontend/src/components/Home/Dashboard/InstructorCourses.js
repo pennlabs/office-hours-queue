@@ -68,6 +68,7 @@ const InstructorCourses = (props) => {
                 courseTitle={course.courseTitle}
                 description={course.description}
                 id={course.id}
+                semester={course.semester}
                 year={course.year}
                 totalQueues={0}
                 openQueues={0}
