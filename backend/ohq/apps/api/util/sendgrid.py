@@ -27,7 +27,7 @@ def send_invitation_email(invited_course_user: InvitedCourseUser):
 
     html_content = template.render(title=title, body=body, sign_up_link="https://ohq.io")
     message = Mail(
-        from_email=Email("info@ohq.io", "OHQ"),
+        from_email=Email("info@ohq.io", "Office Hour Queue"),
         to_emails=invited_course_user.email,
         subject=subject,
         html_content=html_content)

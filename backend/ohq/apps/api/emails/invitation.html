@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-  <html>
+<html>
   <head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
-      <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
 
     <style type="text/css">
 
@@ -13,6 +13,10 @@
         padding: 1.5em;
       }
 
+      .title {
+        margin-top: 0;
+      }
+
       .header-logo {
         width: 190px;
         padding-bottom: 15px;
@@ -20,48 +24,22 @@
         padding-left: 5px;
       }
 
-      .images {
-        height: 120px;
-      }
-
       .footer {
         text-align: center;
         padding-top: 30px;
       }
 
+      .footer p {
+        font-size: 12px;
+      }
+
       h1 {
-        font-family: 'Lato', Sans-Serif;
+        font-family: 'Lato', sans-serif;
       }
 
       p {
-        font-family: 'Lato', Sans-Serif;
+        font-family: 'Lato', sans-serif;
       }
-
-      .body-img {
-        width: 80px;
-        margin-top: 15px;
-      }
-
-      .float-left {
-        float: left;
-        margin-left: 55px;
-      }
-
-      .float-right {
-        float: right;
-        margin-right: 55px;
-      }
-
-      @media (max-width: 1000px) {
-        .float-left {
-          margin-left: 35px;
-        }
-
-        .float-right {
-          margin-right: 35px;
-        }
-      }
-
 
       .link-container {
         text-align: center;
@@ -90,7 +68,7 @@
 
     <div class="content-box">
 
-      <h1 style="margin-top:0px">{{ title }}</h1>
+      <h1 class="title">{{ title }}</h1>
 
       <p>{{ body }}</p>
 
@@ -104,7 +82,7 @@
           us an email anytime at <i>support@ohq.io</i><p>
     </div>
     <div class="footer">
-      <p style="font-size:12px;">&copy; 2020 OHQ</p>
+      <p>&copy; 2020 OHQ</p>
     </div>
   </body>
 </html>
