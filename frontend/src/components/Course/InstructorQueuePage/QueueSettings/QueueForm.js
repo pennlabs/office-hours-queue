@@ -29,11 +29,17 @@ const QueueForm = (props) => {
     description: queue.description,
     queueId: queue.id
   });
+  const [nameCharCount, setNameCharCount] = useState(input.name.length);
+  const [descCharCount, setDescCharCount] = useState(input.description.length);
 
   /* HANDLER FUNCTIONS */
   const handleInputChange = (e, { name, value }) => {
+    if (name === 'description' && value.length > 500) return;
+    if (name === 'name' && value.length > 100) return;
     input[name] = value;
     setInput(input);
+    setDescCharCount(input.description.length)
+    setNameCharCount(input.name.length)
   };
 
   const onSubmit = async () => {
@@ -77,6 +83,9 @@ const QueueForm = (props) => {
               name='name'
               disabled={ loading }
               onChange={ handleInputChange }/>
+              <div style={{"textAlign":"right",
+                "color": nameCharCount < 100 ? "" : "crimson"}}>
+                  {"Characters: " +  nameCharCount + "/100"}</div>
           </Form.Field>
           <Form.Field>
             <label>Description</label>
@@ -85,6 +94,9 @@ const QueueForm = (props) => {
               name='description'
               disabled={ loading }
               onChange={ handleInputChange }/>
+              <div style={{"textAlign":"right",
+                "color": descCharCount < 500 ? "" : "crimson"}}>
+                  {"Characters: " +  descCharCount + "/500"}</div>
           </Form.Field>
           <Button type='submit' disabled={ loading }  onClick={ onSubmit }>Submit</Button>
           <Modal open={ open }
