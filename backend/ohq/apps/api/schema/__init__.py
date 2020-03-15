@@ -92,3 +92,4 @@ class Mutation(graphene.ObjectType):
     join_course = courses.JoinCourse.Field()
     invite_email = courses.InviteEmails.Field()
     resend_invite_email = courses.ResendInviteEmail.Field()
+    change_course_user_kind = courses.ChangeCourseUserKind.Field()

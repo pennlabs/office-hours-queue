@@ -297,7 +297,7 @@ class RemoveInvitedUserFromCourse(graphene.Mutation):
                 pk=from_global_id(input.invited_course_user_id)[1],
             )
             if not CourseUser.objects.filter(
-                user= info.context.user.get_user(),
+                user=info.context.user.get_user(),
                 course=invited_course_user_to_remove.course,
                 kind__in=CourseUserKind.leadership(),
             ).exists():
@@ -336,3 +336,52 @@ class ResendInviteEmail(graphene.Mutation):
 
         send_invitation_email(invited_course_user)
         return ResendInviteEmailResponse(success=True)
+
+class ChangeCourseUserKindInput(graphene.InputObjectType):
+    course_user_id = graphene.ID(required=True)
+    kind = graphene.Field(CourseUserKindType, required=True)
+
+
+class ChangeCourseUserKindResponse(graphene.ObjectType):
+    course_user = graphene.Field(CourseUserNode)
+
+
+class ChangeCourseUserKind(graphene.Mutation):
+    class Arguments:
+        input = ChangeCourseUserKindInput(required=True)
+
+    Output = ChangeCourseUserKindResponse
+
+    @staticmethod
+    def mutate(root, info, input):
+        if not input.kind in CourseUserKind.staff():
+            raise new_user_kind_must_be_staff_error
+        with transaction.atomic():
+            course_user_to_change = CourseUser.objects.get(
+                pk=from_global_id(input.course_user_id)[1],
+            )
+            course = course_user_to_change.course
+            if not CourseUser.objects.filter(
+                user=info.context.user.get_user(),
+                course=course,
+                kind__in=CourseUserKind.leadership(),
+            ).exists():
+                raise user_not_leadership_error
+            if course_user_to_change.kind == CourseUserKind.STUDENT.name:
+                raise user_not_staff_error
+
+            # Prevent removal of last leadership user
+            if (
+                course_user_to_change.kind in CourseUserKind.leadership() and
+                input.kind not in CourseUserKind.leadership() and
+                CourseUser.objects.filter(
+                    course=course,
+                    kind__in=CourseUserKind.leadership()
+                ).count() == 1
+            ):
+                raise remove_only_leadership_error
+
+            course_user_to_change.kind = input.kind
+            course_user_to_change.save()
+
+        return ChangeCourseUserKindResponse(course_user=course_user_to_change)

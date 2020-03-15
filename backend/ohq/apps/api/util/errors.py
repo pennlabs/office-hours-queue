@@ -10,6 +10,8 @@ user_not_student_error = GraphQLError("User is not a student")
 user_not_staff_error = GraphQLError("User is not a staff member")
 user_not_leadership_error = GraphQLError("User is not a leadership member")
 
+new_user_kind_must_be_staff_error = GraphQLError("New user kind must be staff")
+
 user_not_asker_error = GraphQLError("User is not the question asker")
 user_not_answerer_error = GraphQLError("User is not the question answerer")
 
