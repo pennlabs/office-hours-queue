@@ -129,9 +129,12 @@ const Queue = (props) => {
         color="grey"
         icon="cog"
         onClick={ props.editFunc }/>
-      <Grid.Row>
+      {
+        tags.length > 0 && 
+        <Grid.Row>
         <QueueFilterForm tags={ tags } changeFunc={ handleFilterChange }/>
-      </Grid.Row>
+        </Grid.Row>
+      }
       <Grid.Row columns={1} padded="true">
           <Questions
             questions={ filteredQuestions }
