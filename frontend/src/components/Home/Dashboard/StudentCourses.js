@@ -41,7 +41,7 @@ const StudentCourses = (props) => {
             ))
           }
         <Grid.Column>
-          <AddCard clickFunc={ () => setOpen(true) }/>
+          <AddCard clickFunc={ () => setOpen(true) } isStudent={ true }/>
         </Grid.Column>
       </Grid.Row>
       <Snackbar open={ success } autoHideDuration={2000} onClose={ () => setSuccess(false) }>

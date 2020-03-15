@@ -16,7 +16,7 @@ export default class AddCard extends React.Component {
           }}
           onClick={this.props.clickFunc}>
           <Header style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}
-            content="Add Course"/>
+            content={ this.props.isStudent ? "Join Course" : "Add Course" }/>
         </Segment>
       </Segment>
     );
