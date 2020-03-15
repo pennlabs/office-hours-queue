@@ -81,6 +81,7 @@ const QueueForm = (props) => {
             <Form.Input
               defaultValue={ input.name }
               name='name'
+              value={ input.name }
               disabled={ loading }
               onChange={ handleInputChange }/>
               <div style={{"textAlign":"right",
@@ -92,6 +93,7 @@ const QueueForm = (props) => {
             <Form.Input
               defaultValue={ input.description }
               name='description'
+              value={ input.description }
               disabled={ loading }
               onChange={ handleInputChange }/>
               <div style={{"textAlign":"right",
