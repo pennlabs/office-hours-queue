@@ -10,12 +10,7 @@ const QuestionCard = (props) => {
 
   const timeString = (date, isLong) => {
     if (isLong) return new Date(date).toLocaleString('en-US', {dateStyle: 'short', timeStyle: 'short'});
-
-    const d = new Date(date);
-    const hour = d.getHours() > 12 ? d.getHours() - 12 : d.getHours();
-    const meridiem = d.getHours() > 12 ? "pm" : "am";
-    const minutes = d.getMinutes() < 10 ? "0" + d.getMinutes() : d.getMinutes();
-    return `${hour}:${minutes} ${meridiem}`;
+    else return new Date(date).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric' })
   };
 
   useEffect(() => {
