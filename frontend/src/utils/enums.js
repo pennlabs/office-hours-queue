@@ -43,6 +43,24 @@ export const roleOptions = [
   }
 ];
 
+export const staffRoleOptions = [
+  {
+    key: 0,
+    value: "PROFESSOR",
+    text: "Professor"
+  },
+  {
+    key: 1,
+    value: "HEAD_TA",
+    text: "Head TA"
+  },
+  {
+    key: 2,
+    value: "TA",
+    text: "TA"
+  }
+];
+
 export function prettifyRole(role) {
   return roleOptions.find((o) => o.value === role).text;
 }

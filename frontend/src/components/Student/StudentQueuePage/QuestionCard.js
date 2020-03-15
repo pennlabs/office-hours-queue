@@ -58,7 +58,7 @@ const QuestionCard = (props) => {
               <Button compact
                 size='mini'
                 color='red'
-                content='Delete'
+                content='Withdraw'
                 onClick={ () => setOpenDelete(true) }/>
               {
                 /*
@@ -73,7 +73,7 @@ const QuestionCard = (props) => {
           }
         </Header>
           {
-            !question.timeStarted && 
+            !question.timeStarted &&
             <Popup
               trigger= { <Icon name="tags"/> }
               content= {
@@ -85,7 +85,7 @@ const QuestionCard = (props) => {
               position="bottom left"/>
           }
           {
-            question.timeStarted && 
+            question.timeStarted &&
             <Popup wide
               trigger= { <Icon name="sync" loading/> }
               content= {

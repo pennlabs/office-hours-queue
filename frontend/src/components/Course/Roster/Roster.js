@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Segment, Header, Grid, Table } from 'semantic-ui-react';
+import {Segment, Header, Grid, Table, Dropdown, Form} from 'semantic-ui-react';
 import RosterForm from './RosterForm';
 import RemoveButton from './RemoveButton';
 import ResendButton from "./ResendButton";
@@ -11,6 +11,7 @@ import Alert from '@material-ui/lab/Alert';
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
 import { isLeadershipRole, prettifyRole } from "../../../utils/enums";
+import ChangeRoleDropdown from "./ChangeRoleDropdown";
 
 /* GRAPHQL QUERIES/MUTATIONS */
 const GET_USERS = gql`
@@ -57,7 +58,7 @@ const Roster = (props) => {
   const [filteredUsers, setFilteredUsers] = useState(null);
   const [invitedUsers, setInvitedUsers] = useState(null);
   const [open, setOpen] = useState(false);
-  const [tableState, setTableState] = useState({ direction: null, column: null });
+  const [tableState, setTableState] = useState({ direction: 'ascending', column: "fullName" });
   const [showInvited, setShowInvited] = useState(false);
   const [toast, setToast] = useState({ open: false, success: true, message: "" });
 
@@ -125,6 +126,8 @@ const Roster = (props) => {
   };
 
   /* LOAD DATA */
+
+  // Is there only a single user in the leadership category
   let isOnlyOneLeadership;
   if (data && data.course) {
     const newUsers = loadUsers(data);
@@ -137,6 +140,7 @@ const Roster = (props) => {
     if (JSON.stringify(newInvitedUsers) !== JSON.stringify(invitedUsers)) {
       setInvitedUsers(newInvitedUsers);
     }
+
     isOnlyOneLeadership = data.course.courseUsers.edges.filter((item) => isLeadershipRole(item.node.kind)).length < 2;
   }
 
@@ -173,6 +177,14 @@ const Roster = (props) => {
     });
   };
 
+  const setChangeRoleToast = () => {
+    setToast({
+      open: true,
+      success: true,
+      message: `Role successfully updated`
+    })
+  };
+
   const closeToast = () => {
     setToast({
       open: false,
@@ -188,6 +200,11 @@ const Roster = (props) => {
 
   const onRevokeSuccess = async () => {
     setInviteRevokedToast();
+    await refetch();
+  };
+
+  const onRoleChangeSuccess = async () => {
+    setChangeRoleToast();
     await refetch();
   };
 
@@ -290,8 +307,8 @@ const Roster = (props) => {
                   width={4}>Email
                 </Table.HeaderCell>
                 <Table.HeaderCell
-                  sorted = {tableState.column === 'role' ? tableState.direction : null}
-                  onClick = {() => handleSort('role')}
+                  sorted={tableState.column === 'role' ? tableState.direction : null}
+                  onClick={() => handleSort('role')}
                   width={2}>Role
                 </Table.HeaderCell>
                 {
@@ -303,11 +320,20 @@ const Roster = (props) => {
             <Table.Body>
               {
                 filteredUsers.map((user) => (
-                  <Table.Row key={user.id}>
+                  <Table.Row key={ user.id }>
                     <Table.Cell>{ user.fullName }</Table.Cell>
                     <Table.Cell>{ user.preferredName }</Table.Cell>
                     <Table.Cell>{ user.email }</Table.Cell>
-                    <Table.Cell>{ prettifyRole(user.role) }</Table.Cell>
+                    <Table.Cell>
+                      { !isLeadershipRole(props.courseUserKind) || user.role === "STUDENT" ?
+                        prettifyRole(user.role) :
+                        <ChangeRoleDropdown
+                          id={ user.id }
+                          role={ user.role }
+                          successFunc={ onRoleChangeSuccess }
+                        />
+                      }
+                    </Table.Cell>
                     {
                       isLeadershipRole(props.courseUserKind) &&
                       <Table.Cell textAlign="center">

@@ -25,29 +25,31 @@ const DeleteQuestionModal = (props) => {
           questionId: question.id
         }
       }
-    })
+    });
     await props.refetch();
     props.setOpen(false);
-  }
+  };
 
   return (
     <Modal open={ props.open }>
-      <Modal.Header>Delete Question</Modal.Header>
+      <Modal.Header>Withdraw Question</Modal.Header>
       <Modal.Content>
-          You are about to delete your question from <b>{queue.name}</b>:<br/>
-          <Segment inverted color="blue">{`"${question.text}"`}</Segment>
+          You are about to withdraw your question from <b>{queue.name}</b>:<br/>
+          <Segment inverted>{`"${question.text}"`}</Segment>
           <b>Once you withdraw from the queue, you cannot regain your spot!</b>
       </Modal.Content>
       <Modal.Actions>
-        <Button content="Cancel"
+        <Button
+          content="Cancel"
           disabled={ loading }
           onClick={() => { props.setOpen(false) }}/>
-        <Button content="Delete"
+        <Button
+          content="Withdraw"
           disabled={ loading } color="red"
           onClick={ onDelete }/>
       </Modal.Actions>
     </Modal>
   )
-}
+};
 
 export default DeleteQuestionModal;

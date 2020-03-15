@@ -44,7 +44,8 @@ import { setContext } from 'apollo-link-context';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 
 const httpLink = createHttpLink({
-  uri: 'https://ohq.herokuapp.com/graphql',
+  // uri: 'https://ohq.herokuapp.com/graphql',
+  uri: 'http://localhost:8000/graphql',
 });
 
 const authLink = setContext((_, { headers }) => {
