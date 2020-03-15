@@ -353,6 +353,14 @@ const Roster = (props) => {
                 ))
               }
             </Table.Body>
+            <Table.Footer>
+              <Table.Row textAlign="center">
+                <Table.HeaderCell>{ `${filteredUsers.length} user(s)` }</Table.HeaderCell>
+                <Table.HeaderCell/>
+                <Table.HeaderCell/>
+                <Table.HeaderCell/>
+              </Table.Row>
+            </Table.Footer>
           </Table>
         </Segment>
       }
