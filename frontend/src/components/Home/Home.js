@@ -46,8 +46,8 @@ const Home = (props) => {
 
   /* STATE */
   const [active, setActive] = useState('dashboard');
-  const [courses,  setCourses] = useState([]);
-  const [user, setUser] = useState({});
+  const [courses,  setCourses] = useState(null);
+  const [user, setUser] = useState(null);
 
   /* LOAD DATA FUNCTIONS */
   const loadCourses = (data) => {
