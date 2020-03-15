@@ -12,13 +12,13 @@ const Sidebar = (props) => (
       <Image src='../../../ohq.png' size='tiny' style={{"marginTop":"10px"}}/>
     </Link>
     <Menu vertical secondary fluid>
-      <Menu.Item
+      <Menu.Item style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}
         name="Dashboard"
         icon='dashboard'
         active={ props.active === 'dashboard' }
         color='blue'
         onClick={ () => props.clickFunc('dashboard') }/>
-      <Menu.Item
+      <Menu.Item style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}
         name="Account Settings"
         icon='setting'
         active={ props.active === 'account_settings' }

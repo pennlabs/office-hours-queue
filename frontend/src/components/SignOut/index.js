@@ -3,7 +3,7 @@ import { Menu, Icon } from 'semantic-ui-react';
 import { withFirebase } from '../Firebase';
 
 const SignOutButton = ({ firebase }) => (
-  <Menu.Item
+  <Menu.Item style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}
     name="Signout"
     active={false}
     onClick={firebase.doSignOut}>

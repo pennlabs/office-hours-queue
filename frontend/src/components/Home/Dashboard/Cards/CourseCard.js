@@ -14,13 +14,13 @@ export default class CourseCard extends React.Component {
       <Segment basic>
         <Segment attached="top" color="blue" style={{height:"70px"}}>
           <Link to={ path }>
-          <Header style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
-            { `${this.props.department} ${this.props.courseCode}`}
-            <Header.Subheader style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
-              { this.props.courseTitle }
-            </Header.Subheader>
-          </Header>
-            </Link>
+            <Header style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
+              { `${this.props.department} ${this.props.courseCode}`}
+              <Header.Subheader style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
+                { this.props.courseTitle }
+              </Header.Subheader>
+            </Header>
+          </Link>
         </Segment>
         <Segment attached="bottom" secondary textAlign="right" style={{height:"40px"}}>
           <Header as="h6" style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>

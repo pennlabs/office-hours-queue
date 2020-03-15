@@ -7,19 +7,16 @@ export default class ArchivedCourseCard extends React.Component {
     return (
       <Segment basic>
         <Segment attached="top" color="blue" secondary>
-          <Header
-            content={this.props.department + " " + this.props.courseCode}
-            subheader={
-              this.props.courseTitle.length < 35 ? this.props.courseTitle :
-              this.props.courseTitle.substring(0, 25) + "..."
-            }
-          />
+          <Header style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
+            { `${this.props.department} ${this.props.courseCode}`}
+            <Header.Subheader style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
+              { this.props.courseTitle }
+            </Header.Subheader>
+          </Header>
         </Segment>
         <Segment attached="bottom" tertiary textAlign="right">
-          <Header as="h6">
-            <Header.Content>
-              { this.props.semester } { this.props.year }
-            </Header.Content>
+          <Header as="h6" style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
+            { this.props.semester } { this.props.year }
           </Header>
         </Segment>
       </Segment>
