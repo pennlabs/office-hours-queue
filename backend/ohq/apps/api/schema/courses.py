@@ -329,7 +329,7 @@ class ResendInviteEmail(graphene.Mutation):
             )
             if not CourseUser.objects.filter(
                 user=user,
-                course=invited_course_user,
+                course=invited_course_user.course,
                 kind__in=CourseUserKind.leadership(),
             ).exists():
                 raise user_not_leadership_error
