@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Grid, Segment, Header, Tab, Button } from 'semantic-ui-react';
 import QueueForm from './QueueForm';
 import TagForm from './TagForm';
-import ScheduleForm from './ScheduleForm';
 import { useMutation } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 
