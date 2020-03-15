@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {Segment, Header, Grid, Table, Dropdown, Form} from 'semantic-ui-react';
+import { Segment, Header, Grid, Table } from 'semantic-ui-react';
 import RosterForm from './RosterForm';
 import RemoveButton from './RemoveButton';
 import ResendButton from "./ResendButton";
@@ -353,15 +353,10 @@ const Roster = (props) => {
                 ))
               }
             </Table.Body>
-            <Table.Footer>
-              <Table.Row textAlign="center">
-                <Table.HeaderCell>{ `${filteredUsers.length} user(s)` }</Table.HeaderCell>
-                <Table.HeaderCell/>
-                <Table.HeaderCell/>
-                <Table.HeaderCell/>
-              </Table.Row>
-            </Table.Footer>
           </Table>
+          <div>
+            { `${filteredUsers.length} user${filteredUsers.length === 1 ? '' : 's'}` }
+          </div>
         </Segment>
       }
       </Grid.Row>
