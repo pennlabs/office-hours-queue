@@ -58,7 +58,7 @@ const Roster = (props) => {
   const [filteredUsers, setFilteredUsers] = useState(null);
   const [invitedUsers, setInvitedUsers] = useState(null);
   const [open, setOpen] = useState(false);
-  const [tableState, setTableState] = useState({ direction: 'ascending', column: "fullName" });
+  const [tableState, setTableState] = useState({ direction: 'ascending', column: 'fullName' });
   const [showInvited, setShowInvited] = useState(false);
   const [toast, setToast] = useState({ open: false, success: true, message: "" });
 
@@ -111,13 +111,16 @@ const Roster = (props) => {
   /* FILTER USERS BASED ON INPUT */
   const filterUsers = (input) => {
     const newFilteredUsers = users.filter((user) => {
+      const role = user.role.toLowerCase();
       return (
-        user.fullName.toUpperCase().includes(input.search) ||
-        user.email.toUpperCase().includes(input.search)
-      ) && (!input.role || user.role === input.role);
+        user.fullName.toLowerCase().includes(input.search) ||
+        user.preferredName.toLowerCase().includes(input.search) ||
+        user.email.toLowerCase().includes(input.search) ||
+        role.includes(input.search)
+      ) && (!input.role || role === input.role);
     });
     setFilteredUsers(newFilteredUsers);
-    setTableState({ direction: null, column: null })
+    setTableState({ direction: 'ascending', column: 'fullName' })
   };
 
   const closeModal = async () => {
@@ -218,6 +221,11 @@ const Roster = (props) => {
           successFunc={ setRosterUpdateToast }/>
       }
       <Grid.Row>
+        <Segment basic>
+          <Header as="h3">Roster</Header>
+        </Segment>
+      </Grid.Row>
+      <Grid.Row>
       {
         users &&
         <Segment basic>
@@ -283,11 +291,6 @@ const Roster = (props) => {
       {
         users &&
         <Segment basic>
-          <Grid.Row>
-            <Header as="h3">
-              Roster
-            </Header>
-         </Grid.Row>
           <Table sortable celled padded selectable>
             <Table.Header>
               <Table.Row>
@@ -330,6 +333,7 @@ const Roster = (props) => {
                         <ChangeRoleDropdown
                           id={ user.id }
                           role={ user.role }
+                          disabled={ isOnlyOneLeadership && isLeadershipRole(user.role) }
                           successFunc={ onRoleChangeSuccess }
                         />
                       }

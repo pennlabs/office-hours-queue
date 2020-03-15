@@ -9,7 +9,7 @@ const RosterForm = (props) => {
   });
 
   const handleInputChange = (e, { name, value }) => {
-    input[name] = value.toUpperCase();
+    input[name] = value.toLowerCase();
     setInput(input);
     props.filterFunc(input);
   };

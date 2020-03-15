@@ -45,13 +45,13 @@ const RemoveButton = (props) => {
       disabled={ loading }
       onClick={ onSubmit }/>
   );
-  const disabledContent = "Cannot remove only user in leadership role";
+  const disabledContent = 'Cannot remove only user in leadership role';
 
   return (
     <Popup
       trigger={
         <Icon
-          disabled={ props.disabled }
+          disabled={ props.disabled || loading }
           name="remove circle"
           style={{"cursor": "pointer"}}
           loading={ loading }/>

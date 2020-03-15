@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { Dropdown } from 'semantic-ui-react';
+import {Dropdown, Icon, Popup} from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
 import {staffRoleOptions} from "../../../utils/enums";
@@ -33,15 +33,25 @@ const ChangeRoleDropdown = (props) => {
     });
   };
 
-  return (
+  const dropdown = (
     <Dropdown
       selection
       name="role"
-      // disabled={ loading }
+      disabled={ props.disabled || loading }
       loading={ loading }
       onChange={ handleInputChange }
       value={ input.role }
       options={ staffRoleOptions }/>
+  );
+
+  return (
+    <Popup
+      trigger={ <div>{ dropdown }</div> }
+      disabled={ !props.disabled }
+      content={ 'Cannot change only user in leadership role' }
+      on={ 'hover' }
+      position={ 'left center' }
+    />
   );
 };
 
