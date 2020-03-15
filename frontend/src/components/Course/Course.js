@@ -79,7 +79,6 @@ const Course = (props) => {
   return (
     <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
       <CourseSidebar active={ active } clickFunc={ setActive } kind={ courseUserKind } leadership={ course.leadership }/>
-
       <Grid.Column width={13}>
         {
           course.department && <Grid.Row>
@@ -95,7 +94,7 @@ const Course = (props) => {
         }
         {
           courseQuery.data && active === 'roster' &&
-          <Roster course={ course } courseUserKind={ courseUserKind }/>
+          <Roster course={ course } courseUserKind={ courseUserKind } courseRefetch={ courseQuery.refetch }/>
         }
         {
           courseQuery.data && active === 'course_settings' &&

@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Segment, Menu, Grid, Image, Header, List, Icon } from 'semantic-ui-react';
 import { withFirebase } from '../Firebase';
 import { Link } from 'react-router-dom';
 import { isLeadershipRole, prettifyRole } from "../../utils/enums";
 
 const CourseSidebar = (props) => {
+
+  const [leadership, setLeadership] = useState(props.leadership);
+  useEffect(() => {
+    setLeadership(props.leadership)
+  }, [props.leadership])
+
   return (
     <Grid.Column width={3}>
       <Segment basic>
@@ -47,11 +53,11 @@ const CourseSidebar = (props) => {
           }
         </Menu>
       </Segment>
-      { props.leadership &&
+      { leadership &&
         <Segment basic>
           <Header as='h3'>Instructors</Header>
           {
-            props.leadership.map((courseUser) => {
+            leadership.map((courseUser) => {
               return (
                 <List>
                   <List.Item>
