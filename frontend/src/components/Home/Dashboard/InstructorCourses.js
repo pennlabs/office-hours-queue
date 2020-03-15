@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Segment } from 'semantic-ui-react';
+import { Grid, Segment, Button } from 'semantic-ui-react';
 import CourseCard from './Cards/CourseCard';
 import ArchivedCourseCard from './Cards/ArchivedCourseCard';
 import AddCard from './Cards/AddCard';
@@ -54,11 +54,16 @@ const InstructorCourses = (props) => {
       </Grid.Row>
         {
           courses.filter(course => course.archived).length > 0 &&
-          <Segment basic compact>
-            <a style={{"textDecoration":"underline", "cursor":"pointer"}} onClick={ handleArchivedChange }>
-            { showArchived ? "Hide Archived Courses" : "See Archived Courses"}
-            </a>
-          </Segment>
+          <Grid.Row padded="true">
+            <Grid.Column padded="true">
+              <Segment basic compact>
+                <Button color="blue"
+                  content={ showArchived ? "Hide Archived" : "Show Archived" }
+                  onClick={ handleArchivedChange }
+                  icon={ showArchived ? "angle up" : "angle down" }/>
+              </Segment>
+            </Grid.Column>
+          </Grid.Row>
         }
       <Grid.Row columns={4} padded="true">
         {
