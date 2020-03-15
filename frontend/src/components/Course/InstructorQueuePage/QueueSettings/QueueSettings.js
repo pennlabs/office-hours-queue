@@ -90,9 +90,6 @@ const QueueSettings = (props) => {
             }, {
               menuItem: "Tags",
               render: () => { return <TagForm refetch={ props.refetch } queue={ queue }/>}
-            }, {
-              menuItem: "Schedule",
-              render: () => {return <ScheduleForm/>}
             }]}/>
         </Segment>
       </Grid.Row>
