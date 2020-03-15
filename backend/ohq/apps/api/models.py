@@ -59,6 +59,12 @@ class User(models.Model):
     time_joined = models.DateTimeField(auto_now_add=True)
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
 
+    searchable_name = models.CharField(max_length=254+100+100+2, editable=False)
+
+    def save(self, *args, **kwargs):
+        self.searchable_name = f"{self.full_name} {self.preferred_name} {self.email}"
+        super(User, self).save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.full_name} ({self.email})"
 

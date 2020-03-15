@@ -95,6 +95,7 @@ class UserMetaNode(DjangoObjectType):
             'id': ['exact'],
             'email': ['exact', 'icontains'],
             'full_name': ['exact', 'icontains'],
+            'searchable_name': ['icontains'],
         }
         fields = (
             'id',

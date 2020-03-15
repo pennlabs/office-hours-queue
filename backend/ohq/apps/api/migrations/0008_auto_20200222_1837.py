@@ -15,7 +15,6 @@ class Migration(migrations.Migration):
     def reverse_set_searchable_name(apps, schema_editor):
         pass
 
-
     dependencies = [
         ('api', '0007_auto_20200222_1836'),
     ]
