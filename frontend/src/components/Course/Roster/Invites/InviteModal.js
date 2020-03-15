@@ -3,7 +3,6 @@ import { Modal, Button, Tab } from 'semantic-ui-react';
 import InviteForm from './InviteForm';
 import AddForm from './AddForm';
 
-
 const InviteModal = (props) => {
   return (
     <Modal open={ props.open }>

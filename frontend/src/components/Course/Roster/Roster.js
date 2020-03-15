@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Segment, Header, Grid, Table } from 'semantic-ui-react';
 import RosterForm from './RosterForm';
-import RemoveIcon from './RemoveIcon';
+import RemoveButton from './RemoveButton';
+import ResendButton from "./ResendButton";
 import InviteModal from './Invites/InviteModal';
 import _ from 'lodash';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -9,6 +10,7 @@ import Alert from '@material-ui/lab/Alert';
 
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
+import { isLeadershipRole, prettifyRole } from "../../../utils/enums";
 
 /* GRAPHQL QUERIES/MUTATIONS */
 const GET_USERS = gql`
@@ -57,12 +59,12 @@ const Roster = (props) => {
   const [open, setOpen] = useState(false);
   const [tableState, setTableState] = useState({ direction: null, column: null });
   const [showInvited, setShowInvited] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [toast, setToast] = useState({ open: false, success: true, message: "" });
 
   /* MODAL FUNCTIONS */
   const triggerModal = () => {
     setOpen(!open);
-  }
+  };
 
   /* TABLE FUNCTIONS */
   const handleSort = (clickedColumn) => {
@@ -79,17 +81,7 @@ const Roster = (props) => {
       });
       setFilteredUsers(filteredUsers.reverse());
     }
-  }
-
-  const formatRole = (string) => {
-    switch(string) {
-      case 'ADMIN': return 'Admin';
-      case 'PROFESSOR': return 'Professor';
-      case 'HEAD_TA': return 'Head TA';
-      case 'STUDENT': return 'Student';
-      default: return string;
-    }
-  }
+  };
 
   /* GET USERS FROM DATA */
   const loadUsers = (data) => {
@@ -99,7 +91,7 @@ const Roster = (props) => {
         fullName: item.node.user.fullName,
         preferredName: item.node.user.preferredName,
         email: item.node.user.email,
-        role: item.node.kind
+        role: item.node.kind,
       };
     });
   };
@@ -110,7 +102,7 @@ const Roster = (props) => {
         id: item.node.id,
         email: item.node.email,
         role: item.node.kind,
-        invitedBy: item.node.invitedBy
+        invitedBy: item.node.invitedBy,
       };
     });
   };
@@ -133,6 +125,7 @@ const Roster = (props) => {
   };
 
   /* LOAD DATA */
+  let isOnlyOneLeadership;
   if (data && data.course) {
     const newUsers = loadUsers(data);
     const newInvitedUsers = loadInvitedUsers(data);
@@ -144,7 +137,59 @@ const Roster = (props) => {
     if (JSON.stringify(newInvitedUsers) !== JSON.stringify(invitedUsers)) {
       setInvitedUsers(newInvitedUsers);
     }
+    isOnlyOneLeadership = data.course.courseUsers.edges.filter((item) => isLeadershipRole(item.node.kind)).length < 2;
   }
+
+  /* TOAST */
+  const setRosterUpdateToast = () => {
+    setToast({
+      open: true,
+      success: true,
+      message: "Roster successfully updated",
+    });
+  };
+
+  const setUserRemovedToast = (name) => {
+    setToast({
+      open: true,
+      success: true,
+      message: `${name} successfully removed`,
+    });
+  };
+
+  const setInviteRevokedToast = () => {
+    setToast({
+      open: true,
+      success: true,
+      message: `Invitation successfully revoked`,
+    });
+  };
+
+  const setInviteResendToast = () => {
+    setToast({
+      open: true,
+      success: true,
+      message: `Invitation successfully resent`,
+    });
+  };
+
+  const closeToast = () => {
+    setToast({
+      open: false,
+      success: true,
+      message: "",
+    });
+  };
+
+  const onRemoveSuccess = async (name) => {
+    setUserRemovedToast(name);
+    await refetch();
+  };
+
+  const onRevokeSuccess = async () => {
+    setInviteRevokedToast();
+    await refetch();
+  };
 
   return (
     <div>
@@ -153,52 +198,64 @@ const Roster = (props) => {
         <InviteModal open={ open }
           closeFunc={ closeModal }
           courseId={ props.course.id }
-          successFunc={ setSuccess }/>
+          successFunc={ setRosterUpdateToast }/>
       }
       <Grid.Row>
       {
         users &&
         <Segment basic>
-          <RosterForm showInvited={ showInvited }
-            filterFunc={ filterUsers } inviteFunc={ triggerModal }
-            showFunc={ () => { setShowInvited(!showInvited) } }/>
+          <RosterForm
+            showShowInvitedButton={ invitedUsers.length > 0 }
+            showInviteButton={ isLeadershipRole(props.courseUserKind) }
+            invitedShown={ showInvited }
+            filterFunc={ filterUsers }
+            inviteFunc={ triggerModal }
+            showInvitedFunc={ () => { setShowInvited(!showInvited) } }/>
         </Segment>
       }
       </Grid.Row>
       <Grid.Row>
       {
-        showInvited &&
+        (showInvited && invitedUsers.length > 0) &&
         <Segment basic>
           <Grid.Row>
             <Header as="h3">
               Invited Users
             </Header>
          </Grid.Row>
-        <Table sortable celled padded>
+        <Table sortable celled padded selectable>
           <Table.Header>
             <Table.Row>
-              <Table.HeaderCell
-                width={3}>Email</Table.HeaderCell>
-              <Table.HeaderCell
-                width={2}>Role</Table.HeaderCell>
-              <Table.HeaderCell
-                width={3}>Invited By</Table.HeaderCell>
+              <Table.HeaderCell width={3}>Email</Table.HeaderCell>
+              <Table.HeaderCell width={2}>Role</Table.HeaderCell>
+              <Table.HeaderCell width={3}>Invited By</Table.HeaderCell>
+              {
+                isLeadershipRole(props.courseUserKind) && [
+                  <Table.HeaderCell width={1}>Resend</Table.HeaderCell>,
+                  <Table.HeaderCell width={1}>Revoke</Table.HeaderCell>,
+                ]
+              }
             </Table.Row>
           </Table.Header>
           <Table.Body>
           {
-            invitedUsers.length !== 0 ? invitedUsers.map(user => (
+            invitedUsers.map((user) => (
               <Table.Row>
                 <Table.Cell>{ user.email }</Table.Cell>
-                <Table.Cell>{ formatRole(user.role) }</Table.Cell>
+                <Table.Cell>{ prettifyRole(user.role) }</Table.Cell>
                 <Table.Cell>{ user.invitedBy.preferredName }</Table.Cell>
+                {
+                  isLeadershipRole(props.courseUserKind) && [
+                    <Table.Cell textAlign="center">
+                      <ResendButton id={user.id} successFunc={setInviteResendToast}/>
+                    </Table.Cell>,
+                    <Table.Cell textAlign="center">
+                      <RemoveButton id={user.id} isInvited={true} successFunc={onRevokeSuccess}/>
+                    </Table.Cell>,
+                  ]
+                }
               </Table.Row>
-            )) :
-            <Table.Row>
-              <Table.Cell>{ "No invited users!" }</Table.Cell>
-              <Table.Cell>—</Table.Cell>
-              <Table.Cell>—</Table.Cell>
-            </Table.Row>
+            ))
           }
           </Table.Body>
         </Table>
@@ -214,40 +271,54 @@ const Roster = (props) => {
               Roster
             </Header>
          </Grid.Row>
-          <Table sortable celled padded>
+          <Table sortable celled padded selectable>
             <Table.Header>
               <Table.Row>
                 <Table.HeaderCell
                   sorted={tableState.column === 'fullName' ? tableState.direction : null}
                   onClick={() => handleSort('fullName')}
-                  width={3}>Full Name</Table.HeaderCell>
+                  width={3}>Full Name
+                </Table.HeaderCell>
                 <Table.HeaderCell
                   sorted={tableState.column === 'preferredName' ? tableState.direction : null}
                   onClick={() => handleSort('preferredName')}
-                  width={3}>Preferred Name</Table.HeaderCell>
-                <Table.HeaderCell
-                  sorted={tableState.column === 'role' ? tableState.direction : null}
-                  onClick={() => handleSort('role')}
-                  width={2}>Role</Table.HeaderCell>
+                  width={3}>Preferred Name
+                </Table.HeaderCell>
                 <Table.HeaderCell
                   sorted={tableState.column === 'email' ? tableState.direction : null}
                   onClick={() => handleSort('email')}
-                  width={4}>Email</Table.HeaderCell>
-                  <Table.HeaderCell
-                  width={1}>Remove</Table.HeaderCell>
+                  width={4}>Email
+                </Table.HeaderCell>
+                <Table.HeaderCell
+                  sorted = {tableState.column === 'role' ? tableState.direction : null}
+                  onClick = {() => handleSort('role')}
+                  width={2}>Role
+                </Table.HeaderCell>
+                {
+                  isLeadershipRole(props.courseUserKind) &&
+                  <Table.HeaderCell width={1}>Remove</Table.HeaderCell>
+                }
               </Table.Row>
             </Table.Header>
             <Table.Body>
               {
-                filteredUsers.map(user => (
-                  <Table.Row>
+                filteredUsers.map((user) => (
+                  <Table.Row key={user.id}>
                     <Table.Cell>{ user.fullName }</Table.Cell>
                     <Table.Cell>{ user.preferredName }</Table.Cell>
-                    <Table.Cell>{ formatRole(user.role) }</Table.Cell>
                     <Table.Cell>{ user.email }</Table.Cell>
-                    <Table.Cell textAlign="center">
-                      <RemoveIcon id={ user.id } refetch={ refetch }/>
-                    </Table.Cell>
+                    <Table.Cell>{ prettifyRole(user.role) }</Table.Cell>
+                    {
+                      isLeadershipRole(props.courseUserKind) &&
+                      <Table.Cell textAlign="center">
+                        <RemoveButton
+                          disabled={ isOnlyOneLeadership && isLeadershipRole(user.role) }
+                          id={ user.id }
+                          userName={ user.fullName }
+                          isInvited={ false }
+                          successFunc={ onRemoveSuccess }/>
+                      </Table.Cell>
+                    }
                   </Table.Row>
                 ))
               }
@@ -256,9 +327,13 @@ const Roster = (props) => {
         </Segment>
       }
       </Grid.Row>
-      <Snackbar open={ success } autoHideDuration={6000} onClose={ () => setSuccess(false) }>
-        <Alert severity="success" onClose={ () => setSuccess(false) }>
-          <span>Roster updated!</span>
+      <Snackbar
+        open={ toast.open }
+        autoHideDuration={6000}
+        onClose={ closeToast }
+      >
+        <Alert severity={ toast.success ? 'success' : 'error' } onClose={ closeToast }>
+          <span>{ toast.message }</span>
         </Alert>
       </Snackbar>
     </div>

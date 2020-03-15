@@ -15,7 +15,7 @@ const InstructorQueues = (props) => {
     return queues.reduce((count, queue) => {
       return count + (queue.archived ? 0 : 1)
     }, 0)
-  }
+  };
 
   return (
     queues && <Grid.Row columns={2}>
@@ -31,10 +31,10 @@ const InstructorQueues = (props) => {
         queues && numActive() < 2 &&
         <Grid.Column>
           <Segment basic>
-          <Message info>
-            <Message.Header>Create a Queue</Message.Header>
-            <a onClick={ props.createFunc } style={{"cursor":"pointer"}}>Create</a> a queue and augment your OHQ experience!
-          </Message>
+            <Message info>
+              <Message.Header>Create a Queue</Message.Header>
+              <a onClick={ props.createFunc } style={{"cursor":"pointer"}}>Create</a> a queue and augment your OHQ experience!
+            </Message>
           </Segment>
         </Grid.Column>
       }

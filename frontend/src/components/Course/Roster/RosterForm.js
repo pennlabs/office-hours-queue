@@ -1,43 +1,8 @@
 import React, { useState } from 'react';
-import { Form, Button } from 'semantic-ui-react';
-import { gql } from 'apollo-boost';
-import { useMutation } from '@apollo/react-hooks';
-
-const INVITE_USER = gql`
-  mutation AddUserToCourse($input: AddUserToCourseInput!) {
-    addUserToCourse(input: $input) {
-      courseUser {
-        id
-      }
-    }
-  }
-`;
-
-const roleOptions = [
-  {
-    key: "PROFESSOR",
-    value: "PROFESSOR",
-    text: "Professor"
-  },
-  {
-    key: "HEAD_TA",
-    value: "HEAD_TA",
-    text: "Head TA"
-  },
-  {
-    key: "TA",
-    value: "TA",
-    text: "TA"
-  },
-  {
-    key: "STUDENT",
-    value: "STUDENT",
-    text: "Student"
-  }
-];
+import { Form, Button, Icon } from 'semantic-ui-react';
+import { roleOptions } from "../../../utils/enums";
 
 const RosterForm = (props) => {
-  const [inviteUser, { loading, data }] = useMutation(INVITE_USER);
   const [input, setInput] = useState({
     search: "",
     role: ""
@@ -52,16 +17,21 @@ const RosterForm = (props) => {
   return (
     <Form>
       <Form.Field>
-        <Button
-          content="Invite"
-          color="blue"
-          floated="right"
-          onClick={ props.inviteFunc }/>
-        <Button
-          content={props.showInvited ? "Hide Invited" : "Show Invited"}
-          color="grey"
-          floated="right"
-          onClick={ props.showFunc }/>
+        { props.showInviteButton &&
+          <Button
+            content="Invite"
+            color="blue"
+            floated="right"
+            onClick={props.inviteFunc}
+            icon="add user"/>
+        }
+        { props.showShowInvitedButton &&
+          <Button
+            content={props.invitedShown ? "Hide Invited" : "Show Invited"}
+            color="grey"
+            floated="right"
+            onClick={ props.showInvitedFunc }/>
+        }
       </Form.Field>
       <Form.Group>
         <Form.Field>

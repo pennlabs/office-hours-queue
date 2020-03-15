@@ -87,7 +87,7 @@ const Course = (props) => {
         }
         {
           courseQuery.data && active === 'roster' &&
-          <Roster course={ course }/>
+          <Roster course={ course } courseUserKind={ courseUserKind }/>
         }
         {
           courseQuery.data && active === 'course_settings' &&
@@ -108,7 +108,7 @@ const Course = (props) => {
       </Grid.Column>
     </Grid>
   )
-}
+};
 
 const condition = authUser => !!authUser;
 

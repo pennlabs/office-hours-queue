@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Form } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
+import { roleOptions } from "../../../../utils/enums";
 
 const INVITE_EMAIL = gql`
   mutation InviteEmail($input: InviteEmailsInput!) {
@@ -12,29 +13,6 @@ const INVITE_EMAIL = gql`
     }
   }
 `;
-
-const roleOptions = [
-  {
-    key: "PROFESSOR",
-    value: "PROFESSOR",
-    text: "Professor"
-  },
-  {
-    key: "HEAD_TA",
-    value: "HEAD_TA",
-    text: "Head TA"
-  },
-  {
-    key: "TA",
-    value: "TA",
-    text: "TA"
-  },
-  {
-    key: "STUDENT",
-    value: "STUDENT",
-    text: "Student"
-  }
-];
 
 const InviteForm = (props) => {
   const [inviteEmail, { loading, error }] = useMutation(INVITE_EMAIL);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Icon, Popup, Button } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
@@ -11,31 +11,59 @@ const REMOVE_USER = gql`
   }
 `;
 
-const RemoveIcon = (props) => {
-  const [removeUser, { loading, data }] = useMutation(REMOVE_USER);
+const REMOVE_INVITED_USER = gql`
+  mutation RemoveInvitedUser($input: RemoveInvitedUserFromCourseInput!) {
+    removeInvitedUserFromCourse(input: $input) {
+      success
+    }
+  }
+`;
+
+const RemoveButton = (props) => {
+  const [removeUser, { loading, data }] = useMutation(props.isInvited ? REMOVE_INVITED_USER : REMOVE_USER);
+  const [open, setOpen] = useState(false);
 
   const onSubmit = () => {
-    removeUser({
+    return removeUser({
       variables: {
-        input: {
+        input: props.isInvited ? {
+          invitedCourseUserId: props.id
+        } : {
           courseUserId: props.id
         }
       }
-    }).then((data) => {
-      props.refetch();
+    }).then(() => {
+      setOpen(false);
+      props.successFunc(props.userName);
     });
   };
+
+  const removeContent = (
+    <Button
+      color='red'
+      content={props.isInvited ? 'Revoke' : 'Remove'}
+      disabled={ loading }
+      onClick={ onSubmit }/>
+  );
+  const disabledContent = "Cannot remove only user in leadership role";
 
   return (
     <Popup
       trigger={
-        <Icon name="remove circle" loading={ loading }/>
+        <Icon
+          disabled={ props.disabled }
+          name="remove circle"
+          style={{"cursor": "pointer"}}
+          loading={ loading }/>
       }
-      content={<Button color='red' content='Remove' disabled={ loading }  onClick={ onSubmit }/>}
-      on='click'
-      position='top center'
+      content={ props.disabled ? disabledContent : removeContent }
+      on={ props.disabled ? 'hover' : 'click' }
+      onClose={ () => {setOpen(false)} }
+      onOpen={ () => {setOpen(true)} }
+      open={open}
+      position={ props.disabled ? 'left center' : 'top center' }
     />
   );
 };
 
-export default RemoveIcon;
+export default RemoveButton;

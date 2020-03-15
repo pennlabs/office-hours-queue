@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Form, Message } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useLazyQuery, useMutation } from '@apollo/react-hooks';
+import { roleOptions } from "../../../../utils/enums";
 
 const INVITABLE_USERS = gql`
   query InvitableUsers($email_Icontains: String, $fullName_Icontains: String, $courseId: ID!) {
@@ -36,29 +37,6 @@ const INVITE_EMAIL = gql`
     }
   }
 `;
-
-const roleOptions = [
-  {
-    key: "PROFESSOR",
-    value: "PROFESSOR",
-    text: "Professor"
-  },
-  {
-    key: "HEAD_TA",
-    value: "HEAD_TA",
-    text: "Head TA"
-  },
-  {
-    key: "TA",
-    value: "TA",
-    text: "TA"
-  },
-  {
-    key: "STUDENT",
-    value: "STUDENT",
-    text: "Student"
-  }
-];
 
 const AddForm = (props) => {
   const [invitableUsers, invitableUsersRes] = useLazyQuery(INVITABLE_USERS);
