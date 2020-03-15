@@ -335,7 +335,7 @@ const Roster = (props) => {
                           role={ user.role }
                           disabled={ isOnlyOneLeadership && isLeadershipRole(user.role) }
                           successFunc={ onRoleChangeSuccess }
-                        />
+                          refetch={ refetch }/>
                       }
                     </Table.Cell>
                     {

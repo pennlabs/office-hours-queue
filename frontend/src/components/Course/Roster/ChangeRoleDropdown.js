@@ -18,19 +18,19 @@ const ChangeRoleDropdown = (props) => {
   const [changeCourseUserKind, { loading, data }] = useMutation(CHANGE_COURSE_USER_KIND);
   const [input, setInput] = useState({ role: props.role });
 
-  const handleInputChange = (e, { name, value }) => {
+  const handleInputChange = async (e, { name, value }) => {
     input[name] = value;
     setInput(input);
-    return changeCourseUserKind({
+    await changeCourseUserKind({
       variables: {
         input: {
           courseUserId: props.id,
           kind: value,
         }
       }
-    }).then(() => {
-      props.successFunc();
-    });
+    })
+    await props.refetch()
+    props.successFunc();
   };
 
   const dropdown = (
