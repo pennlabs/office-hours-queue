@@ -30,7 +30,7 @@ const AddCard = (props) => {
         onMouseLeave={ () => setHovered(false) }
         onClick={ props.clickFunc }>
         <Header color="green" style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}
-          content={ props.isStudent ? "Join Course" : "Add Course" }/>
+          content={ props.isStudent ? "Join Course" : "Create Course" }/>
       </Segment>
     </Segment>
   )

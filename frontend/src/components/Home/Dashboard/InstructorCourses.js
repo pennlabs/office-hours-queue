@@ -13,11 +13,19 @@ const InstructorCourses = (props) => {
   const [open, setOpen] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
   const [courses, setCourses] = useState(props.courses);
-  const [success, setSuccess] = useState(false);
+  const [toast, setToast] = useState({ success: true, message: "" });
+  const [toastOpen, setToastOpen] = useState(false);
 
   const handleArchivedChange = () => {
     setShowArchived(!showArchived);
   };
+
+  const updateToast = (name, success) => {
+    toast.success = success;
+    toast.message = success ? `${name} created!` : "There was an error!"
+    setToast(toast);
+    setToastOpen(true);
+  }
 
   /* UPDATE ON PROPS CHANGE */
   useEffect(() => {
@@ -30,7 +38,7 @@ const InstructorCourses = (props) => {
         <ModalAddInstructorCourse
           open={ open }
           closeFunc={ () => setOpen(false) }
-          successFunc={ setSuccess }
+          toastFunc={ updateToast }
           refetch={ props.refetch }/>
         {
           courses.map(course => (
@@ -81,9 +89,9 @@ const InstructorCourses = (props) => {
           ))
         }
       </Grid.Row>
-      <Snackbar open={ success } autoHideDuration={2000} onClose={ () => setSuccess(false) }>
-        <Alert severity="success" onClose={ () => setSuccess(false) }>
-          Course added!
+      <Snackbar open={ toastOpen } autoHideDuration={6000} onClose={ () => setToastOpen(false) }>
+        <Alert severity={ toast.success ? 'success' : 'error' } onClose={ () => setToastOpen(false) }>
+          <span>{ toast.message }</span>
         </Alert>
       </Snackbar>
     </Grid>
