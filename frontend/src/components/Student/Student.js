@@ -21,6 +21,13 @@ const GET_COURSE = gql`
       year
       semester
       inviteOnly
+      leadership {
+        kind
+        user {
+          fullName
+          email
+        }
+      }
     }
   }
 `;
@@ -47,7 +54,8 @@ const Student = (props) => {
         description: data.course.description,
         year: data.course.year,
         semester: data.course.semester,
-        inviteOnly: data.course.inviteOnly
+        inviteOnly: data.course.inviteOnly,
+        leadership: data.course.leadership,
       };
     } else {
       return {}
@@ -65,7 +73,7 @@ const Student = (props) => {
   /* UPDATE STATE ON QUERY */
   return (
     <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
-      <StudentSidebar active={ active } clickFunc={ setActive }/>
+      <StudentSidebar active={ active } clickFunc={ setActive } leadership={ course.leadership }/>
       <Grid.Column width={13}>
         {
           course.department && <Grid.Row>
