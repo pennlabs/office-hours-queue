@@ -236,6 +236,8 @@ class CourseNode(DjangoObjectType):
     course_users = DjangoFilterConnectionField(CourseUserNode)
     invited_course_users = DjangoFilterConnectionField(InvitedCourseUserNode)
     queues = DjangoFilterConnectionField(QueueNode)
+
+    leadership = graphene.List(lambda: CourseUserNode)
     feedback_questions = graphene.List(lambda: FeedbackQuestionNode)
 
     def resolve_course_users(self, info, **kwargs):
@@ -248,8 +250,14 @@ class CourseNode(DjangoObjectType):
             raise user_not_staff_error
         return CourseUser.objects.filter(course=self, **kwargs)
 
+    def resolve_invited_course_users(self, info, **kwargs):
+        return InvitedCourseUser.objects.filter(course=self, **kwargs)
+
     def resolve_queues(self, info, **kwargs):
         return Queue.objects.filter(course=self, **kwargs)
+
+    def resolve_leadership(self, info, **kwargs):
+        return CourseUser.objects.filter(course=self, kind__in=CourseUserKind.leadership())
 
     def resolve_feedback_questions(self, info, **kwargs):
         return FeedbackQuestion.objects.filter(course=self, **kwargs)
