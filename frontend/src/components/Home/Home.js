@@ -98,7 +98,7 @@ const Home = (props) => {
   }, []);
 
   return (
-    <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
+    <Grid columns={2} divided="horizontally" style={{"width":"100%"}} stackable>
       <HomeSidebar active={ active } clickFunc={ setActive }/>
       {
         courses && active === 'dashboard' &&

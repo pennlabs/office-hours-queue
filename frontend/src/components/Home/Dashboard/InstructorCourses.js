@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid } from 'semantic-ui-react';
+import { Grid, Segment } from 'semantic-ui-react';
 import CourseCard from './Cards/CourseCard';
 import ArchivedCourseCard from './Cards/ArchivedCourseCard';
 import AddCard from './Cards/AddCard';
@@ -25,8 +25,8 @@ const InstructorCourses = (props) => {
   }, [props.courses]);
 
   return (
-    <Grid style={{"width":"100%"}}>
-      <Grid.Row columns={4} padded="true">
+    <Grid style={{"width":"100%"}} stackable>
+      <Grid.Row columns={4} padded="true" stackable>
         <ModalAddInstructorCourse
           open={ open }
           closeFunc={ () => setOpen(false) }
@@ -52,11 +52,14 @@ const InstructorCourses = (props) => {
           <AddCard clickFunc={ () => setOpen(true) }/>
         </Grid.Column>
       </Grid.Row>
-
-      {/* ARCHIVED CARDS */}
-      <a style={{"textDecoration":"underline", "cursor":"pointer"}} onClick={ handleArchivedChange }>
+        {
+          courses.filter(course => course.archived).length > 0 &&
+          <Segment basic compact>
+            <a style={{"textDecoration":"underline", "cursor":"pointer"}} onClick={ handleArchivedChange }>
             { showArchived ? "Hide Archived Courses" : "See Archived Courses"}
-      </a>
+            </a>
+          </Segment>
+        }
       <Grid.Row columns={4} padded="true">
         {
           courses.map(course => (

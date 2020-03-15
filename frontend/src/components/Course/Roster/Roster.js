@@ -256,8 +256,8 @@ const Roster = (props) => {
               <Table.HeaderCell width={3}>Invited By</Table.HeaderCell>
               {
                 isLeadershipRole(props.courseUserKind) && [
-                  <Table.HeaderCell width={1}>Resend</Table.HeaderCell>,
-                  <Table.HeaderCell width={1}>Revoke</Table.HeaderCell>,
+                  <Table.HeaderCell textAlign="center" width={1}>Resend</Table.HeaderCell>,
+                  <Table.HeaderCell textAlign="center" width={1}>Revoke</Table.HeaderCell>,
                 ]
               }
             </Table.Row>

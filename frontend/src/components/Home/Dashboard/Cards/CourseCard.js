@@ -12,20 +12,19 @@ export default class CourseCard extends React.Component {
 
     return (
       <Segment basic>
-        <Segment attached="top" color="blue" style={{"height":"70px", "width":"192px"}}>
+        <Segment attached="top" color="blue" style={{height:"70px"}}>
           <Link to={ path }>
-          <Header
-            content={this.props.department + " " + this.props.courseCode}
-            subheader={
-              this.props.courseTitle.length <= 20 ? this.props.courseTitle :
-              this.props.courseTitle.substring(0, 20) + "..." }/>
+          <Header style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
+            { `${this.props.department} ${this.props.courseCode}`}
+            <Header.Subheader style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
+              { this.props.courseTitle }
+            </Header.Subheader>
+          </Header>
             </Link>
         </Segment>
-        <Segment attached="bottom" secondary textAlign="right" style={{"height":"40px", "width":"192px"}}>
-          <Header as="h6">
-            <Header.Content>
-              { this.props.semester } { this.props.year }
-            </Header.Content>
+        <Segment attached="bottom" secondary textAlign="right" style={{height:"40px"}}>
+          <Header as="h6" style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
+            { this.props.semester } { this.props.year }
           </Header>
         </Segment>
       </Segment>

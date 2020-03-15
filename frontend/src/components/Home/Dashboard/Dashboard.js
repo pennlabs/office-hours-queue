@@ -24,7 +24,7 @@ const Dashboard = (props) => {
     <Grid.Column width={13}>
     {
       courses &&
-      <Grid padded>
+      <Grid padded stackable>
         <Segment basic padded>
           <Header as="h2">
             <Header.Content>

@@ -18,8 +18,8 @@ const StudentCourses = (props) => {
   }, [props.courses]);
 
   return (
-    <Grid style={{"width":"100%"}}>
-      <Grid.Row columns={4} padded="true">
+    <Grid style={{"width":"100%"}} stackable>
+      <Grid.Row columns={4} padded="true" stackable>
         <ModalAddStudentCourse
             open={ open }
             closeFunc={ () => setOpen(false) }

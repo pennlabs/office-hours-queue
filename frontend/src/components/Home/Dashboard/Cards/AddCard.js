@@ -8,18 +8,15 @@ export default class AddCard extends React.Component {
       <Segment basic>
         <Segment inverted color="green"
           style={{
-            "height":"110px",
-            "width":"192px",
-            "display": "flex",
-            "alignItems": "center",
-            "justifyContent": "center",
-            "cursor": "pointer",
+            height:"110px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
           }}
-          onClick={this.props.clickFunc}
-          >
-          <Header
-            content="Add Course"
-          />
+          onClick={this.props.clickFunc}>
+          <Header style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}
+            content="Add Course"/>
         </Segment>
       </Segment>
     );
