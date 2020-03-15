@@ -4,7 +4,7 @@ from django.db import transaction
 
 from ohq.apps.api.schema.types import *
 from ohq.apps.api.util.errors import *
-from ohq.apps.api.util.sendgrid import send_invitation_email
+from ohq.apps.api.util.sendgrid import send_invitation_email, send_added_to_course_email
 
 
 class CreateCourseInput(graphene.InputObjectType):
@@ -152,7 +152,7 @@ class AddUserToCourse(graphene.Mutation):
                 kind=input.kind,
                 invited_by=user,
             )
-
+        send_added_to_course_email(course_user)
         return AddUserToCourseResponse(course_user=course_user)
 
 
