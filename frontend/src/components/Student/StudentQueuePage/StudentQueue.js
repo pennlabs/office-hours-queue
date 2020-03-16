@@ -20,7 +20,6 @@ const StudentQueue = (props) => {
   }
 
   const errorMessage = (error) => {
-    console.log(error);
     if (!error.message || error.message.split(",").length < 2) return "There was an error!";
     return error.message.split(":")[1];
   }
