@@ -187,14 +187,15 @@ class QueueNode(DjangoObjectType):
 
     number_active_questions = graphene.Int(required=True)
     questions = DjangoFilterConnectionField(QuestionNode)
+    queueQuestions = DjangoFilterConnectionField(QuestionNode)
     start_end_times = graphene.List(StartEndTimes, required=True)
 
     def resolve_number_active_questions(self, info, **kwargs):
         return Question.objects.filter(
             queue=self,
             time_started__isnull=True,
-            time_withdrawn__isnull=True,
             time_rejected__isnull=True,
+            time_withdrawn__isnull=True,
             **kwargs,
         ).count()
 
@@ -207,6 +208,21 @@ class QueueNode(DjangoObjectType):
         ).exists():
             raise user_not_staff_error
         return Question.objects.filter(queue=self, **kwargs)
+
+    def resolve_queue_questions(self, info, **kwargs):
+        # Restrict questions to staff
+        if not CourseUser.objects.filter(
+                user=info.context.user.get_user(),
+                course=self.course,
+                kind__in=CourseUserKind.staff(),
+        ).exists():
+            raise user_not_staff_error
+        return Question.objects.filter(
+            queue=self,
+            time_rejected__isnull=True,
+            time_withdrawn__isnull=True,
+            **kwargs,
+        )
 
     def resolve_start_end_times(self, info, **kwargs):
         # TODO change days of the week to an enum
