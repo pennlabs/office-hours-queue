@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Roster from './Roster/Roster';
 import CourseSettings from './CourseSettings/CourseSettings';
 import InstructorQueuePage from './InstructorQueuePage/InstructorQueuePage';
@@ -26,8 +26,10 @@ const GET_COURSE = gql`
       semester
       inviteOnly
       leadership {
+        id
         kind
         user {
+          id
           fullName
           email
         }
@@ -39,7 +41,7 @@ const GET_COURSE = gql`
 const Course = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
   const courseId = props.location.state ? props.location.state.courseId : "";
-  const courseUserKind = props.location.state ? props.location.state.kind : "";
+  const courseUserId = props.location.state ? props.location.state.courseUserId : "";
   const courseQuery = useQuery(GET_COURSE, { variables: {
     id: courseId
   }});
@@ -47,6 +49,7 @@ const Course = (props) => {
   /* STATE */
   const [active, setActive] = useState('queues');
   const [course, setCourse] = useState({});
+  const [leader, setLeader] = useState(false);
 
   /* LOAD DATA FUNCTIONS */
   const loadCourse = (data) => {
@@ -72,13 +75,14 @@ const Course = (props) => {
     const newCourse = loadCourse(courseQuery.data);
     if (JSON.stringify(newCourse) !== JSON.stringify(course)) {
       setCourse(newCourse);
+      setLeader(newCourse.leadership.map(courseUser => courseUser.id).includes(courseUserId));
     }
   }
 
   /* UPDATE STATE ON QUERY */
   return (
-    <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
-      <CourseSidebar active={ active } clickFunc={ setActive } kind={ courseUserKind } leadership={ course.leadership }/>
+    <Grid columns={2} divided="horizontally" style={{"width":"100%"}} stackable>
+      <CourseSidebar active={ active } clickFunc={ setActive } leader={ leader } leadership={ course.leadership }/>
       <Grid.Column width={13}>
         {
           course.department && <Grid.Row>
@@ -94,15 +98,17 @@ const Course = (props) => {
         }
         {
           courseQuery.data && active === 'roster' &&
-          <Roster course={ course } courseUserKind={ courseUserKind } courseRefetch={ courseQuery.refetch }/>
+          <Roster course={ course }
+            courseUserId={ courseUserId }
+            courseRefetch={ courseQuery.refetch }/>
         }
         {
           courseQuery.data && active === 'course_settings' &&
           <CourseSettings course={ course } refetch={ courseQuery.refetch }/>
         }
         {
-          courseQuery.data && course && active === 'queues' &&
-          <InstructorQueuePage course={ course } />
+          courseQuery.data && active === 'queues' &&
+          <InstructorQueuePage course={ course } leader={ leader }/>
         }
         {
           active === 'analytics' &&

@@ -10,7 +10,7 @@ import Alert from '@material-ui/lab/Alert';
 
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
-import { isLeadershipRole, prettifyRole } from "../../../utils/enums";
+import { prettifyRole, isLeadershipRole } from "../../../utils/enums";
 import ChangeRoleDropdown from "./ChangeRoleDropdown";
 
 /* GRAPHQL QUERIES/MUTATIONS */
@@ -18,6 +18,9 @@ const GET_USERS = gql`
 query GetUsers($id: ID!) {
   course(id: $id) {
     id
+    leadership {
+      id
+    }
     courseUsers {
       edges {
         node {
@@ -61,6 +64,7 @@ const Roster = (props) => {
   const [tableState, setTableState] = useState({ direction: 'ascending', column: 'fullName' });
   const [showInvited, setShowInvited] = useState(false);
   const [toast, setToast] = useState({ open: false, success: true, message: "" });
+  const [leader, setLeader] = useState(null);
 
   /* MODAL FUNCTIONS */
   const triggerModal = () => {
@@ -138,6 +142,7 @@ const Roster = (props) => {
     if (JSON.stringify(newUsers) !== JSON.stringify(users)) {
       setUsers(newUsers);
       setFilteredUsers(newUsers);
+      setLeader(data.course.leadership.map(courseUser => courseUser.id).includes(props.courseUserId));
     }
 
     if (JSON.stringify(newInvitedUsers) !== JSON.stringify(invitedUsers)) {
@@ -231,7 +236,7 @@ const Roster = (props) => {
         <Segment basic>
           <RosterForm
             showShowInvitedButton={ invitedUsers.length > 0 }
-            showInviteButton={ isLeadershipRole(props.courseUserKind) }
+            showInviteButton={ leader }
             invitedShown={ showInvited }
             filterFunc={ filterUsers }
             inviteFunc={ triggerModal }
@@ -255,7 +260,7 @@ const Roster = (props) => {
               <Table.HeaderCell width={2}>Role</Table.HeaderCell>
               <Table.HeaderCell width={3}>Invited By</Table.HeaderCell>
               {
-                isLeadershipRole(props.courseUserKind) && [
+                leader && [
                   <Table.HeaderCell textAlign="center" width={1}>Resend</Table.HeaderCell>,
                   <Table.HeaderCell textAlign="center" width={1}>Revoke</Table.HeaderCell>,
                 ]
@@ -270,7 +275,7 @@ const Roster = (props) => {
                 <Table.Cell>{ prettifyRole(user.role) }</Table.Cell>
                 <Table.Cell>{ user.invitedBy.preferredName }</Table.Cell>
                 {
-                  isLeadershipRole(props.courseUserKind) && [
+                  leader && [
                     <Table.Cell textAlign="center">
                       <ResendButton id={user.id} successFunc={setInviteResendToast}/>
                     </Table.Cell>,
@@ -315,7 +320,7 @@ const Roster = (props) => {
                   width={2}>Role
                 </Table.HeaderCell>
                 {
-                  isLeadershipRole(props.courseUserKind) &&
+                  leader &&
                   <Table.HeaderCell width={1}>Remove</Table.HeaderCell>
                 }
               </Table.Row>
@@ -328,7 +333,7 @@ const Roster = (props) => {
                     <Table.Cell>{ user.preferredName }</Table.Cell>
                     <Table.Cell>{ user.email }</Table.Cell>
                     <Table.Cell>
-                      { !isLeadershipRole(props.courseUserKind) || user.role === "STUDENT" ?
+                      { !leader || user.role === "STUDENT" ?
                         prettifyRole(user.role) :
                         <ChangeRoleDropdown
                           id={ user.id }
@@ -339,7 +344,7 @@ const Roster = (props) => {
                       }
                     </Table.Cell>
                     {
-                      isLeadershipRole(props.courseUserKind) &&
+                      leader &&
                       <Table.Cell textAlign="center">
                         <RemoveButton
                           disabled={ isOnlyOneLeadership && isLeadershipRole(user.role) }

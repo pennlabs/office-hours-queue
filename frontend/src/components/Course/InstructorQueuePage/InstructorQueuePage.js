@@ -38,6 +38,7 @@ const InstructorQueuePage = (props) => {
   const [queues, setQueues] = useState([]);
   const [activeQueueId, setActiveQueueId] = useState(null);
   const [active, setActive] = useState('queues');
+  const [leader, setLeader] = useState(props.leader);
 
   /* TAG FUNCTION */
   const getTags = (queues) => {
@@ -90,13 +91,19 @@ const InstructorQueuePage = (props) => {
     }
   }
 
+  useEffect(() => {
+    setLeader(props.leader);
+  }, [props.leader]);
+
   return (
     <Grid>
       {
         active === 'queues' && data &&
         <InstructorQueues queues={ queues }
           editFunc={ onQueueSettings }
-          createFunc={ () => { setActive('create') } }/>
+          createFunc={ () => { setActive('create') } }
+          courseUserKind={ props.courseUserKind }
+          leader={ leader }/>
       }
       {
         active === 'settings' &&

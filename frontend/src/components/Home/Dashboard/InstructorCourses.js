@@ -52,7 +52,8 @@ const InstructorCourses = (props) => {
                 semester={course.semester}
                 year={course.year}
                 id={course.id}
-                kind={course.kind}/>
+                kind={course.kind}
+                courseUserId={course.courseUserId}/>
             </Grid.Column>
           ))
         }

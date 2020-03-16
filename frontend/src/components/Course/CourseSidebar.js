@@ -2,14 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { Segment, Menu, Grid, Image, Header, List, Icon } from 'semantic-ui-react';
 import { withFirebase } from '../Firebase';
 import { Link } from 'react-router-dom';
-import { isLeadershipRole, prettifyRole } from "../../utils/enums";
+import { prettifyRole } from "../../utils/enums";
 
 const CourseSidebar = (props) => {
-
   const [leadership, setLeadership] = useState(props.leadership);
+  const [leader, setLeader] = useState(props.leader);
+
   useEffect(() => {
     setLeadership(props.leadership)
-  }, [props.leadership])
+  }, [props.leadership]);
+
+  useEffect(() => {
+    setLeader(props.leader)
+  }, [props.leader])
 
   return (
     <Grid.Column width={3}>
@@ -43,7 +48,7 @@ const CourseSidebar = (props) => {
             active={props.active === 'summary'}
             color='blue'/>
           {
-            isLeadershipRole(props.kind) &&
+            leader &&
             <Menu.Item
               name="Course Settings"
               icon='settings'

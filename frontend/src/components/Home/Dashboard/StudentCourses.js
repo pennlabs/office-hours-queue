@@ -27,7 +27,7 @@ const StudentCourses = (props) => {
             successFunc={ setSuccess }/>
           {
             courses.map((course) => (
-              <Grid.Column>
+              <Grid.Column width={4}>
                 <CourseCard
                   department={course.department}
                   courseCode={course.courseCode}

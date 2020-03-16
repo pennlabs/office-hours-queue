@@ -22,6 +22,7 @@ const CURRENT_USER = gql`
       courseUsers {
         edges {
           node {
+            id
             course {
               id
               department
@@ -54,6 +55,7 @@ const Home = (props) => {
     if (!data) return;
     return data.currentUser.courseUsers.edges.map((courseUser) => {
       return {
+        courseUserId: courseUser.node.id,
         id: courseUser.node.course.id,
         department: courseUser.node.course.department,
         courseCode: courseUser.node.course.courseCode,
