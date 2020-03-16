@@ -17,7 +17,7 @@ const Questions = (props) => {
   return (
     <Grid.Row>
       {
-        active && filteredQuestions && filteredQuestions.length !== 0 &&
+        filteredQuestions && filteredQuestions.length !== 0 &&
         filteredQuestions.map(question => (
           <Grid.Row>
             <QuestionCard key={ question.id } question={ question } refetch={ props.refetch }/>
@@ -31,7 +31,7 @@ const Questions = (props) => {
         </Grid.Row>
       }
       {
-        !active &&
+        !active && filteredQuestions.length === 0 &&
         <Grid.Row style={{"marginTop":"10px"}}>
           <Message header="Closed Queue" content="This queue currently closed. You can open it by editing the queue." error/>
         </Grid.Row>
