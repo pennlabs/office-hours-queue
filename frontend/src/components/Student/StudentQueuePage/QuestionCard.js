@@ -68,7 +68,7 @@ const QuestionCard = (props) => {
           }
         </Header>
           {
-            !question.timeStarted &&
+            !question.timeStarted && question.tags.length > 0 &&
             <Popup
               trigger= { <Icon name="tags"/> }
               content= {
