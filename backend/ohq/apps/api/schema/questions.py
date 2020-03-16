@@ -65,8 +65,57 @@ class CreateQuestion(graphene.Mutation):
                 asked_by=user,
                 video_chat_url=input.video_chat_url,
             )
-
         return CreateQuestionResponse(question=question)
+
+
+class UpdateQuestionInput(graphene.InputObjectType):
+    question_id = graphene.ID(required=True)
+    text = graphene.String(required=False)
+    tags = graphene.List(graphene.String, required=False)
+    # TODO add way to remove video chat url
+    video_chat_url = graphene.String(required=False)
+
+
+class UpdateQuestionResponse(graphene.ObjectType):
+    question = graphene.Field(QuestionNode)
+
+
+class UpdateQuestion(graphene.Mutation):
+    class Arguments:
+        input = UpdateQuestionInput(required=True)
+
+    Output = UpdateQuestionResponse
+
+    @staticmethod
+    def mutate(root, info, input):
+        if not input:
+            raise empty_update_error
+        if input.text is not None and not input.text:
+            raise empty_string_error
+        if input.text is not None and len(input.text) > 250:
+            raise question_too_long_error
+        with transaction.atomic():
+            user = info.context.user.get_user()
+            question = Question.objects.get(pk=from_global_id(input.question_id)[1])
+            queue = question.queue
+            if question.asked_by != user:
+                raise user_not_asker_error
+            if queue.course.archived:
+                raise course_archived_error
+            if question.state is not QuestionState.ACTIVE:
+                raise question_not_active_error
+            if input.tags is not None and any(tag not in queue.tags for tag in input.tags):
+                raise unrecognized_tag_error
+
+            if input.text is not None:
+                question.text = input.text
+            if input.tags is not None:
+                question.tags = input.tags
+            if input.video_chat_url is not None:
+                question.video_chat_url = input.video_chat_url
+            question.time_last_updated = datetime.now()
+            question.save()
+        return UpdateQuestionResponse(question=question)
 
 
 class WithdrawQuestionInput(graphene.InputObjectType):

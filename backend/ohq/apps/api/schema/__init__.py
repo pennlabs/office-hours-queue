@@ -80,6 +80,7 @@ class Mutation(graphene.ObjectType):
     answer_feedback_questions = feedback_questions.AnswerFeedbackQuestions.Field()
 
     create_question = questions.CreateQuestion.Field()
+    update_question = questions.UpdateQuestion.Field()
     withdraw_question = questions.WithdrawQuestion.Field()
     reject_question = questions.RejectQuestion.Field()
     start_question = questions.StartQuestion.Field()
