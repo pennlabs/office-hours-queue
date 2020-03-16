@@ -73,7 +73,7 @@ const SignInGoogleBase = (props) => {
               "justifyContent":"center"
             }}>
             <Grid columns={1} textAlign="center">
-              <Grid.Row><img src="ohq-login.png" width="600px" alt=""/></Grid.Row>
+              <Grid.Row><img src="ohq-login.pdf" alt=""/></Grid.Row>
               <Grid.Row><GoogleButton onClick={onSubmit}/></Grid.Row>
             </Grid>
           </div>
