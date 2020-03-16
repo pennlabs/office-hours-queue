@@ -40,7 +40,7 @@ const StudentQueue = (props) => {
         </Header.Subheader>
       </Header>
       <Label
-        content={ queue.numberActiveQuestions + " user(s)" }
+        content={ queue.numberActiveQuestions + ` user${queue.numberActiveQuestions === 1 ? '' : 's'}` }
         color="blue"
         icon="user"/>
       {
