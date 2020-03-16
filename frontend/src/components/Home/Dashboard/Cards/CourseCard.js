@@ -27,15 +27,10 @@ export default class CourseCard extends React.Component {
       state: { courseId: this.props.id, courseUserId: this.props.courseUserId }
     };
 
-  const [hovered, setHovered] = useState(false);
-
-  return (      
+  return (
     <Link to={ path }>
       <Segment basic>
-        <Segment
-        onMouseEnter={ () => setHovered(true) }
-        onMouseLeave={ () => setHovered(false) }>
-        <Segment attached="top" color= {hovered ? "gray" : "blue"} style={{height:"70px"}}>
+        <Segment attached="top" style={{height:"70px"}}>
           <Header style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
             { `${this.props.department} ${this.props.courseCode}`}
             <Header.Subheader style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
@@ -47,7 +42,6 @@ export default class CourseCard extends React.Component {
           <Header as="h6" style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
             { this.props.semester } { this.props.year }
           </Header>
-        </Segment>
         </Segment>
       </Segment>
     </Link>
