@@ -13,8 +13,8 @@ const CourseCard = (props) => {
   return (
     <Segment basic>
       <Link to={ path }>
-        <Segment.Group raised={ hover }>
-          <Segment attached="top" color="blue" style={{height:"70px"}} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+        <Segment.Group raised={ hover } onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+          <Segment attached="top" color="blue" style={{height:"70px"}}>
             <Header style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
               { `${props.department} ${props.courseCode}`}
               <Header.Subheader style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
