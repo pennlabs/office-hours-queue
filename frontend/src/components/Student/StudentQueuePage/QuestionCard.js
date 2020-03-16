@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Segment, Header, Button, Popup, Icon, Message } from 'semantic-ui-react';
+import { Segment, Header, Button, Popup, Icon } from 'semantic-ui-react';
 import EditQuestionModal from './EditQuestionModal';
 import DeleteQuestionModal from './DeleteQuestionModal';
 
