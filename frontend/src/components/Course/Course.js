@@ -106,7 +106,7 @@ const Course = (props) => {
             courseRefetch={ courseQuery.refetch }/>
         }
         {
-          courseQuery.data && active === 'course_settings' &&
+          courseQuery.data && active === 'settings' &&
           <CourseSettings course={ course } refetch={ courseQuery.refetch }/>
         }
         {

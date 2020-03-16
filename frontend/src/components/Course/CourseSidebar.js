@@ -58,7 +58,7 @@ const CourseSidebar = (props) => {
               style={ noWrapStyle }
               name="Course Settings"
               icon='settings'
-              onClick={ () => props.clickFunc('course_settings') }
+              onClick={ () => props.clickFunc('settings') }
               active={props.active === 'settings'}
               color='blue'/>
           }
