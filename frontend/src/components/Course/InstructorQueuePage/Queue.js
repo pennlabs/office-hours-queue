@@ -120,10 +120,10 @@ const Queue = (props) => {
         </Header.Subheader>
       </Header>
       <Label
-        content={ filter(questions, { tags: [] }).length + " user(s)" }
+        content={queue.numberActiveQuestions + " user(s)" }
         color="blue"
         icon="user"/>
-      <Label content="N/A mins" color="blue" icon="clock"/>
+      <Label content={queue.estimatedWaitTime + " mins"} color="blue" icon="clock"/>
       <Label as="a"
         content="Edit"
         color="grey"

@@ -83,6 +83,7 @@ const StudentQueuePage = (props) => {
         description: item.node.description,
         tags: item.node.tags,
         activeOverrideTime: item.node.activeOverrideTime,
+        estimatedWaitTime: item.node.estimatedWaitTime,
         numberActiveQuestions: item.node.numberActiveQuestions
       };
     });

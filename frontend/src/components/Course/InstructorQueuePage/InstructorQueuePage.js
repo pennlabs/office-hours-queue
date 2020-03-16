@@ -21,6 +21,8 @@ query GetQueues($id: ID!) {
           description
           tags
           activeOverrideTime
+          estimatedWaitTime
+          numberActiveQuestions
         }
       }
     }
@@ -64,7 +66,9 @@ const InstructorQueuePage = (props) => {
         description: item.node.description,
         tags: item.node.tags,
         archived: item.node.archived,
-        activeOverrideTime: item.node.activeOverrideTime
+        activeOverrideTime: item.node.activeOverrideTime,
+        estimatedWaitTime: item.node.estimatedWaitTime,
+        numberActiveQuestions: item.node.numberActiveQuestions
       };
     });
   };
