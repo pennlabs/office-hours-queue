@@ -23,11 +23,13 @@ const QuestionCard = (props) => {
         queue={ props.queue }
         question={ props.question }
         setOpen={ setOpenEdit }
+        toastFunc={ props.toastFunc }
         refetch={ props.refetch}/>
       <DeleteQuestionModal open={ openDelete }
         queue={ props.queue }
         question={ props.question }
         setOpen={ setOpenDelete }
+        toastFunc={ props.toastFunc }
         refetch={ props.refetch }/>
       <Segment attached="top" color="blue">
         <Grid>

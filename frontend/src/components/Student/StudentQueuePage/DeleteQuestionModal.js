@@ -19,15 +19,21 @@ const DeleteQuestionModal = (props) => {
   const [withdrawQuestion, { loading, error, data }] = useMutation(WITHDRAW_QUESTION);
 
   const onDelete = async () => {
-    await withdrawQuestion({
-      variables: {
-        input: {
-          questionId: question.id
+    try {
+      await withdrawQuestion({
+        variables: {
+          input: {
+            questionId: question.id
+          }
         }
-      }
-    });
-    await props.refetch();
-    props.setOpen(false);
+      });
+      await props.refetch();
+      props.setOpen(false);
+      props.toastFunc("Question withdrawn!", null);
+    } catch (e) {
+      props.setOpen(false);
+      props.toastFunc(null, e);
+    }
   };
 
   return (
@@ -35,7 +41,7 @@ const DeleteQuestionModal = (props) => {
       <Modal.Header>Withdraw Question</Modal.Header>
       <Modal.Content>
           You are about to withdraw your question from <b>{queue.name}</b>:<br/>
-          <Segment inverted>{`"${question.text}"`}</Segment>
+          <Segment inverted color="red">{`"${question.text}"`}</Segment>
           <b>Once you withdraw from the queue, you cannot regain your spot!</b>
       </Modal.Content>
       <Modal.Actions>

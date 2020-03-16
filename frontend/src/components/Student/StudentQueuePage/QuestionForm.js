@@ -22,12 +22,14 @@ const QuestionForm = (props) => {
     tags: [],
   });
   const [charCount, setCharCount] = useState(0);
+  const [disabled, setDisabled] = useState(true);
 
   const handleInputChange = (e, { name, value }) => {
     if (name === 'text' && value.length > 250) return;
     input[name] = value;
     setInput(input);
-    setCharCount(input.text.length)
+    setCharCount(input.text.length);
+    setDisabled(!input.text || (queue.requireVideoChatUrlOnQuestions && !input.videoChatUrl))
   };
 
   const getDropdownOptions = (tags) => {
@@ -48,9 +50,9 @@ const QuestionForm = (props) => {
         }
       });
       await props.refetch();
-      props.toastFunc(true, null);
+      props.toastFunc("Question added to queue!", null);
     } catch (e) {
-      props.toastFunc(false, e);
+      props.toastFunc(null, e);
     } 
   };
 
@@ -104,7 +106,7 @@ const QuestionForm = (props) => {
         <Button compact
           content="Submit"
           color="blue"
-          disabled={ loading }
+          disabled={ loading || disabled }
           onClick={ onSubmit }/>
       </Segment>
     </div>

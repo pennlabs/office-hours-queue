@@ -12,8 +12,8 @@ const StudentQueue = (props) => {
   const [toastOpen, setToastOpen] = useState(false);
 
   const updateToast = (success, error) => {
-    toast.success = success;
-    toast.message = success ? `Question added to ${queue.name}!` : errorMessage(error);
+    toast.success = success !== null;
+    toast.message = success ? success : errorMessage(error);
     setToast(toast);
     setToastOpen(true);
   }
@@ -61,7 +61,7 @@ const StudentQueue = (props) => {
         }
         {
           queue.activeOverrideTime && props.hasQuestion && question &&
-          <QuestionCard question={ question } queue={ queue } refetch={ props.refetch }/>
+          <QuestionCard question={ question } queue={ queue } refetch={ props.refetch } toastFunc={ updateToast }/>
         }
       </Grid.Row>
       <Snackbar open={ toastOpen } autoHideDuration={6000} onClose={ () => setToastOpen(false) }>

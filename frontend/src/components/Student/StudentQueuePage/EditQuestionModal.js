@@ -59,8 +59,11 @@ const EditQuestionModal = (props) => {
         }
       });
       props.refetch();
+      props.setOpen(false);
+      props.toastFunc("Question edited!", null);
     } catch (e) {
-      console.log(e);
+      props.setOpen(false);
+      props.toastFunc(null, e);
     }
   };
 
