@@ -185,8 +185,18 @@ class QueueNode(DjangoObjectType):
         )
         interfaces = (relay.Node,)
 
+    number_active_questions = graphene.Int(required=True)
     questions = DjangoFilterConnectionField(QuestionNode)
     start_end_times = graphene.List(StartEndTimes, required=True)
+
+    def resolve_number_active_questions(self, info, **kwargs):
+        return Question.objects.filter(
+            queue=self,
+            time_started__isnull=True,
+            time_withdrawn__isnull=True,
+            time_rejected__isnull=True,
+            **kwargs,
+        ).count()
 
     def resolve_questions(self, info, **kwargs):
         # Restrict questions to staff
