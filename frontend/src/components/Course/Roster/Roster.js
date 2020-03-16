@@ -42,7 +42,7 @@ query GetUsers($id: ID!) {
           email
           kind
           invitedBy {
-            preferredName
+            fullName
           }
         }
       }
