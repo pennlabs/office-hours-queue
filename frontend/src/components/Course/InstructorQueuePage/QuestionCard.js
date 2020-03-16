@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Segment, Header, Icon, Button, Popup, Grid } from 'semantic-ui-react';
-import DeleteQuestionModal from './RejectQuestionModal';
+import RejectQuestionModal from './RejectQuestionModal';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks'
 
@@ -72,7 +72,7 @@ const QuestionCard = (props) => {
 
   return (
     question && <div style={{"marginTop":"10px"}}>
-      <DeleteQuestionModal open={open} question={question} closeFunc={triggerModal} refetch={ props.refetch }/>
+      <RejectQuestionModal open={open} question={question} closeFunc={triggerModal} refetch={ props.refetch }/>
         <Segment attached="top" color="blue" clearing>
           <Grid columns={2}>
             <Grid.Row>
