@@ -96,7 +96,7 @@ const QuestionCard = (props) => {
         <Segment attached="bottom" secondary textAlign="right" style={{"height":"50px"}}>
           <Grid columns={2}>
             <Grid.Row>
-              <Grid.Column textAlign="left">
+              <Grid.Column textAlign="left" width={11}>
                 <Header as="h5">
                   {
                     !question.timeStarted &&
@@ -110,9 +110,10 @@ const QuestionCard = (props) => {
                       <Button compact
                         size='mini'
                         color='green'
+                        icon={ question.videoChatUrl ? 'video' : null }
                         content='Answer'
-                        disabled={ isLoading() }
-                        onClick={ onAnswer }/>
+                        onClick={ () => {onAnswer(); if (question.videoChatUrl) window.open(question.videoChatUrl)} }
+                        disabled={ isLoading() }/>
                     </Header.Content>
                   }
                   {
@@ -127,8 +128,8 @@ const QuestionCard = (props) => {
                     </Header.Content>
                   }
                   {
-                    question.videoChatUrl &&
-                    <a href={ question.videoChatUrl } onClick={ () => { if (!question.timeStarted) onAnswer() } } target="_blank">
+                    question.timeStarted && question.videoChatUrl &&
+                    <a href={ question.videoChatUrl } target="_blank">
                       <Button compact
                         size='mini'
                         color='blue'
@@ -137,7 +138,7 @@ const QuestionCard = (props) => {
                   }
                 </Header>
               </Grid.Column>
-              <Grid.Column>
+              <Grid.Column width={5}>
                 {
                   question.timeStarted &&
                   <Popup wide
