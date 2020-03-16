@@ -48,10 +48,10 @@ const DeleteQuestionModal = (props) => {
 
   return (
     question && <Modal open={ props.open }>
-        <Modal.Header>Delete Question</Modal.Header>
+        <Modal.Header>Reject Question</Modal.Header>
         <Modal.Content>
           <Modal.Description>
-            You are about to delete the following question from
+            You are about to reject the following question from
             <b>{" " + question.askedBy.preferredName}</b>:<br/>
             <Segment inverted color="blue">{`"${question.text}"`}</Segment>
             <Form>
@@ -63,12 +63,15 @@ const DeleteQuestionModal = (props) => {
                    selection
                    onChange={handleInputChange}/>
               </Form.Field>
-              <Form.Field>
-                <Form.TextArea
-                  disabled={ otherDisabled }
-                  name="rejectedReasonOther"
-                  onChange={handleInputChange}/>
-              </Form.Field>
+              { input.rejectedReason === "OTHER" &&
+                <Form.Field>
+                  <Form.TextArea
+                    disabled={otherDisabled}
+                    name="rejectedReasonOther"
+                    onChange={handleInputChange}
+                    placeholder={'Please add additional explanation'}/>
+                </Form.Field>
+              }
             </Form>
           </Modal.Description>
         </Modal.Content>

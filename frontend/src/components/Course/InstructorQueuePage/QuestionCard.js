@@ -97,7 +97,7 @@ const QuestionCard = (props) => {
                 <Button compact
                   size='mini'
                   color='red'
-                  content='Delete'
+                  content='Reject'
                   disabled={ isLoading() }
                   onClick={ triggerModal }/>
                 <Button compact
