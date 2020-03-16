@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Grid, Message } from 'semantic-ui-react';
+import _ from 'lodash';
 import QuestionCard from './QuestionCard';
 
 const Questions = (props) => {
@@ -18,7 +19,7 @@ const Questions = (props) => {
     <Grid.Row>
       {
         filteredQuestions && filteredQuestions.length !== 0 &&
-        filteredQuestions.map(question => (
+        _.sortBy(filteredQuestions, "timeAsked").map(question => (
           <Grid.Row>
             <QuestionCard key={ question.id } question={ question } refetch={ props.refetch }/>
           </Grid.Row>
@@ -33,7 +34,7 @@ const Questions = (props) => {
       {
         !active && filteredQuestions.length === 0 &&
         <Grid.Row style={{"marginTop":"10px"}}>
-          <Message header="Closed Queue" content="This queue currently closed. You can open it by editing the queue." error/>
+          <Message header="Closed Queue" content="This queue currently closed. You can open it above." error/>
         </Grid.Row>
       }
     </Grid.Row>
