@@ -11,26 +11,25 @@ export default class CourseCard extends React.Component {
     };
 
     return (
-      <Segment
-          as={Link}
-          style={{display:'block'}} 
-          to={path}>
-        <Segment attached="top" color="blue" style={{height:"70px"}}>
-          {/* <Link to={ path }> */}
-            <Header style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
-              { `${this.props.department} ${this.props.courseCode}`}
-              <Header.Subheader style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
-                { this.props.courseTitle }
-              </Header.Subheader>
+      <Link to={ path }>
+        <Segment basic>
+          <Segment attached="top" color="blue" style={{height:"70px"}}>
+            {/*  */}
+              <Header style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
+                { `${this.props.department} ${this.props.courseCode}`}
+                <Header.Subheader style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
+                  { this.props.courseTitle }
+                </Header.Subheader>
+              </Header>
+            {/* </Link> */}
+          </Segment>
+          <Segment attached="bottom" secondary textAlign="right" style={{height:"40px"}}>
+            <Header as="h6" style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
+              { this.props.semester } { this.props.year }
             </Header>
-          {/* </Link> */}
+          </Segment>
         </Segment>
-        <Segment attached="bottom" secondary textAlign="right" style={{height:"40px"}}>
-          <Header as="h6" style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
-            { this.props.semester } { this.props.year }
-          </Header>
-        </Segment>
-      </Segment>
+      </Link>
     );
   }
 }
