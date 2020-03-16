@@ -44,7 +44,7 @@ const StudentQueue = (props) => {
         color="blue"
         icon="user"
       />
-      // <Label content={ `${queue.estimatedWaitTime} mins`} color="blue" icon="clock"/>
+      <Label content={ `${queue.estimatedWaitTime} mins`} color="blue" icon="clock"/>
       <Grid.Row>
         {
           !queue.activeOverrideTime &&
