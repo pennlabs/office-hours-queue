@@ -24,11 +24,22 @@ const FINISH_QUESTION = gql`
   }
 `;
 
+const UNDO_START_QUESTION = gql`
+  mutation UndoStartQuestion($input: UndoStartQuestionInput!) {
+    undoStartQuestion(input: $input) {
+      question {
+        id
+      }
+    }
+  }
+`;
+
 const QuestionCard = (props) => {
   const [question, setQuestion] = useState(props.question);
   const [open, setOpen] = useState(false);
   const [startQuestion, startQuestionRes] = useMutation(START_QUESTION);
   const [finishQuestion, finishQuestionRes] = useMutation(FINISH_QUESTION);
+  const [undoStartQuestion, undoStartQuestionRes] = useMutation(UNDO_START_QUESTION);
 
   const timeString = (date, isLong) => {
     if (isLong) return new Date(date).toLocaleString('en-US', {dateStyle: 'short', timeStyle: 'short'});
@@ -61,8 +72,20 @@ const QuestionCard = (props) => {
     props.refetch();
   };
 
+  const onUndo = async () => {
+    await undoStartQuestion({
+      variables: {
+        input: {
+          questionId: question.id
+        }
+      }
+    })
+    props.refetch();
+  }
+
   const isLoading = () => {
-    return startQuestionRes && startQuestionRes.loading && finishQuestionRes && finishQuestionRes.loading;
+    return (startQuestionRes && startQuestionRes.loading) || (finishQuestionRes && 
+      finishQuestionRes.loading) || (undoStartQuestionRes && undoStartQuestionRes.loading);
   };
 
 
@@ -94,9 +117,9 @@ const QuestionCard = (props) => {
           { question.text }
         </Segment>
         <Segment attached="bottom" secondary textAlign="right" style={{"height":"50px"}}>
-          <Grid columns={2}>
-            <Grid.Row>
-              <Grid.Column textAlign="left" width={11}>
+          <Grid>
+            <Grid.Row columns="equal">
+              <Grid.Column textAlign="left">
                 <Header as="h5">
                   {
                     !question.timeStarted &&
@@ -110,10 +133,32 @@ const QuestionCard = (props) => {
                       <Button compact
                         size='mini'
                         color='green'
-                        icon={ question.videoChatUrl ? 'video' : null }
                         content='Answer'
-                        onClick={ () => {onAnswer(); if (question.videoChatUrl) window.open(question.videoChatUrl)} }
+                        onClick={ onAnswer }
                         disabled={ isLoading() }/>
+                    </Header.Content>
+                  }
+                  {
+                    !question.timeStarted && question.videoChatUrl && 
+                    <Header.Content>
+                      <Button compact
+                        size='mini'
+                        color='blue'
+                        href={ question.videoChatUrl }
+                        content='Join Call'
+                        disabled={ isLoading() }
+                        onClick={ onAnswer }/>
+                    </Header.Content>
+                  }
+                  {
+                    question.timeStarted &&
+                    <Header.Content>
+                      <Button compact
+                        size='mini'
+                        color='red'
+                        content='Undo'
+                        disabled={ isLoading() }
+                        onClick={ onUndo }/>
                     </Header.Content>
                   }
                   {
@@ -138,7 +183,7 @@ const QuestionCard = (props) => {
                   }
                 </Header>
               </Grid.Column>
-              <Grid.Column width={5}>
+              <Grid.Column width={5} only='computer'>
                 {
                   question.timeStarted &&
                   <Popup wide
