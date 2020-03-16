@@ -117,6 +117,15 @@ const QuestionCard = (props) => {
                     onClick={ onFinish }/>
                 </Header.Content>
             }
+            {
+              question.videoChatUrl &&
+              <a href={ question.videoChatUrl} target="_blank">
+                <Button compact
+                  size='mini'
+                  color='blue'
+                  content='Join Call'/>
+              </a>
+            }
             </Header>
             {
               question.timeStarted &&

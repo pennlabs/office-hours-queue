@@ -23,6 +23,7 @@ const GET_QUESTIONS = gql`
             timeStarted
             timeAnswered
             orderKey
+            videoChatUrl
             answeredBy {
               id
               preferredName
@@ -61,7 +62,8 @@ const Queue = (props) => {
         timeRejected: item.node.timeRejected,
         timeStarted: item.node.timeStarted,
         timeAnswered: item.node.timeAnswered,
-        answeredBy: item.node.answeredBy
+        answeredBy: item.node.answeredBy,
+        videoChatUrl: item.node.videoChatUrl
       };
     });
   };
