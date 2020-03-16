@@ -95,8 +95,12 @@ const Home = (props) => {
   }
 
   useEffect(() => {
-    setCourses(loadCourses(data));
-    setUser(loadUser(data));
+    async function fetchData() {
+        await refetch();
+        setCourses(loadCourses(data));
+        setUser(loadUser(data));
+    }
+    fetchData();
   }, []);
 
   return (
