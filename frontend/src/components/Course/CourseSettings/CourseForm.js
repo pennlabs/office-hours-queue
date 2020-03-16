@@ -50,7 +50,11 @@ const CourseForm = (props) => {
   const handleInputChange = (e, { name, value }) => {
     input[name] =  name === "inviteOnly" ? !input[name] : value;
     setInput(input);
-    setDisabled(!input.department || !input.courseCode || !input.courseTitle || !input.year);
+    setDisabled(!input.department || !input.courseCode || !input.courseTitle || !input.year || 
+    (input.department == props.course.department && 
+    input.courseCode == props.course.courseCode && 
+    input.courseTitle == props.course.courseTitle &&
+    input.year == props.course.year));
   };
 
   const handleVCInputChange = (e, { name, value }) => {
