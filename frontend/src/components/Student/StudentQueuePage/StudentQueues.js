@@ -22,7 +22,7 @@ const StudentQueues = (props) => {
 
   return (
     queues &&
-    <Grid columns={queues.length}>
+    <Grid columns={queues.length} stackable>
       <Grid.Row columns={queues.length}>
         {
           queues.length !== 0 &&

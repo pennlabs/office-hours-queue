@@ -11,7 +11,7 @@ const CourseSidebar = (props) => (
       <Image src='../../../ohq.png' size='tiny' style={{"marginTop":"10px"}}/>
     </Link>
     <Menu vertical secondary fluid>
-      <Menu.Item
+      <Menu.Item style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}
         name="Queues"
         icon='hourglass one'
         active={props.active === 'queues'}
@@ -22,13 +22,14 @@ const CourseSidebar = (props) => (
     { props.leadership &&
       <Segment basic>
         <Header as='h3'>Instructors</Header>
-        { props.leadership.map((courseUser) => {
+        { 
+          props.leadership.map((courseUser) => {
             const headerProps = courseUser.kind === 'PROFESSOR' ?
               { as: 'a', href: `mailto:${courseUser.user.email}` } :
               {};
             return (
               <List>
-                <List.Item>
+                <List.Item style={{overflow: "hidden"}}>
                   <Image avatar><Icon name='user'/></Image>
                   <List.Content>
                     <List.Header {...headerProps}>

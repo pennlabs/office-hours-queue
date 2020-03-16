@@ -72,7 +72,7 @@ const Student = (props) => {
 
   /* UPDATE STATE ON QUERY */
   return (
-    <Grid columns={2} divided="horizontally" style={{"width":"100%"}}>
+    <Grid columns={2} divided="horizontally" style={{"width":"100%"}} stackable>
       <StudentSidebar active={ active } clickFunc={ setActive } leadership={ course.leadership }/>
       <Grid.Column width={13}>
         {
