@@ -118,7 +118,7 @@ const InstructorQueuePage = (props) => {
       }
     });
     refetch();
-  }
+  };
 
   const onClose = async (id) => {
     await deactivateQueue({
@@ -129,7 +129,7 @@ const InstructorQueuePage = (props) => {
       }
     });
     refetch();
-  }
+  };
 
   /* LOAD DATA */
   if (data && data.course) {
@@ -152,7 +152,6 @@ const InstructorQueuePage = (props) => {
           createFunc={ () => { setActive('create') } }
           openFunc={ onOpen }
           closeFunc={ onClose }
-          courseUserKind={ props.courseUserKind }
           leader={ leader }/>
       }
       {

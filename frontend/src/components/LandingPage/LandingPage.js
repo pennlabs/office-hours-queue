@@ -61,16 +61,16 @@ const SignInGoogleBase = (props) => {
 
   return (
     <AuthUserContext.Consumer>
-      {authUser =>
+      { authUser =>
         condition(authUser)
           ? <Home />
           : <div
             style={{
-              "height":"100%",
-              "width":"100%",
-              "display":"flex",
+              "height": "100%",
+              "width": "100%",
+              "display": "flex",
               "alignItems": "center",
-              "justifyContent":"center"
+              "justifyContent": "center"
             }}>
             <Grid columns={1} textAlign="center">
               <Grid.Row><img src="ohq-login.png" width="600px" height="107px" alt="logo"/></Grid.Row>

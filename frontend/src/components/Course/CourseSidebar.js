@@ -14,7 +14,7 @@ const CourseSidebar = (props) => {
 
   useEffect(() => {
     setLeader(props.leader)
-  }, [props.leader])
+  }, [props.leader]);
 
   return (
     <Grid.Column width={3}>
@@ -26,13 +26,13 @@ const CourseSidebar = (props) => {
           <Menu.Item
             name="Queues"
             icon='hourglass one'
-            onClick={ () => props.clickFunc('queues') }
+            onClick={() => props.clickFunc('queues')}
             active={props.active === 'queues'}
             color='blue'/>
           <Menu.Item
             name="Roster"
             icon='users'
-            onClick={ () => props.clickFunc('roster') }
+            onClick={() => props.clickFunc('roster')}
             active={props.active === 'roster'}
             color='blue'/>
           <Menu.Item
@@ -52,8 +52,8 @@ const CourseSidebar = (props) => {
             <Menu.Item
               name="Course Settings"
               icon='settings'
-              onClick={ () => props.clickFunc('course_settings') }
-              active={props.active === 'course_settings'}
+              onClick={ () => props.clickFunc('settings') }
+              active={props.active === 'settings'}
               color='blue'/>
           }
         </Menu>

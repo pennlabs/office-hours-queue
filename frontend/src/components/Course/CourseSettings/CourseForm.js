@@ -22,10 +22,10 @@ const CourseForm = (props) => {
   const [updateCourse, { loading, data }] = useMutation(UPDATE_COURSE);
 
   const videoChatNum = (course) => {
-    if (course.requireVideoChatUrlOnQuestions) return 0
-    if (course.videoChatEnabled) return 1
-    return 2
-  }
+    if (course.requireVideoChatUrlOnQuestions) return 0;
+    if (course.videoChatEnabled) return 1;
+    return 2;
+  };
 
   /* STATE */
   const [defCourse, setDefCourse] = useState(props.course);
@@ -46,7 +46,7 @@ const CourseForm = (props) => {
   const [open, setOpen] = useState(false);
 
   /* HANDLER FUNCTIONS */
-  
+
   const handleInputChange = (e, { name, value }) => {
     input[name] =  name === "inviteOnly" ? !input[name] : value;
     setInput(input);
@@ -57,8 +57,8 @@ const CourseForm = (props) => {
     input.year == props.course.year));
   };
 
-  const handleVCInputChange = (e, { name, value }) => {
-    setDisabled(false)
+  const handleVideoChatInputChange = (e, { name }) => {
+    setDisabled(false);
     switch (name) {
       case 'requireVideoChatUrlOnQuestions': {
         input[name] = true;
@@ -82,7 +82,7 @@ const CourseForm = (props) => {
         break;
       }
     }
-  }
+  };
 
   const onSubmit = async () => {
     try {
@@ -109,11 +109,11 @@ const CourseForm = (props) => {
     });
     await props.refetch();
     setOpen(false);
-  }
+  };
 
   useEffect(() => {
     setDefCourse(props.course);
-  }, [props.course])
+  }, [props.course]);
 
   return (
     <Form>
@@ -165,19 +165,19 @@ const CourseForm = (props) => {
           checked={ check === 0 }
           name="requireVideoChatUrlOnQuestions"
           disabled={ loading }
-          onChange={ handleVCInputChange }/>
+          onChange={ handleVideoChatInputChange }/>
         <Form.Radio
           label="Allow Link"
           checked={ check === 1 }
           name="videoChatEnabled"
           disabled={ loading }
-          onChange={ handleVCInputChange }/>
+          onChange={ handleVideoChatInputChange }/>
         <Form.Radio
           label="No Link"
           checked={ check === 2 }
           name="disableVideoChat"
           disabled={ loading }
-          onChange={ handleVCInputChange }/>
+          onChange={ handleVideoChatInputChange }/>
       </Form.Field>
       <Form.Field required>
         <label>Invite Only?</label>
@@ -191,8 +191,7 @@ const CourseForm = (props) => {
       <Button color='blue' type='submit' disabled={ disabled || loading } onClick={ onSubmit }>Submit</Button>
       <Modal open={ open }
         trigger={
-          <a style={{"textDecoration":"underline", "cursor":"pointer"}}
-            onClick={ () => setOpen(true) }>Archive</a>
+          <Button type='submit' onClick={ () => setOpen(true) }>Archive</Button>
         }>
         <Modal.Header>Archive Course</Modal.Header>
         <Modal.Content>
@@ -220,6 +219,6 @@ const CourseForm = (props) => {
       </Snackbar>
     </Form>
   );
-}
+};
 
 export default CourseForm;

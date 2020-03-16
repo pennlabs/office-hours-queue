@@ -42,7 +42,7 @@ const QueueForm = (props) => {
     setInput(input);
     setDescCharCount(input.description.length)
     setNameCharCount(input.name.length)
-    setDisabled(!input.name || !input.description || 
+    setDisabled(!input.name || !input.description ||
     (input.name === queue.name && input.description === queue.description))
   };
 
@@ -112,11 +112,10 @@ const QueueForm = (props) => {
           <Button color="blue" type='submit' disabled={ disabled || loading }  onClick={ onSubmit }>Submit</Button>
           <Modal open={ open }
             trigger={
-              <a style={{"textDecoration":"underline", "cursor":"pointer"}}
-                onClick={ () => setOpen(true) }>Archive</a>
+              <Button type='submit' onClick={ () => setOpen(true) }>Archive</Button>
             }>
             <Modal.Header>Archive Queue</Modal.Header>
-            <Modal.Content>You are about to archive this queue: <b>{queue.name}</b>. This cannot be undone!</Modal.Content>
+            <Modal.Content>You are about to archive this queue: <b>{queue.name}</b>.</Modal.Content>
             <Modal.Actions>
               <Button content="Cancel"
                 disabled={ loading }

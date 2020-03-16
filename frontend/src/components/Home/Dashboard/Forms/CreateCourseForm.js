@@ -74,6 +74,6 @@ const CreateCourseForm = (props) => {
       </Form.Field>
     </Form>
   );
-}
+};
 
 export default CreateCourseForm;

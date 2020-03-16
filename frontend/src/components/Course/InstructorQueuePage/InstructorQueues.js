@@ -29,8 +29,10 @@ const InstructorQueues = (props) => {
         queues.length !== 0 &&
         queues.map((queue) => (
           !queue.archived && <Grid.Column>
-            <Queue key={ queue.id }
+            <Queue
+              key={ queue.id }
               queue={ queue }
+              leader={ props.leader }
               openFunc={ () => props.openFunc(queue.id) }
               closeFunc={ () => props.closeFunc(queue.id) }
               editFunc={ () => props.editFunc(queue.id) }/>

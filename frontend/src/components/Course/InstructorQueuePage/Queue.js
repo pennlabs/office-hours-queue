@@ -137,13 +137,15 @@ const Queue = (props) => {
               <Label content={queue.estimatedWaitTime + " mins"} color="blue" icon="clock"/>
               */
             }
-            <Label as="a"
-              content="Edit"
-              color="grey"
-              icon="cog"
-              onClick={ props.editFunc }/>
           </Grid.Column>
           <Grid.Column textAlign="right">
+            { props.leader &&
+              <Button
+                size="mini"
+                content="Edit"
+                icon="cog"
+                onClick={ props.editFunc }/>
+            }
             <Button
               size="mini"
               content="Close"
