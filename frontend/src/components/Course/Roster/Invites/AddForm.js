@@ -4,9 +4,10 @@ import './AddForm.css';
 import { Form } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useDropzone } from 'react-dropzone'
-import {roleOptions} from '../../../../utils/enums';
+import parse from 'csv-parse/lib/sync';
+import { roleOptions } from '../../../../utils/enums';
 import AsyncCreatableSelect from 'react-select/async-creatable';
-import {isValidEmail, useImperativeQuery} from "../../../../utils";
+import { isValidEmail, useImperativeQuery } from "../../../../utils";
 
 const INVITABLE_USERS = gql`
   query InvitableUsers($searchableName_Icontains: String, $courseId: ID!) {
@@ -36,8 +37,8 @@ const AddForm = (props) => {
       reader.onload = () => {
         // Do whatever you want with the file contents
         try {
-          const lines = reader.result.split('\n');
-          const allNewEmails = lines.map((line) => line.split(',')[0]).filter(isValidEmail);
+          const records = parse(reader.result);
+          const allNewEmails = records.map((line) => line[0]).filter(isValidEmail);
           const existingEmails = values.map((item) => item.value);
           const emails = Array.from(new Set(allNewEmails.concat(existingEmails)));
           const newValues = emails.map((email) => ({ label: email, value: email }));
@@ -101,11 +102,9 @@ const AddForm = (props) => {
     <Form>
       <div {...getRootProps({className: classes.join(' ')})}>
         <input {...getInputProps()} />
-        {
-          <div>
-            <p>Drag and drop CSV or click to select file for bulk invitation</p>
-          </div>
-        }
+        <div>
+          <p>Drag and drop CSV or click to select file for bulk invitation</p>
+        </div>
       </div>
       <Form.Field>
         <label style={{marginTop: '10px'}}>Name or Email</label>
@@ -117,7 +116,7 @@ const AddForm = (props) => {
           placeholder={'Search...'}
           isValidNewOption={isValidEmail}
           formatCreateLabel={formatCreateLabel}
-          onChange={ onChange }
+          onChange={onChange}
           value={values}
         />
       </Form.Field>
