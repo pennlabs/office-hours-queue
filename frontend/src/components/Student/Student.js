@@ -35,9 +35,11 @@ const GET_COURSE = gql`
 const Student = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
   const courseId = props.location.state ? props.location.state.courseId : "";
-  const courseQuery = useQuery(GET_COURSE, { variables: {
-    id: courseId
-  }});
+  const courseQuery = useQuery(GET_COURSE, {
+    variables: {
+      id: courseId
+    }
+  });
 
   /* STATE */
   const [active, setActive] = useState('queues');

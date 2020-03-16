@@ -41,13 +41,17 @@ const QuestionForm = (props) => {
   };
 
   const onSubmit = async () => {
-    await createQuestion({
-      variables: {
-        input: input
-      }
-    });
-    await props.refetch();
-    props.successFunc(true);
+    try {
+      await createQuestion({
+        variables: {
+          input: input
+        }
+      });
+      await props.refetch();
+      props.toastFunc(true, null);
+    } catch (e) {
+      props.toastFunc(false, e);
+    } 
   };
 
   useEffect(() => {

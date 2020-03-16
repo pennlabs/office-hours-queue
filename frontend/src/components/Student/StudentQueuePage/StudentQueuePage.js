@@ -59,8 +59,7 @@ const StudentQueuePage = (props) => {
   const getQueuesRes = useQuery(GET_QUEUES, {
     variables: {
       id: props.course.id
-    },
-    pollInterval: 10000
+    }
   });
 
   const getQuestionRes = useQuery(CURRENT_QUESTION, {

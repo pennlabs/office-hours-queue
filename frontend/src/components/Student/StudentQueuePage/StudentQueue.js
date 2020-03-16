@@ -9,6 +9,20 @@ const StudentQueue = (props) => {
   const [queue, setQueue] = useState(props.queue);
   const [question, setQuestion] = useState(props.question);
   const [success, setSuccess] = useState(false);
+  const [toast, setToast] = useState({ message: "", success: true });
+  const [toastOpen, setToastOpen] = useState(false);
+
+  const updateToast = (success, error) => {
+    toast.success = success;
+    toast.message = success ? `Question added to ${queue.name}!` : errorMessage(error);
+    setToast(toast);
+    setToastOpen(true);
+  }
+
+  const errorMessage = (error) => {
+    if (!error.message || error.message.split(",").length < 2) return "There was an error!";
+    return error.message.split(":")[1];
+  }
 
   useEffect(() => {
     setQuestion(props.question);
@@ -40,7 +54,7 @@ const StudentQueue = (props) => {
         }
         {
           queue.activeOverrideTime && !props.hasQuestion &&
-          <QuestionForm queue={ queue } refetch={ props.refetch } successFunc={ setSuccess }/>
+          <QuestionForm queue={ queue } refetch={ props.refetch } toastFunc={ updateToast }/>
         }
         {
           queue.activeOverrideTime && props.hasQuestion && !question &&
@@ -51,9 +65,9 @@ const StudentQueue = (props) => {
           <QuestionCard question={ question } queue={ queue } refetch={ props.refetch }/>
         }
       </Grid.Row>
-      <Snackbar open={ success } autoHideDuration={6000} onClose={ () => setSuccess(false) }>
-        <Alert severity="success" onClose={ () => setSuccess(false) }>
-          <span>Question added to <b>{`${queue.name}!`}</b></span>
+      <Snackbar open={ toastOpen } autoHideDuration={6000} onClose={ () => setToastOpen(false) }>
+        <Alert severity={ toast.success ? "success" : "error"} onClose={ () => setToastOpen(false) }>
+          <span>{ toast.message }</span>
         </Alert>
       </Snackbar>
     </Segment>
