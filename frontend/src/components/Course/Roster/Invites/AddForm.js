@@ -4,8 +4,7 @@ import { gql } from 'apollo-boost';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import {roleOptions} from '../../../../utils/enums';
 import AsyncCreatableSelect from 'react-select/async-creatable';
-import Select from 'react-select';
-import {isValidEmail} from "../../../../utils";
+import {isValidEmail, useImperativeQuery} from "../../../../utils";
 
 const INVITABLE_USERS = gql`
   query InvitableUsers($searchableName_Icontains: String, $courseId: ID!) {
@@ -22,13 +21,6 @@ const INVITABLE_USERS = gql`
 `;
 
 const AddForm = (props) => {
-
-  const useImperativeQuery = (query) => {
-    const { refetch } = useQuery(query, { skip: true });
-    return (variables) => {
-      return refetch(variables);
-    };
-  };
 
   const invitableUsers = useImperativeQuery(INVITABLE_USERS);
 
@@ -69,7 +61,7 @@ const AddForm = (props) => {
           onChange={ (items) => {
             props.changeFunc(undefined, {
               name: 'emails',
-              value: items.map((item) => item.value),
+              value: items === null ? [] : items.map((item) => item.value),
             });
           }}
         />

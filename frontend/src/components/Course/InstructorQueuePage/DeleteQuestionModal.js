@@ -40,7 +40,7 @@ const DeleteQuestionModal = (props) => {
         variables: {
           input: input
         }
-      })
+      });
       await props.refetch();
       props.closeFunc();
     }

@@ -5,6 +5,8 @@ import { gql } from 'apollo-boost';
 import { useLazyQuery } from '@apollo/react-hooks';
 import { useMutation } from '@apollo/react-hooks';
 import { prettifySemester } from "../../../../utils/enums";
+import { isValidEmail, useImperativeQuery } from "../../../../utils";
+import AsyncSelect from "react-select/async";
 
 /* GRAPHQL QUERIES/MUTATIONS */
 const JOINABLE_COURSES = gql`
@@ -24,112 +26,45 @@ const JOINABLE_COURSES = gql`
   }
 `;
 
-const JOIN_COURSE = gql`
-  mutation JoinCourse($input: JoinCourseInput!) {
-    joinCourse(input: $input) {
-      courseUser {
-        id
-        kind
-      }
-    }
-  }
-`;
-
 /* FUNCTIONAL COMPONENT */
 const AddStudentForm = (props) => {
-  /* STATE */
-  const [input, setInput] = useState({
-    name: null,
-    courseId: null,
-  });
-  const [results, setResults] = useState(null);
-
   /* GRAPHQL QUERIES/MUTATIONS */
-  const [joinableCourses, { loading, data }] = useLazyQuery(JOINABLE_COURSES);
-  const [joinCourse, joinData] = useMutation(JOIN_COURSE);
+  const joinableCourses = useImperativeQuery(JOINABLE_COURSES);
 
-  /* LOADING SEARCH RESULTS */
-  if (data && data.joinableCourses) {
-    const newResults = data.joinableCourses.edges.map(course => {
+  const promiseOptions = async (inputValue) => {
+    if (inputValue.length === 0) {
+      return [];
+    }
+    const { data } = await joinableCourses({
+      searchableName_Icontains: inputValue,
+    });
+    return data.joinableCourses.edges.map((item) => {
       return {
-        key: course.node.id,
-        text: `${course.node.department} ${course.node.courseCode} (${course.node.courseTitle}, ${prettifySemester(course.node.semester)} ${course.node.year})`,
-        value: course.node.id
-      };
-    });
-    if (!results || newResults.length !== results.length ||
-        JSON.stringify(newResults) !== JSON.stringify(results)) {
-      setResults(newResults);
-    }
-  }
-
-  /* HANDLER FUNCTIONS */
-  const handleInputChange = (e, { name, value }) => {
-    input[name] = value;
-    setInput(input);
-    if (name === 'name') {
-      onSearch();
-    }
-  };
-
-  const onSearch = () => {
-    if (input.name.length < 2) {
-      setResults(null);
-      return;
-    }
-    joinableCourses({
-      variables: {
-        searchableName_Icontains: input.name,
+        label: `${item.node.department} ${item.node.courseCode} (${item.node.courseTitle}, ${prettifySemester(item.node.semester)} ${item.node.year})`,
+        value: item.node.id,
       }
     });
-  };
-
-  const onSubmit = async () => {
-    if (!input.courseId) return;
-    await joinCourse({
-      variables: {
-        input: {
-          courseId: input.courseId
-        }
-      }
-    });
-    /*
-    await joinableCourses({
-      variables: {
-        searchableName_Icontains: input.name,
-      }
-    });*/
-    props.refetch();
-    props.successFunc(true); //trigger snackbar
   };
 
   return (
     <Form>
       <Form.Field>
-        <label>Course Name</label>
-        <Form.Input name="name" onChange={ handleInputChange }/>
+        <label>Course Name or Course Code</label>
+        <AsyncSelect
+          cacheOptions
+          defaultOptions
+          loadOptions={promiseOptions}
+          isMulti
+          placeholder={'Search...'}
+          isValidNewOption={isValidEmail}
+          onChange={ (items) => {
+            props.changeFunc(undefined, {
+              name: 'courseIds',
+              value: items === null ? [] : items.map((item) => item.value),
+            });
+          }}
+        />
       </Form.Field>
-      {
-        results && input.name.length > 1 && 
-        <div>
-          <Form.Field>
-            <label>Results</label>
-            <Form.Dropdown
-              placeholder="Select Course"
-              name="courseId"
-              options={results}
-              search
-              selection
-              onChange={ handleInputChange }/>
-          </Form.Field>
-          <Form.Field>
-            <Button content="Add"
-              color="green"
-              disabled={ joinData.loading || loading }
-              onClick={ onSubmit }/>
-          </Form.Field>
-        </div>
-      }
     </Form>
   );
 };

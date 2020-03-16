@@ -64,8 +64,16 @@ const InviteModal = (props) => {
         <AddForm courseId={ props.courseId } changeFunc={ handleInputChange }/>
       </Modal.Content>
       <Modal.Actions>
-        <Button content="Invite" color='blue' disabled={loading} loading={loading} onClick={ inviteFunc }/>
-        <Button content="Cancel" disabled={loading} onClick={ props.closeFunc }/>
+        <Button
+          content='Invite'
+          color='blue'
+          disabled={loading || input.emails.length === 0 || input.kind === null}
+          loading={loading}
+          onClick={ inviteFunc }/>
+        <Button
+          content='Cancel'
+          disabled={loading}
+          onClick={ props.closeFunc }/>
       </Modal.Actions>
     </Modal>
   )

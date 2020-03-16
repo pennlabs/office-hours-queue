@@ -1,19 +1,68 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Modal, Button } from 'semantic-ui-react';
 import AddStudentForm from '../Forms/AddStudentForm';
+import {gql} from "apollo-boost";
+import {useMutation} from "@apollo/react-hooks";
 
-export default class ModalAddStudentCourse extends React.Component {
-  render() {
-    return (
-      <Modal open={ this.props.open }>
-        <Modal.Header>Add New Course</Modal.Header>
-        <Modal.Content>
-          <AddStudentForm refetch={ this.props.refetch } successFunc={ this.props.successFunc }/>
-        </Modal.Content>
-        <Modal.Actions>
-          <Button content="Done" onClick={ this.props.closeFunc }/>
-        </Modal.Actions>
-      </Modal>
-    );
+const JOIN_COURSES = gql`
+  mutation JoinCourse($input: JoinCoursesInput!) {
+    joinCourses(input: $input) {
+      courseUsers {
+        id
+        kind
+      }
+    }
   }
-}
+`;
+
+const ModalAddStudentCourse = (props) => {
+
+  const [input, setInput] = useState({ courseIds: [] });
+  const [joinCourses, { loading, data }] = useMutation(JOIN_COURSES);
+
+  const handleInputChange = (e, { name, value }) => {
+    input[name] = value;
+    setInput(input);
+  };
+
+  const joinFunc = async () => {
+    if (input.courseIds.length === 0) {
+      return;
+    }
+    await joinCourses({
+      variables: {
+        input: {
+          courseIds: input.courseIds
+        }
+      }
+    });
+    props.refetch();
+    props.closeFunc();
+    props.successFunc(true); // trigger snackbar
+  };
+
+  console.log(loading || input.courseIds.length === 0, input.courseIds.length)
+  console.log(input.courseIds)
+  return (
+    <Modal open={ props.open }>
+      <Modal.Header>Join Courses</Modal.Header>
+      <Modal.Content>
+        <AddStudentForm changeFunc={ handleInputChange }/>
+      </Modal.Content>
+      <Modal.Actions>
+        <Button
+          content='Join'
+          color='blue'
+          disabled={loading || input.courseIds.length === 0 }
+          loading={loading}
+          onClick={ joinFunc }/>
+        <Button
+          content='Cancel'
+          disabled={loading}
+          onClick={ props.closeFunc }/>
+      </Modal.Actions>
+    </Modal>
+  );
+};
+
+export default ModalAddStudentCourse;

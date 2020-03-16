@@ -45,12 +45,12 @@ const ModalAddInstructorCourse = (props) => {
       props.toastFunc(`${input.department} ${input.courseCode}`, true);
     } catch (e) {
       props.toastFunc(null, false);
-    } 
+    }
   };
 
   useEffect(() => {
     setOpen(props.open);
-  }, [props.open])
+  }, [props.open]);
 
   return (
     <Modal open={ open }>
@@ -61,12 +61,12 @@ const ModalAddInstructorCourse = (props) => {
       <Modal.Actions>
         <Button content="Cancel" onClick={ props.closeFunc }/>
         <Button content="Create"
-          color="green" 
+          color="green"
           disabled={ disabled }
           onClick={ onSubmit }/>
       </Modal.Actions>
     </Modal>
   )
-}
+};
 
 export default ModalAddInstructorCourse;
