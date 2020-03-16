@@ -23,16 +23,6 @@ const StudentQueues = (props) => {
   return (
     queues &&
     <Grid columns={queues.length}>
-        {
-          /*
-          question && !showQuestion(question) &&
-          <Button basic
-          content="Last Question" 
-          color="blue" compact
-          onClick={ () => props.showFunc(question) }
-          floated="right"/>
-          */
-        }
       <Grid.Row columns={queues.length}>
         {
           queues.length !== 0 &&
