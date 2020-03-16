@@ -41,7 +41,13 @@ class CreateQuestion(graphene.Mutation):
                 kind=CourseUserKind.STUDENT.name,
             ).exists():
                 raise user_not_student_error
-            if course.require_video_chat_url_on_questions and input.video_chat_url is None:
+            if not course.video_chat_enabled and input.video_chat_url is not None:
+                raise video_chat_disabled_error
+            if (
+                course.video_chat_enabled and
+                course.require_video_chat_url_on_questions and
+                input.video_chat_url is None
+            ):
                 raise video_chat_url_required_error
             if course.archived:
                 raise course_archived_error
@@ -98,14 +104,17 @@ class UpdateQuestion(graphene.Mutation):
             user = info.context.user.get_user()
             question = Question.objects.get(pk=from_global_id(input.question_id)[1])
             queue = question.queue
+            course = queue.course
             if question.asked_by != user:
                 raise user_not_asker_error
-            if queue.course.archived:
+            if course.archived:
                 raise course_archived_error
             if question.state is not QuestionState.ACTIVE:
                 raise question_not_active_error
             if input.tags is not None and any(tag not in queue.tags for tag in input.tags):
                 raise unrecognized_tag_error
+            if not course.video_chat_enabled and input.video_chat_url is not None:
+                raise video_chat_disabled_error
 
             if input.text is not None:
                 question.text = input.text

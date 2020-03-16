@@ -94,6 +94,7 @@ class Course(models.Model):
     semester = models.CharField(**Semester.choices())
     archived = models.BooleanField(default=False)
     invite_only = models.BooleanField(default=False)
+    video_chat_enabled = models.BooleanField(default=False)
     require_video_chat_url_on_questions = models.BooleanField(default=False)
 
     searchable_name = models.CharField(max_length=72, editable=False)

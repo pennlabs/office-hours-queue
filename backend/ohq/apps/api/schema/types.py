@@ -241,6 +241,7 @@ class CourseNode(DjangoObjectType):
             'year',
             'archived',
             'invite_only',
+            'video_chat_enabled',
             'require_video_chat_url_on_questions',
         )
         interfaces = (relay.Node,)
