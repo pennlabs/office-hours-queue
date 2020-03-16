@@ -177,8 +177,6 @@ class RejectQuestion(graphene.Mutation):
 
     @staticmethod
     def mutate(root, info, input):
-        if not input.rejected_reason_other:
-            raise empty_string_error
         with transaction.atomic():
             user = info.context.user.get_user()
             question = Question.objects.get(pk=from_global_id(input.question_id)[1])
@@ -197,6 +195,8 @@ class RejectQuestion(graphene.Mutation):
                  input.rejected_reason_other is not None)
             ):
                 raise other_rejection_reason_required_error
+            if input.rejected_reason_other is not None and not input.rejected_reason_other:
+                raise empty_string_error
             if question.state is not QuestionState.ACTIVE:
                 raise question_not_active_error
             question.rejected_reason = input.rejected_reason
