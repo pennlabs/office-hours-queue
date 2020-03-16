@@ -252,11 +252,11 @@ class InviteOrAddEmails(graphene.Mutation):
             existing_users_emails = set(user.email for user in existing_users)
             new_course_users = [
                 CourseUser(
-                    user=user,
+                    user=existing_user,
                     course=course,
                     kind=input.kind,
                     invited_by=user,
-                ) for user in existing_users
+                ) for existing_user in existing_users
             ]
             CourseUser.objects.bulk_create(new_course_users)
 
