@@ -42,6 +42,19 @@ class AuthUser(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['email']
     objects = AuthUserManager()
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["firebase_uid"],
+                name="unique_auth_user_firebase_uid",
+            ),
+            models.UniqueConstraint(
+                fields=["email"],
+                name="unique_auth_user_email",
+            )
+        ]
+
+
     def get_user(self):
         return self.user_set.get()
 
@@ -55,14 +68,28 @@ class User(models.Model):
     full_name = models.CharField(max_length=100)
     preferred_name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
+    user_key = models.CharField(max_length=50, editable=False)
     phone_number = PhoneNumberField(blank=True, null=True)
     time_joined = models.DateTimeField(auto_now_add=True)
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
 
     searchable_name = models.CharField(max_length=254+100+100+2, editable=False)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user_key"],
+                name="unique_user_user_key",
+            ),
+            models.UniqueConstraint(
+                fields=["email"],
+                name="unique_user_email",
+            )
+        ]
+
     def save(self, *args, **kwargs):
         self.searchable_name = f"{self.full_name} {self.preferred_name} {self.email}"
+        self.user_key = self.email.split("@")[0]
         super(User, self).save(*args, **kwargs)
 
     def __str__(self):
