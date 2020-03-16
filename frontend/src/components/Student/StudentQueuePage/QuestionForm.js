@@ -87,7 +87,8 @@ const QuestionForm = (props) => {
                 onChange={ handleInputChange }/>
           </Form.Field>
           }
-          { queue.tags && queue.tags.length > 0 &&
+          { 
+            queue.tags && queue.tags.length > 0 &&
             <Form.Field>
               <label>Tags</label>
               <Form.Dropdown multiple selection

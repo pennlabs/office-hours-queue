@@ -97,7 +97,7 @@ const QuestionCard = (props) => {
     question && <div style={{"marginTop":"10px"}}>
       <RejectQuestionModal open={open} question={question} closeFunc={triggerModal} refetch={ props.refetch }/>
         <Segment attached="top" color="blue" clearing>
-          <Grid columns={2}>
+          <Grid columns="equal">
             <Grid.Row>
               <Grid.Column textAlign="left">
                 <Header as="h5" style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
@@ -116,7 +116,7 @@ const QuestionCard = (props) => {
           tertiary={ question.timeStarted !== null }>
           { question.text }
         </Segment>
-        <Segment attached="bottom" secondary textAlign="right" style={{"height":"50px"}}>
+        <Segment attached="bottom" secondary textAlign="right">
           <Grid>
             <Grid.Row columns="equal">
               <Grid.Column textAlign="left">
@@ -183,7 +183,7 @@ const QuestionCard = (props) => {
                   }
                 </Header>
               </Grid.Column>
-              <Grid.Column width={5} only='computer' style={{fontSize: "10px", whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
+              <Grid.Column width={5} textAlign="right" only='computer' style={{fontSize: "10px", whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
                 {
                   question.timeStarted &&
                   <Popup wide

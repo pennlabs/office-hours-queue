@@ -57,7 +57,7 @@ const Student = (props) => {
         year: data.course.year,
         semester: data.course.semester,
         inviteOnly: data.course.inviteOnly,
-        leadership: data.course.leadership,
+        leadership: data.course.leadership
       };
     } else {
       return {}

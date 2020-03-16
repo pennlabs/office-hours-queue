@@ -8,7 +8,6 @@ import Alert from '@material-ui/lab/Alert';
 const StudentQueue = (props) => {
   const [queue, setQueue] = useState(props.queue);
   const [question, setQuestion] = useState(props.question);
-  const [success, setSuccess] = useState(false);
   const [toast, setToast] = useState({ message: "", success: true });
   const [toastOpen, setToastOpen] = useState(false);
 

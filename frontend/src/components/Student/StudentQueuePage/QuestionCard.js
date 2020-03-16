@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Segment, Header, Button, Popup, Icon } from 'semantic-ui-react';
+import { Segment, Header, Button, Popup, Icon, Grid } from 'semantic-ui-react';
 import EditQuestionModal from './EditQuestionModal';
 import DeleteQuestionModal from './DeleteQuestionModal';
 
@@ -29,66 +29,72 @@ const QuestionCard = (props) => {
         question={ props.question }
         setOpen={ setOpenDelete }
         refetch={ props.refetch }/>
-      <Segment attached="top" color="blue" style={{height:"50px"}}>
-          <Header as="h5" floated='right' color="blue">
-            <Header.Content>
-              { timeString(question.timeAsked, false) }
-            </Header.Content>
-          </Header>
-          <Header as="h5" floated='left'>
-            <Header.Content>
-              { "Position: #" + (question.questionsAhead + 1) }
-            </Header.Content>
-          </Header>
+      <Segment attached="top" color="blue">
+        <Grid>
+          <Grid.Row columns="equal">
+            <Grid.Column textAlign="left">
+              <Header as="h5" style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
+                { "Position: #" + (question.questionsAhead + 1) }
+              </Header>
+            </Grid.Column>
+            <Grid.Column width={6}>
+              <Header as="h5" color="blue" textAlign="right">
+                { timeString(question.timeAsked, false) }
+              </Header>
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
       </Segment>
-      <Segment attached
-        tertiary={ question.timeStarted !== null }>
+      <Segment attached tertiary={ question.timeStarted !== null }>
         { question.text }
       </Segment>
-      <Segment attached="bottom" secondary textAlign="right" style={{"height":"50px"}}>
-        <Header as="h5" floated='left'>
-          {
-            !question.timeStarted &&
-            <Header.Content>
-              <Button compact
-                size='mini'
-                color='red'
-                content='Withdraw'
-                onClick={ () => setOpenDelete(true) }/>
+      <Segment attached="bottom" secondary>
+        <Grid>
+          <Grid.Row columns="equal">
+            <Grid.Column textAlign="left">
+              <Header as="h5">
               {
-                /*
+                !question.timeStarted &&
+                <Header.Content>
                   <Button compact
                     size='mini'
-                    color='green'
-                    content='Edit'
-                    onClick={ () => setOpenEdit(true) }/>
-                */
+                    color='red'
+                    content='Withdraw'
+                    onClick={ () => setOpenDelete(true) }/>
+                    <Button compact
+                      size='mini'
+                      color='green'
+                      content='Edit'
+                      onClick={ () => setOpenEdit(true) }/>
+                </Header.Content>
               }
-            </Header.Content>
-          }
-        </Header>
-          {
-            !question.timeStarted && question.tags.length > 0 &&
-            <Popup
-              trigger= { <Icon name="tags"/> }
-              content= {
-                question.tags && question.tags.map(tag => {
-                  return ' ' + tag
-                }).toString()
+              </Header>
+            </Grid.Column>
+            <Grid.Column textAlign="right" width={5}
+              style={{fontSize: "10px", whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
+            {
+              question.timeStarted &&
+              <Popup wide
+                trigger= { <Icon name="sync" loading/> }
+                content= {
+                  `Started by ${question.answeredBy.preferredName} on ${timeString(question.timeStarted, true)}`
+                }
+                basic inverted
+                position="bottom right"/>
+            }
+            {
+              question.tags && question.tags.length > 0 &&
+              <Popup
+              trigger= {
+                <span>{ question.tags.map(tag => " " + tag).toString() }</span>
               }
+              content= { question.tags.map(tag => " " + tag).toString() }
               basic inverted
               position="bottom left"/>
-          }
-          {
-            question.timeStarted &&
-            <Popup wide
-              trigger= { <Icon name="sync" loading/> }
-              content= {
-                `Started by ${question.answeredBy.preferredName} on ${timeString(question.timeStarted, true)}`
-              }
-              basic inverted
-              position="bottom right"/>
-          }
+            }
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
       </Segment>
     </div>
   );
