@@ -25,6 +25,7 @@ const GET_COURSE = gql`
       year
       semester
       inviteOnly
+      requireVideoChatUrlOnQuestions
       leadership {
         id
         kind
@@ -63,6 +64,7 @@ const Course = (props) => {
         year: data.course.year,
         semester: data.course.semester,
         inviteOnly: data.course.inviteOnly,
+        requireVideoChatUrlOnQuestions: data.course.requireVideoChatUrlOnQuestions,
         leadership: data.course.leadership,
       }
     } else {

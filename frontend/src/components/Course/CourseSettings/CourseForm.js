@@ -23,14 +23,19 @@ const CourseForm = (props) => {
 
   /* STATE */
   const [defCourse, setDefCourse] = useState(props.course);
-  const [input, setInput] = useState({ courseId: props.course.id });
+  const [input, setInput] = useState({
+    courseId: props.course.id,
+    inviteOnly: props.course.inviteOnly,
+    requireVideoChatUrlOnQuestions: props.course.requireVideoChatUrlOnQuestions
+  });
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
   const [open, setOpen] = useState(false);
 
   /* HANDLER FUNCTIONS */
   const handleInputChange = (e, { name, value }) => {
-    input[name] = name === "inviteOnly" ? !input[name] : value;
+    input[name] = name === "inviteOnly" || 
+      name === "requireVideoChatUrlOnQuestions" ? !input[name] : value;
     setInput(input);
   };
 
@@ -114,7 +119,16 @@ const CourseForm = (props) => {
           defaultChecked={ defCourse.inviteOnly }
           name="inviteOnly"
           disabled={ loading }
-          value={true} toggle
+          value={ input.inviteOnly } toggle
+          onChange={ handleInputChange }/>
+      </Form.Field>
+      <Form.Field>
+        <label>Require Video Chat?</label>
+        <Form.Radio
+          defaultChecked={ defCourse.requireVideoChatUrlOnQuestions }
+          name="requireVideoChatUrlOnQuestions"
+          disabled={ loading }
+          value={ input.requireVideoChatUrlOnQuestions } toggle
           onChange={ handleInputChange }/>
       </Form.Field>
       <Button color='blue' type='submit' disabled={ loading } onClick={ onSubmit }>Submit</Button>
