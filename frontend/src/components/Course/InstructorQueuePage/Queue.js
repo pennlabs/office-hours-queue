@@ -125,7 +125,7 @@ const Queue = (props) => {
       </Header>
       <Grid>
         <Grid.Row columns="equal">
-          <Grid.Column>
+          <Grid.Column only='computer mobile'>
             <Label
               content={ filter(questions, { tags: [] }).length + " user(s)" }
               color="blue"

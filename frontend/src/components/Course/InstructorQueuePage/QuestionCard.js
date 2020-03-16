@@ -174,7 +174,7 @@ const QuestionCard = (props) => {
                   }
                 </Header>
               </Grid.Column>
-              <Grid.Column width={5} textAlign="right" only='computer' style={{fontSize: "10px", whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
+              <Grid.Column width={5} textAlign="right" only='computer mobile' style={{fontSize: "10px", whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
                 {
                   question.timeStarted &&
                   <Popup wide
