@@ -66,6 +66,7 @@ class UpdateCourseInput(graphene.InputObjectType):
     year = graphene.Int(required=False)
     semester = graphene.Field(SemesterType, required=False)
     invite_only = graphene.Boolean(required=False)
+    require_video_chat_url_on_questions = graphene.Boolean(required=False)
     archived = graphene.Boolean(required=False)
 
 
@@ -112,6 +113,10 @@ class UpdateCourse(graphene.Mutation):
                 course.semester = input.semester
             if input.invite_only is not None:
                 course.invite_only = input.invite_only
+            if input.require_video_chat_url_on_questions is not None:
+                course.require_video_chat_url_on_questions = (
+                    input.require_video_chat_url_on_questions
+                )
             if input.archived is not None:
                 course.archived = input.archived
             course.save()

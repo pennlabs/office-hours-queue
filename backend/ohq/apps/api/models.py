@@ -94,6 +94,7 @@ class Course(models.Model):
     semester = models.CharField(**Semester.choices())
     archived = models.BooleanField(default=False)
     invite_only = models.BooleanField(default=False)
+    require_video_chat_url_on_questions = models.BooleanField(default=False)
 
     searchable_name = models.CharField(max_length=72, editable=False)
 
@@ -278,6 +279,7 @@ class Question(models.Model):
         related_name='questions',
         on_delete=models.CASCADE,
     )
+    video_chat_url = models.URLField(blank=True, null=True)
 
     time_asked = models.DateTimeField(auto_now_add=True)
     asked_by = models.ForeignKey(

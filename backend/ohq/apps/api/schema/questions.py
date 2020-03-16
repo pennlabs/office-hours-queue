@@ -12,6 +12,7 @@ class CreateQuestionInput(graphene.InputObjectType):
     queue_id = graphene.ID(required=True)
     text = graphene.String(required=True)
     tags = graphene.List(graphene.String, required=True)
+    video_chat_url = graphene.String(required=False)
 
 
 class CreateQuestionResponse(graphene.ObjectType):
@@ -40,6 +41,8 @@ class CreateQuestion(graphene.Mutation):
                 kind=CourseUserKind.STUDENT.name,
             ).exists():
                 raise user_not_student_error
+            if course.require_video_chat_url_on_questions and input.video_chat_url is None:
+                raise video_chat_url_required_error
             if course.archived:
                 raise course_archived_error
             if queue.active_override_time is None:
@@ -60,6 +63,7 @@ class CreateQuestion(graphene.Mutation):
                 text=input.text,
                 tags=input.tags,
                 asked_by=user,
+                video_chat_url=input.video_chat_url,
             )
 
         return CreateQuestionResponse(question=question)

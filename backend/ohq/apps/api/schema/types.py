@@ -30,7 +30,7 @@ class CourseUserNode(DjangoObjectType):
         model = CourseUser
         filter_fields = ('kind', 'deactivated')
         fields = (
-            'deactivated',
+            # 'deactivated',
             'time_created',
         )
         interfaces = (relay.Node,)
@@ -131,6 +131,7 @@ class QuestionNode(DjangoObjectType):
             'state',
             'queue',
             'order_key',
+            'video_chat_url',
         )
         interfaces = (relay.Node,)
 
@@ -230,6 +231,7 @@ class CourseNode(DjangoObjectType):
             'year',
             'archived',
             'invite_only',
+            'require_video_chat_url_on_questions',
         )
         interfaces = (relay.Node,)
 
