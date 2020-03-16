@@ -16,9 +16,23 @@ const QueueSettings = (props) => {
     <Grid.Column>
       <Grid.Row>
         <Segment basic>
-          <Header as="h3">
-            { queue.name }
-          </Header>
+          <Grid columns="equal">
+            <Grid.Row>
+              <Grid.Column textAlign="left">
+                <Header as="h3">
+                  { queue.name }
+                  <Header.Subheader>
+                    { queue.description }
+                  </Header.Subheader>
+                </Header>
+              </Grid.Column>
+              <Grid.Column textAlign="right">
+                <Header as="h3">
+                  <Button content="Back"/>
+                </Header>
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
         </Segment>
       </Grid.Row>
       <Grid.Row>

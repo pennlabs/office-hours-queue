@@ -133,21 +133,12 @@ const QuestionCard = (props) => {
                       <Button compact
                         size='mini'
                         color='green'
+                        target="_blank"
+                        href={ question.videoChatUrl ? question.videoChatUrl : null }
+                        icon={ question.videoChatUrl ? "video" : null }
                         content='Answer'
                         onClick={ onAnswer }
                         disabled={ isLoading() }/>
-                    </Header.Content>
-                  }
-                  {
-                    !question.timeStarted && question.videoChatUrl && 
-                    <Header.Content>
-                      <Button compact
-                        size='mini'
-                        color='blue'
-                        href={ question.videoChatUrl }
-                        content='Join Call'
-                        disabled={ isLoading() }
-                        onClick={ onAnswer }/>
                     </Header.Content>
                   }
                   {
