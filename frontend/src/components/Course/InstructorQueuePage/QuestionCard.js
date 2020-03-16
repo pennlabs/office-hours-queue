@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Segment, Header, Icon, Button, Popup} from 'semantic-ui-react';
+import { Segment, Header, Icon, Button, Popup, Grid } from 'semantic-ui-react';
 import DeleteQuestionModal from './DeleteQuestionModal';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks'
@@ -73,83 +73,97 @@ const QuestionCard = (props) => {
   return (
     question && <div style={{"marginTop":"10px"}}>
       <DeleteQuestionModal open={open} question={question} closeFunc={triggerModal} refetch={ props.refetch }/>
-        <Segment attached="top" color="blue" style={{"height":"50px"}}>
-            <Header as="h5" floated='right' color="blue">
-              <Header.Content>
-                { timeString(question.timeAsked, false) }
-              </Header.Content>
-            </Header>
-            <Header as="h5" floated='left'>
-              <Header.Content>
-                { question.askedBy.preferredName }
-              </Header.Content>
-            </Header>
+        <Segment attached="top" color="blue" clearing>
+          <Grid columns={2}>
+            <Grid.Row>
+              <Grid.Column textAlign="left">
+                <Header as="h5" style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
+                  { question.askedBy.preferredName }
+                </Header>
+              </Grid.Column>
+              <Grid.Column>
+                <Header as="h5" color="blue" textAlign="right">
+                  { timeString(question.timeAsked, false) }
+                </Header>
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
         </Segment>
         <Segment attached
           tertiary={ question.timeStarted !== null }>
           { question.text }
         </Segment>
         <Segment attached="bottom" secondary textAlign="right" style={{"height":"50px"}}>
-          <Header as="h5" floated='left'>
-            {
-              !question.timeStarted ?
-              <Header.Content>
-                <Button compact
-                  size='mini'
-                  color='red'
-                  content='Reject'
-                  disabled={ isLoading() }
-                  onClick={ triggerModal }/>
-                <Button compact
-                  size='mini'
-                  color='green'
-                  content='Answer'
-                  disabled={ isLoading() }
-                  onClick={ onAnswer }/>
-              </Header.Content>
-                :
-                <Header.Content>
-                  <Button compact
-                    size='mini'
-                    color='green'
-                    content='Finish'
-                    disabled={ isLoading() }
-                    onClick={ onFinish }/>
-                </Header.Content>
-            }
-            {
-              question.videoChatUrl &&
-              <a href={ question.videoChatUrl } onClick={ () => { if (!question.timeStarted) onAnswer() } } target="_blank">
-                <Button compact
-                  size='mini'
-                  color='blue'
-                  content='Join Call'/>
-              </a>
-            }
-            </Header>
-            {
-              question.timeStarted &&
-              <Popup wide
-                trigger= {
-                  <Icon name="sync" loading/>
+          <Grid columns={2}>
+            <Grid.Row>
+              <Grid.Column textAlign="left">
+                <Header as="h5">
+                  {
+                    !question.timeStarted &&
+                    <Header.Content>
+                      <Button compact
+                        size='mini'
+                        color='red'
+                        content='Reject'
+                        disabled={ isLoading() }
+                        onClick={ triggerModal }/>
+                      <Button compact
+                        size='mini'
+                        color='green'
+                        content='Answer'
+                        disabled={ isLoading() }
+                        onClick={ onAnswer }/>
+                    </Header.Content>
+                  }
+                  {
+                    question.timeStarted &&
+                    <Header.Content>
+                      <Button compact
+                        size='mini'
+                        color='green'
+                        content='Finish'
+                        disabled={ isLoading() }
+                        onClick={ onFinish }/>
+                    </Header.Content>
+                  }
+                  {
+                    question.videoChatUrl &&
+                    <a href={ question.videoChatUrl } onClick={ () => { if (!question.timeStarted) onAnswer() } } target="_blank">
+                      <Button compact
+                        size='mini'
+                        color='blue'
+                        content='Join Call'/>
+                    </a>
+                  }
+                </Header>
+              </Grid.Column>
+              <Grid.Column>
+                {
+                  question.timeStarted &&
+                  <Popup wide
+                    trigger= {
+                      <Icon name="sync" loading/>
+                    }
+                    content= {
+                      `Started by ${question.answeredBy.preferredName} on ${timeString(question.timeStarted, true)}`
+                    }
+                    basic inverted
+                    position="bottom right"/>
                 }
-                content= {
-                  `Started by ${question.answeredBy.preferredName} on ${timeString(question.timeStarted, true)}`
-                }
-                basic inverted
-                position="bottom right"/>
-            }
-            <Popup
-              trigger= {
-                <Icon name="tags"/>
-              }
-              content= {
-                question.tags && question.tags.length > 0 ? question.tags.map(tag => {
-                  return " " + tag
-                }).toString() : <i>No Tags</i>
-              }
-              basic inverted
-              position="bottom left"/>
+                <Popup
+                  trigger= {
+                    <Icon name="tags"/>
+                  }
+                  content= {
+                    question.tags && question.tags.length > 0 ? question.tags.map(tag => {
+                      return " " + tag
+                    }).toString() : <i>No Tags</i>
+                  }
+                  basic inverted
+                  position="bottom left"/>
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
         </Segment>
       </div>
   );

@@ -100,7 +100,7 @@ const InstructorQueuePage = (props) => {
   }, [props.leader]);
 
   return (
-    <Grid>
+    <Grid stackable>
       {
         active === 'queues' && data &&
         <InstructorQueues queues={ queues }
