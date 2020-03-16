@@ -183,7 +183,7 @@ const QuestionCard = (props) => {
                   }
                 </Header>
               </Grid.Column>
-              <Grid.Column width={5} only='computer'>
+              <Grid.Column width={5} only='computer' style={{fontSize: "10px", whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
                 {
                   question.timeStarted &&
                   <Popup wide
@@ -196,17 +196,21 @@ const QuestionCard = (props) => {
                     basic inverted
                     position="bottom right"/>
                 }
-                <Popup
+                {
+                  question.tags && question.tags.length > 0 &&
+                  <Popup
                   trigger= {
-                    <Icon name="tags"/>
+                    <span>{ question.tags.map(tag => " " + tag).toString() }</span>
                   }
-                  content= {
-                    question.tags && question.tags.length > 0 ? question.tags.map(tag => {
-                      return " " + tag
-                    }).toString() : <i>No Tags</i>
-                  }
+                  content= { question.tags.map(tag => " " + tag).toString() }
                   basic inverted
                   position="bottom left"/>
+
+                }
+                {
+                  (!question.tags || question.tags.length == 0) && <span><i>No Tags</i></span>
+                }
+               
               </Grid.Column>
             </Grid.Row>
           </Grid>
