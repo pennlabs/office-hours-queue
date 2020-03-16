@@ -21,49 +21,57 @@ const CourseForm = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
   const [updateCourse, { loading, data }] = useMutation(UPDATE_COURSE);
 
+  const videoChatNum = (course) => {
+    if (course.requireVideoChatUrlOnQuestions) return 0
+    if (course.videoChatEnabled) return 1
+    return 2
+  }
+
   /* STATE */
   const [defCourse, setDefCourse] = useState(props.course);
   const [input, setInput] = useState({
     courseId: props.course.id,
     inviteOnly: props.course.inviteOnly,
     requireVideoChatUrlOnQuestions: props.course.requireVideoChatUrlOnQuestions,
-    enableVideoChat: props.course.enableVideoChat 
+    videoChatEnabled: props.course.videoChatEnabled 
   });
+  const [check, setCheck] = useState(videoChatNum(props.course));
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
   const [open, setOpen] = useState(false);
 
   /* HANDLER FUNCTIONS */
-  const isBooleanField = (name) => {
-    return name === "inviteOnly" || name === "requireVideoChatUrlOnQuestions" || name === "enableVideoChat"
-  }
+  
   const handleInputChange = (e, { name, value }) => {
     input[name] =  name === "inviteOnly" ? !input[name] : value;
     setInput(input);
   };
 
-  const handleVCInputChange = (name) => {
+  const handleVCInputChange = (e, { name, value }) => {
     switch (name) {
       case 'requireVideoChatUrlOnQuestions': {
-        input[name] = !input[name];
-        input.enableVideoChat = false;
+        input[name] = true;
+        input.videoChatEnabled = false;
         setInput(input);
-
+        setCheck(videoChatNum(input));
+        break;
       }
-      case 'enableVideoChat': {
-        input[name] = !input[name];
+      case 'videoChatEnabled': {
+        input[name] = true;
         input.requireVideoChatUrlOnQuestions = false;
         setInput(input);
-
+        setCheck(videoChatNum(input));
+        break;
       }
       case 'disableVideoChat': {
         input.requireVideoChatUrlOnQuestions = false;
-        input.enableVideoChat = false;
+        input.videoChatEnabled = false;
         setInput(input);
-
+        setCheck(videoChatNum(input));
+        break;
       }
     }
-    console.log(input);
+    
   }
 
   const onSubmit = async () => {
@@ -144,24 +152,21 @@ const CourseForm = (props) => {
         <label>Video Chat</label>
         <Form.Radio
           label="Require Link"
-          defaultChecked={ defCourse.requireVideoChatUrlOnQuestions }
+          checked={ check === 0 }
           name="requireVideoChatUrlOnQuestions"
           disabled={ loading }
-          value={ input.requireVideoChatUrlOnQuestions }
           onChange={ handleVCInputChange }/>
         <Form.Radio
           label="Allow Link"
-          defaultChecked={ defCourse.videoChatEnabled }
+          checked={ check === 1 }
           name="videoChatEnabled"
           disabled={ loading }
-          value={ input.videoChatEnabled }
           onChange={ handleVCInputChange }/>
         <Form.Radio
           label="No Link"
-          defaultChecked={ !defCourse.videoChatEnabled && !defCourse.requireVideoChatUrlOnQuestions }
+          checked={ check === 2 }
           name="disableVideoChat"
           disabled={ loading }
-          value={ !input.requireVideoChatUrlOnQuestions && !input.videoChatEnabled }
           onChange={ handleVCInputChange }/>
       </Form.Field>
       <Form.Field>
@@ -170,7 +175,7 @@ const CourseForm = (props) => {
           defaultChecked={ defCourse.inviteOnly }
           name="inviteOnly"
           disabled={ loading }
-          value={ input.inviteOnly } toggle
+          toggle
           onChange={ handleInputChange }/>
       </Form.Field>
       <Button color='blue' type='submit' disabled={ loading } onClick={ onSubmit }>Submit</Button>
