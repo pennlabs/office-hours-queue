@@ -87,10 +87,10 @@ class Mutation(graphene.ObjectType):
     undo_start_question = questions.UndoStartQuestion.Field()
     finish_question = questions.FinishQuestion.Field()
 
-    add_user_to_course = courses.AddUserToCourse.Field()
+    # add_user_to_course = courses.AddUserToCourse.Field()
     remove_user_from_course = courses.RemoveUserFromCourse.Field()
     remove_invited_user_from_course = courses.RemoveInvitedUserFromCourse.Field()
-    join_course = courses.JoinCourse.Field()
+    join_courses = courses.JoinCourses.Field()
     invite_or_add_emails = courses.InviteOrAddEmails.Field()
     resend_invite_email = courses.ResendInviteEmail.Field()
     change_course_user_kind = courses.ChangeCourseUserKind.Field()

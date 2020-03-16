@@ -123,74 +123,77 @@ class UpdateCourse(graphene.Mutation):
         return UpdateCourseResponse(course=course)
 
 
-class AddUserToCourseInput(graphene.InputObjectType):
-    course_id = graphene.ID(required=True)
-    user_id = graphene.ID(required=True)
-    kind = graphene.Field(CourseUserKindType, required=True)
+# class AddUserToCourseInput(graphene.InputObjectType):
+#     course_id = graphene.ID(required=True)
+#     user_id = graphene.ID(required=True)
+#     kind = graphene.Field(CourseUserKindType, required=True)
+#
+#
+# class AddUserToCourseResponse(graphene.ObjectType):
+#     course_user = graphene.Field(CourseUserNode, required=False)
+#
+#
+# class AddUserToCourse(graphene.Mutation):
+#     class Arguments:
+#         input = AddUserToCourseInput(required=True)
+#
+#     Output = AddUserToCourseResponse
+#
+#     @staticmethod
+#     def mutate(root, info, input):
+#         with transaction.atomic():
+#             user = info.context.user.get_user()
+#             course = Course.objects.get(pk=from_global_id(input.course_id)[1])
+#             if not CourseUser.objects.filter(
+#                 user=user,
+#                 course=course,
+#                 kind__in=CourseUserKind.leadership(),
+#             ).exists():
+#                 raise user_not_leadership_error
+#
+#             course_user = CourseUser.objects.create(
+#                 user=User.objects.get(pk=from_global_id(input.user_id)[1]),
+#                 course=course,
+#                 kind=input.kind,
+#                 invited_by=user,
+#             )
+#         send_added_to_course_email(course_user)
+#         return AddUserToCourseResponse(course_user=course_user)
 
 
-class AddUserToCourseResponse(graphene.ObjectType):
-    course_user = graphene.Field(CourseUserNode, required=False)
+class JoinCoursesInput(graphene.InputObjectType):
+    course_ids = graphene.List(graphene.ID, required=True)
 
 
-class AddUserToCourse(graphene.Mutation):
+class JoinCoursesResponse(graphene.ObjectType):
+    course_users = graphene.List(CourseUserNode, required=False)
+
+
+class JoinCourses(graphene.Mutation):
     class Arguments:
-        input = AddUserToCourseInput(required=True)
+        input = JoinCoursesInput(required=True)
 
-    Output = AddUserToCourseResponse
+    Output = JoinCoursesResponse
 
     @staticmethod
     def mutate(root, info, input):
         with transaction.atomic():
-            user = info.context.user.get_user()
-            course = Course.objects.get(pk=from_global_id(input.course_id)[1])
-            if not CourseUser.objects.filter(
-                user=user,
-                course=course,
-                kind__in=CourseUserKind.leadership(),
-            ).exists():
-                raise user_not_leadership_error
-
-            course_user = CourseUser.objects.create(
-                user=User.objects.get(pk=from_global_id(input.user_id)[1]),
-                course=course,
-                kind=input.kind,
-                invited_by=user,
+            courses = Course.objects.filter(
+                pk__in=[from_global_id(course_id)[1] for course_id in input.course_ids],
             )
-        send_added_to_course_email(course_user)
-        return AddUserToCourseResponse(course_user=course_user)
-
-
-class JoinCourseInput(graphene.InputObjectType):
-    course_id = graphene.ID(required=True)
-
-
-class JoinCourseResponse(graphene.ObjectType):
-    course_user = graphene.Field(CourseUserNode, required=False)
-
-
-class JoinCourse(graphene.Mutation):
-    class Arguments:
-        input = JoinCourseInput(required=True)
-
-    Output = JoinCourseResponse
-
-    @staticmethod
-    def mutate(root, info, input):
-        with transaction.atomic():
-            course = Course.objects.get(pk=from_global_id(input.course_id)[1])
-            if course.invite_only:
+            if any(course.invite_only for course in courses):
                 raise course_invite_only_error
-            if course.archived:
+            if any(course.archived for course in courses):
                 raise course_archived_error
-
-            course_user = CourseUser.objects.create(
-                user=info.context.user.get_user(),
-                course=course,
-                kind=CourseUserKind.STUDENT.name,
-            )
-
-        return JoinCourseResponse(course_user=course_user)
+            course_users = [
+                CourseUser(
+                    user=info.context.user.get_user(),
+                    course=course,
+                    kind=CourseUserKind.STUDENT.name,
+                ) for course in courses
+            ]
+            CourseUser.objects.bulk_create(course_users)
+        return JoinCoursesResponse(course_users=course_users)
 
 
 class InviteOrAddEmailsInput(graphene.InputObjectType):
