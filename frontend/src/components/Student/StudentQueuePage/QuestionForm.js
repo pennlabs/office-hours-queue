@@ -73,14 +73,16 @@ const QuestionForm = (props) => {
                 "color": charCount < 250 ? "" : "crimson"}}>
                   {"Characters: " +  charCount + "/250"}</div>
           </Form.Field>
-          <Form.Field>
-            <label>Tags</label>
-            <Form.Dropdown multiple selection
-            name="tags"
-            disabled={ loading }
-            onChange={ handleInputChange }
-            options={ getDropdownOptions(queue.tags) } />
-          </Form.Field>
+          { queue.tags && queue.tags.length > 0 &&
+            <Form.Field>
+              <label>Tags</label>
+              <Form.Dropdown multiple selection
+              name="tags"
+              disabled={ loading }
+              onChange={ handleInputChange }
+              options={ getDropdownOptions(queue.tags) } />
+            </Form.Field>
+          }
         </Form>
       </Segment>
       <Segment attached="bottom">
