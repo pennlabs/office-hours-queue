@@ -29,13 +29,22 @@ const AccountForm = (props) => {
     preferredName: props.user.preferredName,
     phoneNumber: props.user.phoneNumber
   });
-  const [input, setInput] = useState({});
+  const [input, setInput] = useState({
+    email: props.user.email,
+    fullName: props.user.fullName,
+    preferredName: props.user.preferredName,
+    phoneNumber: props.user.phoneNumber
+  });
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
+  const [disabled, setDisabled] = useState(true);
 
   const handleInputChange = (e, { name, value }) => {
     input[name] = value;
     setInput(input);
+    console.log(input.phoneNumber === defUser.phoneNumber)
+    setDisabled((!input.preferredName || !input.fullName) ||
+      (input.preferredName === defUser.preferredName && input.fullName === defUser.fullName && input.phoneNumber === defUser.phoneNumber))
   };
 
   const onSubmit = async () => {
@@ -43,16 +52,11 @@ const AccountForm = (props) => {
     const preferredName = input.preferredName
     const phoneNumber = input.phoneNumber
 
-    const newInput = (phoneNumber ?
-      {
-        fullName: fullName,
-        preferredName: preferredName,
-        phoneNumber: phoneNumber
-      } : {
-        fullName: fullName,
-        preferredName: preferredName
-      }
-    );
+    const newInput = {
+      fullName: fullName,
+      preferredName: preferredName,
+      phoneNumber: phoneNumber
+    } 
     try {
       await updateUser({
         variables: {
@@ -102,7 +106,7 @@ const AccountForm = (props) => {
           disabled={ loading }
           onChange={ handleInputChange }/>
       </Form.Field>
-      <Button color='blue' type='submit' disabled={ loading }  onClick={ onSubmit }>Submit</Button>
+      <Button color='blue' type='submit' disabled={ disabled }  onClick={ onSubmit }>Submit</Button>
       <Snackbar open={ success } autoHideDuration={6000} onClose={ () => setSuccess(false) }>
         <Alert severity="success" onClose={ () => setSuccess(false) }>
           Your account has been updated!
