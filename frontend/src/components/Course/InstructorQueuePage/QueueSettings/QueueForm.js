@@ -23,6 +23,7 @@ const QueueForm = (props) => {
   /* STATE */
   const [success, setSuccess] = useState(false);
   const [disabled, setDisabled] = useState(true);
+  const [error, setError] = useState(false);
   const [queue, setQueue] = useState(props.queue);
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState({
@@ -46,14 +47,18 @@ const QueueForm = (props) => {
   };
 
   const onSubmit = async () => {
-    await updateQueue({
+    try{
+      await updateQueue({
       variables: {
         input: input
       }
-    })
-    await props.refetch();
-    setSuccess(true);
-    props.backFunc('queues');
+      })
+      await props.refetch();
+      setSuccess(true);
+      props.backFunc('queues');
+    } catch(e){
+      setError(true);
+    }
   };
 
   const onArchived = async () => {
@@ -127,6 +132,11 @@ const QueueForm = (props) => {
       <Snackbar open={ success } autoHideDuration={2000} onClose={ () => setSuccess(false) }>
         <Alert severity="success" onClose={ () => setSuccess(false) }>
           <span><b>{queue.name}</b> has been updated!</span>
+        </Alert>
+      </Snackbar>
+      <Snackbar open={ error } autoHideDuration={6000} onClose={ () => setError(false) }>
+        <Alert severity="error" onClose={ () => setError(false) }>
+          <span>There was an error editing this queue. Try changing the name of the queue.</span>
         </Alert>
       </Snackbar>
     </Form>
