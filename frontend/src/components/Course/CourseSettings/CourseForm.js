@@ -33,10 +33,15 @@ const CourseForm = (props) => {
     courseId: props.course.id,
     inviteOnly: props.course.inviteOnly,
     requireVideoChatUrlOnQuestions: props.course.requireVideoChatUrlOnQuestions,
-    videoChatEnabled: props.course.videoChatEnabled 
+    videoChatEnabled: props.course.videoChatEnabled,
+    department: props.course.department,
+    courseCode: props.course.courseCode,
+    courseTitle: props.course.courseTitle,
+    year: props.course.year
   });
   const [check, setCheck] = useState(videoChatNum(props.course));
   const [success, setSuccess] = useState(false);
+  const [disabled, setDisabled] = useState(true);
   const [error, setError] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -45,9 +50,11 @@ const CourseForm = (props) => {
   const handleInputChange = (e, { name, value }) => {
     input[name] =  name === "inviteOnly" ? !input[name] : value;
     setInput(input);
+    setDisabled(!input.department || !input.courseCode || !input.courseTitle || !input.year);
   };
 
   const handleVCInputChange = (e, { name, value }) => {
+    setDisabled(false)
     switch (name) {
       case 'requireVideoChatUrlOnQuestions': {
         input[name] = true;
@@ -177,7 +184,7 @@ const CourseForm = (props) => {
           toggle
           onChange={ handleInputChange }/>
       </Form.Field>
-      <Button color='blue' type='submit' disabled={ loading } onClick={ onSubmit }>Submit</Button>
+      <Button color='blue' type='submit' disabled={ disabled } onClick={ onSubmit }>Submit</Button>
       <Modal open={ open }
         trigger={
           <a style={{"textDecoration":"underline", "cursor":"pointer"}}
