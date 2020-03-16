@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Grid, Segment, Header, Form, Button } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
+import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
 
 /* GRAPHQL QUERIES/MUTATIONS */
 const CREATE_QUEUE = gql`
@@ -21,6 +23,7 @@ const CreateQueue = (props) => {
   /* STATE */
   const [success, setSuccess] = useState(false);
   const [disabled, setDisabled] = useState(true);
+  const [error, setError] = useState(false);
   const [input, setInput] = useState({
     name: null,
     description: null,
@@ -37,14 +40,18 @@ const CreateQueue = (props) => {
   };
 
   const onSubmit = async () => {
-    await createQueue({
-    variables: {
-      input: input
-      }
-    })
-    await props.refetch();
-    setSuccess(true);
-    props.backFunc('queues');
+    try{
+      await createQueue({
+      variables: {
+        input: input
+        }
+      })
+      await props.refetch();
+      setSuccess(true);
+      props.backFunc('queues');
+    } catch (e){
+      setError(true);
+    }
   };
 
   return (
@@ -85,8 +92,13 @@ const CreateQueue = (props) => {
           </Form>
         </Segment>
       </Grid.Row>
+      <Snackbar open={ error } autoHideDuration={6000} onClose={ () => setError(false) }>
+        <Alert severity="error" onClose={ () => setError(false) }>
+          <span>There was an error creating this queue. Try changing the name.</span>
+        </Alert>
+      </Snackbar>
     </Grid.Column>
-  );
+  )
 };
 
 export default CreateQueue;
