@@ -31,6 +31,7 @@ const AccountForm = (props) => {
   });
   const [input, setInput] = useState({});
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(false);
 
   const handleInputChange = (e, { name, value }) => {
     input[name] = value;
@@ -52,14 +53,17 @@ const AccountForm = (props) => {
         preferredName: preferredName
       }
     );
-
-    await updateUser({
-      variables: {
-        input: newInput
-      }
-    })
-    await props.refetch();
-    setSuccess(true);
+    try {
+      await updateUser({
+        variables: {
+          input: newInput
+        }
+      })
+      await props.refetch();
+      setSuccess(true);
+    } catch (e) {
+      setError(true);
+    }
   };
 
   return (
@@ -99,9 +103,14 @@ const AccountForm = (props) => {
           onChange={ handleInputChange }/>
       </Form.Field>
       <Button color='blue' type='submit' disabled={ loading }  onClick={ onSubmit }>Submit</Button>
-      <Snackbar open={ success } autoHideDuration={2000} onClose={ () => setSuccess(false) }>
+      <Snackbar open={ success } autoHideDuration={6000} onClose={ () => setSuccess(false) }>
         <Alert severity="success" onClose={ () => setSuccess(false) }>
           Your account has been updated!
+        </Alert>
+      </Snackbar>
+      <Snackbar open={ error } autoHideDuration={6000} onClose={ () => setError(false) }>
+        <Alert severity="error" onClose={ () => setError(false) }>
+          <span>There was an error updating your account!</span>
         </Alert>
       </Snackbar>
     </Form>
