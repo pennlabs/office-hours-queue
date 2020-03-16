@@ -7,6 +7,7 @@ import { prettifyRole } from "../../utils/enums";
 const CourseSidebar = (props) => {
   const [leadership, setLeadership] = useState(props.leadership);
   const [leader, setLeader] = useState(props.leader);
+  const noWrapStyle = {whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}
 
   useEffect(() => {
     setLeadership(props.leadership)
@@ -24,24 +25,28 @@ const CourseSidebar = (props) => {
         </Link>
         <Menu vertical secondary fluid>
           <Menu.Item
+            style={ noWrapStyle }
             name="Queues"
             icon='hourglass one'
             onClick={() => props.clickFunc('queues')}
             active={props.active === 'queues'}
             color='blue'/>
           <Menu.Item
+            style={ noWrapStyle }
             name="Roster"
             icon='users'
             onClick={() => props.clickFunc('roster')}
             active={props.active === 'roster'}
             color='blue'/>
           <Menu.Item
+            style={ noWrapStyle }
             name="Analytics"
             icon='chart bar'
             onClick={ () => props.clickFunc('analytics') }
             active={props.active === 'analytics'}
             color='blue'/>
           <Menu.Item
+            style={ noWrapStyle }
             name="Question Summary"
             icon='list ol'
             onClick={ () => props.clickFunc('summary') }
@@ -50,6 +55,7 @@ const CourseSidebar = (props) => {
           {
             leader &&
             <Menu.Item
+              style={ noWrapStyle }
               name="Course Settings"
               icon='settings'
               onClick={ () => props.clickFunc('settings') }

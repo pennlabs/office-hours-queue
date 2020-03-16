@@ -29,7 +29,7 @@ const CourseSidebar = (props) => (
               {};
             return (
               <List>
-                <List.Item style={{overflow: "hidden"}}>
+                <List.Item>
                   <Image avatar><Icon name='user'/></Image>
                   <List.Content>
                     <List.Header {...headerProps}>
