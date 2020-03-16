@@ -68,14 +68,14 @@ const AccountForm = (props) => {
 
   return (
     <Form>
-      <Form.Field>
+      <Form.Field required>
         <label>Email Address</label>
         <Form.Input
           defaultValue={ defUser.email }
           disabled
           onChange={ handleInputChange }/>
       </Form.Field>
-      <Form.Field>
+      <Form.Field required>
         <label>Full Name</label>
         <Form.Input
           placeholder='Full Name'
@@ -84,7 +84,7 @@ const AccountForm = (props) => {
           disabled={ loading }
           onChange={ handleInputChange }/>
       </Form.Field>
-      <Form.Field>
+      <Form.Field required>
         <label>Preferred Name</label>
         <Form.Input
           placeholder='Preferred Name'

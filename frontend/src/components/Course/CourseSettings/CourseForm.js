@@ -107,7 +107,7 @@ const CourseForm = (props) => {
 
   return (
     <Form>
-      <Form.Field>
+      <Form.Field required>
         <label>Department</label>
         <Form.Input
           defaultValue={ defCourse.department }
@@ -115,7 +115,7 @@ const CourseForm = (props) => {
           disabled={ loading }
           onChange={ handleInputChange }/>
       </Form.Field>
-      <Form.Field>
+      <Form.Field required>
         <label>Course Code</label>
         <Form.Input
           defaultValue={ defCourse.courseCode }
@@ -123,7 +123,7 @@ const CourseForm = (props) => {
           disabled={ loading }
           onChange={ handleInputChange }/>
       </Form.Field>
-      <Form.Field>
+      <Form.Field required>
         <label>Course Title</label>
         <Form.Input
           defaultValue={ defCourse.courseTitle }
@@ -131,7 +131,7 @@ const CourseForm = (props) => {
           disabled={ loading }
           onChange={ handleInputChange }/>
       </Form.Field>
-      <Form.Field>
+      <Form.Field required>
         <label>Year</label>
         <Form.Input
           defaultValue={ defCourse.year }
@@ -139,7 +139,7 @@ const CourseForm = (props) => {
           disabled={ loading }
           onChange={ handleInputChange }/>
       </Form.Field>
-      <Form.Field>
+      <Form.Field required>
         <label>Semester</label>
         <Form.Dropdown
           defaultValue={ defCourse.semester }
@@ -148,7 +148,7 @@ const CourseForm = (props) => {
           selection options={ semesterOptions }
           onChange={ handleInputChange } />
       </Form.Field>
-      <Form.Field>
+      <Form.Field required>
         <label>Video Chat</label>
         <Form.Radio
           label="Require Link"
@@ -169,7 +169,7 @@ const CourseForm = (props) => {
           disabled={ loading }
           onChange={ handleVCInputChange }/>
       </Form.Field>
-      <Form.Field>
+      <Form.Field required>
         <label>Invite Only?</label>
         <Form.Radio
           defaultChecked={ defCourse.inviteOnly }
@@ -177,7 +177,7 @@ const CourseForm = (props) => {
           disabled={ loading }
           toggle
           onChange={ handleInputChange }/>
-      </Form.Field>
+      </Form.Field required>
       <Button color='blue' type='submit' disabled={ loading } onClick={ onSubmit }>Submit</Button>
       <Modal open={ open }
         trigger={
