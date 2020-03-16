@@ -51,6 +51,11 @@ class CreateUser(graphene.Mutation):
 
 
 class UpdateUserInput(graphene.InputObjectType):
+    if (
+            not input.full_name or
+            not input.preferred_name
+        ):
+            raise empty_string_error
     full_name = graphene.String(required=False)
     preferred_name = graphene.String(required=False)
     phone_number = graphene.String(required=False)
