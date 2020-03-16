@@ -16,13 +16,14 @@ const JOIN_COURSES = gql`
 `;
 
 const ModalAddStudentCourse = (props) => {
-
-  const [input, setInput] = useState({ courseIds: [] });
   const [joinCourses, { loading, data }] = useMutation(JOIN_COURSES);
+  const [input, setInput] = useState({ courseIds: [] });
+  const [disabled, setDisabled] = useState(true);
 
   const handleInputChange = (e, { name, value }) => {
     input[name] = value;
     setInput(input);
+    setDisabled(input.courseIds.length === 0);
   };
 
   const joinFunc = async () => {
@@ -41,8 +42,6 @@ const ModalAddStudentCourse = (props) => {
     props.successFunc(true); // trigger snackbar
   };
 
-  console.log(loading || input.courseIds.length === 0, input.courseIds.length)
-  console.log(input.courseIds)
   return (
     <Modal open={ props.open }>
       <Modal.Header>Join Courses</Modal.Header>
@@ -53,7 +52,7 @@ const ModalAddStudentCourse = (props) => {
         <Button
           content='Join'
           color='blue'
-          disabled={loading || input.courseIds.length === 0 }
+          disabled={loading || disabled }
           loading={loading}
           onClick={ joinFunc }/>
         <Button

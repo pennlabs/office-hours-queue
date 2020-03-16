@@ -31,17 +31,17 @@ const INVITE_OR_ADD_EMAILS = gql`
 
 const InviteModal = (props) => {
   const [inviteOrAddEmails, { loading, data }] = useMutation(INVITE_OR_ADD_EMAILS);
-
   const [input, setInput] = useState({ emails: [], kind: null });
+  const [disabled, setDisabled] = useState(true);
 
   const handleInputChange = (e, { name, value }) => {
     input[name] = value;
     setInput(input);
+    setDisabled(input.emails.length === 0 || input.kind === null)
   };
 
   const inviteFunc = async () => {
     if (input.emails.length === 0 || input.kind === null) {
-      // TODO validation
       return
     }
     await inviteOrAddEmails({
@@ -67,7 +67,7 @@ const InviteModal = (props) => {
         <Button
           content='Invite'
           color='blue'
-          disabled={loading || input.emails.length === 0 || input.kind === null}
+          disabled={loading || disabled}
           loading={loading}
           onClick={ inviteFunc }/>
         <Button
