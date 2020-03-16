@@ -20,7 +20,7 @@ const CreateQueue = (props) => {
 
   /* STATE */
   const [success, setSuccess] = useState(false);
-  const [error, setError] = useState(null);
+  const [disabled, setDisabled] = useState(true);
   const [input, setInput] = useState({
     name: null,
     description: null,
@@ -33,22 +33,17 @@ const CreateQueue = (props) => {
   const handleInputChange = (e, { name, value }) => {
     input[name] = value;
     setInput(input);
+    setDisabled(input.name == null || input.description == null);
   };
 
   const onSubmit = async () => {
-    if (input.name == null || input.name == ""){
-      setError("Please fill out name");
-    } else if (input.description == null || input.description == ""){
-      setError("Please fill out description");
-    } else {
-        await createQueue({
-        variables: {
-          input: input
-        }
-      })
-      await props.refetch();
-      setSuccess(true);
-    }
+    await createQueue({
+    variables: {
+      input: input
+      }
+    })
+    await props.refetch();
+    setSuccess(true);
   };
 
   return (
@@ -79,15 +74,12 @@ const CreateQueue = (props) => {
                 disabled={ loading }
                 onChange={ handleInputChange }/>
             </Form.Field>
-            <Button color='blue' type='submit' disabled={ loading }  onClick={ onSubmit }>Submit</Button>
+            <Button color='blue' type='submit' disabled={ disabled || loading }  onClick={ onSubmit }>Submit</Button>
             {
               loading && <span>Creating...</span>
             }
             {
               success && !loading && <span>Created!</span>
-            }
-            {
-              error != null && !loading && <span>{error}</span>
             }
           </Form>
         </Segment>
