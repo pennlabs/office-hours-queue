@@ -2,6 +2,8 @@ from graphql import GraphQLError
 
 empty_string_error = GraphQLError("Required string input must not be empty")
 
+email_not_upenn_error = GraphQLError("Must sign up with upenn.edu email")
+
 course_does_not_exist_error = GraphQLError("Course does not exist")
 queue_does_not_exist_error = GraphQLError("Queue does not exist")
 question_does_not_exist_error = GraphQLError("Question does not exist")

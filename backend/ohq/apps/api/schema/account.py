@@ -1,7 +1,7 @@
 from django.db import transaction
 
 from ohq.apps.api.schema.types import *
-from ohq.apps.api.util.errors import empty_update_error, empty_string_error
+from ohq.apps.api.util.errors import empty_update_error, empty_string_error, email_not_upenn_error
 
 
 class CreateUserInput(graphene.InputObjectType):
@@ -27,6 +27,8 @@ class CreateUser(graphene.Mutation):
             not input.preferred_name
         ):
             raise empty_string_error
+        if not info.context.user.email.endswith("upenn.edu"):
+            raise email_not_upenn_error
         with transaction.atomic():
             user = User.objects.create(
                 full_name=input.full_name,
