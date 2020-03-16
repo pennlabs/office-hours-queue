@@ -136,7 +136,7 @@ const QueueForm = (props) => {
       </Snackbar>
       <Snackbar open={ error } autoHideDuration={6000} onClose={ () => setError(false) }>
         <Alert severity="error" onClose={ () => setError(false) }>
-          <span>There was an error editing this queue. Try changing the name of the queue.</span>
+          <span>There was an error editing <b>{queue.name}</b>.</span>
         </Alert>
       </Snackbar>
     </Form>
