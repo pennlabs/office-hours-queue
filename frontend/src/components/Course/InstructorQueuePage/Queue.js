@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Header, Label, Grid, Segment, Form } from 'semantic-ui-react';
+import { Header, Label, Grid, Segment, Button } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
 import Questions from './Questions';
@@ -92,6 +92,7 @@ const Queue = (props) => {
 
   /* STATE */
   const [queue, setQueue] = useState(props.queue);
+  const [active, setActive] = useState(props.queue.activeOverrideTime !== null)
   const [questions, setQuestions] = useState([]);
   const [filteredQuestions, setFilteredQuestions] = useState([]);
   const [tags, setTags] = useState([]);
@@ -111,6 +112,7 @@ const Queue = (props) => {
 
   useEffect(() => {
     setQueue(queue);
+    setActive(props.queue.activeOverrideTime !== null)
   }, [props.queue]);
 
   return (
@@ -121,16 +123,39 @@ const Queue = (props) => {
             { queue.description }
         </Header.Subheader>
       </Header>
-      <Label
-        content={ filter(questions, { tags: [] }).length + " user(s)" }
-        color="blue"
-        icon="user"/>
-      <Label content={queue.estimatedWaitTime + " mins"} color="blue" icon="clock"/>
-      <Label as="a"
-        content="Edit"
-        color="grey"
-        icon="cog"
-        onClick={ props.editFunc }/>
+      <Grid>
+        <Grid.Row columns="equal">
+          <Grid.Column>
+            <Label
+              content={ filter(questions, { tags: [] }).length + " user(s)" }
+              color="blue"
+              icon="user"/>
+            {
+              /*
+              <Label content={queue.estimatedWaitTime + " mins"} color="blue" icon="clock"/>
+              */
+            }
+            <Label as="a"
+              content="Edit"
+              color="grey"
+              icon="cog"
+              onClick={ props.editFunc }/>
+          </Grid.Column>
+          <Grid.Column textAlign="right">
+            <Button
+              size="mini"
+              content="Close"
+              color="red"
+              disabled={ !active }
+              onClick={ props.closeFunc }/>
+            <Button size="mini"
+              content="Open"
+              color="green"
+              disabled={ active }
+              onClick={ props.openFunc }/>
+          </Grid.Column>
+        </Grid.Row>
+      </Grid>
       {
         tags.length > 0 && 
         <Grid.Row>
@@ -142,7 +167,7 @@ const Queue = (props) => {
             questions={ filteredQuestions }
             filters={ filters }
             refetch={ refetch }
-            active={ queue.activeOverrideTime !== null }/>
+            active={ active }/>
       </Grid.Row>
     </Segment>
   );

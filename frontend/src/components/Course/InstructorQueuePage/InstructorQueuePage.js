@@ -5,7 +5,7 @@ import QueueSettings from './QueueSettings/QueueSettings';
 import CreateQueue from './CreateQueue/CreateQueue';
 
 import { gql } from 'apollo-boost';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 
 /* GRAPHQL QUERIES/MUTATIONS */
 const GET_QUEUES = gql`
@@ -30,11 +30,33 @@ query GetQueues($id: ID!) {
 }
 `;
 
+const ACTIVATE_QUEUE = gql`
+  mutation ManuallyActivateQueue($input: ManuallyActivateQueueInput!) {
+    manuallyActivateQueue(input: $input) {
+      queue {
+        id
+      }
+    }
+  }
+`;
+
+const DEACTIVATE_QUEUE = gql`
+mutation ManuallyDeactivateQueue($input: ManuallyDeactivateQueueInput!) {
+  manuallyDeactivateQueue(input: $input) {
+    queue {
+      id
+    }
+  }
+}
+`;
+
 const InstructorQueuePage = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
   const { loading, error, data, refetch } = useQuery(GET_QUEUES, { variables: {
     id: props.course.id
   }});
+  const [activateQueue, activateQueueRes] = useMutation(ACTIVATE_QUEUE);
+  const [deactivateQueue, deactivateQueueRes] = useMutation(DEACTIVATE_QUEUE);
 
   /* STATE */
   const [queues, setQueues] = useState([]);
@@ -87,6 +109,28 @@ const InstructorQueuePage = (props) => {
     }
   };
 
+  const onOpen = async (id) => {
+    await activateQueue({
+      variables: {
+        input: {
+          queueId: id
+        }
+      }
+    });
+    refetch();
+  }
+
+  const onClose = async (id) => {
+    await deactivateQueue({
+      variables: {
+        input: {
+          queueId: id
+        }
+      }
+    });
+    refetch();
+  }
+
   /* LOAD DATA */
   if (data && data.course) {
     const newQueues = loadQueues(data);
@@ -106,6 +150,8 @@ const InstructorQueuePage = (props) => {
         <InstructorQueues queues={ queues }
           editFunc={ onQueueSettings }
           createFunc={ () => { setActive('create') } }
+          openFunc={ onOpen }
+          closeFunc={ onClose }
           courseUserKind={ props.courseUserKind }
           leader={ leader }/>
       }

@@ -11,7 +11,7 @@ const Questions = (props) => {
   }, [props.questions]);
 
   useEffect(() => {
-    setActive(active);
+    setActive(props.active);
   }, [props.active])
 
   return (

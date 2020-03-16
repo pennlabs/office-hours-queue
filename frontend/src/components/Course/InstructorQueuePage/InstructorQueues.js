@@ -5,7 +5,7 @@ import { isLeadershipRole } from "../../../utils/enums";
 
 const InstructorQueues = (props) => {
   /* STATE */
-  const [queues, setQueues] = useState([]);
+  const [queues, setQueues] = useState(props.queues);
   const [leader, setLeader] = useState(props.leader);
 
   const numActive = () => {
@@ -29,7 +29,11 @@ const InstructorQueues = (props) => {
         queues.length !== 0 &&
         queues.map((queue) => (
           !queue.archived && <Grid.Column>
-            <Queue key={ queue.id } queue={ queue } editFunc={ () => props.editFunc(queue.id) }/>
+            <Queue key={ queue.id }
+              queue={ queue }
+              openFunc={ () => props.openFunc(queue.id) }
+              closeFunc={ () => props.closeFunc(queue.id) }
+              editFunc={ () => props.editFunc(queue.id) }/>
           </Grid.Column>
         ))
       }

@@ -253,7 +253,7 @@ const Roster = (props) => {
               Invited Users
             </Header>
          </Grid.Row>
-        <Table sortable celled padded selectable>
+        <Table sortable celled padded selectable striped>
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell width={3}>Email</Table.HeaderCell>
@@ -296,7 +296,7 @@ const Roster = (props) => {
       {
         users &&
         <Segment basic>
-          <Table sortable celled padded selectable>
+          <Table sortable celled padded selectable striped>
             <Table.Header>
               <Table.Row>
                 <Table.HeaderCell
