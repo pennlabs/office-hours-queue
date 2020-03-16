@@ -41,9 +41,9 @@ const QueueForm = (props) => {
           input: input
         }
       })
+      setNewTag("");
       await props.refetch();
       setSuccess(true);
-      setNewTag(null);
     }
   };
 
