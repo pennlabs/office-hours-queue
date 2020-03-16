@@ -11,8 +11,10 @@ export default class CourseCard extends React.Component {
     };
 
     return (
-      <Link to={ path }>
-        <Segment basic>
+      <Segment
+          as={Link}
+          style={{display:'block'}} 
+          to={path}>
         <Segment attached="top" color="blue" style={{height:"70px"}}>
           {/* <Link to={ path }> */}
             <Header style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
@@ -29,7 +31,6 @@ export default class CourseCard extends React.Component {
           </Header>
         </Segment>
       </Segment>
-      </Link>
     );
   }
 }
