@@ -115,6 +115,8 @@ const Queue = (props) => {
     setActive(props.queue.activeOverrideTime !== null)
   }, [props.queue]);
 
+  const queueQuestions = filter(questions, { tags: [] });
+
   return (
     <Segment basic>
       <Header as="h3">
@@ -127,7 +129,7 @@ const Queue = (props) => {
         <Grid.Row columns="equal">
           <Grid.Column only='computer mobile'>
             <Label
-              content={ filter(questions, { tags: [] }).length + " user(s)" }
+              content={ queueQuestions.length + ` user${queueQuestions.length === 1 ? '' : 's'}` }
               color="blue"
               icon="user"/>
             {
@@ -157,7 +159,7 @@ const Queue = (props) => {
         </Grid.Row>
       </Grid>
       {
-        tags.length > 0 && 
+        tags.length > 0 &&
         <Grid.Row>
         <QueueFilterForm tags={ tags } changeFunc={ handleFilterChange }/>
         </Grid.Row>
