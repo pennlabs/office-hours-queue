@@ -72,7 +72,7 @@ const CreateQueue = (props) => {
                 disabled={ loading }
                 onChange={ handleInputChange }/>
             </Form.Field>
-            <Button type='submit' disabled={ loading }  onClick={ onSubmit }>Submit</Button>
+            <Button color='blue' type='submit' disabled={ loading }  onClick={ onSubmit }>Submit</Button>
             {
               loading && <span>Creating...</span>
             }

@@ -117,7 +117,7 @@ const CourseForm = (props) => {
           value={true} toggle
           onChange={ handleInputChange }/>
       </Form.Field>
-      <Button type='submit' disabled={ loading } onClick={ onSubmit }>Submit</Button>
+      <Button color='blue' type='submit' disabled={ loading } onClick={ onSubmit }>Submit</Button>
       <Modal open={ open }
         trigger={
           <a style={{"textDecoration":"underline", "cursor":"pointer"}}
