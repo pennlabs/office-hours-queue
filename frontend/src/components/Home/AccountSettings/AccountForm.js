@@ -39,9 +39,9 @@ const AccountForm = (props) => {
   };
 
   const onSubmit = async () => {
-    const fullName = input.fullName ? input.fullName : defUser.fullName;
-    const preferredName = input.preferredName ? input.preferredName : defUser.preferredName;
-    const phoneNumber = input.phoneNumber ? input.phoneNumber : defUser.phoneNumber;
+    const fullName = input.fullName
+    const preferredName = input.preferredName
+    const phoneNumber = input.phoneNumber
 
     const newInput = (phoneNumber ?
       {
