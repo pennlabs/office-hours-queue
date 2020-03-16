@@ -32,11 +32,10 @@ export default class CourseCard extends React.Component {
   return (      
     <Link to={ path }>
       <Segment basic>
-        <Segment style={ hovered ? hoverStyle : cardStyle }
+        <Segment
         onMouseEnter={ () => setHovered(true) }
-        onMouseLeave={ () => setHovered(false) }
-        onClick={ props.clickFunc }>
-        <Segment attached="top" color="blue" style={{height:"70px"}}>
+        onMouseLeave={ () => setHovered(false) }>
+        <Segment attached="top" color= {hovered ? "gray" : "blue"} style={{height:"70px"}}>
           <Header style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
             { `${this.props.department} ${this.props.courseCode}`}
             <Header.Subheader style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
