@@ -1,12 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Segment, Header, Grid } from 'semantic-ui-react';
 import CourseForm from './CourseForm';
 
 const CourseSettings = (props) => {
+  const [course, setCourse]  = useState(props.course);
+  console.log(course);
+
+  useEffect(() => {
+    setCourse(course);
+  }, [props.course])
   return (
     <div>
       {
-        props.course && props.course.id &&
+        course && course.id &&
         <div>
         <Grid.Row>
           <Segment basic>
@@ -17,7 +23,7 @@ const CourseSettings = (props) => {
         </Grid.Row>
         <Grid.Row>
           <Segment basic>
-            <CourseForm course={ props.course } refetch={ props.refetch }/>
+            <CourseForm course={ course } refetch={ props.refetch }/>
           </Segment>
         </Grid.Row>
         </div>
