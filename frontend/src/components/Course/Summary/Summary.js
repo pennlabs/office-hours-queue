@@ -81,7 +81,7 @@ const Summary = (props) => {
           (!input.before || new Date(question.timeAsked).getTime() <= new Date(input.before).getTime()) &&
           (!input.after || new Date(question.timeAsked).getTime() >= new Date(input.after).getTime())
         ) && (
-          input.state.length == 0 || input.state.includes(question.state)
+          input.state.length === 0 || input.state.includes(question.state)
         )
       );
     });

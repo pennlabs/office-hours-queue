@@ -84,7 +84,7 @@ const QuestionCard = (props) => {
   }
 
   const isLoading = () => {
-    return (startQuestionRes && startQuestionRes.loading) || (finishQuestionRes && 
+    return (startQuestionRes && startQuestionRes.loading) || (finishQuestionRes &&
       finishQuestionRes.loading) || (undoStartQuestionRes && undoStartQuestionRes.loading);
   };
 
@@ -196,12 +196,12 @@ const QuestionCard = (props) => {
                   content= { question.tags.map(tag => " " + tag).toString() }
                   basic inverted
                   position="bottom left"/>
-
                 }
                 {
-                  (!question.tags || question.tags.length == 0) && <span><i>No Tags</i></span>
+                  (!question.tags || question.tags.length === 0) &&
+                  <span><i>No Tags</i></span>
                 }
-               
+
               </Grid.Column>
             </Grid.Row>
           </Grid>

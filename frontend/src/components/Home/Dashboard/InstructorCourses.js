@@ -25,7 +25,7 @@ const InstructorCourses = (props) => {
     toast.message = success ? `${name} created!` : "There was an error!"
     setToast(toast);
     setToastOpen(true);
-  }
+  };
 
   /* UPDATE ON PROPS CHANGE */
   useEffect(() => {
@@ -43,7 +43,7 @@ const InstructorCourses = (props) => {
         {
           courses.map(course => (
             !course.archived &&
-            <Grid.Column>
+            <Grid.Column key={course.id}>
               <CourseCard
                 department={course.department}
                 courseCode={course.courseCode}

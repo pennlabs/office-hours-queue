@@ -65,7 +65,7 @@ const Analytics = (props) => {
     let noTagCount = 0;
 
     node.questions.edges.forEach(question => {
-      if (question.node.tags.length == 0) noTagCount += 1
+      if (question.node.tags.length === 0) noTagCount += 1;
       question.node.tags.forEach(tag => {
         counts[tag] = counts[tag] ? counts[tag] + 1 : 1;
       });
@@ -82,7 +82,7 @@ const Analytics = (props) => {
     return {
       data: {
         labels: labels,
-        datasets: [{ 
+        datasets: [{
           data: datapoints,
           backgroundColor: [...Array(datapoints.length)].map(item => {
             return getRandomColor();
