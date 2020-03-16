@@ -26,12 +26,22 @@ const DeleteQuestionModal = (props) => {
   const [question, setQuestion] = useState(props.question);
   const [input, setInput] = useState({questionId:props.question.id, rejectedReason: null});
   const [otherDisabled, setOtherDisabled] = useState(true);
+  const [rejectDisabled, setRejectDisabled] = useState(true);
   const [rejectQuestion, { loading, error }] = useMutation(REJECT_QUESTION);
 
   const handleInputChange = (e, {name, value}) =>{
     input[name] = value;
     setInput(input);
     setOtherDisabled(name === 'rejectedReason' && value !== 'OTHER');
+
+    if (name === 'rejectedReason' && value !== 'OTHER') {
+      setRejectDisabled(false)
+    } else if (name === 'rejectedReason' && value === 'OTHER') {
+      setRejectDisabled(true)
+    }
+    if (name === 'rejectedReasonOther') {
+      setRejectDisabled(input.rejectedReasonOther === null || input.rejectedReasonOther === '')
+    }
   };
 
   const onSubmit = async () => {
@@ -55,7 +65,7 @@ const DeleteQuestionModal = (props) => {
             <b>{" " + question.askedBy.preferredName}</b>:<br/>
             <Segment inverted color="blue">{`"${question.text}"`}</Segment>
             <Form>
-              <Form.Field>
+              <Form.Field required>
                 <Form.Dropdown
                    name="rejectedReason"
                    placeholder="Select Reason"
@@ -64,7 +74,7 @@ const DeleteQuestionModal = (props) => {
                    onChange={handleInputChange}/>
               </Form.Field>
               { input.rejectedReason === "OTHER" &&
-                <Form.Field>
+                <Form.Field required>
                   <Form.TextArea
                     disabled={otherDisabled}
                     name="rejectedReasonOther"
@@ -77,7 +87,7 @@ const DeleteQuestionModal = (props) => {
         </Modal.Content>
         <Modal.Actions>
           <Button content="Cancel" onClick={props.closeFunc}/>
-          <Button content="Delete" color="red" onClick={onSubmit}/>
+          <Button content="Reject" disabled={rejectDisabled} color="red" onClick={onSubmit}/>
         </Modal.Actions>
       </Modal>
   );
