@@ -28,7 +28,7 @@ const QueueSettings = (props) => {
               </Grid.Column>
               <Grid.Column textAlign="right">
                 <Header as="h3">
-                  <Button content="Back" onClick={ () => props.backFunc('queues') }/>
+                  <Button content="Back" onClick={ () => props.backFunc() }/>
                 </Header>
               </Grid.Column>
             </Grid.Row>

@@ -52,10 +52,10 @@ const QueueForm = (props) => {
       variables: {
         input: input
       }
-      })
+      });
       await props.refetch();
       setSuccess(true);
-      props.backFunc('queues');
+      props.backFunc();
     } catch(e){
       setError(true);
     }
@@ -69,11 +69,11 @@ const QueueForm = (props) => {
           archived: true
         }
       }
-    })
+    });
     await props.refetch();
     setOpen(false);
-    props.backFunc('queues');
-  }
+    props.backFunc();
+  };
 
   /* PROPS UPDATE */
   useEffect(() => {
@@ -130,12 +130,12 @@ const QueueForm = (props) => {
       }
       <Snackbar open={ success } autoHideDuration={2000} onClose={ () => setSuccess(false) }>
         <Alert severity="success" onClose={ () => setSuccess(false) }>
-          <span><b>{queue.name}</b> has been updated!</span>
+          <span><b>{queue.name}</b> successfully updated</span>
         </Alert>
       </Snackbar>
       <Snackbar open={ error } autoHideDuration={6000} onClose={ () => setError(false) }>
         <Alert severity="error" onClose={ () => setError(false) }>
-          <span>There was an error editing <b>{queue.name}</b>.</span>
+          <span>There was an error editing <b>{queue.name}</b></span>
         </Alert>
       </Snackbar>
     </Form>

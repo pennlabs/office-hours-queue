@@ -21,7 +21,6 @@ const CreateQueue = (props) => {
   const [createQueue, { loading, data }] = useMutation(CREATE_QUEUE);
 
   /* STATE */
-  const [success, setSuccess] = useState(false);
   const [disabled, setDisabled] = useState(true);
   const [error, setError] = useState(false);
   const [input, setInput] = useState({
@@ -45,10 +44,10 @@ const CreateQueue = (props) => {
       variables: {
         input: input
         }
-      })
+      });
       await props.refetch();
-      setSuccess(true);
       props.backFunc('queues');
+      props.successFunc();
     } catch (e){
       setError(true);
     }
@@ -82,13 +81,17 @@ const CreateQueue = (props) => {
                 disabled={ loading }
                 onChange={ handleInputChange }/>
             </Form.Field>
-            <Button color='blue' type='submit' disabled={ disabled || loading }  onClick={ onSubmit }>Submit</Button>
-            {
-              loading && <span>Creating...</span>
-            }
-            {
-              success && !loading && <span>Created!</span>
-            }
+            <Button
+              content='Submit'
+              color='blue'
+              type='submit'
+              disabled={ disabled || loading }
+              loading={loading}
+              onClick={ onSubmit }/>
+            <Button
+              content='Cancel'
+              type='submit'
+              onClick={ props.backFunc }/>
           </Form>
         </Segment>
       </Grid.Row>

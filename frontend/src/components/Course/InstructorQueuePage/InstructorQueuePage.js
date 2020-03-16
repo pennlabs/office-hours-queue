@@ -6,6 +6,8 @@ import CreateQueue from './CreateQueue/CreateQueue';
 
 import { gql } from 'apollo-boost';
 import { useQuery, useMutation } from '@apollo/react-hooks';
+import Alert from "@material-ui/lab/Alert";
+import Snackbar from "@material-ui/core/Snackbar";
 
 /* GRAPHQL QUERIES/MUTATIONS */
 const GET_QUEUES = gql`
@@ -59,6 +61,7 @@ const InstructorQueuePage = (props) => {
   const [deactivateQueue, deactivateQueueRes] = useMutation(DEACTIVATE_QUEUE);
 
   /* STATE */
+  const [success, setSuccess] = useState(false);
   const [queues, setQueues] = useState([]);
   const [activeQueueId, setActiveQueueId] = useState(null);
   const [active, setActive] = useState('queues');
@@ -157,15 +160,27 @@ const InstructorQueuePage = (props) => {
       {
         active === 'settings' &&
         <Grid.Row>
-          <QueueSettings queue={ getQueue(activeQueueId) } refetch={ refetch } backFunc={ setActive }/>
+          <QueueSettings
+            queue={ getQueue(activeQueueId) }
+            refetch={ refetch }
+            backFunc={ () => setActive('queues') }/>
         </Grid.Row>
       }
       {
         active === 'create' && data &&
         <Grid.Row>
-          <CreateQueue courseId={ props.course.id } refetch={ refetch } backFunc={ setActive }/>
+          <CreateQueue
+            courseId={ props.course.id }
+            refetch={ refetch }
+            successFunc={ () => setSuccess(true) }
+            backFunc={ () => setActive('queues') }/>
         </Grid.Row>
       }
+      <Snackbar open={ success } autoHideDuration={6000} onClose={ () => setSuccess(false) }>
+        <Alert severity="success" onClose={ () => setSuccess(false) }>
+          <span>Queue successfully created</span>
+        </Alert>
+      </Snackbar>
     </Grid>
   );
 };
