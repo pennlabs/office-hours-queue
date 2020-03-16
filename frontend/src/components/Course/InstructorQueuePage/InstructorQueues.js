@@ -28,7 +28,8 @@ const InstructorQueues = (props) => {
       {
         queues.length !== 0 &&
         queues.map((queue) => (
-          !queue.archived && <Grid.Column>
+          !queue.archived &&
+          <Grid.Column key={'column' + queue.id}>
             <Queue
               key={ queue.id }
               queue={ queue }

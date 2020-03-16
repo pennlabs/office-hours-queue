@@ -61,23 +61,23 @@ const CourseSidebar = (props) => {
       { leadership &&
         <Segment basic>
           <Header as='h3'>Instructors</Header>
+          <List>
           {
             leadership.map((courseUser) => {
               return (
-                <List>
-                  <List.Item>
-                    <Icon name='user'/>
-                    <List.Content>
-                      <List.Header as='a' href={`mailto:${courseUser.user.email}`}>
-                        { courseUser.user.fullName }
-                      </List.Header>
-                      <List.Description>{ prettifyRole(courseUser.kind) }</List.Description>
-                    </List.Content>
-                  </List.Item>
-                </List>
+                <List.Item key={courseUser.user.email} style={{"marginBottom": "8px"}}>
+                  <Icon name='user'/>
+                  <List.Content>
+                    <List.Header as='a' href={`mailto:${courseUser.user.email}`}>
+                      { courseUser.user.fullName }
+                    </List.Header>
+                    <List.Description>{ prettifyRole(courseUser.kind) }</List.Description>
+                  </List.Content>
+                </List.Item>
               );
             })
           }
+          </List>
         </Segment>
       }
     </Grid.Column>
