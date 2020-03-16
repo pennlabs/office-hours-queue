@@ -8,7 +8,7 @@ const cardStyle = {
   justifyContent: "center",
   cursor: "pointer",
   border: "dashed #21ba45"
-}
+};
 
 const hoverStyle = {
   height:"110px",
