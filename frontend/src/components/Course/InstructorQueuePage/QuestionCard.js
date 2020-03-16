@@ -119,7 +119,7 @@ const QuestionCard = (props) => {
             }
             {
               question.videoChatUrl &&
-              <a href={ question.videoChatUrl} target="_blank">
+              <a href={ question.videoChatUrl } onClick={ () => { if (!question.timeStarted) onAnswer() } } target="_blank">
                 <Button compact
                   size='mini'
                   color='blue'

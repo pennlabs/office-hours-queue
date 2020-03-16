@@ -26,18 +26,45 @@ const CourseForm = (props) => {
   const [input, setInput] = useState({
     courseId: props.course.id,
     inviteOnly: props.course.inviteOnly,
-    requireVideoChatUrlOnQuestions: props.course.requireVideoChatUrlOnQuestions
+    requireVideoChatUrlOnQuestions: props.course.requireVideoChatUrlOnQuestions,
+    enableVideoChat: props.course.enableVideoChat 
   });
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
   const [open, setOpen] = useState(false);
 
   /* HANDLER FUNCTIONS */
+  const isBooleanField = (name) => {
+    return name === "inviteOnly" || name === "requireVideoChatUrlOnQuestions" || name === "enableVideoChat"
+  }
   const handleInputChange = (e, { name, value }) => {
-    input[name] = name === "inviteOnly" || 
-      name === "requireVideoChatUrlOnQuestions" ? !input[name] : value;
+    input[name] =  name === "inviteOnly" ? !input[name] : value;
     setInput(input);
   };
+
+  const handleVCInputChange = (name) => {
+    switch (name) {
+      case 'requireVideoChatUrlOnQuestions': {
+        input[name] = !input[name];
+        input.enableVideoChat = false;
+        setInput(input);
+
+      }
+      case 'enableVideoChat': {
+        input[name] = !input[name];
+        input.requireVideoChatUrlOnQuestions = false;
+        setInput(input);
+
+      }
+      case 'disableVideoChat': {
+        input.requireVideoChatUrlOnQuestions = false;
+        input.enableVideoChat = false;
+        setInput(input);
+
+      }
+    }
+    console.log(input);
+  }
 
   const onSubmit = async () => {
     try {
@@ -114,21 +141,36 @@ const CourseForm = (props) => {
           onChange={ handleInputChange } />
       </Form.Field>
       <Form.Field>
+        <label>Video Chat</label>
+        <Form.Radio
+          label="Require Link"
+          defaultChecked={ defCourse.requireVideoChatUrlOnQuestions }
+          name="requireVideoChatUrlOnQuestions"
+          disabled={ loading }
+          value={ input.requireVideoChatUrlOnQuestions }
+          onChange={ handleVCInputChange }/>
+        <Form.Radio
+          label="Allow Link"
+          defaultChecked={ defCourse.videoChatEnabled }
+          name="videoChatEnabled"
+          disabled={ loading }
+          value={ input.videoChatEnabled }
+          onChange={ handleVCInputChange }/>
+        <Form.Radio
+          label="No Link"
+          defaultChecked={ !defCourse.videoChatEnabled && !defCourse.requireVideoChatUrlOnQuestions }
+          name="disableVideoChat"
+          disabled={ loading }
+          value={ !input.requireVideoChatUrlOnQuestions && !input.videoChatEnabled }
+          onChange={ handleVCInputChange }/>
+      </Form.Field>
+      <Form.Field>
         <label>Invite Only?</label>
         <Form.Radio
           defaultChecked={ defCourse.inviteOnly }
           name="inviteOnly"
           disabled={ loading }
           value={ input.inviteOnly } toggle
-          onChange={ handleInputChange }/>
-      </Form.Field>
-      <Form.Field>
-        <label>Require Video Chat?</label>
-        <Form.Radio
-          defaultChecked={ defCourse.requireVideoChatUrlOnQuestions }
-          name="requireVideoChatUrlOnQuestions"
-          disabled={ loading }
-          value={ input.requireVideoChatUrlOnQuestions } toggle
           onChange={ handleInputChange }/>
       </Form.Field>
       <Button color='blue' type='submit' disabled={ loading } onClick={ onSubmit }>Submit</Button>

@@ -26,6 +26,7 @@ const GET_COURSE = gql`
       semester
       inviteOnly
       requireVideoChatUrlOnQuestions
+      enableVideoChat
       leadership {
         id
         kind
