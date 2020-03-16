@@ -74,6 +74,15 @@ class Semester(ChoicesEnum):
     SPRING = "SPRING"
     SUMMER = "SUMMER"
 
+    @staticmethod
+    def to_pretty(kind):
+        if kind == Semester.FALL.name:
+            return "Fall"
+        if kind == Semester.SPRING.name:
+            return "Spring"
+        if kind == Semester.SUMMER.name:
+            return "Summer"
+
 
 class Course(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -117,7 +126,8 @@ class Course(models.Model):
         super(Course, self).save(*args, **kwargs)
 
     def __str__(self):
-        return self.department + " " + self.course_code
+        return f"{self.department} {self.course_code} - " \
+               f"{Semester.to_pretty(self.semester)} {self.year}"
 
 
 class CourseUserKind(ChoicesEnum):
