@@ -50,7 +50,11 @@ const StudentQueue = (props) => {
       }
       <Grid.Row>
         {
-          !queue.activeOverrideTime &&
+          props.hasQuestion && question &&
+          <QuestionCard question={ question } queue={ queue } refetch={ props.refetch } toastFunc={ updateToast }/>
+        }
+        {
+          !queue.activeOverrideTime && !props.hasQuestion &&
           <Message style={{"marginTop":"10px"}} info header="Queue Closed" error
             content="This queue is currently closed. Contact course staff if you think this is an error."/>
         }
@@ -61,10 +65,6 @@ const StudentQueue = (props) => {
         {
           queue.activeOverrideTime && props.hasQuestion && !question &&
           <Message style={{"marginTop":"10px"}}info header="Question In Queue" content="You already have asked a question in another queue!"/>
-        }
-        {
-          queue.activeOverrideTime && props.hasQuestion && question &&
-          <QuestionCard question={ question } queue={ queue } refetch={ props.refetch } toastFunc={ updateToast }/>
         }
       </Grid.Row>
       <Snackbar open={ toastOpen } autoHideDuration={6000} onClose={ () => setToastOpen(false) }>
