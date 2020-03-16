@@ -44,7 +44,9 @@ const AccountForm = (props) => {
     setInput(input);
     console.log(input.phoneNumber === defUser.phoneNumber)
     setDisabled((!input.preferredName || !input.fullName) ||
-      (input.preferredName === defUser.preferredName && input.fullName === defUser.fullName && input.phoneNumber === defUser.phoneNumber))
+      (input.preferredName === defUser.preferredName && 
+       input.fullName === defUser.fullName && 
+       input.phoneNumber === defUser.phoneNumber))
   };
 
   const onSubmit = async () => {
