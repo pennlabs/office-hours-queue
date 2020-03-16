@@ -373,7 +373,7 @@ class Question(models.Model):
         with transaction.atomic():
             if self._state.adding:
                 self.order_key = Question.objects.count()
-        super(Question, self).save(*args, **kwargs)
+            super(Question, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.time_asked} - {self.queue.course} - {self.queue.name}"
