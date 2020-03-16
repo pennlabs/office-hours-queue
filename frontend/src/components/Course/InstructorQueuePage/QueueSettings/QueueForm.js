@@ -42,7 +42,7 @@ const QueueForm = (props) => {
     setDescCharCount(input.description.length)
     setNameCharCount(input.name.length)
     setDisabled(!input.name || !input.description || 
-    (input.name == queue.name && input.description == queue.name))
+    (input.name === queue.name && input.description === queue.description))
   };
 
   const onSubmit = async () => {
