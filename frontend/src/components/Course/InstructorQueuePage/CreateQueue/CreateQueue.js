@@ -20,6 +20,7 @@ const CreateQueue = (props) => {
 
   /* STATE */
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(null);
   const [input, setInput] = useState({
     name: null,
     description: null,
@@ -35,13 +36,19 @@ const CreateQueue = (props) => {
   };
 
   const onSubmit = async () => {
-    await createQueue({
-      variables: {
-        input: input
-      }
-    })
-    await props.refetch();
-    setSuccess(true);
+    if (input.name == null || input.name == ""){
+      setError("Please fill out name");
+    } else if (input.description == null || input.description == ""){
+      setError("Please fill out description");
+    } else {
+        await createQueue({
+        variables: {
+          input: input
+        }
+      })
+      await props.refetch();
+      setSuccess(true);
+    }
   };
 
   return (
@@ -78,6 +85,9 @@ const CreateQueue = (props) => {
             }
             {
               success && !loading && <span>Created!</span>
+            }
+            {
+              error != null && !loading && <span>{error}</span>
             }
           </Form>
         </Segment>
