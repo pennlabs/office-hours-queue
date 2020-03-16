@@ -177,7 +177,7 @@ const CourseForm = (props) => {
           disabled={ loading }
           toggle
           onChange={ handleInputChange }/>
-      </Form.Field required>
+      </Form.Field>
       <Button color='blue' type='submit' disabled={ loading } onClick={ onSubmit }>Submit</Button>
       <Modal open={ open }
         trigger={
