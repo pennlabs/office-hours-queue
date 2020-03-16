@@ -56,7 +56,7 @@ const CreateQueue = (props) => {
       <Grid.Row>
         <Segment basic>
           <Form>
-            <Form.Field>
+            <Form.Field required>
               <label>Name</label>
               <Form.Input
                 placeholder="Name"
@@ -64,7 +64,7 @@ const CreateQueue = (props) => {
                 disabled={ loading }
                 onChange={ handleInputChange }/>
             </Form.Field>
-            <Form.Field>
+            <Form.Field required>
               <label>Description</label>
               <Form.Input
                 placeholder="Description"
