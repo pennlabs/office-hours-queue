@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Segment, Header, Icon, Button, Popup, Grid } from 'semantic-ui-react';
-import DeleteQuestionModal from './DeleteQuestionModal';
+import DeleteQuestionModal from './RejectQuestionModal';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks'
 

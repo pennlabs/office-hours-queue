@@ -14,7 +14,7 @@ const REJECT_QUESTION = gql`
   }
 `;
 
-const deleteOptions = [
+const rejectOptions = [
   {key: 'NOT_HERE', value: 'NOT_HERE', text: 'Not Here'},
   {key: 'OH_ENDED', value: 'OH_ENDED', text: 'OH Ended'},
   {key: 'NOT_SPECIFIC', value: 'NOT_SPECIFIC', text: 'Not Specific'},
@@ -22,7 +22,7 @@ const deleteOptions = [
   {key: 'OTHER', value: 'OTHER', text: 'Other'}
 ];
 
-const DeleteQuestionModal = (props) => {
+const RejectQuestionModal = (props) => {
   const [question, setQuestion] = useState(props.question);
   const [input, setInput] = useState({questionId:props.question.id, rejectedReason: null});
   const [otherDisabled, setOtherDisabled] = useState(true);
@@ -69,7 +69,7 @@ const DeleteQuestionModal = (props) => {
                 <Form.Dropdown
                    name="rejectedReason"
                    placeholder="Select Reason"
-                   options={deleteOptions}
+                   options={rejectOptions}
                    selection
                    onChange={handleInputChange}/>
               </Form.Field>
@@ -93,4 +93,4 @@ const DeleteQuestionModal = (props) => {
   );
 };
 
-export default DeleteQuestionModal;
+export default RejectQuestionModal;
