@@ -113,15 +113,18 @@ const EditQuestionModal = (props) => {
                 onChange={ handleInputChange }/>
             </Form.Field>
           }
-          <Form.Field>
-            <label>Tags</label>
-            <Form.Dropdown multiple selection
-              name="tags"
-              disabled={ loading }
-              onChange={ handleInputChange }
-              defaultValue={ question.tags }
-              options={ getDropdownOptions(queue.tags) } />
-          </Form.Field>
+          {
+            question.tags && question.tags.length > 0 &&
+            <Form.Field>
+              <label>Tags</label>
+              <Form.Dropdown multiple selection
+                name="tags"
+                disabled={ loading }
+                onChange={ handleInputChange }
+                defaultValue={ question.tags }
+                options={ getDropdownOptions(queue.tags) } />
+            </Form.Field>
+          }
         </Form>
       </Modal.Content>
       <Modal.Actions>
