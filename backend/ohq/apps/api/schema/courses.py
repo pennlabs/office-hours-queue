@@ -15,6 +15,8 @@ class CreateCourseInput(graphene.InputObjectType):
     year = graphene.Int(required=True)
     semester = graphene.Field(SemesterType, required=True)
     invite_only = graphene.Boolean(required=True)
+    video_chat_enabled = graphene.Boolean(required=False)
+    require_video_chat_url_on_questions = graphene.Boolean(required=False)
     course_user_kind = graphene.Field(CourseUserKindType, required=False)
 
 
@@ -48,6 +50,8 @@ class CreateCourse(graphene.Mutation):
                 year=input.year,
                 semester=input.semester,
                 invite_only=input.invite_only,
+                video_chat_enabled=input.video_chat_enabled,
+                require_video_chat_url_on_questions=input.require_video_chat_url_on_questions,
             )
             course_user = CourseUser.objects.create(
                 user=user,
