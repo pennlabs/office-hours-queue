@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { Form, Message } from 'semantic-ui-react';
+import { Form, Message, Segment } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
-import { useLazyQuery, useMutation } from '@apollo/react-hooks';
-import { roleOptions } from "../../../../utils/enums";
+import { useQuery, useMutation } from '@apollo/react-hooks';
+import {roleOptions} from '../../../../utils/enums';
+import AsyncCreatableSelect from 'react-select/async-creatable';
+import Select from 'react-select';
+import {isValidEmail} from "../../../../utils";
 
 const INVITABLE_USERS = gql`
-  query InvitableUsers($email_Icontains: String, $fullName_Icontains: String, $courseId: ID!) {
-    invitableUsers(email_Icontains: $email_Icontains, fullName_Icontains: $fullName_Icontains, courseId: $courseId) {
+  query InvitableUsers($searchableName_Icontains: String, $courseId: ID!) {
+    invitableUsers(searchableName_Icontains: $searchableName_Icontains, courseId: $courseId) {
       edges {
         node {
           id
@@ -18,159 +21,68 @@ const INVITABLE_USERS = gql`
   }
 `;
 
-const ADD_USER = gql`
-  mutation AddUserToCourse($input: AddUserToCourseInput!) {
-    addUserToCourse(input: $input) {
-      courseUser {
-        id
-      }
-    }
-  }
-`;
-
-const INVITE_EMAIL = gql`
-  mutation InviteEmail($input: InviteEmailsInput!) {
-    inviteEmail(input: $input) {
-      invitedCourseUser {
-        id
-      }
-    }
-  }
-`;
-
 const AddForm = (props) => {
-  const [invitableUsers, invitableUsersRes] = useLazyQuery(INVITABLE_USERS);
-  const [addUser, addUserRes] = useMutation(ADD_USER);
-  const [inviteEmail, inviteEmailRes] = useMutation(INVITE_EMAIL);
 
-  const [input, setInput] = useState({
-    email: null,
-    fullName: null,
-    userId: null,
-    invEmail: null,
-    invRole: null,
-  });
-  const [results, setResults] = useState(null);
-
-  const handleInputChange = (e, { name, value }) => {
-    input[name] = value;
-    setInput(input);
+  const useImperativeQuery = (query) => {
+    const { refetch } = useQuery(query, { skip: true });
+    return (variables) => {
+      return refetch(variables);
+    };
   };
 
-  const onSearch = () => {
-    invitableUsers({
-      variables: {
-        email_Icontains: input.email,
-        fullName_Icontains: input.fullName,
-        courseId: props.courseId
-      }
+  const invitableUsers = useImperativeQuery(INVITABLE_USERS);
+
+  const promiseOptions = async (inputValue) => {
+    if (inputValue.length === 0) {
+      return [];
+    }
+    const { data } = await invitableUsers({
+      searchableName_Icontains: inputValue,
+      courseId: props.courseId
     });
-  };
-
-  const getResults = (data) => {
     return data.invitableUsers.edges.map((item) => {
       return {
-        key: item.node.id,
-        value: item.node.id,
-        text: `${item.node.fullName} (${item.node.email})`,
-      };
-    });
-  };
-
-  const onSubmit = async () => {
-    if (!input.userId) { return }
-    await addUser({
-      variables: {
-        input: {
-          userId: input.userId,
-          courseId: props.courseId,
-          kind: input.role
-        }
+        label: `${item.node.fullName} (${item.node.email})`,
+        value: item.node.email,
       }
     });
   };
 
-  const onInvite = async () => {
-    if (!input.invEmail) { return }
-    await inviteEmail({
-      variables: {
-        input: {
-          courseId: props.courseId,
-          email: input.invEmail,
-          kind: input.invRole
-        }
-      }
-    });
+  const formatCreateLabel = (inputValue) => {
+    return (
+      <div>Invite <i><b>{ inputValue }</b></i></div>
+    );
   };
-
-  const isLoading = () => {
-    return (addUserRes && addUserRes.loading) ||
-      (invitableUsersRes && invitableUsersRes.loading) ||
-      (inviteEmailRes && inviteEmailRes.loading);
-  };
-
-  if (invitableUsersRes.data && invitableUsersRes.data.invitableUsers) {
-    const newResults = getResults(invitableUsersRes.data);
-    if (JSON.stringify(newResults) !== JSON.stringify(results)) {
-      setResults(newResults);
-    }
-  }
 
   return (
     <Form>
       <Form.Field>
-        <label>Email</label>
-        <Form.Input
-          name="email"
-          disabled={ isLoading() }
-          onChange={ handleInputChange }
+        <label>Name or Email</label>
+        <AsyncCreatableSelect
+          cacheOptions
+          defaultOptions
+          loadOptions={promiseOptions}
+          isMulti
+          placeholder={'Search...'}
+          isValidNewOption={isValidEmail}
+          formatCreateLabel={formatCreateLabel}
+          onChange={ (items) => {
+            props.changeFunc(undefined, {
+              name: 'emails',
+              value: items.map((item) => item.value),
+            });
+          }}
         />
       </Form.Field>
       <Form.Field>
-        <label>Full Name</label>
-        <Form.Input
-          name="fullName"
-          disabled={ isLoading() }
-          onChange={ handleInputChange }
+        <label>Role</label>
+        <Form.Dropdown
+          name={'kind'}
+          selection options={roleOptions}
+          placeholder={'Role'}
+          onChange={ props.changeFunc }
         />
       </Form.Field>
-      <Form.Field>
-          <Form.Button content="Search" disabled={ isLoading() } onClick={ onSearch }/>
-      </Form.Field>
-      {
-        results && results.length > 0 &&
-        <div>
-          <Form.Field>
-            <label>Results</label>
-            <Form.Dropdown
-              placeholder="Select User"
-              name="userId"
-              options={ results }
-              search selection
-              disabled={ isLoading() }
-              onChange={ handleInputChange }/>
-          </Form.Field>
-          <Form.Field>
-            <Form.Dropdown selection
-              placeholder="Add As..."
-              name="role"
-              disabled={ isLoading() }
-              onChange={ handleInputChange }
-              options={ roleOptions }/>
-          </Form.Field>
-          <Form.Field>
-            <Form.Button
-              content="Add" color="blue"
-              disabled={ isLoading() }
-              onClick={ onSubmit }/>
-          </Form.Field>
-        </div>
-      }
-      {
-        results && results.length === 0 &&
-        <Message header="No Results" negative
-          content="Those inputs did not return any results, but you can invite someone by email instead!"/>
-      }
     </Form>
   )
 };

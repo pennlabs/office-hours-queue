@@ -28,15 +28,15 @@ const ChangeRoleDropdown = (props) => {
           kind: value,
         }
       }
-    })
-    await props.refetch()
+    });
+    await props.refetch();
     props.successFunc();
   };
 
   const dropdown = (
     <Dropdown
       selection
-      name="role"
+      name='role'
       disabled={ props.disabled || loading }
       loading={ loading }
       onChange={ handleInputChange }

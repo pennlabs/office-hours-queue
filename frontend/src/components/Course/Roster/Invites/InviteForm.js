@@ -3,6 +3,7 @@ import { Form } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
 import { roleOptions } from "../../../../utils/enums";
+import { isValidEmail } from "../../../../utils";
 
 const INVITE_EMAIL = gql`
   mutation InviteEmail($input: InviteEmailsInput!) {
@@ -23,11 +24,6 @@ const InviteForm = (props) => {
     input[name] = value;
     setInput(input);
   };
-
-  const isValidEmail = (email) => {
-    const pattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return pattern.test(email)
-  }
 
   const onSubmit = async () => {
     if (!input.emails || !input.role) return;

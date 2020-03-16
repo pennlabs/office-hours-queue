@@ -1,24 +1,71 @@
-import React from 'react';
-import { Modal, Button, Tab } from 'semantic-ui-react';
-import InviteForm from './InviteForm';
+import React, {useState} from 'react';
+import { Modal, Button } from 'semantic-ui-react';
 import AddForm from './AddForm';
+import {gql} from "apollo-boost";
+import {useMutation} from "@apollo/react-hooks";
+
+const INVITE_OR_ADD_EMAILS = gql`
+  mutation InviteOrAddEmails($input: InviteOrAddEmailsInput!) {
+    inviteOrAddEmails(input: $input) {
+      invitedCourseUsers {
+        email
+      }
+      addedCourseUsers {
+        user {
+          fullName
+          email
+        }
+      }
+      existingInvitedCourseUsers {
+        email
+      }
+      existingCourseUsers {
+        user {
+          fullName
+          email
+        }
+      }
+    }
+  }
+`;
 
 const InviteModal = (props) => {
+  const [inviteOrAddEmails, { loading, data }] = useMutation(INVITE_OR_ADD_EMAILS);
+
+  const [input, setInput] = useState({ emails: [], kind: null });
+
+  const handleInputChange = (e, { name, value }) => {
+    input[name] = value;
+    setInput(input);
+  };
+
+  const inviteFunc = async () => {
+    if (input.emails.length === 0 || input.kind === null) {
+      // TODO validation
+      return
+    }
+    await inviteOrAddEmails({
+      variables: {
+        input: {
+          emails: input.emails,
+          kind: input.kind,
+          courseId: props.courseId,
+        }
+      }
+    });
+    props.closeFunc();
+    props.successFunc();
+  };
+
   return (
     <Modal open={ props.open }>
       <Modal.Header>Invite User</Modal.Header>
       <Modal.Content>
-        <Tab menu={{ pointing: true, secondary: true }} panes={
-          [{
-            menuItem: "Invite",
-            render: () => { return <InviteForm courseId={ props.courseId } successFunc={ props.successFunc }/>}
-          },{
-            menuItem: "Add",
-            render: () => { return <AddForm courseId={ props.courseId } successFunc={ props.successFunc }/> }
-          }]}/>
+        <AddForm courseId={ props.courseId } changeFunc={ handleInputChange }/>
       </Modal.Content>
       <Modal.Actions>
-        <Button content="Done" onClick={ props.closeFunc }/>
+        <Button content="Invite" color='blue' disabled={loading} loading={loading} onClick={ inviteFunc }/>
+        <Button content="Cancel" disabled={loading} onClick={ props.closeFunc }/>
       </Modal.Actions>
     </Modal>
   )
