@@ -33,7 +33,7 @@ const CreateQueue = (props) => {
   const handleInputChange = (e, { name, value }) => {
     input[name] = value;
     setInput(input);
-    setDisabled(input.name == null || input.description == null);
+    setDisabled(!input.name || !input.description);
   };
 
   const onSubmit = async () => {

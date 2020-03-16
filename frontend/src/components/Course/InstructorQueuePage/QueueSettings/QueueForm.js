@@ -22,6 +22,7 @@ const QueueForm = (props) => {
 
   /* STATE */
   const [success, setSuccess] = useState(false);
+  const [disabled, setDisabled] = useState(true);
   const [queue, setQueue] = useState(props.queue);
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState({
@@ -40,6 +41,8 @@ const QueueForm = (props) => {
     setInput(input);
     setDescCharCount(input.description.length)
     setNameCharCount(input.name.length)
+    setDisabled(!input.name || !input.description || 
+    (input.name == queue.name && input.description == queue.name))
   };
 
   const onSubmit = async () => {
@@ -100,7 +103,7 @@ const QueueForm = (props) => {
                 "color": descCharCount < 500 ? "" : "crimson"}}>
                   {"Characters: " +  descCharCount + "/500"}</div>
           </Form.Field>
-          <Button color="blue" type='submit' disabled={ loading }  onClick={ onSubmit }>Submit</Button>
+          <Button color="blue" type='submit' disabled={ disabled || loading }  onClick={ onSubmit }>Submit</Button>
           <Modal open={ open }
             trigger={
               <a style={{"textDecoration":"underline", "cursor":"pointer"}}
