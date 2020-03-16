@@ -10,6 +10,8 @@ const GET_QUEUES = gql`
   query GetQueues($id: ID!) {
     course(id: $id) {
       id
+      videoChatEnabled
+      requireVideoChatUrlOnQuestions
       queues {
         edges {
           node {
@@ -79,6 +81,8 @@ const StudentQueuePage = (props) => {
     return data.course.queues.edges.filter(item => !item.node.archived).map(item => {
       return {
         id: item.node.id,
+        videoChatEnabled: data.course.videoChatEnabled,
+        requireVideoChatUrlOnQuestions: data.course.requireVideoChatUrlOnQuestions,
         name: item.node.name,
         description: item.node.description,
         tags: item.node.tags,

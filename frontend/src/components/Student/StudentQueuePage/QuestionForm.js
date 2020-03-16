@@ -66,7 +66,7 @@ const QuestionForm = (props) => {
       </Segment>
       <Segment attached secondary>
         <Form>
-          <Form.Field>
+          <Form.Field required>
             <label>Question</label>
             <Form.TextArea
               name="text"
@@ -77,6 +77,16 @@ const QuestionForm = (props) => {
                 "color": charCount < 250 ? "" : "crimson"}}>
                   {"Characters: " +  charCount + "/250"}</div>
           </Form.Field>
+          {
+            (queue.requireVideoChatUrlOnQuestions || queue.videoChatEnabled) &&
+            <Form.Field required={ queue.requireVideoChatUrlOnQuestions }>
+              <label>Video Chat URL</label>
+              <Form.Input
+                name="videoChatUrl"
+                disabled={ loading }
+                onChange={ handleInputChange }/>
+          </Form.Field>
+          }
           { queue.tags && queue.tags.length > 0 &&
             <Form.Field>
               <label>Tags</label>

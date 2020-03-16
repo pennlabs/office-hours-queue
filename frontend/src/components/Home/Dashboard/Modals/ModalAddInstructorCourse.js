@@ -41,7 +41,7 @@ const ModalAddInstructorCourse = (props) => {
     switch (name) {
       case 'requireVideoChatUrlOnQuestions': {
         input[name] = true;
-        input.videoChatEnabled = false;
+        input.videoChatEnabled = true;
         setInput(input);
         setCheck(videoChatNum(input));
         break;
