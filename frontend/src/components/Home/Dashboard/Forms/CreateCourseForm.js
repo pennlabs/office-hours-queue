@@ -1,8 +1,14 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form } from 'semantic-ui-react';
 import { semesterOptions } from "../../../../utils/enums";
 
 const CreateCourseForm = (props) => {
+  const [check, setCheck] = useState(props.check);
+
+  useEffect(() => {
+    setCheck(props.check)
+  }, [props.check])
+
   return (
     <Form>
       <Form.Field required>
@@ -30,8 +36,26 @@ const CreateCourseForm = (props) => {
         <Form.Dropdown name="semester" onChange={ props.changeFunc } selection options={ semesterOptions }/>
       </Form.Field>
       <Form.Field required>
+        <label>Video Chat</label>
+        <Form.Radio
+          label="Require Link"
+          checked={ check === 0 }
+          name="requireVideoChatUrlOnQuestions"
+          onChange={ props.vcChangeFunc }/>
+        <Form.Radio
+          label="Allow Link"
+          checked={ check === 1 }
+          name="videoChatEnabled"
+          onChange={ props.vcChangeFunc }/>
+        <Form.Radio
+          label="No Link"
+          checked={ check === 2 }
+          name="disableVideoChat"
+          onChange={ props.vcChangeFunc }/>
+      </Form.Field>
+      <Form.Field required>
         <label>Invite Only?</label>
-        <Form.Radio name="inviteOnly" onChange={ props.changeFunc } value={true} toggle/>
+        <Form.Radio name="inviteOnly" onChange={ props.changeFunc } toggle/>
       </Form.Field>
       <Form.Field required>
         <label>Your Role</label>

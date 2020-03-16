@@ -18,8 +18,15 @@ const CREATE_COURSE = gql`
 `;
 
 const ModalAddInstructorCourse = (props) => {
+  const videoChatNum = (course) => {
+    if (course.requireVideoChatUrlOnQuestions) return 0
+    if (course.videoChatEnabled) return 1
+    return 2
+  }
+
   const [open, setOpen] = useState(props.open);
   const [input, setInput] = useState({ inviteOnly: false });
+  const [check, setCheck] = useState(2);
   const [disabled, setDisabled] = useState(true);
   const [createCourse, { data }] = useMutation(CREATE_COURSE);
 
@@ -29,6 +36,32 @@ const ModalAddInstructorCourse = (props) => {
     setDisabled(!input.department || !input.courseCode || !input.courseTitle ||
       !input.year || !input.semester || !input.courseUserKind);
   };
+
+  const handleVCInputChange = (e, { name, value }) => {
+    switch (name) {
+      case 'requireVideoChatUrlOnQuestions': {
+        input[name] = true;
+        input.videoChatEnabled = false;
+        setInput(input);
+        setCheck(videoChatNum(input));
+        break;
+      }
+      case 'videoChatEnabled': {
+        input[name] = true;
+        input.requireVideoChatUrlOnQuestions = false;
+        setInput(input);
+        setCheck(videoChatNum(input));
+        break;
+      }
+      case 'disableVideoChat': {
+        input.requireVideoChatUrlOnQuestions = false;
+        input.videoChatEnabled = false;
+        setInput(input);
+        setCheck(videoChatNum(input));
+        break;
+      }
+    }
+  }
 
   const onSubmit = async () => {
     if (!input.department || !input.courseCode || !input.courseTitle ||
@@ -56,7 +89,7 @@ const ModalAddInstructorCourse = (props) => {
     <Modal open={ open }>
       <Modal.Header>Create New Course</Modal.Header>
       <Modal.Content>
-        <CreateCourseForm changeFunc={ handleInputChange }/>
+        <CreateCourseForm changeFunc={ handleInputChange } vcChangeFunc={ handleVCInputChange } check={ check }/>
       </Modal.Content>
       <Modal.Actions>
         <Button content="Cancel" onClick={ props.closeFunc }/>

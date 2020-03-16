@@ -71,7 +71,6 @@ const CourseForm = (props) => {
         break;
       }
     }
-    
   }
 
   const onSubmit = async () => {
