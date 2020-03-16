@@ -36,6 +36,7 @@ const CURRENT_QUESTION = gql`
       id
       text
       tags
+      videoChatUrl
       questionsAhead
       state
       timeAsked

@@ -1,23 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Form, Button } from 'semantic-ui-react';
 import { useMutation } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 
+const UPDATE_QUESTION = gql`
+  mutation UpdateQuestion($input: UpdateQuestionInput!) {
+    updateQuestion(input: $input) {
+      question {
+        id
+      }
+    }
+  }
+`;
+
 const EditQuestionModal = (props) => {
   const [queue, setQueue] = useState(props.queue);
   const [question, setQuestion] = useState(props.question);
-  const [success, setSuccess] = useState(false);
+  const [disabled, setDisabled] = useState(true);
   const [input, setInput] = useState({
+    questionId: question.id,
     text: question.text,
     tags: question.tags,
+    videoChatUrl: question.videoChatUrl
   });
   const [charCount, setCharCount] = useState(input.text.length);
+  const [updateQuestion, { loading, data }] = useMutation(UPDATE_QUESTION);
+
+  const isValid = () => {
+    return (input.text && (!queue.requireVideoChatUrlOnQuestions || input.videoChatUrl)) &&
+      (question.text !== input.text || JSON.stringify(question.tags) !== JSON.stringify(input.tags) ||
+      question.videoChatUrl !== input.videoChatUrl);
+  }
 
   const handleInputChange = (e, { name, value }) => {
     if (name === 'text' && value.length > 250) return;
     input[name] = value;
     setInput(input);
-    setCharCount(input.text.length)
+    setCharCount(input.text.length);
+    setDisabled(!isValid())
   };
 
   const getDropdownOptions = (tags) => {
@@ -30,8 +50,38 @@ const EditQuestionModal = (props) => {
     });
   };
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
+    if (!queue.requireVideoChatUrlOnQuestions && !queue.videoChatEnabled) delete input.videoChatUrl;
+    try {
+      await updateQuestion({
+        variables: {
+          input: input
+        }
+      });
+      props.refetch();
+    } catch (e) {
+      console.log(e);
+    }
   };
+
+  const resetInput = () => {
+    setInput({
+      questionId: question.id,
+      text: question.text,
+      tags: question.tags,
+      videoChatUrl: question.videoChatUrl
+    });
+    setCharCount(question.text.length);
+    setDisabled(true)
+  }
+
+  useEffect(() => {
+    setQuestion(props.question)
+  }, [props.question]);
+
+  useEffect(() => {
+    setQueue(props.queue)
+  }, [props.queue])
 
   return (
     <Modal open={ props.open }>
@@ -43,24 +93,37 @@ const EditQuestionModal = (props) => {
             <Form.TextArea
               name="text"
               value={ input.text }
+              disabled={ loading }
               onChange={ handleInputChange }/>
               <div style={{"textAlign":"right",
                 "color": charCount < 250 ? "" : "crimson"}}>
                   {"Characters: " +  charCount + "/250"}</div>
           </Form.Field>
+          {
+            (queue.requireVideoChatUrlOnQuestions || queue.videoChatEnabled) &&
+            <Form.Field required={ queue.requireVideoChatUrlOnQuestions }>
+              <label>Video Chat URL</label>
+              <Form.Input
+                name="videoChatUrl"
+                disabled={ loading }
+                defaultValue={ question.videoChatUrl }
+                onChange={ handleInputChange }/>
+            </Form.Field>
+          }
           <Form.Field>
             <label>Tags</label>
             <Form.Dropdown multiple selection
               name="tags"
+              disabled={ loading }
               onChange={ handleInputChange }
-              value={ input.tags }
+              defaultValue={ question.tags }
               options={ getDropdownOptions(queue.tags) } />
           </Form.Field>
         </Form>
       </Modal.Content>
       <Modal.Actions>
-        <Button content="Cancel" onClick={() => { props.setOpen(false) }}/>
-        <Button content="Submit" color="green"/>
+        <Button content="Cancel" disabled={ loading } onClick={() => { resetInput(); props.setOpen(false) }}/>
+        <Button content="Submit" disabled={ loading || disabled } color="green" onClick={ onSubmit }/>
       </Modal.Actions>
     </Modal>
   );
