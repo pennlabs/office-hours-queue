@@ -85,7 +85,8 @@ const InstructorCourses = (props) => {
                 courseTitle={course.courseTitle}
                 description={course.description}
                 id={course.id}
-                semester={course.semester}/>
+                semester={course.semester}
+                year={course.year}/>
             </Grid.Column>
           ))
         }
