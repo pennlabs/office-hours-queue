@@ -188,21 +188,24 @@ class JoinCourse(graphene.Mutation):
         return JoinCourseResponse(course_user=course_user)
 
 
-class InviteEmailsInput(graphene.InputObjectType):
+class InviteOrAddEmailsInput(graphene.InputObjectType):
     course_id = graphene.ID(required=True)
     emails = graphene.List(graphene.String, required=True)
     kind = graphene.Field(CourseUserKindType, required=True)
 
 
-class InviteEmailsResponse(graphene.ObjectType):
+class InviteOrAddEmailsResponse(graphene.ObjectType):
     invited_course_users = graphene.List(InvitedCourseUserNode, required=False)
+    added_course_users = graphene.List(CourseUserNode, required=False)
+    existing_course_users = graphene.List(CourseUserNode, required=False)
+    existing_invited_course_users = graphene.List(InvitedCourseUserNode, required=False)
 
 
-class InviteEmails(graphene.Mutation):
+class InviteOrAddEmails(graphene.Mutation):
     class Arguments:
-        input = InviteEmailsInput(required=True)
+        input = InviteOrAddEmailsInput(required=True)
 
-    Output = InviteEmailsResponse
+    Output = InviteOrAddEmailsResponse
 
     @staticmethod
     def mutate(root, info, input):
@@ -215,23 +218,62 @@ class InviteEmails(graphene.Mutation):
                 kind__in=CourseUserKind.leadership(),
             ).exists():
                 raise user_not_leadership_error
-            if CourseUser.objects.filter(
+            # Course users already in the course
+            existing_course_users = CourseUser.objects.filter(
                 user__email__in=input.emails,
                 course=course,
-            ):
-                raise user_in_course_error
-            invited_course_users = [
+            )
+            # Emails of users already in the course
+            existing_course_users_emails = set(
+                course_user.user.email for course_user in existing_course_users
+            )
+            # Emails of users that will be added
+            new_user_emails = set(input.emails) - existing_course_users_emails
+            # Users that already exist and are to be added
+            existing_users = User.objects.filter(
+                email__in=list(new_user_emails),
+            )
+            # Emails of users that already exist and are to be added
+            existing_users_emails = set(user.email for user in existing_users)
+            new_course_users = [
+                CourseUser(
+                    user=user,
+                    course=course,
+                    kind=input.kind,
+                    invited_by=user,
+                ) for user in existing_users
+            ]
+            CourseUser.objects.bulk_create(new_course_users)
+
+            # Invited course users already in the course
+            existing_invited_course_users = InvitedCourseUser.objects.filter(
+                email__in=input.emails,
+                course=course,
+            )
+            # Emails of invited users already in the course
+            existing_invited_course_users_emails = set(
+                invited_course_user.email for invited_course_user in existing_invited_course_users
+            )
+
+            new_invited_course_users = [
                 InvitedCourseUser(
                     email=email,
                     course=course,
                     invited_by=user,
                     kind=input.kind,
-                ) for email in input.emails
+                ) for email in (new_user_emails - existing_users_emails - existing_invited_course_users_emails)
             ]
-            InvitedCourseUser.objects.bulk_create(invited_course_users)
-        for invited_course_user in invited_course_users:
+            InvitedCourseUser.objects.bulk_create(new_invited_course_users)
+        for course_user in new_course_users:
+            send_added_to_course_email(course_user)
+        for invited_course_user in new_invited_course_users:
             send_invitation_email(invited_course_user)
-        return InviteEmailsResponse(invited_course_users=invited_course_users)
+        return InviteOrAddEmailsResponse(
+            invited_course_users=new_invited_course_users,
+            added_course_users=new_course_users,
+            existing_course_users=existing_course_users,
+            existing_invited_course_users=existing_invited_course_users,
+        )
 
 
 class RemoveUserFromCourseInput(graphene.InputObjectType):
@@ -336,6 +378,7 @@ class ResendInviteEmail(graphene.Mutation):
 
         send_invitation_email(invited_course_user)
         return ResendInviteEmailResponse(success=True)
+
 
 class ChangeCourseUserKindInput(graphene.InputObjectType):
     course_user_id = graphene.ID(required=True)
