@@ -118,7 +118,7 @@ const InstructorQueuePage = (props) => {
       {
         active === 'create' && data &&
         <Grid.Row>
-          <CreateQueue courseId={ props.course.id } refetch={ refetch }/>
+          <CreateQueue courseId={ props.course.id } refetch={ refetch } backFunc={ setActive }/>
         </Grid.Row>
       }
     </Grid>

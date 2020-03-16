@@ -53,6 +53,7 @@ const QueueForm = (props) => {
     })
     await props.refetch();
     setSuccess(true);
+    props.backFunc('queues');
   };
 
   const onArchived = async () => {

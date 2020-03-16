@@ -44,6 +44,7 @@ const CreateQueue = (props) => {
     })
     await props.refetch();
     setSuccess(true);
+    props.backFunc('queues');
   };
 
   return (
