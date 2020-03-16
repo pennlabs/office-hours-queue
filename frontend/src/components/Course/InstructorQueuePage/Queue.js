@@ -111,7 +111,7 @@ const Queue = (props) => {
   }
 
   useEffect(() => {
-    setQueue(queue);
+    setQueue(props.queue);
     setActive(props.queue.activeOverrideTime !== null)
   }, [props.queue]);
 

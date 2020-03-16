@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
-import { Form, Button } from 'semantic-ui-react';
+import React  from 'react';
+import { Form } from 'semantic-ui-react';
 
 import { gql } from 'apollo-boost';
-import { useLazyQuery } from '@apollo/react-hooks';
-import { useMutation } from '@apollo/react-hooks';
 import { prettifySemester } from "../../../../utils/enums";
 import { isValidEmail, useImperativeQuery } from "../../../../utils";
 import AsyncSelect from "react-select/async";

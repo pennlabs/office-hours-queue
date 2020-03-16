@@ -16,12 +16,12 @@ const StudentQueue = (props) => {
     toast.message = success ? success : errorMessage(error);
     setToast(toast);
     setToastOpen(true);
-  }
+  };
 
   const errorMessage = (error) => {
     if (!error.message || error.message.split(",").length < 2) return "There was an error!";
     return error.message.split(":")[1];
-  }
+  };
 
   useEffect(() => {
     setQuestion(props.question);

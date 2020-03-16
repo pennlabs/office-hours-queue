@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Roster from './Roster/Roster';
 import CourseSettings from './CourseSettings/CourseSettings';
 import InstructorQueuePage from './InstructorQueuePage/InstructorQueuePage';
