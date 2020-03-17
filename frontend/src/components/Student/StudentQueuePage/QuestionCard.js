@@ -41,7 +41,7 @@ const QuestionCard = (props) => {
             </Grid.Column>
             <Grid.Column width={6}>
               <Header as="h5" color="blue" textAlign="right">
-                { timeString(question.timeAsked, false) }
+                Asked at { timeString(question.timeAsked, false) }
               </Header>
             </Grid.Column>
           </Grid.Row>

@@ -40,7 +40,7 @@ const StudentQueue = (props) => {
         </Header.Subheader>
       </Header>
       <Label
-        content={ queue.numberActiveQuestions + ` user${queue.numberActiveQuestions === 1 ? '' : 's'}` }
+        content={ queue.numberActiveQuestions + ` user${queue.numberActiveQuestions === 1 ? '' : 's'} in queue` }
         color="blue"
         icon="user"/>
       {
@@ -64,7 +64,7 @@ const StudentQueue = (props) => {
         }
         {
           queue.activeOverrideTime && props.hasQuestion && !question &&
-          <Message style={{"marginTop":"10px"}}info header="Question In Queue" content="You already have asked a question in another queue!"/>
+          <Message style={{"marginTop":"10px"}} info header="Question already in queue" content="You already have asked a question in another queue"/>
         }
       </Grid.Row>
       <Snackbar open={ toastOpen } autoHideDuration={6000} onClose={ () => setToastOpen(false) }>

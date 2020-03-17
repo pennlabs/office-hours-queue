@@ -60,7 +60,7 @@ const EditQuestionModal = (props) => {
       });
       props.refetch();
       props.setOpen(false);
-      props.toastFunc("Question edited!", null);
+      props.toastFunc("Question successfully updated", null);
     } catch (e) {
       props.setOpen(false);
       props.toastFunc(null, e);

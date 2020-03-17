@@ -50,10 +50,10 @@ const QuestionForm = (props) => {
         }
       });
       await props.refetch();
-      props.toastFunc("Question added to queue!", null);
+      props.toastFunc("Question successfully added to queue", null);
     } catch (e) {
       props.toastFunc(null, e);
-    } 
+    }
   };
 
   useEffect(() => {
@@ -89,7 +89,7 @@ const QuestionForm = (props) => {
                 onChange={ handleInputChange }/>
           </Form.Field>
           }
-          { 
+          {
             queue.tags && queue.tags.length > 0 &&
             <Form.Field>
               <label>Tags</label>
