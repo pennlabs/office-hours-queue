@@ -34,7 +34,6 @@ const INVITE_OR_ADD_EMAILS = gql`
 const InviteModal = (props) => {
   const [inviteOrAddEmails, { loading }] = useMutation(INVITE_OR_ADD_EMAILS);
   const [input, setInput] = useState({ emails: [], kind: null });
-  const [error, setError] = useState(null);
   const [disabled, setDisabled] = useState(true);
 
   const handleInputChange = (e, { name, value }) => {
@@ -60,7 +59,12 @@ const InviteModal = (props) => {
       props.closeFunc();
       props.successFunc();
     } catch (e) {
-      setError(e.message);
+      props.setToast({
+        open: true,
+        success: false,
+        message: e.message.includes('Course cannot have more than') ?
+          'Course cannot have more than 1000 users' : e.message,
+      });
     }
   };
 
@@ -68,7 +72,11 @@ const InviteModal = (props) => {
     <Modal open={ props.open }>
       <Modal.Header>Invite User</Modal.Header>
       <Modal.Content>
-        <AddForm users={ props.users } courseId={ props.courseId } changeFunc={ handleInputChange }/>
+        <AddForm
+          users={ props.users }
+          courseId={ props.courseId }
+          changeFunc={ handleInputChange }
+          setToast={ props.setToast }/>
       </Modal.Content>
       <Modal.Actions>
         <Button
@@ -82,15 +90,6 @@ const InviteModal = (props) => {
           disabled={loading}
           onClick={ props.closeFunc }/>
       </Modal.Actions>
-      <Snackbar open={ error } autoHideDuration={6000} onClose={ () => setError(null) }>
-        <Alert severity={ 'error' } onClose={ () => setError(null) }>
-          <span>
-            {
-              error && error.includes('Course cannot have more than') ? 'Course cannot have more than 1000 users' : error
-            }
-          </span>
-        </Alert>
-      </Snackbar>
     </Modal>
   )
 };

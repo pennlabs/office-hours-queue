@@ -104,6 +104,18 @@ const AddForm = (props) => {
     });
   };
 
+  const onCreateOption = (item) => {
+    if (isValidEmail(item)) {
+      onChange([...values, { label: item, value: item }]);
+    } else {
+      props.setToast({
+        open: true,
+        success: false,
+        message: 'Can only invite valid emails',
+      });
+    }
+  };
+
   return (
     <Form>
       <div {...getRootProps({className: classes.join(' ')})}>
@@ -120,7 +132,7 @@ const AddForm = (props) => {
           loadOptions={promiseOptions}
           isMulti
           placeholder={'Search...'}
-          isValidNewOption={isValidEmail}
+          onCreateOption={onCreateOption}
           isOptionDisabled={(option) => option.disabled }
           formatCreateLabel={formatCreateLabel}
           onChange={onChange}

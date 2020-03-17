@@ -224,6 +224,7 @@ const Roster = (props) => {
           closeFunc={ closeModal }
           courseId={ props.course.id }
           successFunc={ setRosterUpdateToast }
+          setToast={ setToast }
           users={ users }/>
       }
 
@@ -362,11 +363,7 @@ const Roster = (props) => {
         </Segment>
       }
       </Grid.Row>
-      <Snackbar
-        open={ toast.open }
-        autoHideDuration={6000}
-        onClose={ closeToast }
-      >
+      <Snackbar open={ toast.open } autoHideDuration={6000} onClose={ closeToast }>
         <Alert severity={ toast.success ? 'success' : 'error' } onClose={ closeToast }>
           <span>{ toast.message }</span>
         </Alert>
