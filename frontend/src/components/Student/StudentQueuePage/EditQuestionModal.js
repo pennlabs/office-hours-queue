@@ -114,7 +114,7 @@ const EditQuestionModal = (props) => {
             </Form.Field>
           }
           {
-            question.tags && question.tags.length > 0 &&
+            queue.tags && queue.tags.length > 0 &&
             <Form.Field>
               <label>Tags</label>
               <Form.Dropdown multiple selection
