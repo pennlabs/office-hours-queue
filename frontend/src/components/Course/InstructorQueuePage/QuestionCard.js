@@ -111,12 +111,12 @@ const QuestionCard = (props) => {
               <Grid.Column>
                 <Header as="h5" color="blue" textAlign="right">
                   <Popup
-                  trigger= {
-                    <span>Asked { moment.duration(moment().diff(moment(question.timeAsked))).humanize() } ago</span>
-                  }
-                  content= { timeString(question.timeAsked, false) }
-                  basic
-                  position="left center"/>
+                    trigger= {
+                      <span>Asked { moment.duration(moment().diff(moment(question.timeAsked))).humanize() } ago</span>
+                    }
+                    content= { timeString(question.timeAsked, false) }
+                    basic
+                    position="left center"/>
                 </Header>
               </Grid.Column>
             </Grid.Row>
