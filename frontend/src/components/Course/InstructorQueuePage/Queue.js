@@ -120,7 +120,7 @@ const Queue = (props) => {
       </Header>
       <Grid>
         <Grid.Row columns="equal">
-          <Grid.Column width={4} only="computer mobile">
+          <Grid.Column width={5} only="computer mobile">
             <Label
               content={ queueQuestions.length + ` user${queueQuestions.length === 1 ? '' : 's'}` }
               color="blue"
