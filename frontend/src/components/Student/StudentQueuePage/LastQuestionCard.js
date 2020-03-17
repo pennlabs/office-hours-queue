@@ -40,7 +40,7 @@ const LastQuestionCard = (props) => {
           <div>
             The following question you asked on <b>{ timeString(question.timeAsked) }</b> was rejected by <b>{question.rejectedBy.preferredName}</b>:<br/>
             <Message error>{`"${question.text}"`}</Message>
-            The rejected reason was: 
+            The reason for rejection was:
             <b>{ ` ${formatReason(question.rejectedReason, question.rejectedReasonOther)}` }</b>
           </div>
         }

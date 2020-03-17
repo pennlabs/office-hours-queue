@@ -13,7 +13,7 @@ const RejectedQuestionModal = (props) => {
       case 'WRONG_QUEUE': return 'Wrong Queue'
       default: return reason;
     }
-  }
+  };
 
   const timeString = (date) => {
     const d = new Date(date);
@@ -25,7 +25,7 @@ const RejectedQuestionModal = (props) => {
 
   useEffect(() => {
     setQuestion(props.question);
-  }, [props.question])
+  }, [props.question]);
 
   return (
     <Modal open={ props.open }>
@@ -35,7 +35,7 @@ const RejectedQuestionModal = (props) => {
         <Modal.Content>
           The following question asked at { new Date(question.timeAsked).toLocaleString('en-US', {dateStyle: 'short', timeStyle: 'short'}) } was rejected:<br/>
           <Segment inverted color="blue">{`"${question.text}"`}</Segment>
-          The rejected reason was: 
+          The reason for rejection was:
           <b>{ ` ${formatReason(question.rejectedReason, question.rejectedReasonOther)}` }</b><br/>
           If you believe this is an error, please contact course staff.
       </Modal.Content>
@@ -45,6 +45,6 @@ const RejectedQuestionModal = (props) => {
       </Modal.Actions>
     </Modal>
   );
-}
+};
 
 export default RejectedQuestionModal;

@@ -7,7 +7,7 @@ const CourseSettings = (props) => {
 
   useEffect(() => {
     setCourse(props.course);
-  }, [props.course])
+  }, [props.course]);
 
   return (
     <div>
