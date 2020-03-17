@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import './AddForm.css';
 
 import { Form } from 'semantic-ui-react';
@@ -67,6 +67,10 @@ const AddForm = (props) => {
   // else if (isDragReject) { classes.push('reject-dropzone') }
   if (isDragActive) { classes.push('active-dropzone') }
 
+  const existingEmails = useMemo(
+    () => new Set(props.users.map((user) => user.email)),
+    [props.users]
+  );
 
   const promiseOptions = async (inputValue) => {
     if (inputValue.length === 0) {
@@ -77,9 +81,11 @@ const AddForm = (props) => {
       courseId: props.courseId
     });
     return data.invitableUsers.edges.map((item) => {
+      const existing = existingEmails.has(item.node.email);
       return {
-        label: `${item.node.fullName} (${item.node.email})`,
+        label: `${item.node.fullName} (${item.node.email})${existing ? ' already in course' : ''}`,
         value: item.node.email,
+        disabled: existing,
       }
     });
   };
@@ -115,6 +121,7 @@ const AddForm = (props) => {
           isMulti
           placeholder={'Search...'}
           isValidNewOption={isValidEmail}
+          isOptionDisabled={(option) => option.disabled }
           formatCreateLabel={formatCreateLabel}
           onChange={onChange}
           value={values}

@@ -223,7 +223,8 @@ const Roster = (props) => {
         <InviteModal open={ open }
           closeFunc={ closeModal }
           courseId={ props.course.id }
-          successFunc={ setRosterUpdateToast }/>
+          successFunc={ setRosterUpdateToast }
+          users={ users }/>
       }
 
       <Grid.Row>

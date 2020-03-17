@@ -61,7 +61,7 @@ const InviteModal = (props) => {
     <Modal open={ props.open }>
       <Modal.Header>Invite User</Modal.Header>
       <Modal.Content>
-        <AddForm courseId={ props.courseId } changeFunc={ handleInputChange }/>
+        <AddForm users={ props.users } courseId={ props.courseId } changeFunc={ handleInputChange }/>
       </Modal.Content>
       <Modal.Actions>
         <Button
