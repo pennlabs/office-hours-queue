@@ -22,7 +22,7 @@ const CourseSidebar = (props) => (
     { props.leadership &&
       <Segment basic>
         <Header as='h3'>Instructors</Header>
-        { 
+        {
           props.leadership.map((courseUser) => {
             const headerProps = courseUser.kind === 'PROFESSOR' ?
               { as: 'a', href: `mailto:${courseUser.user.email}` } :

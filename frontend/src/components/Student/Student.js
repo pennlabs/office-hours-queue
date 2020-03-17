@@ -8,6 +8,7 @@ import { compose } from 'recompose';
 
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
+import { leadershipSortFunc } from "../../utils";
 
 /* GRAPHQL QUERIES/MUTATIONS */
 const GET_COURSE = gql`
@@ -57,7 +58,7 @@ const Student = (props) => {
         year: data.course.year,
         semester: data.course.semester,
         inviteOnly: data.course.inviteOnly,
-        leadership: data.course.leadership
+        leadership: data.course.leadership.sort(leadershipSortFunc),
       };
     } else {
       return {}

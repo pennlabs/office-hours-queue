@@ -11,3 +11,13 @@ export function useImperativeQuery(query) {
     return refetch(variables);
   };
 }
+
+export function leadershipSortFunc(a, b) {
+  if (a.user.fullName !== b.user.fullName) {
+    return a.fullName < b.fullName;
+  }
+  if (a.kind !== b.kind) {
+    return a.kind > b.kind;
+  }
+  return a.user.email < b.user.email;
+}
