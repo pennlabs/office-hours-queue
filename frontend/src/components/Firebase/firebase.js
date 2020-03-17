@@ -18,6 +18,9 @@ class Firebase {
 
     this.auth = firebase.auth();
     this.googleProvider = new firebase.auth.GoogleAuthProvider();
+    this.googleProvider.setCustomParameters({
+      prompt: 'select_account'
+    });
   }
 
   doSignInWithGoogle = () =>
