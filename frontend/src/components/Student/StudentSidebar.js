@@ -24,15 +24,12 @@ const CourseSidebar = (props) => (
         <Header as='h3'>Instructors</Header>
         {
           props.leadership.map((courseUser) => {
-            const headerProps = courseUser.kind === 'PROFESSOR' ?
-              { as: 'a', href: `mailto:${courseUser.user.email}` } :
-              {};
             return (
               <List>
                 <List.Item>
                   <Image avatar><Icon name='user'/></Image>
                   <List.Content>
-                    <List.Header {...headerProps}>
+                    <List.Header as='a' href={`mailto:${courseUser.user.email}`}>
                       { courseUser.user.fullName }
                     </List.Header>
                     <List.Description>{ prettifyRole(courseUser.kind) }</List.Description>
