@@ -127,7 +127,7 @@ const Queue = (props) => {
       </Header>
       <Grid>
         <Grid.Row columns="equal">
-          <Grid.Column only='computer mobile'>
+          <Grid.Column width={4} only="computer mobile">
             <Label
               content={ queueQuestions.length + ` user${queueQuestions.length === 1 ? '' : 's'}` }
               color="blue"
@@ -138,7 +138,7 @@ const Queue = (props) => {
               */
             }
           </Grid.Column>
-          <Grid.Column textAlign="right">
+          <Grid.Column textAlign="right" floated="right">
             { props.leader &&
               <Button
                 size="mini"
