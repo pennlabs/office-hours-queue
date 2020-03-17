@@ -19,7 +19,7 @@ const StudentCourses = (props) => {
 
   return (
     <Grid style={{"width":"100%"}} stackable>
-      <Grid.Row columns={4} padded="true" stackable>
+      <Grid.Row padded="true" stackable>
         <ModalAddStudentCourse
             open={ open }
             closeFunc={ () => setOpen(false) }
@@ -27,7 +27,7 @@ const StudentCourses = (props) => {
             successFunc={ setSuccess }/>
           {
             courses.map((course) => (
-              <Grid.Column key={course.id} width={4}>
+              <Grid.Column key={course.id} style={{width:"240px"}}>
                 <CourseCard
                   department={course.department}
                   courseCode={course.courseCode}
@@ -40,7 +40,7 @@ const StudentCourses = (props) => {
               </Grid.Column>
             ))
           }
-        <Grid.Column>
+        <Grid.Column style={{width:"240px"}}>
           <AddCard clickFunc={ () => setOpen(true) } isStudent={ true }/>
         </Grid.Column>
       </Grid.Row>

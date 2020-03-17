@@ -34,7 +34,7 @@ const InstructorCourses = (props) => {
 
   return (
     <Grid style={{"width":"100%"}} stackable>
-      <Grid.Row columns={4} padded="true" stackable>
+      <Grid.Row padded="true" stackable>
         <ModalAddInstructorCourse
           open={ open }
           closeFunc={ () => setOpen(false) }
@@ -43,7 +43,7 @@ const InstructorCourses = (props) => {
         {
           courses.map(course => (
             !course.archived &&
-            <Grid.Column key={course.id}>
+            <Grid.Column key={course.id} style={{width:"240px"}}>
               <CourseCard
                 department={course.department}
                 courseCode={course.courseCode}
@@ -57,7 +57,7 @@ const InstructorCourses = (props) => {
             </Grid.Column>
           ))
         }
-        <Grid.Column>
+        <Grid.Column style={{width:"240px"}}>
           <AddCard clickFunc={ () => setOpen(true) }/>
         </Grid.Column>
       </Grid.Row>
@@ -74,11 +74,11 @@ const InstructorCourses = (props) => {
             </Grid.Column>
           </Grid.Row>
         }
-      <Grid.Row columns={4} padded="true">
+      <Grid.Row padded="true" style={{width:"240px"}}>
         {
           courses.map(course => (
             course.archived && showArchived &&
-            <Grid.Column>
+            <Grid.Column style={{width:"240px"}}>
               <ArchivedCourseCard
                 department={course.department}
                 courseCode={course.courseCode}
