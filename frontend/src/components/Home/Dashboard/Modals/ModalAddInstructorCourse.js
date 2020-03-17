@@ -26,7 +26,7 @@ const ModalAddInstructorCourse = (props) => {
 
   const [open, setOpen] = useState(props.open);
   const [input, setInput] = useState({
-    inviteOnly: false, 
+    inviteOnly: false,
     requireVideoChatUrlOnQuestions: false,
     videoChatEnabled: false
   });
@@ -80,7 +80,7 @@ const ModalAddInstructorCourse = (props) => {
       await props.refetch();
       props.closeFunc();
       setInput({
-        inviteOnly: false, 
+        inviteOnly: false,
         requireVideoChatUrlOnQuestions: false,
         videoChatEnabled: false
       });
@@ -94,12 +94,12 @@ const ModalAddInstructorCourse = (props) => {
   const onClose = () => {
     props.closeFunc();
     setInput({
-      inviteOnly: false, 
+      inviteOnly: false,
       requireVideoChatUrlOnQuestions: false,
       videoChatEnabled: false
     });
     setCheck(2);
-  }
+  };
 
   useEffect(() => {
     setOpen(props.open);

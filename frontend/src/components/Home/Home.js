@@ -123,7 +123,6 @@ const Home = (props) => {
 };
 
 const condition = (authUser) => {
-  console.log(authUser)
   return authUser && authUser.hasUserObject;
 };
 

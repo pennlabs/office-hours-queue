@@ -25,10 +25,12 @@ const CreateCourseForm = (props) => {
         <label>Course Title</label>
         <Form.Input name="courseTitle" onChange={ props.changeFunc } placeholder="Data Structures and Algorithms"/>
       </Form.Field>
-      <Form.Field>
-        <label>Description</label>
-        <Form.TextArea name="description" onChange={ props.changeFunc } placeholder="(Optional)"/>
-      </Form.Field>
+      {
+        // <Form.Field>
+        //   <label>Description</label>
+        //   <Form.TextArea name="description" onChange={props.changeFunc} placeholder="(Optional)"/>
+        // </Form.Field>
+      }
       <Form.Field required>
         <label>Year</label>
         <Form.Input name="year" onChange={ props.changeFunc } placeholder="2020"/>
