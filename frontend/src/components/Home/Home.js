@@ -3,8 +3,6 @@ import Dashboard from './Dashboard/Dashboard';
 import AccountSettings from './AccountSettings/AccountSettings';
 import HomeSidebar from './HomeSidebar'
 import { Grid } from 'semantic-ui-react';
-import Snackbar from '@material-ui/core/Snackbar';
-import Alert from '@material-ui/lab/Alert';
 
 import { withAuthorization } from '../Session';
 import { compose } from 'recompose';
@@ -51,14 +49,10 @@ const Home = (props) => {
   const [active, setActive] = useState('dashboard');
   const [courses,  setCourses] = useState(null);
   const [user, setUser] = useState(null);
-  // const [loginError, setLoginError] = useState(false);
 
   /* LOAD DATA FUNCTIONS */
   const loadCourses = (data) => {
-    if (!data){
-      // setLoginError(true);
-      return;
-    } 
+    if (!data) return;
     return data.currentUser.courseUsers.edges.map((courseUser) => {
       return {
         courseUserId: courseUser.node.id,
@@ -76,10 +70,7 @@ const Home = (props) => {
   };
 
   const loadUser = (data) => {
-    if (!data) {
-      // setLoginError(true);
-      return;
-    }
+    if (!data) return;
     return {
       id: data.currentUser.id,
       email: data.currentUser.email,
@@ -113,7 +104,7 @@ const Home = (props) => {
   }, []);
 
   return (
-    <Grid columns={2} divided style={{"width":"100%"}} stackable>
+    <Grid columns={2} divided="horizontally" style={{"width":"100%"}} stackable>
       <HomeSidebar active={ active } clickFunc={ setActive }/>
       {
         courses && active === 'dashboard' &&
