@@ -64,13 +64,15 @@ class CreateQuestion(graphene.Mutation):
                 raise too_many_questions_error
             if any(tag not in queue.tags for tag in input.tags):
                 raise unrecognized_tag_error
-            question = Question.objects.create(
+            question = Question(
                 queue=queue,
                 text=input.text,
                 tags=input.tags,
                 asked_by=user,
                 video_chat_url=input.video_chat_url,
             )
+            question.clean_fields()
+            question.save()
         return CreateQuestionResponse(question=question)
 
 
@@ -123,6 +125,7 @@ class UpdateQuestion(graphene.Mutation):
             if input.video_chat_url is not None:
                 question.video_chat_url = input.video_chat_url
             question.time_last_updated = datetime.now()
+            question.clean_fields()
             question.save()
         return UpdateQuestionResponse(question=question)
 
