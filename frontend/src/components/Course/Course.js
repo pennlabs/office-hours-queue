@@ -140,8 +140,7 @@ const Course = (props) => {
 };
 
 const condition = (authUser) => {
-  if (!authUser) { return false}
-  return authUser.hasUserObject;
+  return authUser && authUser.hasUserObject;
 };
 
 export default compose(

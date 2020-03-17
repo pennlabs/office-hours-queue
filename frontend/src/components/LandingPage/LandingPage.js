@@ -30,8 +30,7 @@ const SignInGoogleBase = (props) => {
   const [createUser, { data }] = useMutation(CREATE_USER);
   const [error, setError] = useState(null);
   const condition = (authUser) => {
-    if (!authUser) { return false}
-    return authUser.hasUserObject;
+    return authUser && authUser.hasUserObject;
   };
 
 
