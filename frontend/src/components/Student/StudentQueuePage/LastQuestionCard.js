@@ -59,11 +59,16 @@ const LastQuestionCard = (props) => {
           </div>
         }
       </Segment>
-      <Message attached="bottom" warning>
+      <Message
+        attached="bottom"
+        error={question.state === "REJECTED"}
+        success={question.state === "ANSWERED"}
+        info={question.state === "WITHDRAWN"}
+      >
         If you believe this is an error, please contact course staff!
       </Message>
     </Segment>
   )
-}
+};
 
 export default LastQuestionCard;
