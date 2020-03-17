@@ -54,7 +54,7 @@ const StudentQueue = (props) => {
           <QuestionCard question={ question } queue={ queue } refetch={ props.refetch } toastFunc={ updateToast }/>
         }
         {
-          !queue.activeOverrideTime && !props.hasQuestion &&
+          !queue.activeOverrideTime && !question &&
           <Message style={{"marginTop":"10px"}} info header="Queue Closed" error
             content="This queue is currently closed. Contact course staff if you think this is an error."/>
         }
