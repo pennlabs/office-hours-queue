@@ -5,6 +5,7 @@ import Alert from '@material-ui/lab/Alert';
 import { semesterOptions } from "../../../utils/enums";
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
+import * as ROUTES from '../../../constants/routes';
 
 /* GRAPHQL QUERIES/MUTATIONS */
 const UPDATE_COURSE = gql`
@@ -110,6 +111,7 @@ const CourseForm = (props) => {
     });
     await props.refetch();
     setOpen(false);
+    window.location = ROUTES.HOME;
   };
 
   useEffect(() => {
