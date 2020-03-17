@@ -126,6 +126,8 @@ class Course(models.Model):
 
     searchable_name = models.CharField(max_length=72, editable=False)
 
+    MAX_NUMBER_COURSE_USERS = 1000
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -318,7 +320,6 @@ class Question(models.Model):
         null=True,
     )
 
-    # TODO I don't think we should allow question editing
     time_last_updated = models.DateTimeField(blank=True, null=True)
     time_withdrawn = models.DateTimeField(blank=True, null=True)
 

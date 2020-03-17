@@ -244,6 +244,14 @@ class InviteOrAddEmails(graphene.Mutation):
             )
             # Emails of users that will be added
             new_user_emails = set(input.emails) - existing_course_users_emails
+
+            if (
+                course.course_users.count() +
+                course.invited_course_users.count() +
+                len(new_user_emails) > Course.MAX_NUMBER_COURSE_USERS
+            ):
+                raise max_number_users_error
+
             # Users that already exist and are to be added
             existing_users = User.objects.filter(
                 email__in=list(new_user_emails),

@@ -1,4 +1,5 @@
 from graphql import GraphQLError
+from ohq.apps.api.models import Course
 
 empty_string_error = GraphQLError("Required string input must not be empty")
 
@@ -41,6 +42,8 @@ course_invite_only_error = GraphQLError("Course is invite only")
 course_archived_error = GraphQLError("Course is archived")
 user_in_course_error = GraphQLError("User is already in course")
 remove_only_leadership_error = GraphQLError("Cannot remove only leadership user")
+max_number_users_error = GraphQLError(f"Course cannot have more than "
+                                      f"{Course.MAX_NUMBER_COURSE_USERS} users")
 
 invalid_day_of_week_error = GraphQLError("Invalid day of the week")
 invalid_time_of_day_error = GraphQLError("Invalid time of day")

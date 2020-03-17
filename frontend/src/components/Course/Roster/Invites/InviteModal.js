@@ -3,6 +3,8 @@ import { Modal, Button } from 'semantic-ui-react';
 import AddForm from './AddForm';
 import {gql} from "apollo-boost";
 import {useMutation} from "@apollo/react-hooks";
+import Alert from "@material-ui/lab/Alert";
+import Snackbar from "@material-ui/core/Snackbar";
 
 const INVITE_OR_ADD_EMAILS = gql`
   mutation InviteOrAddEmails($input: InviteOrAddEmailsInput!) {
@@ -32,6 +34,7 @@ const INVITE_OR_ADD_EMAILS = gql`
 const InviteModal = (props) => {
   const [inviteOrAddEmails, { loading }] = useMutation(INVITE_OR_ADD_EMAILS);
   const [input, setInput] = useState({ emails: [], kind: null });
+  const [error, setError] = useState(null);
   const [disabled, setDisabled] = useState(true);
 
   const handleInputChange = (e, { name, value }) => {
@@ -44,17 +47,22 @@ const InviteModal = (props) => {
     if (input.emails.length === 0 || input.kind === null) {
       return
     }
-    await inviteOrAddEmails({
-      variables: {
-        input: {
-          emails: input.emails,
-          kind: input.kind,
-          courseId: props.courseId,
+    try {
+      await inviteOrAddEmails({
+        variables: {
+          input: {
+            emails: input.emails,
+            kind: input.kind,
+            courseId: props.courseId,
+          }
         }
-      }
-    });
-    props.closeFunc();
-    props.successFunc();
+      });
+      props.closeFunc();
+      props.successFunc();
+    } catch (e) {
+      console.log(e)
+      setError(e.message);
+    }
   };
 
   return (
@@ -75,6 +83,15 @@ const InviteModal = (props) => {
           disabled={loading}
           onClick={ props.closeFunc }/>
       </Modal.Actions>
+      <Snackbar open={ error } autoHideDuration={6000} onClose={ () => setError(null) }>
+        <Alert severity={ 'error' } onClose={ () => setError(null) }>
+          <span>
+            {
+              error && error.includes('Course cannot have more than') ? 'Course cannot have more than 1000 users' : error
+            }
+          </span>
+        </Alert>
+      </Snackbar>
     </Modal>
   )
 };
