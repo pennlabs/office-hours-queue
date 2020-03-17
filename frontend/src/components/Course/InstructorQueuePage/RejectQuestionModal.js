@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Modal, Button, Segment } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
@@ -27,7 +27,7 @@ const RejectQuestionModal = (props) => {
   const [input, setInput] = useState({questionId:props.question.id, rejectedReason: null});
   const [otherDisabled, setOtherDisabled] = useState(true);
   const [rejectDisabled, setRejectDisabled] = useState(true);
-  const [rejectQuestion, { loading, error }] = useMutation(REJECT_QUESTION);
+  const [rejectQuestion, { loading }] = useMutation(REJECT_QUESTION);
 
   const handleInputChange = (e, {name, value}) =>{
     input[name] = value;
@@ -45,7 +45,8 @@ const RejectQuestionModal = (props) => {
   };
 
   const onSubmit = async () => {
-    if (input.rejectedReason) {
+    if (!input.rejectedReason) return;
+    try {
       await rejectQuestion({
         variables: {
           input: input
@@ -53,8 +54,14 @@ const RejectQuestionModal = (props) => {
       });
       await props.refetch();
       props.closeFunc();
-    }
+    } catch (e) {
+      console.log(e)
+    } 
   };
+  
+  useEffect(() => {
+    setQuestion(props.question);
+  }, [props.question]);
 
   return (
     question && <Modal open={ props.open }>
@@ -86,8 +93,8 @@ const RejectQuestionModal = (props) => {
           </Modal.Description>
         </Modal.Content>
         <Modal.Actions>
-          <Button content="Cancel" onClick={props.closeFunc}/>
-          <Button content="Reject" disabled={rejectDisabled} color="red" onClick={onSubmit}/>
+          <Button content="Cancel" onClick={ props.closeFunc }/>
+          <Button content="Reject" disabled={ loading || rejectDisabled } color="red" onClick={ onSubmit }/>
         </Modal.Actions>
       </Modal>
   );
