@@ -46,6 +46,7 @@ const CourseForm = (props) => {
   const [success, setSuccess] = useState(false);
   const [disabled, setDisabled] = useState(true);
   const [error, setError] = useState(false);
+  const [archiveError, setArchiveError] = useState(false);
   const [open, setOpen] = useState(false);
 
   /* HANDLER FUNCTIONS */
@@ -105,17 +106,21 @@ const CourseForm = (props) => {
   };
 
   const onArchived = async () => {
-    await updateCourse({
-      variables: {
-        input: {
-          courseId: input.courseId,
-          archived: true
+    try {
+      await updateCourse({
+        variables: {
+          input: {
+            courseId: input.courseId,
+            archived: true,
+          }
         }
-      }
-    });
-    await props.refetch();
-    setOpen(false);
-    window.location = ROUTES.HOME;
+      });
+      await props.refetch();
+      setOpen(false);
+      window.location = ROUTES.HOME;
+    } catch (e) {
+      setArchiveError(true);
+    }
   };
 
   useEffect(() => {
@@ -217,12 +222,17 @@ const CourseForm = (props) => {
       </Modal>
       <Snackbar open={ success } autoHideDuration={6000} onClose={ () => setSuccess(false) }>
         <Alert severity="success" onClose={ () => setSuccess(false) }>
-          <span><b>{`${defCourse.department} ${defCourse.courseCode}`}</b> has been updated!</span>
+          <span><b>{`${defCourse.department} ${defCourse.courseCode}`}</b> successfully updated</span>
         </Alert>
       </Snackbar>
       <Snackbar open={ error } autoHideDuration={6000} onClose={ () => setError(false) }>
         <Alert severity="error" onClose={ () => setError(false) }>
-          <span>There was an error updating <b>{`${defCourse.department} ${defCourse.courseCode}`}</b>!</span>
+          <span>There was an error updating <b>{`${defCourse.department} ${defCourse.courseCode}`}</b></span>
+        </Alert>
+      </Snackbar>
+      <Snackbar open={ archiveError } autoHideDuration={6000} onClose={ () => setArchiveError(false) }>
+        <Alert severity="error" onClose={ () => setArchiveError(false) }>
+          <span>There was an error archiving <b>{`${defCourse.department} ${defCourse.courseCode}`}</b></span>
         </Alert>
       </Snackbar>
     </Form>

@@ -97,7 +97,7 @@ const CreateQueue = (props) => {
       </Grid.Row>
       <Snackbar open={ error } autoHideDuration={6000} onClose={ () => setError(false) }>
         <Alert severity="error" onClose={ () => setError(false) }>
-          <span>There was an error creating this queue. Try changing the name.</span>
+          <span>There was an error creating this queue. Names must be unique.</span>
         </Alert>
       </Snackbar>
     </Grid.Column>

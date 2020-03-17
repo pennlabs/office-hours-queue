@@ -44,8 +44,8 @@ const AccountForm = (props) => {
     setInput(input);
     console.log(input.phoneNumber === defUser.phoneNumber)
     setDisabled((!input.preferredName || !input.fullName) ||
-      (input.preferredName === defUser.preferredName && 
-       input.fullName === defUser.fullName && 
+      (input.preferredName === defUser.preferredName &&
+       input.fullName === defUser.fullName &&
        input.phoneNumber === defUser.phoneNumber))
   };
 
@@ -58,7 +58,7 @@ const AccountForm = (props) => {
       fullName: fullName,
       preferredName: preferredName,
       phoneNumber: phoneNumber
-    } 
+    }
     try {
       await updateUser({
         variables: {
@@ -125,7 +125,7 @@ const AccountForm = (props) => {
       </Snackbar>
       <Snackbar open={ error } autoHideDuration={6000} onClose={ () => setError(false) }>
         <Alert severity="error" onClose={ () => setError(false) }>
-          <span>There was an error updating your account!</span>
+          <span>There was an error updating your account</span>
         </Alert>
       </Snackbar>
     </Form>

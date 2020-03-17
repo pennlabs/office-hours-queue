@@ -60,7 +60,6 @@ const InviteModal = (props) => {
       props.closeFunc();
       props.successFunc();
     } catch (e) {
-      console.log(e)
       setError(e.message);
     }
   };
