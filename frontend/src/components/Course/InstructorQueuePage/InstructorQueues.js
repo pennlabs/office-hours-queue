@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Segment, Header, Message } from 'semantic-ui-react';
+import { Grid, Segment, Icon, Message } from 'semantic-ui-react';
 import Queue from './Queue.js';
-import { isLeadershipRole } from "../../../utils/enums";
 
 const InstructorQueues = (props) => {
   /* STATE */
@@ -45,9 +44,12 @@ const InstructorQueues = (props) => {
         queues && numActive() < 2 && leader &&
         <Grid.Column>
           <Segment basic>
-            <Message info>
-              <Message.Header>Create a Queue</Message.Header>
-              <a onClick={ props.createFunc } style={{"cursor":"pointer"}}>Create</a> a queue and augment your OHQ experience!
+            <Message info icon>
+              <Icon name="lightbulb outline"/>
+              <Message.Content>
+                <Message.Header>Create a Queue</Message.Header>
+                <a onClick={ props.createFunc } style={{"cursor":"pointer"}}>Create</a> a queue and augment your OHQ experience!
+              </Message.Content>
             </Message>
           </Segment>
         </Grid.Column>

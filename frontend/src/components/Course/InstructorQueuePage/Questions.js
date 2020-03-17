@@ -31,13 +31,15 @@ const Questions = (props) => {
       {
         active && filteredQuestions && filteredQuestions.length === 0 &&
         <Grid.Row style={{"marginTop":"10px"}}>
-          <Message header="Empty Queue" content="This queue currently has no questions."/>
+          <Message icon="folder open outline" header="Empty Queue"
+            content="This queue currently has no questions, or no questions have applied tags."/>
         </Grid.Row>
       }
       {
         !active && filteredQuestions.length === 0 &&
         <Grid.Row style={{"marginTop":"10px"}}>
-          <Message header="Closed Queue" content="This queue is currently closed. You can open it by using the 'open' button above." error/>
+          <Message icon="calendar times outline" header="Closed Queue"
+            content="This queue is currently closed. You can open it by using the 'open' button above." error/>
         </Grid.Row>
       }
     </Grid.Row>
