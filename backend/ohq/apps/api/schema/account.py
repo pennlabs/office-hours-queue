@@ -1,3 +1,4 @@
+from firebase_admin import auth
 from django.db import transaction
 
 from ohq.apps.api.schema.types import *
@@ -30,6 +31,10 @@ class CreateUser(graphene.Mutation):
         if not info.context.user.email.endswith("upenn.edu"):
             raise email_not_upenn_error
         with transaction.atomic():
+            auth.set_custom_user_claims(
+                info.context.user.firebase_uid,
+                { "hasUserObject": True },
+            )
             user = User.objects.create(
                 full_name=input.full_name,
                 preferred_name=input.preferred_name,

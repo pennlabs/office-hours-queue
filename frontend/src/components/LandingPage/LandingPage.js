@@ -1,21 +1,19 @@
 import React, { useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
-import { Grid } from 'semantic-ui-react';
-
+import { useMutation } from '@apollo/react-hooks';
+import { gql } from 'apollo-boost';
 import { withFirebase } from '../Firebase';
 
+import { Grid } from 'semantic-ui-react';
+import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
 import GoogleButton from 'react-google-button';
 import "typeface-roboto";
 
 import * as ROUTES from '../../constants/routes';
-
 import Home from '../Home/Home';
-
 import AuthUserContext from '../Session/context';
-
-import { gql } from 'apollo-boost';
-import { useMutation } from '@apollo/react-hooks';
 
 //graphql mutation for creating user
 const CREATE_USER = gql`
@@ -29,15 +27,19 @@ const CREATE_USER = gql`
 `;
 
 const SignInGoogleBase = (props) => {
-  const [error, setError] = useState(null);
-  const condition = authUser => !!authUser;
   const [createUser, { data }] = useMutation(CREATE_USER);
+  const [error, setError] = useState(null);
+  const condition = (authUser) => {
+    if (!authUser) { return false}
+    return authUser.hasUserObject;
+  };
 
-  const onSubmit = (event) => {
-    props.firebase
-      .doSignInWithGoogle()
-      .then(async (socialAuthUser) => {
-        if (socialAuthUser.additionalUserInfo.isNewUser) {
+
+  const onSubmit = async (event) => {
+    try {
+      const socialAuthUser = await props.firebase.doSignInWithGoogle();
+      const result = await socialAuthUser.user.getIdTokenResult();
+      if (!result.claims.hasUserObject) {
           await createUser({
             variables: {
               input:{
@@ -46,16 +48,12 @@ const SignInGoogleBase = (props) => {
               }
             }
           });
-        }
-      })
-      .then(() => {
-        setError(null);
-        props.history.push(ROUTES.LANDING);
-      })
-      .catch(error => {
-        setError(error);
-      });
-
+          setError(null);
+          props.history.push(ROUTES.LANDING);
+      }
+    } catch (e) {
+      setError(e.message);
+    }
     event.preventDefault();
   };
 
@@ -76,6 +74,11 @@ const SignInGoogleBase = (props) => {
               <Grid.Row><img src="ohq-login.png" width="600px" height="107px" alt="logo"/></Grid.Row>
               <Grid.Row><GoogleButton onClick={onSubmit}/></Grid.Row>
             </Grid>
+            <Snackbar open={ error } autoHideDuration={6000} onClose={ () => setError(null) }>
+              <Alert severity="error" onClose={ () => setError(null) }>
+                <span>Must sign in with upenn.edu email</span>
+              </Alert>
+            </Snackbar>
           </div>
       }
     </AuthUserContext.Consumer>
