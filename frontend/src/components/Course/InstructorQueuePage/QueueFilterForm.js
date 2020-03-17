@@ -22,10 +22,11 @@ const QueueFilterForm = (props) => {
       {
         tagOptions && <Form.Group>
         <Form.Field>
-          <label>Tags</label>
+          {/*<label>Tags</label>*/}
           <Form.Dropdown multiple
             selection
             name="tags"
+            placeholder="Filter by tags"
             options={ tagOptions }
             onChange={ handleInputChange }/>
         </Form.Field>
