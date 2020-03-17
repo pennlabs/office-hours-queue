@@ -3,6 +3,7 @@ import { Segment, Header, Icon, Button, Popup, Grid } from 'semantic-ui-react';
 import RejectQuestionModal from './RejectQuestionModal';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks'
+import moment from 'moment';
 
 const START_QUESTION = gql`
   mutation StartQuestion($input: StartQuestionInput!) {
@@ -109,7 +110,13 @@ const QuestionCard = (props) => {
               </Grid.Column>
               <Grid.Column>
                 <Header as="h5" color="blue" textAlign="right">
-                  Asked at { timeString(question.timeAsked, false) }
+                  <Popup
+                  trigger= {
+                    <span>Asked { moment.duration(moment().diff(moment(question.timeAsked))).humanize() } ago</span>
+                  }
+                  content= { timeString(question.timeAsked, false) }
+                  basic
+                  position="left center"/>
                 </Header>
               </Grid.Column>
             </Grid.Row>
@@ -194,12 +201,12 @@ const QuestionCard = (props) => {
                 {
                   question.tags && question.tags.length > 0 &&
                   <Popup
-                  trigger= {
-                    <span>{ question.tags.map(tag => " " + tag).toString() }</span>
-                  }
-                  content= { question.tags.map(tag => " " + tag).toString() }
-                  basic inverted
-                  position="bottom left"/>
+                    trigger= {
+                      <span>{ question.tags.map(tag => " " + tag).toString() }</span>
+                    }
+                    content= { question.tags.map(tag => " " + tag).toString() }
+                    basic inverted
+                    position="bottom left"/>
                 }
                 {
                   (!question.tags || question.tags.length === 0) &&
@@ -212,6 +219,6 @@ const QuestionCard = (props) => {
         </Segment>
       </div>
   );
-}
+};
 
 export default QuestionCard;

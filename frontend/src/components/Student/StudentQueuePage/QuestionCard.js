@@ -87,12 +87,12 @@ const QuestionCard = (props) => {
             {
               question.tags && question.tags.length > 0 &&
               <Popup
-              trigger= {
-                <span>{ question.tags.map(tag => " " + tag).toString() }</span>
-              }
-              content= { question.tags.map(tag => " " + tag).toString() }
-              basic inverted
-              position="bottom left"/>
+                trigger= {
+                  <span>{ question.tags.map(tag => " " + tag).toString() }</span>
+                }
+                content= { question.tags.map(tag => " " + tag).toString() }
+                basic inverted
+                position="bottom left"/>
             }
             </Grid.Column>
           </Grid.Row>
