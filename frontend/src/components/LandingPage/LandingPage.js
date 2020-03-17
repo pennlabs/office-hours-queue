@@ -5,7 +5,7 @@ import { useMutation } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 import { withFirebase } from '../Firebase';
 
-import { Grid } from 'semantic-ui-react';
+import { Grid, Dimmer, Segment, Loader } from 'semantic-ui-react';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 import GoogleButton from 'react-google-button';
@@ -14,6 +14,7 @@ import "typeface-roboto";
 import * as ROUTES from '../../constants/routes';
 import Home from '../Home/Home';
 import AuthUserContext from '../Session/context';
+import LoadingContext from "./context";
 
 //graphql mutation for creating user
 const CREATE_USER = gql`
@@ -29,10 +30,10 @@ const CREATE_USER = gql`
 const SignInGoogleBase = (props) => {
   const [createUser, { data }] = useMutation(CREATE_USER);
   const [error, setError] = useState(null);
+
   const condition = (authUser) => {
     return authUser && authUser.hasUserObject;
   };
-
 
   const onSubmit = async (event) => {
     try {
@@ -59,23 +60,37 @@ const SignInGoogleBase = (props) => {
   return (
     <AuthUserContext.Consumer>
       { authUser =>
-        condition(authUser)
-          ? <Home />
-          : <div
-            style={{
-              "height": "100%",
-              "width": "100%",
-              "display": "flex",
-              "alignItems": "center",
-              "justifyContent": "center"
-            }}>
-            <Grid columns={1} textAlign="center">
-              <Grid.Row only="computer tablet"><img src="ohq-login.png" width="600px" height="107px" alt="logo"/></Grid.Row>
-              <Grid.Row only="mobile"><img src="ohq.png" width="217px" height="107px" alt="logo-mini"/></Grid.Row>
-              <Grid.Row><GoogleButton onClick={onSubmit}/></Grid.Row>
-            </Grid>
-            <Snackbar open={ error } autoHideDuration={6000} onClose={ () => setError(null) }>
-              <Alert severity="error" onClose={ () => setError(null) }>
+        condition(authUser) ?
+          <Home/> :
+          <LoadingContext.Consumer>
+            { loading => loading ? (
+              <div style={{
+                "height": "100%",
+                "width": "100%",
+                "display": "flex",
+                "alignItems": "center",
+                "justifyContent": "center"
+              }}>
+                <Dimmer active inverted>
+                  <Loader size='big' inverted/>
+                </Dimmer>
+              </div>
+              ) :
+              <div
+                style={{
+                  "height": "100%",
+                  "width": "100%",
+                  "display": "flex",
+                  "alignItems": "center",
+                  "justifyContent": "center"
+                }}>
+                <Grid columns={1} textAlign="center">
+                  <Grid.Row only="computer tablet"><img src="ohq-login.png" width="600px" height="107px" alt="logo"/></Grid.Row>
+                  <Grid.Row only="mobile"><img src="ohq.png" width="217px" height="107px" alt="logo-mini"/></Grid.Row>
+                  <Grid.Row><GoogleButton onClick={onSubmit}/></Grid.Row>
+                </Grid>
+                <Snackbar open={ error } autoHideDuration={6000} onClose={ () => setError(null) }>
+                  <Alert severity="error" onClose={ () => setError(null) }>
                 <span>
                   {
                     error && error.includes("upenn.edu email") ? "Must sign in with a upenn.edu email" :
@@ -83,9 +98,11 @@ const SignInGoogleBase = (props) => {
                     "An error occurred, unable to sign in"
                   }
                 </span>
-              </Alert>
-            </Snackbar>
-          </div>
+                  </Alert>
+                </Snackbar>
+              </div>
+            }
+          </LoadingContext.Consumer>
       }
     </AuthUserContext.Consumer>
   );

@@ -2,6 +2,7 @@ import React from 'react';
 
 import AuthUserContext from './context';
 import { withFirebase } from '../Firebase';
+import LoadingContext from "../LandingPage/context";
 
 const withAuthentication = Component => {
   class WithAuthentication extends React.Component {
@@ -10,6 +11,7 @@ const withAuthentication = Component => {
 
       this.state = {
         authUser: JSON.parse(localStorage.getItem('authUser')),
+        loading: true,
       };
     }
 
@@ -21,7 +23,7 @@ const withAuthentication = Component => {
             authUser['hasUserObject'] = result.claims.hasUserObject;
           }
           localStorage.setItem('authUser', JSON.stringify(authUser));
-          this.setState({ authUser });
+          this.setState({ authUser, loading: false });
         },
         () => {
           localStorage.removeItem('authUser');
@@ -37,7 +39,9 @@ const withAuthentication = Component => {
     render() {
       return (
         <AuthUserContext.Provider value={this.state.authUser}>
-          <Component {...this.props} />
+          <LoadingContext.Provider value={this.state.loading}>
+            <Component {...this.props} />
+          </LoadingContext.Provider>
         </AuthUserContext.Provider>
       );
     }
