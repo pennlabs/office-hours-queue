@@ -260,7 +260,7 @@ class Queue(models.Model):
     estimated_wait_time = models.IntegerField(default=0)
     start_end_times = JSONField()
 
-    tags = ArrayField(models.CharField(max_length=20))
+    tags = ArrayField(models.CharField(max_length=20), blank=True, null=True)
 
     active_override_time = models.DateTimeField(blank=True, null=True)
 
@@ -301,7 +301,7 @@ class QuestionState(ChoicesEnum):
 class Question(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     text = models.TextField()
-    tags = ArrayField(models.CharField(max_length=20), null=True, blank=True)
+    tags = ArrayField(models.CharField(max_length=20), blank=True, null=True)
     queue = models.ForeignKey(
         Queue,
         related_name='questions',
