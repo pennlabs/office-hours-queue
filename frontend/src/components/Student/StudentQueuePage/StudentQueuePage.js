@@ -102,7 +102,7 @@ const StudentQueuePage = (props) => {
   }
 
   if (getQuestionRes.data && getQuestionRes.data.currentQuestion) {
-    var newCurrentQuestion = getQuestionRes.data.currentQuestion;
+    const newCurrentQuestion = getQuestionRes.data.currentQuestion;
     if (JSON.stringify(newCurrentQuestion) !== JSON.stringify(currentQuestion)) {
       setCurrentQuestion(newCurrentQuestion);
     }

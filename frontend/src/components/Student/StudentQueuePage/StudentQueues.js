@@ -9,7 +9,7 @@ const StudentQueues = (props) => {
 
   const showQuestion = (question) => {
     return question.state === "ACTIVE" || question.state === "STARTED";
-  }
+  };
 
   useEffect(() => {
     setQuestion(props.question);

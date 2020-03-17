@@ -74,7 +74,7 @@ const CourseSidebar = (props) => {
                 <List.Item key={courseUser.user.email} style={{"marginBottom": "8px"}}>
                   <Icon name='user'/>
                   <List.Content>
-                    <List.Header as='a' href={`mailto:${courseUser.user.email}`}>
+                    <List.Header as='a' target='_blank' href={`mailto:${courseUser.user.email}`}>
                       { courseUser.user.fullName }
                     </List.Header>
                     <List.Description>{ prettifyRole(courseUser.kind) }</List.Description>
