@@ -55,7 +55,7 @@ const StudentQueue = (props) => {
         }
         {
           !queue.activeOverrideTime && !question &&
-          <Message style={{"marginTop":"10px"}} info header="Queue Closed" error
+          <Message style={{"marginTop":"10px"}} header="Queue Closed" error icon="calendar times outline"
             content="This queue is currently closed. Contact course staff if you think this is an error."/>
         }
         {
@@ -64,7 +64,7 @@ const StudentQueue = (props) => {
         }
         {
           queue.activeOverrideTime && props.hasQuestion && !question &&
-          <Message style={{"marginTop":"10px"}} info header="Question already in queue" content="You already have asked a question in another queue"/>
+          <Message style={{"marginTop":"10px"}} info header="Question already in queue" icon="comment alternate outline" content="You already have asked a question in another queue"/>
         }
       </Grid.Row>
       <Snackbar open={ toastOpen } autoHideDuration={6000} onClose={ () => setToastOpen(false) }>
