@@ -100,7 +100,11 @@ const Home = (props) => {
         setCourses(loadCourses(data));
         setUser(loadUser(data));
     }
-    fetchData();
+    try {
+      fetchData();
+    } catch (e) {
+      console.log(e)
+    }
   }, []);
 
   return (
