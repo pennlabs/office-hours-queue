@@ -187,7 +187,7 @@ class QueueNode(DjangoObjectType):
 
     number_active_questions = graphene.Int(required=True)
     questions = DjangoFilterConnectionField(QuestionNode)
-    queueQuestions = DjangoFilterConnectionField(QuestionNode)
+    queue_questions = DjangoFilterConnectionField(QuestionNode)
     start_end_times = graphene.List(StartEndTimes, required=True)
 
     def resolve_number_active_questions(self, info, **kwargs):
