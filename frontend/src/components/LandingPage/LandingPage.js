@@ -3,6 +3,7 @@ import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 import { Grid } from 'semantic-ui-react';
 
+
 import { withFirebase } from '../Firebase';
 
 import GoogleButton from 'react-google-button';
@@ -30,6 +31,7 @@ const CREATE_USER = gql`
 
 const SignInGoogleBase = (props) => {
   const [error, setError] = useState(null);
+  const [notPennError, setNotPennError] = useState(false);
   const condition = authUser => !!authUser;
   const [createUser, { data }] = useMutation(CREATE_USER);
 
@@ -38,6 +40,7 @@ const SignInGoogleBase = (props) => {
       .doSignInWithGoogle()
       .then(async (socialAuthUser) => {
         if (socialAuthUser.additionalUserInfo.isNewUser) {
+          try {
           await createUser({
             variables: {
               input:{
@@ -46,6 +49,12 @@ const SignInGoogleBase = (props) => {
               }
             }
           });
+          console.log("made user??");
+          }
+          catch(e) {
+            setNotPennError(true);
+            console.log("penn email error");
+          }
         }
       })
       .then(() => {
@@ -54,15 +63,18 @@ const SignInGoogleBase = (props) => {
       })
       .catch(error => {
         setError(error);
+        setNotPennError(true);
       });
 
     event.preventDefault();
   };
 
+  console.log("ON LANDING PAGE");
+
   return (
     <AuthUserContext.Consumer>
-      { authUser =>
-        condition(authUser)
+      {authUser =>
+        condition(authUser) && !notPennError
           ? <Home />
           : <div
             style={{
