@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import './CourseForm.css';
+
 import { Form, Button, Modal } from 'semantic-ui-react';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
@@ -123,6 +125,7 @@ const CourseForm = (props) => {
       <Form.Field required>
         <label>Department</label>
         <Form.Input
+          className={'department-input'}
           defaultValue={ defCourse.department }
           name='department'
           disabled={ loading }

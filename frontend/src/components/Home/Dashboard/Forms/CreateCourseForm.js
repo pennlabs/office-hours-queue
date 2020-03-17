@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import '../../../Course/CourseSettings/CourseForm.css'
+
 import { Form } from 'semantic-ui-react';
 import { semesterOptions } from "../../../../utils/enums";
 
@@ -7,13 +9,13 @@ const CreateCourseForm = (props) => {
 
   useEffect(() => {
     setCheck(props.check)
-  }, [props.check])
+  }, [props.check]);
 
   return (
     <Form>
       <Form.Field required>
         <label>Department</label>
-        <Form.Input name="department" onChange={ props.changeFunc } placeholder="CIS"/>
+        <Form.Input className={'department-input'} name="department" onChange={ props.changeFunc } placeholder="CIS"/>
       </Form.Field>
       <Form.Field required>
         <label>Course Code</label>
