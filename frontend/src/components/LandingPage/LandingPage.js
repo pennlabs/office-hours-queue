@@ -79,7 +79,7 @@ const SignInGoogleBase = (props) => {
                 <span>
                   {
                     error && error.includes("upenn.edu email") ? "Must sign in with a upenn.edu email" :
-                    error && error.includes("UniqueConstraint") ? "An account with that PennKey already exists" :
+                    error && error.includes("unique_user_user_key") ? "An account with that PennKey already exists" :
                     "An error occurred, unable to sign in"
                   }
                 </span>
