@@ -221,6 +221,7 @@ class QueueNode(DjangoObjectType):
             queue=self,
             time_rejected__isnull=True,
             time_withdrawn__isnull=True,
+            time_answered__isnull=True,
             **kwargs,
         )
 
