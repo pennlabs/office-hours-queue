@@ -95,6 +95,7 @@ const QuestionForm = (props) => {
               <Form.Input
                 name="videoChatUrl"
                 disabled={ loading }
+                placeholder={ 'https://zoom.us/j/578603907?pwd=L2ZhNkhlRnJPeGVwckcvY3hNak83QT09' }
                 onChange={ handleInputChange }/>
           </Form.Field>
           }
