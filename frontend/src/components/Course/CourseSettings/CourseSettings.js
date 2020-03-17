@@ -4,30 +4,25 @@ import CourseForm from './CourseForm';
 
 const CourseSettings = (props) => {
   const [course, setCourse]  = useState(props.course);
-  console.log(course);
 
   useEffect(() => {
-    setCourse(course);
+    setCourse(props.course);
   }, [props.course])
+
   return (
     <div>
-      {
-        course && course.id &&
-        <div>
-        <Grid.Row>
-          <Segment basic>
-            <Header as="h3">
-              Course Settings
-            </Header>
-          </Segment>
-        </Grid.Row>
-        <Grid.Row>
-          <Segment basic>
-            <CourseForm course={ course } refetch={ props.refetch }/>
-          </Segment>
-        </Grid.Row>
-        </div>
-      }
+      <Grid.Row>
+        <Segment basic>
+          <Header as="h3">
+            Course Settings
+          </Header>
+        </Segment>
+      </Grid.Row>
+      <Grid.Row>
+        <Segment basic>
+          <CourseForm course={ course } refetch={ props.refetch }/>
+        </Segment>
+      </Grid.Row>
     </div>
   );
 };

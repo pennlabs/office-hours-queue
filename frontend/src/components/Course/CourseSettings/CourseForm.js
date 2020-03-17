@@ -51,10 +51,10 @@ const CourseForm = (props) => {
     input[name] =  name === "inviteOnly" ? !input[name] : value;
     setInput(input);
     setDisabled(!input.department || !input.courseCode || !input.courseTitle || !input.year ||
-    (input.department === props.course.department &&
-    input.courseCode === props.course.courseCode &&
-    input.courseTitle === props.course.courseTitle &&
-    input.year === props.course.year));
+    (input.department === defCourse.department &&
+    input.courseCode === defCourse.courseCode &&
+    input.courseTitle === defCourse.courseTitle &&
+    input.year === defCourse.year));
   };
 
   const handleVideoChatInputChange = (e, { name }) => {
@@ -93,6 +93,7 @@ const CourseForm = (props) => {
       });
       await props.refetch();
       setSuccess(true);
+      setDisabled(true);
     } catch (e) {
       setError(true);
     }
