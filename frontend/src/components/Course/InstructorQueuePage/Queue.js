@@ -10,7 +10,7 @@ const GET_QUESTIONS = gql`
     queue(id: $id) {
       id
       tags
-      questions {
+      queueQuestions {
         edges {
           node {
             id
@@ -18,8 +18,6 @@ const GET_QUESTIONS = gql`
             tags
             state
             timeAsked
-            timeWithdrawn
-            timeRejected
             timeStarted
             timeAnswered
             orderKey
@@ -49,7 +47,9 @@ const Queue = (props) => {
 
   const getQuestions = (data) => {
     if (!data) { return [] }
-    return data.queue.questions.edges.map((item) => {
+    console.log(data);
+    return data.queue.queueQuestions.edges.map((item) => {
+      console.log(item.node);
       return {
         id: item.node.id,
         orderKey: item.node.orderKey,
@@ -58,8 +58,6 @@ const Queue = (props) => {
         state: item.node.state,
         timeAsked: item.node.timeAsked,
         askedBy: item.node.askedBy,
-        timeWithdrawn: item.node.timeWithdrawn,
-        timeRejected: item.node.timeRejected,
         timeStarted: item.node.timeStarted,
         timeAnswered: item.node.timeAnswered,
         answeredBy: item.node.answeredBy,
@@ -68,14 +66,9 @@ const Queue = (props) => {
     });
   };
 
-  /* FILTERING QUESTIONS FUNC */
-  const isVisible = (question) => {
-    return question.state === "ACTIVE" || question.state === "STARTED";
-  };
-
   const filter = (questions, filters) => {
     return questions.filter(question => {
-      return isSubset(question.tags, filters.tags) && isVisible(question);
+      return isSubset(question.tags, filters.tags);
     });
   };
 
