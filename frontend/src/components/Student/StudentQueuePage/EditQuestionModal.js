@@ -24,7 +24,7 @@ const EditQuestionModal = (props) => {
     videoChatUrl: question.videoChatUrl
   });
   const [charCount, setCharCount] = useState(input.text.length);
-  const [updateQuestion, { loading, data }] = useMutation(UPDATE_QUESTION);
+  const [updateQuestion, { loading }] = useMutation(UPDATE_QUESTION);
 
   const isValid = () => {
     return (input.text && (!queue.requireVideoChatUrlOnQuestions || input.videoChatUrl)) &&

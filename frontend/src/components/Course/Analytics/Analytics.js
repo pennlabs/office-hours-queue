@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import _ from 'lodash';
 import { Segment, Header, Grid } from 'semantic-ui-react';
 import MyPieChart from './MyPieChart';
 
@@ -43,7 +42,7 @@ const GET_COURSE = gql`
 `;
 
 const Analytics = (props) => {
-  const { loading, error, data } = useQuery(GET_COURSE, {
+  const { data } = useQuery(GET_COURSE, {
     variables: {
       id: props.course.id
     }

@@ -54,7 +54,7 @@ mutation ManuallyDeactivateQueue($input: ManuallyDeactivateQueueInput!) {
 
 const InstructorQueuePage = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
-  const { loading, error, data, refetch } = useQuery(GET_QUEUES, { variables: {
+  const { data, refetch } = useQuery(GET_QUEUES, { variables: {
     id: props.course.id
   }});
   const [activateQueue, activateQueueRes] = useMutation(ACTIVATE_QUEUE);
@@ -66,21 +66,6 @@ const InstructorQueuePage = (props) => {
   const [activeQueueId, setActiveQueueId] = useState(null);
   const [active, setActive] = useState('queues');
   const [leader, setLeader] = useState(props.leader);
-
-  /* TAG FUNCTION */
-  const getTags = (queues) => {
-    const newTags = [];
-    const tagNames = [];
-    queues.forEach((queue) => {
-      queue.tags.forEach((tag) => {
-        if (!tagNames.includes(tag)) {
-          newTags.push({ name: tag, isActive: false });
-          tagNames.push(tag);
-        }
-      });
-    });
-    return newTags;
-  };
 
   /* QUEUE FUNCTION */
   const loadQueues = (data) => {

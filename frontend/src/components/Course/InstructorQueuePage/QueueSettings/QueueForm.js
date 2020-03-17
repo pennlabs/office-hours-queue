@@ -18,7 +18,7 @@ const UPDATE_QUEUE = gql`
 
 const QueueForm = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
-  const [updateQueue, { data, loading }] = useMutation(UPDATE_QUEUE);
+  const [updateQueue, { loading }] = useMutation(UPDATE_QUEUE);
 
   /* STATE */
   const [success, setSuccess] = useState(false);

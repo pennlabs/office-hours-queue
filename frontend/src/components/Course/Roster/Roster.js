@@ -52,7 +52,7 @@ query GetUsers($id: ID!) {
 `;
 
 const Roster = (props) => {
-  const { loading, error, data, refetch } = useQuery(GET_USERS, { variables: {
+  const { data, refetch } = useQuery(GET_USERS, { variables: {
     id: props.course.id
   }});
 

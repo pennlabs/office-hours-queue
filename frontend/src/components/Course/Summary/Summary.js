@@ -1,6 +1,6 @@
 // WIP
 import React, { useState } from 'react';
-import { Segment, Header, Grid, Table } from 'semantic-ui-react';
+import { Segment, Grid, Table } from 'semantic-ui-react';
 import _ from 'lodash';
 import SummaryForm from './SummaryForm';
 
@@ -59,14 +59,13 @@ const GET_QUESTIONS = gql`
 `;
 
 const Summary = (props) => {
-  const { loading, error, data, refetch } = useQuery(GET_QUESTIONS, { variables: {
+  const { data } = useQuery(GET_QUESTIONS, { variables: {
     id: props.course.id
   }});
 
   /* STATE */
   const [questions, setQuestions] = useState(null);
   const [filteredQuestions, setFilteredQuestions] = useState(null);
-  const [open, setOpen] = useState(false);
   const [tableState, setTableState] = useState({ direction: null, column: null })
 
   /* FILTER USERS BASED ON INPUT */

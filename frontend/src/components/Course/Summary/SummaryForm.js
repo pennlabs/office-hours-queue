@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Button } from 'semantic-ui-react';
-import { gql } from 'apollo-boost';
-import { useMutation } from '@apollo/react-hooks';
+import { Form } from 'semantic-ui-react';
 import TextField from '@material-ui/core/TextField';
 
 const SummaryForm = (props) => {

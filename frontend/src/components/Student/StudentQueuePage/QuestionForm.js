@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Segment, Form, Header, Button, Icon } from 'semantic-ui-react';
+import { Segment, Form, Header, Button} from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
 import { isValidURL } from "../../../utils";
@@ -16,7 +16,7 @@ const CREATE_QUESTION = gql`
 `;
 
 const QuestionForm = (props) => {
-  const [createQuestion, { loading, data }] = useMutation(CREATE_QUESTION);
+  const [createQuestion, { loading }] = useMutation(CREATE_QUESTION);
   const [queue, setQueue] = useState(props.queue);
   const [input, setInput] = useState({
     queueId: props.queue.id,

@@ -12,7 +12,7 @@ const RESEND_INVITE_EMAIL = gql`
 `;
 
 const ResendButton = (props) => {
-  const [resendInviteEmail, { loading, data }] = useMutation(RESEND_INVITE_EMAIL);
+  const [resendInviteEmail, { loading }] = useMutation(RESEND_INVITE_EMAIL);
   const [open, setOpen] = useState(false);
 
   const onSubmit = () => {

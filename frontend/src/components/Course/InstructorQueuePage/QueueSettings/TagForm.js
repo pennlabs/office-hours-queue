@@ -16,10 +16,9 @@ const UPDATE_QUEUE = gql`
 
 const QueueForm = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
-  const [updateQueue, { data, loading }] = useMutation(UPDATE_QUEUE);
+  const [updateQueue, { loading }] = useMutation(UPDATE_QUEUE);
 
   /* STATE */
-  const [success, setSuccess] = useState(false);
   const [queue, setQueue] = useState(props.queue);
   const [newTag, setNewTag] = useState("");
   const [input, setInput] = useState({
@@ -43,7 +42,6 @@ const QueueForm = (props) => {
       })
       setNewTag("");
       await props.refetch();
-      setSuccess(true);
     }
   };
 
@@ -55,7 +53,6 @@ const QueueForm = (props) => {
       }
     })
     await props.refetch();
-    setSuccess(true);
     setNewTag(newTag);
   };
 

@@ -22,7 +22,7 @@ const UPDATE_COURSE = gql`
 
 const CourseForm = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
-  const [updateCourse, { loading, data }] = useMutation(UPDATE_COURSE);
+  const [updateCourse, { loading }] = useMutation(UPDATE_COURSE);
 
   const videoChatNum = (course) => {
     if (course.requireVideoChatUrlOnQuestions) return 0;
@@ -85,6 +85,7 @@ const CourseForm = (props) => {
         setCheck(videoChatNum(input));
         break;
       }
+      default: return;
     }
   };
 

@@ -30,7 +30,7 @@ const INVITE_OR_ADD_EMAILS = gql`
 `;
 
 const InviteModal = (props) => {
-  const [inviteOrAddEmails, { loading, data }] = useMutation(INVITE_OR_ADD_EMAILS);
+  const [inviteOrAddEmails, { loading }] = useMutation(INVITE_OR_ADD_EMAILS);
   const [input, setInput] = useState({ emails: [], kind: null });
   const [disabled, setDisabled] = useState(true);
 

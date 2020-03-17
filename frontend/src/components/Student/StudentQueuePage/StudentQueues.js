@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Segment, Grid, Message, Header } from 'semantic-ui-react';
+import { Segment, Grid, Message } from 'semantic-ui-react';
 import StudentQueue from './StudentQueue';
 import LastQuestionCard from './LastQuestionCard'
 

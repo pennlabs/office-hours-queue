@@ -5,7 +5,7 @@ import { useMutation } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 import { withFirebase } from '../Firebase';
 
-import { Grid, Dimmer, Segment, Loader } from 'semantic-ui-react';
+import { Grid, Dimmer, Loader } from 'semantic-ui-react';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 import GoogleButton from 'react-google-button';

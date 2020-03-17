@@ -43,7 +43,7 @@ const CURRENT_USER = gql`
 
 const Home = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
-  const { loading, error, data, refetch } = useQuery(CURRENT_USER);
+  const { data, refetch } = useQuery(CURRENT_USER);
 
   /* STATE */
   const [active, setActive] = useState('dashboard');

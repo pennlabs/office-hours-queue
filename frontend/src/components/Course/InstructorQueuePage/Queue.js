@@ -38,11 +38,11 @@ const GET_QUESTIONS = gql`
 `;
 
 const Queue = (props) => {
-  const { loading, error, data, refetch } = useQuery(GET_QUESTIONS, {
+  const { data, refetch } = useQuery(GET_QUESTIONS, {
     variables: {
       id: props.queue.id
     },
-    pollInterval: 1000
+    pollInterval: 1000 + Math.random() * 500
   });
 
   const getQuestions = (data) => {

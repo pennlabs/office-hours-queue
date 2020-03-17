@@ -20,7 +20,7 @@ const REMOVE_INVITED_USER = gql`
 `;
 
 const RemoveButton = (props) => {
-  const [removeUser, { loading, data }] = useMutation(props.isInvited ? REMOVE_INVITED_USER : REMOVE_USER);
+  const [removeUser, { loading }] = useMutation(props.isInvited ? REMOVE_INVITED_USER : REMOVE_USER);
   const [open, setOpen] = useState(false);
 
   const onSubmit = () => {

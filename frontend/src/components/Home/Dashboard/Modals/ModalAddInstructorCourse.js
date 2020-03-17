@@ -32,7 +32,7 @@ const ModalAddInstructorCourse = (props) => {
   });
   const [check, setCheck] = useState(2);
   const [disabled, setDisabled] = useState(true);
-  const [createCourse, { data }] = useMutation(CREATE_COURSE);
+  const [createCourse, { loading }] = useMutation(CREATE_COURSE);
 
   const handleInputChange = (e, { name, value }) => {
     input[name] = name === "inviteOnly" ? !input[name] : value;
@@ -64,6 +64,7 @@ const ModalAddInstructorCourse = (props) => {
         setCheck(videoChatNum(input));
         break;
       }
+      default: return;
     }
   };
 
@@ -115,7 +116,7 @@ const ModalAddInstructorCourse = (props) => {
         <Button content="Cancel" onClick={ onClose }/>
         <Button content="Create"
           color="green"
-          disabled={ disabled }
+          disabled={ disabled || loading }
           onClick={ onSubmit }/>
       </Modal.Actions>
     </Modal>

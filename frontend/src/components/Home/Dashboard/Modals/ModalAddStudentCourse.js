@@ -16,7 +16,7 @@ const JOIN_COURSES = gql`
 `;
 
 const ModalAddStudentCourse = (props) => {
-  const [joinCourses, { loading, data }] = useMutation(JOIN_COURSES);
+  const [joinCourses, { loading }] = useMutation(JOIN_COURSES);
   const [input, setInput] = useState({ courseIds: [] });
   const [disabled, setDisabled] = useState(true);
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
 import { Form, Button } from 'semantic-ui-react';
@@ -20,7 +20,7 @@ const UPDATE_USER = gql`
 
 const AccountForm = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
-  const [updateUser, { data, loading }] = useMutation(UPDATE_USER);
+  const [updateUser, { loading }] = useMutation(UPDATE_USER);
 
   /* STATE */
   const [defUser, setDefUser] = useState({
@@ -71,6 +71,15 @@ const AccountForm = (props) => {
       setError(true);
     }
   };
+
+  useEffect(() => {
+    setDefUser({
+      email: props.user.email,
+      fullName: props.user.fullName,
+      preferredName: props.user.preferredName,
+      phoneNumber: props.user.phoneNumber
+    })
+  }, [props.user])
 
   return (
     <Form>

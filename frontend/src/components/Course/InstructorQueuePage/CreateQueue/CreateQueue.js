@@ -18,7 +18,7 @@ const CREATE_QUEUE = gql`
 
 const CreateQueue = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
-  const [createQueue, { loading, data }] = useMutation(CREATE_QUEUE);
+  const [createQueue, { loading }] = useMutation(CREATE_QUEUE);
 
   /* STATE */
   const [disabled, setDisabled] = useState(true);

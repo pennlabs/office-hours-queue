@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Segment, Button } from 'semantic-ui-react';
 import { useMutation } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
@@ -16,7 +16,7 @@ const WITHDRAW_QUESTION = gql`
 const DeleteQuestionModal = (props) => {
   const [question, setQuestion] = useState(props.question);
   const [queue, setQueue] = useState(props.queue);
-  const [withdrawQuestion, { loading, error, data }] = useMutation(WITHDRAW_QUESTION);
+  const [withdrawQuestion, { loading }] = useMutation(WITHDRAW_QUESTION);
 
   const onDelete = async () => {
     try {
@@ -35,6 +35,14 @@ const DeleteQuestionModal = (props) => {
       props.toastFunc(null, e);
     }
   };
+
+  useEffect(() => {
+    setQuestion(props.question);
+  }, [props.question])
+
+  useEffect(() => {
+    setQueue(props.queue)
+  }, [props.queue])
 
   return (
     <Modal open={ props.open }>

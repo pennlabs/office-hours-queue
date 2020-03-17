@@ -137,6 +137,7 @@ const QuestionCard = (props) => {
                         size='mini'
                         color='green'
                         target="_blank"
+                        rel="noopener noreferrer"
                         href={ question.videoChatUrl ? question.videoChatUrl : null }
                         icon={ question.videoChatUrl ? "video" : null }
                         content='Answer'
@@ -168,7 +169,7 @@ const QuestionCard = (props) => {
                   }
                   {
                     question.timeStarted && question.videoChatUrl &&
-                    <a href={ question.videoChatUrl } target="_blank">
+                    <a href={ question.videoChatUrl } target="_blank" rel="noopener noreferrer">
                       <Button compact
                         size='mini'
                         color='blue'

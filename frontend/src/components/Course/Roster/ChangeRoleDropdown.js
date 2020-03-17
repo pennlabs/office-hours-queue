@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Dropdown, Icon, Popup} from 'semantic-ui-react';
+import {Dropdown, Popup} from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
 import {staffRoleOptions} from "../../../utils/enums";
@@ -15,7 +15,7 @@ const CHANGE_COURSE_USER_KIND = gql`
 `;
 
 const ChangeRoleDropdown = (props) => {
-  const [changeCourseUserKind, { loading, data }] = useMutation(CHANGE_COURSE_USER_KIND);
+  const [changeCourseUserKind, { loading }] = useMutation(CHANGE_COURSE_USER_KIND);
   const [input, setInput] = useState({ role: props.role });
 
   const handleInputChange = async (e, { name, value }) => {
