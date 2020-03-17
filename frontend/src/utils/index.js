@@ -38,19 +38,19 @@ export function semesterSortFunc(a, b) {
 }
 
 export function courseSortFunc(a, b) {
-  if (a.department !== b.department) {
-    return a.department < b.department;
-  }
-  if (a.courseCode !== b.courseCode) {
-    const collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
-    return collator.compare(a.courseCode, b.courseCode);
-  }
   if (a.year !== b.year) {
     // Recent years first
     return a.year > b.year;
   }
   if (a.semester !== b.semester) {
     return semesterSortFunc(a.semester, b.semester);
+  }
+  if (a.department !== b.department) {
+    return a.department < b.department;
+  }
+  if (a.courseCode !== b.courseCode) {
+    const collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
+    return collator.compare(a.courseCode, b.courseCode);
   }
   if (a.courseTitle !== b.courseTitle) {
     return a.courseTitle < b.courseTitle;
