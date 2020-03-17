@@ -122,7 +122,10 @@ const Home = (props) => {
   )
 };
 
-const condition = authUser => !!authUser;
+const condition = (authUser) => {
+  if (!authUser) { return false}
+  return authUser.hasUserObject;
+};
 
 export default compose(
   withAuthorization(condition),
