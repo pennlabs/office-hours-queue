@@ -57,7 +57,8 @@ const CourseForm = (props) => {
     (input.department === defCourse.department &&
     input.courseCode === defCourse.courseCode &&
     input.courseTitle === defCourse.courseTitle &&
-    input.year === defCourse.year));
+    input.year === defCourse.year &&
+    input.inviteOnly === defCourse.inviteOnly));
   };
 
   const handleVideoChatInputChange = (e, { name }) => {
