@@ -25,7 +25,11 @@ const ModalAddInstructorCourse = (props) => {
   };
 
   const [open, setOpen] = useState(props.open);
-  const [input, setInput] = useState({ inviteOnly: false });
+  const [input, setInput] = useState({
+    inviteOnly: false, 
+    requireVideoChatUrlOnQuestions: false,
+    videoChatEnabled: false
+  });
   const [check, setCheck] = useState(2);
   const [disabled, setDisabled] = useState(true);
   const [createCourse, { data }] = useMutation(CREATE_COURSE);
@@ -75,11 +79,27 @@ const ModalAddInstructorCourse = (props) => {
       });
       await props.refetch();
       props.closeFunc();
+      setInput({
+        inviteOnly: false, 
+        requireVideoChatUrlOnQuestions: false,
+        videoChatEnabled: false
+      });
+      setCheck(2);
       props.toastFunc(`${input.department} ${input.courseCode}`, true);
     } catch (e) {
       props.toastFunc(null, false);
     }
   };
+
+  const onClose = () => {
+    props.closeFunc();
+    setInput({
+      inviteOnly: false, 
+      requireVideoChatUrlOnQuestions: false,
+      videoChatEnabled: false
+    });
+    setCheck(2);
+  }
 
   useEffect(() => {
     setOpen(props.open);
@@ -92,7 +112,7 @@ const ModalAddInstructorCourse = (props) => {
         <CreateCourseForm changeFunc={ handleInputChange } vcChangeFunc={ handleVideoChatInputChange } check={ check }/>
       </Modal.Content>
       <Modal.Actions>
-        <Button content="Cancel" onClick={ props.closeFunc }/>
+        <Button content="Cancel" onClick={ onClose }/>
         <Button content="Create"
           color="green"
           disabled={ disabled }

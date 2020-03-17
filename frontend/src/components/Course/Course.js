@@ -76,6 +76,7 @@ const Course = (props) => {
         semester: data.course.semester,
         inviteOnly: data.course.inviteOnly,
         requireVideoChatUrlOnQuestions: data.course.requireVideoChatUrlOnQuestions,
+        videoChatEnabled: data.course.videoChatEnabled,
         leadership: data.course.leadership.sort(leadershipSortFunc),
       }
     } else {
