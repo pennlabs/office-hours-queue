@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Segment, Form, Header, Button, Icon } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
+import { isValidURL } from "../../../utils";
+
 
 const CREATE_QUESTION = gql`
   mutation CreateQuestion($input: CreateQuestionInput!) {
@@ -23,6 +25,7 @@ const QuestionForm = (props) => {
   });
   const [charCount, setCharCount] = useState(0);
   const [disabled, setDisabled] = useState(true);
+  const [validURL, setValidURL] = useState(queue.requireVideoChatUrlOnQuestions ? false : true);
 
   const handleInputChange = (e, { name, value }) => {
     if (name === 'text' && value.length > 250) return;
@@ -30,6 +33,12 @@ const QuestionForm = (props) => {
     setInput(input);
     setCharCount(input.text.length);
     setDisabled(!input.text || (queue.requireVideoChatUrlOnQuestions && !input.videoChatUrl))
+    if (name === 'videoChatUrl') {
+      setValidURL(isValidURL(input.videoChatUrl))
+      if (queue.videoChatEnabled && input.videoChatUrl === '') {
+        setValidURL(true)
+      }
+    }
   };
 
   const getDropdownOptions = (tags) => {
@@ -106,7 +115,7 @@ const QuestionForm = (props) => {
         <Button compact
           content="Submit"
           color="blue"
-          disabled={ loading || disabled }
+          disabled={ loading || disabled || !validURL }
           onClick={ onSubmit }/>
       </Segment>
     </div>
