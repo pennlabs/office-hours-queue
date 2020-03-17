@@ -125,7 +125,7 @@ const Summary = (props) => {
           tags: qs.node.tags,
           queue: qs.node.queue.name,
           timeAsked: qs.node.timeAsked,
-          askedBy: qs.node.askedBy.fullName,
+          askedBy: qs.node.askedBy ? qs.node.askedBy.fullName : "",
           answeredBy: qs.node.answeredBy ? qs.node.answeredBy.fullName : "",
           rejectedBy: qs.node.rejectedBy ? qs.node.rejectedBy.fullName : "",
           state: qs.node.state
