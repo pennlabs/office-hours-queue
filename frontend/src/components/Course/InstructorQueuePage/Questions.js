@@ -32,7 +32,7 @@ const Questions = (props) => {
         active && filteredQuestions && filteredQuestions.length === 0 &&
         <Grid.Row style={{"marginTop":"10px"}}>
           <Message icon="folder open outline" header="Empty Queue"
-            content="This queue currently has no questions, or no questions have applied tags."/>
+            content="This queue currently has no questions, or no questions match your tag filter."/>
         </Grid.Row>
       }
       {
