@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Dashboard from './Dashboard/Dashboard';
 import AccountSettings from './AccountSettings/AccountSettings';
 import HomeSidebar from './HomeSidebar'
-import { Grid, Container } from 'semantic-ui-react';
+import { Grid } from 'semantic-ui-react';
+import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
 
 import { withAuthorization } from '../Session';
 import { compose } from 'recompose';
@@ -49,19 +51,12 @@ const Home = (props) => {
   const [active, setActive] = useState('dashboard');
   const [courses,  setCourses] = useState(null);
   const [user, setUser] = useState(null);
-  const [loginError, setLoginError] = useState(false);
-
-  // try{
+  // const [loginError, setLoginError] = useState(false);
 
   /* LOAD DATA FUNCTIONS */
   const loadCourses = (data) => {
     if (!data){
-      setLoginError(true);
-      props.firebase.doSignOut().then(function() {
-        console.log('Signed Out');
-      }, function(error) {
-        console.error('Sign Out Error', error);
-      });
+      // setLoginError(true);
       return;
     } 
     return data.currentUser.courseUsers.edges.map((courseUser) => {
@@ -83,11 +78,6 @@ const Home = (props) => {
   const loadUser = (data) => {
     if (!data) {
       // setLoginError(true);
-      props.firebase.doSignOut().then(function() {
-        console.log('Signed Out');
-      }, function(error) {
-        console.error('Sign Out Error', error);
-      });
       return;
     }
     return {
@@ -113,16 +103,6 @@ const Home = (props) => {
     }
   }
 
-  // }
-
-  // catch(e) {
-  //   props.firebase.doSignOut().then(function() {
-  //     console.log('Signed Out');
-  //   }, function(error) {
-  //     console.error('Sign Out Error', error);
-  //   });
-  // }
-
   useEffect(() => {
     async function fetchData() {
         await refetch();
@@ -131,8 +111,6 @@ const Home = (props) => {
     }
     fetchData();
   }, []);
-
-
 
   return (
     <Grid columns={2} divided style={{"width":"100%"}} stackable>

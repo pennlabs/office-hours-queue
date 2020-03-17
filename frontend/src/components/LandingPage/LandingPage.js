@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 import { Grid } from 'semantic-ui-react';
-import Snackbar from '@material-ui/core/Snackbar';
-import Alert from '@material-ui/lab/Alert';
 
 
 import { withFirebase } from '../Firebase';
@@ -33,7 +31,7 @@ const CREATE_USER = gql`
 
 const SignInGoogleBase = (props) => {
   const [error, setError] = useState(null);
-  const [emailError, setEmailError] = useState(false);
+  const [notPennError, setNotPennError] = useState(false);
   const condition = authUser => !!authUser;
   const [createUser, { data }] = useMutation(CREATE_USER);
 
@@ -51,9 +49,11 @@ const SignInGoogleBase = (props) => {
               }
             }
           });
+          console.log("made user??");
           }
           catch(e) {
-            setEmailError(true);
+            setNotPennError(true);
+            console.log("penn email error");
           }
         }
       })
@@ -63,16 +63,18 @@ const SignInGoogleBase = (props) => {
       })
       .catch(error => {
         setError(error);
-        setEmailError(true);
+        setNotPennError(true);
       });
 
     event.preventDefault();
   };
 
+  console.log("ON LANDING PAGE");
+
   return (
     <AuthUserContext.Consumer>
       {authUser =>
-        condition(authUser) && !emailError
+        condition(authUser) && !notPennError
           ? <Home />
           : <div
             style={{
@@ -86,11 +88,6 @@ const SignInGoogleBase = (props) => {
               <Grid.Row><img src="ohq-login.png" width="600px" height="107px" alt="logo"/></Grid.Row>
               <Grid.Row><GoogleButton onClick={onSubmit}/></Grid.Row>
             </Grid>
-            <Snackbar open={ emailError } autoHideDuration={6000} onClose={ () => setEmailError(false) }>
-            <Alert severity="error" onClose={ () => setEmailError(false) }>
-              <span>There was an error creating this user. You must login with a Penn email.</span>
-            </Alert>
-          </Snackbar>
           </div>
       }
     </AuthUserContext.Consumer>
