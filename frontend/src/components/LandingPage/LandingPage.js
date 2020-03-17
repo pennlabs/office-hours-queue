@@ -76,7 +76,13 @@ const SignInGoogleBase = (props) => {
             </Grid>
             <Snackbar open={ error } autoHideDuration={6000} onClose={ () => setError(null) }>
               <Alert severity="error" onClose={ () => setError(null) }>
-                <span>Must sign in with upenn.edu email</span>
+                <span>
+                  {
+                    error.includes("upenn.edu email") ? "Must sign in with a upenn.edu email" :
+                    error.includes("UniqueConstraint") ? "An account with that PennKey already exists" :
+                    "An error occurred, unable to sign in"
+                  }
+                </span>
               </Alert>
             </Snackbar>
           </div>
