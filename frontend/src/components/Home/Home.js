@@ -9,6 +9,7 @@ import { compose } from 'recompose';
 
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
+import { courseSortFunc } from "../../utils";
 
 /* GRAPHQL QUERIES/MUTATIONS */
 const CURRENT_USER = gql`
@@ -28,7 +29,6 @@ const CURRENT_USER = gql`
               department
               courseCode
               courseTitle
-              description
               semester
               year
               archived
@@ -60,13 +60,13 @@ const Home = (props) => {
         department: courseUser.node.course.department,
         courseCode: courseUser.node.course.courseCode,
         courseTitle: courseUser.node.course.courseTitle,
-        description: courseUser.node.course.description,
+        // description: courseUser.node.course.description,
         semester: courseUser.node.course.semester,
         year: courseUser.node.course.year,
         archived: courseUser.node.course.archived,
         kind: courseUser.node.kind
       };
-    });
+    }).sort(courseSortFunc);
   };
 
   const loadUser = (data) => {
