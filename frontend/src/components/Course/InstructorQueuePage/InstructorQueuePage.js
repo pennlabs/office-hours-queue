@@ -155,7 +155,8 @@ const InstructorQueuePage = (props) => {
           createFunc={ () => { setActive('create') } }
           openFunc={ onOpen }
           closeFunc={ onClose }
-          leader={ leader }/>
+          leader={ leader }
+          userId={ props.userId }/>
       }
       {
         active === 'settings' &&

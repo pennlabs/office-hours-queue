@@ -41,10 +41,19 @@ const GET_COURSE = gql`
   }
 `;
 
+const CURRENT_USER = gql`
+  {
+    currentUser {
+      id
+    }
+  }
+`;
+
 const Course = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
   const courseId = props.location.state ? props.location.state.courseId : "";
   const courseUserId = props.location.state ? props.location.state.courseUserId : "";
+  const currentUserQuery = useQuery(CURRENT_USER);
   const courseQuery = useQuery(GET_COURSE, { variables: {
     id: courseId
   }});
@@ -111,8 +120,10 @@ const Course = (props) => {
           <CourseSettings course={ course } refetch={ courseQuery.refetch }/>
         }
         {
-          courseQuery.data && active === 'queues' &&
-          <InstructorQueuePage course={ course } leader={ leader }/>
+          courseQuery.data && active === 'queues' && currentUserQuery.data &&
+          <InstructorQueuePage course={ course }
+            leader={ leader }
+            userId={ currentUserQuery.data.currentUser.id }/>
         }
         {
           active === 'analytics' &&

@@ -36,7 +36,8 @@ const InstructorQueues = (props) => {
               leader={ props.leader }
               openFunc={ () => props.openFunc(queue.id) }
               closeFunc={ () => props.closeFunc(queue.id) }
-              editFunc={ () => props.editFunc(queue.id) }/>
+              editFunc={ () => props.editFunc(queue.id) }
+              userId={ props.userId }/>
           </Grid.Column>
         ))
       }

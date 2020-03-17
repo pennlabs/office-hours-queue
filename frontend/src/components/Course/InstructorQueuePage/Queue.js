@@ -24,11 +24,11 @@ const GET_QUESTIONS = gql`
             timeAnswered
             orderKey
             videoChatUrl
-            answeredBy {
+            askedBy {
               id
               preferredName
             }
-            askedBy {
+            answeredBy {
               id
               preferredName
             }
@@ -171,7 +171,8 @@ const Queue = (props) => {
             questions={ filteredQuestions }
             filters={ filters }
             refetch={ refetch }
-            active={ active }/>
+            active={ active }
+            userId={ props.userId }/>
       </Grid.Row>
     </Segment>
   );

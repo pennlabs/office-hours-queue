@@ -21,7 +21,10 @@ const Questions = (props) => {
         filteredQuestions && filteredQuestions.length !== 0 &&
         _.sortBy(filteredQuestions, "timeAsked").map(question => (
           <Grid.Row>
-            <QuestionCard key={ question.id } question={ question } refetch={ props.refetch }/>
+            <QuestionCard key={ question.id }
+              question={ question }
+              refetch={ props.refetch }
+              userId={ props.userId }/>
           </Grid.Row>
         ))
       }

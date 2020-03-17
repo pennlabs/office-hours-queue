@@ -88,6 +88,9 @@ const QuestionCard = (props) => {
       finishQuestionRes.loading) || (undoStartQuestionRes && undoStartQuestionRes.loading);
   };
 
+  const b64Equal = (string1, string2) => {
+    return atob(string1).split(":")[1] === atob(string2).split(":")[1]
+  }
 
   useEffect(() => {
     setQuestion(props.question);
@@ -142,7 +145,7 @@ const QuestionCard = (props) => {
                     </Header.Content>
                   }
                   {
-                    question.timeStarted &&
+                    question.timeStarted && b64Equal(question.answeredBy.id, props.userId) &&
                     <Header.Content>
                       <Button compact
                         size='mini'
@@ -153,7 +156,7 @@ const QuestionCard = (props) => {
                     </Header.Content>
                   }
                   {
-                    question.timeStarted &&
+                    question.timeStarted && b64Equal(question.answeredBy.id, props.userId) &&
                     <Header.Content>
                       <Button compact
                         size='mini'
