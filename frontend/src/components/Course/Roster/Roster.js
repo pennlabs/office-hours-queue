@@ -225,11 +225,7 @@ const Roster = (props) => {
           courseId={ props.course.id }
           successFunc={ setRosterUpdateToast }/>
       }
-      <Grid.Row>
-        <Segment basic>
-          <Header as="h3">Roster</Header>
-        </Segment>
-      </Grid.Row>
+
       <Grid.Row>
       {
         users &&
