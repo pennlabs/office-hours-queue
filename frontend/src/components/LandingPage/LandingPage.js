@@ -78,8 +78,8 @@ const SignInGoogleBase = (props) => {
               <Alert severity="error" onClose={ () => setError(null) }>
                 <span>
                   {
-                    error.includes("upenn.edu email") ? "Must sign in with a upenn.edu email" :
-                    error.includes("UniqueConstraint") ? "An account with that PennKey already exists" :
+                    error && error.includes("upenn.edu email") ? "Must sign in with a upenn.edu email" :
+                    error && error.includes("UniqueConstraint") ? "An account with that PennKey already exists" :
                     "An error occurred, unable to sign in"
                   }
                 </span>
