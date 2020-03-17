@@ -4,9 +4,6 @@ import InstructorCourses from './InstructorCourses';
 import StudentCourses from './StudentCourses';
 
 const Dashboard = (props) => {
-  /* STATE */
-  const [courses, setCourses] = useState(props.courses);
-
   const getCourses = (allCourses, isStudent) => {
     if (!allCourses) { return [] }
     return allCourses.filter((course) => {
@@ -14,10 +11,15 @@ const Dashboard = (props) => {
         (!isStudent && course.kind !== 'STUDENT');
     });
   };
+  
+  /* STATE */
+  const [courses, setCourses] = useState(props.courses);
+  const [hasInstructorCourses, setHasInstructorCourses] = useState(getCourses(props.courses).length > 0)
 
   /* UPDATE ON PROPS CHANGE */
   useEffect(() => {
     setCourses(props.courses);
+    setHasInstructorCourses(getCourses(props.courses).length > 0)
   }, [props.courses]);
 
   return (
@@ -33,14 +35,18 @@ const Dashboard = (props) => {
           </Header>
         </Segment>
         <StudentCourses courses={ getCourses(courses, true) } refetch={ props.refetch }/>
-        <Segment basic padded>
-          <Header as="h2">
-            <Header.Content>
-              Instructor Courses
-            </Header.Content>
-          </Header>
-        </Segment>
-        <InstructorCourses courses={ getCourses(courses, false) } refetch={ props.refetch }/>
+        {
+          hasInstructorCourses && [
+            <Segment basic padded>
+              <Header as="h2">
+                <Header.Content>
+                  Instructor Courses
+                </Header.Content>
+              </Header>
+            </Segment>,
+            <InstructorCourses courses={ getCourses(courses, false) } refetch={ props.refetch }/>
+          ]
+        }
       </Grid>
     }
     </Grid.Column>
