@@ -173,6 +173,7 @@ class QueueNode(DjangoObjectType):
         filter_fields = (
             'id',
             'name',
+            'archived',
         )
         fields = (
             'id',
