@@ -105,14 +105,20 @@ const AddForm = (props) => {
   };
 
   const onCreateOption = (item) => {
-    if (isValidEmail(item)) {
-      onChange([...values, { label: item, value: item }]);
-    } else {
+    if (!isValidEmail(item)) {
       props.setToast({
         open: true,
         success: false,
         message: 'Can only invite valid emails',
       });
+    } else if (!item.split("@")[1].endsWith("upenn.edu")) {
+      props.setToast({
+        open: true,
+        success: false,
+        message: 'Can only invite upenn.edu emails',
+      });
+    } else {
+      onChange([...values, { label: item, value: item }]);
     }
   };
 
