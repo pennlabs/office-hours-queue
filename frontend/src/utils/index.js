@@ -63,3 +63,10 @@ export function courseSortFunc(a, b) {
   }
   return 0;
 }
+
+export function queueSortFunc(a, b) {
+  if (a.name !== b.name) {
+    return a.name < b.name ? -1 : 1;
+  }
+  return 0;
+}

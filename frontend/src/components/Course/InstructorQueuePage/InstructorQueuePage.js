@@ -5,16 +5,17 @@ import QueueSettings from './QueueSettings/QueueSettings';
 import CreateQueue from './CreateQueue/CreateQueue';
 
 import { gql } from 'apollo-boost';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/react-hooks';
 import Alert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
+import { queueSortFunc } from "../../../utils";
 
 /* GRAPHQL QUERIES/MUTATIONS */
 const GET_QUEUES = gql`
 query GetQueues($id: ID!) {
   course(id: $id) {
     id
-    queues {
+    queues(archived: false) {
       edges {
         node {
           id
@@ -58,7 +59,7 @@ const InstructorQueuePage = (props) => {
         estimatedWaitTime: item.node.estimatedWaitTime,
         numberActiveQuestions: item.node.numberActiveQuestions
       };
-    });
+    }).sort(queueSortFunc);
   };
 
   /* HANDLER FUNCTIONS */
