@@ -141,12 +141,12 @@ const Queue = (props) => {
             <Button
               size="mini"
               content="Close"
-              color="red"
+              color={ !active ? null : "red" }
               disabled={ !active }
               onClick={ props.closeFunc }/>
             <Button size="mini"
               content="Open"
-              color="green"
+              color={ active ? null : "green" }
               disabled={ active }
               onClick={ props.openFunc }/>
           </Grid.Column>
