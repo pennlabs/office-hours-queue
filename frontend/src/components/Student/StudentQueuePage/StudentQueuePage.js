@@ -64,14 +64,16 @@ const StudentQueuePage = (props) => {
     variables: {
       id: props.course.id
     },
-    pollInterval: 10000 + Math.random() * 2000
+    pollInterval: 10000 + Math.random() * 2000,
+    skip: !props.course.id
   });
 
   const getQuestionRes = useQuery(CURRENT_QUESTION, {
     variables: {
       courseId: props.course.id
     },
-    pollInterval: 5000 + Math.random() * 500
+    pollInterval: 5000 + Math.random() * 500,
+    skip: !props.course.id
   });
 
   const [queues, setQueues] = useState(null);
