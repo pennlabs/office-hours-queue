@@ -27,12 +27,13 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_course_pretty(self, info, course_pretty_id):
+        course = Course.objects.get(pretty_id=course_pretty_id)
         if not CourseUser.objects.filter(
                 user=info.context.user.get_user(),
-                course=self.course,
+                course=course,
         ).exists():
             raise user_not_in_course_error
-        return Course.objects.get(pretty_id=course_pretty_id)
+        return course
 
     current_question = graphene.Field(types.QuestionNode, course_id=graphene.ID(required=True))
 
