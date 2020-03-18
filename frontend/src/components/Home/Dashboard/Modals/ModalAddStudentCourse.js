@@ -50,15 +50,15 @@ const ModalAddStudentCourse = (props) => {
       </Modal.Content>
       <Modal.Actions>
         <Button
+          content='Cancel'
+          disabled={loading}
+          onClick={ props.closeFunc }/>
+        <Button
           content='Join'
           color='blue'
           disabled={loading || disabled }
           loading={loading}
           onClick={ joinFunc }/>
-        <Button
-          content='Cancel'
-          disabled={loading}
-          onClick={ props.closeFunc }/>
       </Modal.Actions>
     </Modal>
   );
