@@ -8,6 +8,8 @@ from django.contrib.postgres.fields import ArrayField, JSONField
 from phonenumber_field.modelfields import PhoneNumberField
 from polymorphic.models import PolymorphicModel
 
+from ohq.apps.api.util import generate_random_pretty_id
+
 
 class ChoicesEnum(Enum):
     @classmethod
@@ -125,6 +127,7 @@ class Course(models.Model):
     require_video_chat_url_on_questions = models.BooleanField(default=False)
 
     searchable_name = models.CharField(max_length=72, editable=False)
+    pretty_id = models.CharField(max_length=8)
 
     MAX_NUMBER_COURSE_USERS = 1000
 
@@ -133,6 +136,10 @@ class Course(models.Model):
             models.UniqueConstraint(
                 fields=["course_code", "department", "year", "semester"],
                 name="unique_course_name",
+            ),
+            models.UniqueConstraint(
+                fields=["pretty_id"],
+                name="unique_course_pretty_id",
             )
         ]
 
@@ -154,7 +161,17 @@ class Course(models.Model):
 
     def save(self, *args, **kwargs):
         self.searchable_name = f"{self.department} {self.course_code} {self.course_title}"
-        super(Course, self).save(*args, **kwargs)
+        # Model is not saved to the database yet
+        with transaction.atomic():
+            if self._state.adding:
+                while True:
+                    pretty_id = generate_random_pretty_id()
+                    if Course.objects.filter(pretty_id=self.pretty_id).exists:
+                        continue
+                    else:
+                        self.pretty_id = pretty_id
+                        break
+            super(Course, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.department} {self.course_code} - " \

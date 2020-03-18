@@ -6,7 +6,7 @@ from django.db import transaction
 
 from ohq.apps.api.schema.types import *
 from ohq.apps.api.util.errors import *
-from ohq.apps.api.util import validateDayOfWeek, validateMinutesInDay
+from ohq.apps.api.util import validate_day_of_week, validate_minutes_in_day
 
 
 class StartEndMinutesInput(graphene.InputObjectType):
@@ -41,9 +41,9 @@ class CreateQueue(graphene.Mutation):
     def startEndTimesInputToJSON(ss):
         json = []
         for s in ss:
-            if not validateDayOfWeek(s.day):
+            if not validate_day_of_week(s.day):
                 raise invalid_day_of_week_error
-            if any(not validateMinutesInDay(time.start) or not validateMinutesInDay(time.end)
+            if any(not validate_minutes_in_day(time.start) or not validate_minutes_in_day(time.end)
                    for time in s.times):
                 raise invalid_time_of_day_error
             json.append({
