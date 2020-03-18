@@ -9,7 +9,7 @@ from .models import AuthUser
 class FirebaseAuthentication:
 
     def authenticate(self, request, **kwargs):
-        if (settings.DEBUG):
+        if settings.DEBUG:
             return AuthUser.objects.get(firebase_uid="E3UXVSfwZOf0VPw9p7XiaZqcoVE3")
         decoded_token = self._get_auth_token(request)
         if decoded_token:

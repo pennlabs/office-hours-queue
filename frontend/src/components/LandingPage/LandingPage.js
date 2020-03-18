@@ -3,7 +3,6 @@ import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 import { useMutation } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
-import { withFirebase } from '../Firebase';
 
 import { Grid, Dimmer, Loader } from 'semantic-ui-react';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -13,6 +12,7 @@ import "typeface-roboto";
 
 import * as ROUTES from '../../constants/routes';
 import Home from '../Home/Home';
+import firebase from '../Firebase';
 import AuthUserContext from '../Session/context';
 import LoadingContext from "./context";
 
@@ -37,19 +37,19 @@ const SignInGoogleBase = (props) => {
 
   const onSubmit = async (event) => {
     try {
-      const socialAuthUser = await props.firebase.doSignInWithGoogle();
+      const socialAuthUser = await firebase.doSignInWithGoogle();
       const result = await socialAuthUser.user.getIdTokenResult();
       if (!result.claims.hasUserObject) {
-          await createUser({
-            variables: {
-              input:{
-                fullName: socialAuthUser.user.displayName,
-                preferredName: socialAuthUser.user.displayName.split("/[ ,]+/")[0]
-              }
+        await createUser({
+          variables: {
+            input:{
+              fullName: socialAuthUser.user.displayName,
+              preferredName: socialAuthUser.user.displayName.split("/[ ,]+/")[0]
             }
-          });
-          setError(null);
-          props.history.push(ROUTES.LANDING);
+          }
+        });
+        setError(null);
+        props.history.push(ROUTES.LANDING);
       }
     } catch (e) {
       setError(e.message);
@@ -110,7 +110,6 @@ const SignInGoogleBase = (props) => {
 
 const SignInGoogle = compose(
   withRouter,
-  withFirebase,
 )(SignInGoogleBase);
 
 const LandingPage = () => {

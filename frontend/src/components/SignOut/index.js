@@ -1,8 +1,8 @@
 import React from 'react';
 import { Menu, Icon } from 'semantic-ui-react';
-import { withFirebase } from '../Firebase';
+import firebase from '../Firebase';
 
-const SignOutButton = ({ firebase }) => (
+const SignOutButton = () => (
   <Menu.Item style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}
     name="Signout"
     active={false}
@@ -12,4 +12,4 @@ const SignOutButton = ({ firebase }) => (
   </Menu.Item>
 );
 
-export default withFirebase(SignOutButton);
+export default SignOutButton;

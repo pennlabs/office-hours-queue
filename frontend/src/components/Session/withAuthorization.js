@@ -2,16 +2,20 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 
+import firebase from '../Firebase'
 import AuthUserContext from './context';
-import { withFirebase } from '../Firebase';
 import * as ROUTES from '../../constants/routes';
 import LandingPage from '../LandingPage/LandingPage';
 
 const withAuthorization = condition => Component => {
   class WithAuthorization extends React.Component {
     componentDidMount() {
-      this.listener = this.props.firebase.onAuthUserListener(
-        authUser => {
+      this.listener = firebase.auth.onAuthStateChanged(
+        async (authUser) => {
+          if (authUser && !authUser.hasUserObject) {
+            const result = await authUser.getIdTokenResult();
+            authUser['hasUserObject'] = result.claims.hasUserObject;
+          }
           if (!condition(authUser)) {
             this.props.history.replace(ROUTES.LANDING);
           }
@@ -37,7 +41,6 @@ const withAuthorization = condition => Component => {
 
   return compose(
     withRouter,
-    withFirebase,
   )(WithAuthorization);
 };
 

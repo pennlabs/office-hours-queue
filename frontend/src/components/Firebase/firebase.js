@@ -3,7 +3,7 @@ import "firebase/auth";
 
 const config = {
   apiKey: "AIzaSyAiEIpy5y_EGS9lOeMc5NQF5VDUiJScSqE",
-  authDomain: "office-hour-q.firebaseapp.com",
+  authDomain: "ohq.io",
   databaseURL: "https://office-hour-q.firebaseio.com",
   projectId: "office-hour-q",
   storageBucket: "office-hour-q.appspot.com",
@@ -45,4 +45,4 @@ class Firebase {
     });
 }
 
-export default Firebase;
+export default new Firebase();

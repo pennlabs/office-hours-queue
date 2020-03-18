@@ -1,6 +1,5 @@
 import React from 'react';
 import { Segment, Menu, Grid, Image } from 'semantic-ui-react';
-import { withFirebase } from '../Firebase';
 import { Link } from 'react-router-dom';
 
 import SignOutButton from '../SignOut';
@@ -30,4 +29,4 @@ const Sidebar = (props) => (
   </Grid.Column>
 );
 
-export default withFirebase(Sidebar);
+export default Sidebar;

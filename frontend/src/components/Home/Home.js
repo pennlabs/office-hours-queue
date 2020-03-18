@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Dashboard from './Dashboard/Dashboard';
 import AccountSettings from './AccountSettings/AccountSettings';
 import HomeSidebar from './HomeSidebar'
-import { Grid } from 'semantic-ui-react';
+import {Dimmer, Grid, Loader, Segment} from 'semantic-ui-react';
 
 import { withAuthorization } from '../Session';
 import { compose } from 'recompose';
@@ -111,12 +111,13 @@ const Home = (props) => {
     <Grid columns={2} divided="horizontally" style={{"width":"100%"}} stackable>
       <HomeSidebar active={ active } clickFunc={ setActive }/>
       {
-        courses && active === 'dashboard' &&
-        <Dashboard courses={ courses } refetch={ refetch }/>
-      }
-      {
-        user && active === 'account_settings' &&
-        <AccountSettings user={ user } refetch={ refetch }/>
+        courses && active === 'dashboard' ? <Dashboard courses={ courses } refetch={ refetch }/> :
+        user && active === 'account_settings' ? <AccountSettings user={ user } refetch={ refetch }/> :
+        <Grid.Column width={13}>
+          <Dimmer active inverted>
+            <Loader size='big' inverted/>
+          </Dimmer>
+        </Grid.Column>
       }
     </Grid>
   )

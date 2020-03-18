@@ -1,7 +1,7 @@
 import React from 'react';
 
 import AuthUserContext from './context';
-import { withFirebase } from '../Firebase';
+import firebase from '../Firebase';
 import LoadingContext from "../LandingPage/context";
 
 const withAuthentication = Component => {
@@ -16,14 +16,16 @@ const withAuthentication = Component => {
     }
 
     componentDidMount() {
-      this.listener = this.props.firebase.auth.onAuthStateChanged(
+      this.listener = firebase.auth.onAuthStateChanged(
         async (authUser) => {
+          const deepCopy = JSON.parse(JSON.stringify(authUser));
           if (authUser) {
             const result = await authUser.getIdTokenResult();
-            authUser['hasUserObject'] = result.claims.hasUserObject;
+            deepCopy['hasUserObject'] = result.claims.hasUserObject;
           }
-          localStorage.setItem('authUser', JSON.stringify(authUser));
-          this.setState({ authUser, loading: false });
+          const stringy = JSON.stringify(deepCopy);
+          localStorage.setItem('authUser', stringy);
+          this.setState({ authUser: deepCopy, loading: false });
         },
         () => {
           localStorage.removeItem('authUser');
@@ -47,7 +49,7 @@ const withAuthentication = Component => {
     }
   }
 
-  return withFirebase(WithAuthentication);
+  return WithAuthentication;
 };
 
 export default withAuthentication;

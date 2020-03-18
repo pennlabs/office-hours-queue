@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Segment, Menu, Grid, Image, Header, List, Icon } from 'semantic-ui-react';
-import { withFirebase } from '../Firebase';
 import { Link } from 'react-router-dom';
 import { prettifyRole } from "../../utils/enums";
 
@@ -90,4 +89,4 @@ const CourseSidebar = (props) => {
   )
 };
 
-export default withFirebase(CourseSidebar);
+export default CourseSidebar;
