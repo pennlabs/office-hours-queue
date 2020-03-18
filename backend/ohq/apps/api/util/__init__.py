@@ -1,3 +1,4 @@
+import re
 import random
 import string
 
@@ -13,3 +14,8 @@ def generate_random_pretty_id():
         for _ in
         range(8)
     )
+
+def sorted_alphanumeric(l):
+    convert = lambda text: int(text) if text.isdigit() else text
+    alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
+    return sorted(l, key=alphanum_key)

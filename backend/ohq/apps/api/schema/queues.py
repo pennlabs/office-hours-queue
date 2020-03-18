@@ -6,7 +6,7 @@ from django.db import transaction
 
 from ohq.apps.api.schema.types import *
 from ohq.apps.api.util.errors import *
-from ohq.apps.api.util import validate_day_of_week, validate_minutes_in_day
+from ohq.apps.api.util import validate_day_of_week, validate_minutes_in_day, sorted_alphanumeric
 
 
 class StartEndMinutesInput(graphene.InputObjectType):
@@ -77,7 +77,7 @@ class CreateQueue(graphene.Mutation):
             queue = Queue.objects.create(
                 name=input.name,
                 description=input.description or "",
-                tags=tags,
+                tags=sorted_alphanumeric(tags),
                 start_end_times=CreateQueue.startEndTimesInputToJSON(input.start_end_times),
                 course=course,
             )
@@ -126,7 +126,9 @@ class UpdateQueue(graphene.Mutation):
                 queue.description = input.description
             if input.tags is not None:
                 seen = set()
-                queue.tags = [x for x in input.tags if not (x in seen or seen.add(x))]
+                queue.tags = sorted_alphanumeric(
+                    [x for x in input.tags if not (x in seen or seen.add(x))]
+                )
             if input.start_end_times is not None:
                 queue.start_end_times = CreateQueue.startEndTimesInputToJSON(input.start_end_times),
             if input.archived is not None:
