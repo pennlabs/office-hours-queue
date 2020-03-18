@@ -35,13 +35,14 @@ class CreateUser(graphene.Mutation):
                 info.context.user.firebase_uid,
                 { "hasUserObject": True },
             )
-            user = User.objects.create(
+            user = User(
                 full_name=input.full_name,
                 preferred_name=input.preferred_name,
                 email=info.context.user.email,
                 phone_number=input.phone_number,
                 auth_user=info.context.user,
             )
+            user.clean_fields()
             invites = InvitedCourseUser.objects.filter(email=info.context.user.email)
             new_course_users = [
                 CourseUser(
@@ -51,6 +52,7 @@ class CreateUser(graphene.Mutation):
                     invited_by=invite.invited_by,
                 ) for invite in invites
             ]
+            user.save()
             CourseUser.objects.bulk_create(new_course_users)
             invites.delete()
 
@@ -90,6 +92,7 @@ class UpdateUser(graphene.Mutation):
                 user.preferred_name = input.preferred_name
             if input.phone_number is not None:
                 user.phone_number = input.phone_number
+            user.clean_fields()
             user.save()
 
         return UpdateUserResponse(user=user)
