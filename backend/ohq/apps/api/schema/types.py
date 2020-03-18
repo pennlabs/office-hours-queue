@@ -273,6 +273,8 @@ class CourseNode(DjangoObjectType):
     leadership = graphene.List(lambda: CourseUserNode)
     feedback_questions = graphene.List(lambda: FeedbackQuestionNode)
 
+    current_course_user_kind = graphene.Field(CourseUserKindType)
+
     def resolve_course_users(self, info, **kwargs):
         # Restrict roster to staff
         if not CourseUser.objects.filter(
@@ -294,6 +296,12 @@ class CourseNode(DjangoObjectType):
 
     def resolve_feedback_questions(self, info, **kwargs):
         return FeedbackQuestion.objects.filter(course=self, **kwargs)
+
+    def resolve_current_course_user_kind(self, info, **kwargs):
+        return CourseUser.objects.get(
+            user=info.context.user.get_user(),
+            course=self,
+        ).kind
 
 
 class CourseMetaNode(DjangoObjectType):
