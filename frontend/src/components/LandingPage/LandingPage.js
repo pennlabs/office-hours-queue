@@ -80,7 +80,7 @@ const SignInGoogleBase = (props) => {
                 "justifyContent": "center"
               }}>
                 <Dimmer active inverted inline='centered'>
-                  <Loader inverted/>
+                  <Loader size='big' inverted/>
                 </Dimmer>
               </div>
               ) :

@@ -61,6 +61,7 @@ const Roster = (props) => {
   const [filteredUsers, setFilteredUsers] = useState(null);
   const [invitedUsers, setInvitedUsers] = useState(null);
   const [open, setOpen] = useState(false);
+  const [invitedTableState, setInvitedTableState] = useState({ direction: 'ascending', column: 'email' });
   const [tableState, setTableState] = useState({ direction: 'ascending', column: 'fullName' });
   const [showInvited, setShowInvited] = useState(false);
   const [toast, setToast] = useState({ open: false, success: true, message: "" });
@@ -78,13 +79,25 @@ const Roster = (props) => {
         column: clickedColumn,
         direction: 'ascending',
       });
-      setFilteredUsers(_.sortBy(filteredUsers, clickedColumn));
     } else {
       setTableState({
         column: tableState.column,
         direction: tableState.direction === 'ascending' ? 'descending' : 'ascending',
       });
-      setFilteredUsers(filteredUsers.reverse());
+    }
+  };
+
+  const handleInvitedSort = (clickedColumn) => {
+    if (invitedTableState.column !== clickedColumn) {
+      setInvitedTableState({
+        column: clickedColumn,
+        direction: 'ascending',
+      });
+    } else {
+      setInvitedTableState({
+        column: invitedTableState.column,
+        direction: invitedTableState.direction === 'ascending' ? 'descending' : 'ascending',
+      });
     }
   };
 
@@ -218,8 +231,7 @@ const Roster = (props) => {
 
   return (
     <div>
-      {
-        users &&
+      { users &&
         <InviteModal open={ open }
           closeFunc={ closeModal }
           courseId={ props.course.id }
@@ -227,10 +239,8 @@ const Roster = (props) => {
           setToast={ setToast }
           users={ users }/>
       }
-
       <Grid.Row>
-      {
-        users &&
+      { users &&
         <Segment basic>
           <RosterForm
             showShowInvitedButton={ invitedUsers.length > 0 }
@@ -243,56 +253,70 @@ const Roster = (props) => {
       }
       </Grid.Row>
       <Grid.Row>
-      {
-        (showInvited && invitedUsers.length > 0) &&
+      { (showInvited && invitedUsers.length > 0) &&
         <Segment basic>
           <Grid.Row>
             <Header as="h3">
               Invited Users
             </Header>
-         </Grid.Row>
-        <Table sortable celled padded selectable striped>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell width={3}>Email</Table.HeaderCell>
-              <Table.HeaderCell width={2}>Role</Table.HeaderCell>
-              <Table.HeaderCell width={3}>Invited By</Table.HeaderCell>
-              {
-                leader && [
-                  <Table.HeaderCell textAlign="center" width={1}>Resend</Table.HeaderCell>,
-                  <Table.HeaderCell textAlign="center" width={1}>Revoke</Table.HeaderCell>,
-                ]
-              }
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-          {
-            invitedUsers.map((user) => (
+          </Grid.Row>
+          <Table sortable celled padded selectable striped>
+            <Table.Header>
               <Table.Row>
-                <Table.Cell>{ user.email }</Table.Cell>
-                <Table.Cell>{ prettifyRole(user.role) }</Table.Cell>
-                <Table.Cell>{ user.invitedBy.fullName }</Table.Cell>
+                <Table.HeaderCell
+                  sorted={invitedTableState.column === 'email' ? invitedTableState.direction : null}
+                  onClick={() => handleInvitedSort('email')}
+                  width={3}>Email
+                </Table.HeaderCell>
+                <Table.HeaderCell
+                  sorted={invitedTableState.column === 'role' ? invitedTableState.direction : null}
+                  onClick={() => handleInvitedSort('role')}
+                  width={2}>Role
+                </Table.HeaderCell>
+                <Table.HeaderCell
+                  sorted={invitedTableState.column === 'invitedBy' ? invitedTableState.direction : null}
+                  onClick={() => handleInvitedSort('invitedBy')}
+                  width={3}>Invited By
+                </Table.HeaderCell>
                 {
                   leader && [
-                    <Table.Cell textAlign="center">
-                      <ResendButton id={user.id} successFunc={setInviteResendToast}/>
-                    </Table.Cell>,
-                    <Table.Cell textAlign="center">
-                      <RemoveButton id={user.id} isInvited={true} successFunc={onRevokeSuccess}/>
-                    </Table.Cell>,
+                    <Table.HeaderCell textAlign="center" width={1}>Resend</Table.HeaderCell>,
+                    <Table.HeaderCell textAlign="center" width={1}>Revoke</Table.HeaderCell>,
                   ]
                 }
               </Table.Row>
-            ))
-          }
-          </Table.Body>
-        </Table>
+            </Table.Header>
+            <Table.Body>
+            {
+              _.orderBy(
+                invitedUsers,
+                invitedTableState.column !== "invitedBy" ? invitedTableState.column : (invited) => invited.invitedBy.fullName,
+                invitedTableState.direction === 'ascending' ? 'asc' : 'desc',
+              ).map((user) => (
+                <Table.Row>
+                  <Table.Cell>{ user.email }</Table.Cell>
+                  <Table.Cell>{ prettifyRole(user.role) }</Table.Cell>
+                  <Table.Cell>{ user.invitedBy.fullName }</Table.Cell>
+                  {
+                    leader && [
+                      <Table.Cell textAlign="center">
+                        <ResendButton id={user.id} successFunc={setInviteResendToast}/>
+                      </Table.Cell>,
+                      <Table.Cell textAlign="center">
+                        <RemoveButton id={user.id} isInvited={true} successFunc={onRevokeSuccess}/>
+                      </Table.Cell>,
+                    ]
+                  }
+                </Table.Row>
+              ))
+            }
+            </Table.Body>
+          </Table>
         </Segment>
       }
       </Grid.Row>
       <Grid.Row>
-      {
-        users &&
+      { users &&
         <Segment basic>
           <Table sortable celled padded selectable striped>
             <Table.Header>
@@ -325,7 +349,11 @@ const Roster = (props) => {
             </Table.Header>
             <Table.Body>
               {
-                filteredUsers.map((user) => (
+                _.orderBy(
+                  filteredUsers,
+                  tableState.column,
+                  tableState.direction === 'ascending' ? 'asc' : 'desc',
+                ).map((user) => (
                   <Table.Row key={ user.id }>
                     <Table.Cell>{ user.fullName }</Table.Cell>
                     <Table.Cell>{ user.preferredName }</Table.Cell>
