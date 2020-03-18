@@ -201,7 +201,14 @@ const CourseForm = (props) => {
           toggle
           onChange={ handleInputChange }/>
       </Form.Field>
-      <Button color='blue' type='submit' disabled={ disabled || loading } onClick={ onSubmit }>Submit</Button>
+      <Button
+        color='blue'
+        type='submit'
+        disabled={ disabled || loading }
+        loading={ loading }
+        onClick={ onSubmit }>
+        Submit
+      </Button>
       <Modal open={ open }
         trigger={
           <Button type='submit' onClick={ () => setOpen(true) }>Archive</Button>
@@ -217,6 +224,7 @@ const CourseForm = (props) => {
           <Button content="Archive"
             onClick={ onArchived }
             disabled={ loading }
+            loading={ loading }
             color="red"/>
         </Modal.Actions>
       </Modal>

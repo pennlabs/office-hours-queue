@@ -116,7 +116,14 @@ const AccountForm = (props) => {
           disabled={ loading }
           onChange={ handleInputChange }/>
       </Form.Field>
-      <Button color='blue' type='submit' disabled={ disabled || loading }  onClick={ onSubmit }>Submit</Button>
+      <Button
+        color='blue'
+        type='submit'
+        disabled={ disabled || loading }
+        loading={ loading }
+        onClick={ onSubmit }>
+        Submit
+      </Button>
       <Snackbar open={ success } autoHideDuration={6000} onClose={ () => setSuccess(false) }>
         <Alert severity="success" onClose={ () => setSuccess(false) }>
           Your account has been updated!

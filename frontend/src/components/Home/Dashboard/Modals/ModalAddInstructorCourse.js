@@ -113,10 +113,11 @@ const ModalAddInstructorCourse = (props) => {
         <CreateCourseForm changeFunc={ handleInputChange } vcChangeFunc={ handleVideoChatInputChange } check={ check }/>
       </Modal.Content>
       <Modal.Actions>
-        <Button content="Cancel" onClick={ onClose }/>
+        <Button content="Cancel" disabled={ loading } onClick={ onClose }/>
         <Button content="Create"
           color="green"
           disabled={ disabled || loading }
+          loading={ loading }
           onClick={ onSubmit }/>
       </Modal.Actions>
     </Modal>

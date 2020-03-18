@@ -80,18 +80,19 @@ const QuestionCard = (props) => {
           questionId: question.id
         }
       }
-    })
+    });
     props.refetch();
-  }
+  };
 
   const isLoading = () => {
-    return (startQuestionRes && startQuestionRes.loading) || (finishQuestionRes &&
-      finishQuestionRes.loading) || (undoStartQuestionRes && undoStartQuestionRes.loading);
+    return (startQuestionRes && startQuestionRes.loading) ||
+      (finishQuestionRes && finishQuestionRes.loading) ||
+      (undoStartQuestionRes && undoStartQuestionRes.loading);
   };
 
   const b64Equal = (string1, string2) => {
     return atob(string1).split(":")[1] === atob(string2).split(":")[1]
-  }
+  };
 
   useEffect(() => {
     setQuestion(props.question);
@@ -149,7 +150,8 @@ const QuestionCard = (props) => {
                         icon={ question.videoChatUrl ? "video" : null }
                         content='Answer'
                         onClick={ onAnswer }
-                        disabled={ isLoading() }/>
+                        disabled={ isLoading() }
+                        loading={ startQuestionRes && startQuestionRes.loading }/>
                     </Header.Content>
                   }
                   {
@@ -160,7 +162,8 @@ const QuestionCard = (props) => {
                         color='red'
                         content='Undo'
                         disabled={ isLoading() }
-                        onClick={ onUndo }/>
+                        onClick={ onUndo }
+                        loading={ undoStartQuestionRes && undoStartQuestionRes.loading }/>
                     </Header.Content>
                   }
                   {
@@ -171,7 +174,8 @@ const QuestionCard = (props) => {
                         color='green'
                         content='Finish'
                         disabled={ isLoading() }
-                        onClick={ onFinish }/>
+                        onClick={ onFinish }
+                        loading={ finishQuestionRes && finishQuestionRes.loading }/>
                     </Header.Content>
                   }
                   {

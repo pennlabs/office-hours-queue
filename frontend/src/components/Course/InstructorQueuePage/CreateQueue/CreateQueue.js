@@ -86,7 +86,7 @@ const CreateQueue = (props) => {
               color='blue'
               type='submit'
               disabled={ disabled || loading }
-              loading={loading}
+              loading={ loading }
               onClick={ onSubmit }/>
             <Button
               content='Cancel'

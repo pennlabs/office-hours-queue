@@ -38,11 +38,11 @@ const DeleteQuestionModal = (props) => {
 
   useEffect(() => {
     setQuestion(props.question);
-  }, [props.question])
+  }, [props.question]);
 
   useEffect(() => {
     setQueue(props.queue)
-  }, [props.queue])
+  }, [props.queue]);
 
   return (
     <Modal open={ props.open }>
@@ -59,7 +59,9 @@ const DeleteQuestionModal = (props) => {
           onClick={() => { props.setOpen(false) }}/>
         <Button
           content="Withdraw"
-          disabled={ loading } color="red"
+          disabled={ loading }
+          loading={ loading }
+          color="red"
           onClick={ onDelete }/>
       </Modal.Actions>
     </Modal>

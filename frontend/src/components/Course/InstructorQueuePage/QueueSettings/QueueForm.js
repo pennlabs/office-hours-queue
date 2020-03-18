@@ -109,7 +109,14 @@ const QueueForm = (props) => {
                 "color": descCharCount < 500 ? "" : "crimson"}}>
                   {"Characters: " +  descCharCount + "/500"}</div>
           </Form.Field>
-          <Button color="blue" type='submit' disabled={ disabled || loading }  onClick={ onSubmit }>Submit</Button>
+          <Button
+            color="blue"
+            type="submit"
+            disabled={ disabled || loading }
+            loading={ loading }
+            onClick={ onSubmit }>
+            Submit
+          </Button>
           <Modal open={ open }
             trigger={
               <Button type='submit' onClick={ () => setOpen(true) }>Archive</Button>
