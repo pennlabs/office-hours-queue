@@ -10,8 +10,8 @@ import AsyncCreatableSelect from 'react-select/async-creatable';
 import { isValidEmail, useImperativeQuery } from "../../../../utils";
 
 const INVITABLE_USERS = gql`
-  query InvitableUsers($searchableName_Icontains: String, $courseId: ID!) {
-    invitableUsers(searchableName_Icontains: $searchableName_Icontains, courseId: $courseId) {
+  query InvitableUsers($searchableName_Icontains: String) {
+    invitableUsers(searchableName_Icontains: $searchableName_Icontains) {
       edges {
         node {
           id
@@ -78,7 +78,6 @@ const AddForm = (props) => {
     }
     const { data } = await invitableUsers({
       searchableName_Icontains: inputValue,
-      courseId: props.courseId
     });
     return data.invitableUsers.edges.map((item) => {
       const existing = existingEmails.has(item.node.email);

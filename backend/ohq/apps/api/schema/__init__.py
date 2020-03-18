@@ -21,9 +21,6 @@ class Query(graphene.ObjectType):
     def resolve_invitable_users(self, info, **kwargs):
         return User.objects.filter(searchable=True, **kwargs)
 
-    # TODO remove
-    course = relay.Node.Field(types.CourseNode)
-
     course_pretty = graphene.Field(
         types.CourseNode,
         course_pretty_id=graphene.String(required=True),

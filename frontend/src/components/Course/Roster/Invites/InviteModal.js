@@ -74,7 +74,6 @@ const InviteModal = (props) => {
       <Modal.Content>
         <AddForm
           users={ props.users }
-          courseId={ props.courseId }
           changeFunc={ handleInputChange }
           setToast={ props.setToast }/>
       </Modal.Content>
