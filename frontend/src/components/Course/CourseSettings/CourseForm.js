@@ -157,6 +157,7 @@ const CourseForm = (props) => {
       <Form.Field required>
         <label>Year</label>
         <Form.Input
+          type='number'
           defaultValue={ defCourse.year }
           name='year'
           disabled={ loading }

@@ -33,7 +33,7 @@ const CreateCourseForm = (props) => {
       }
       <Form.Field required>
         <label>Year</label>
-        <Form.Input name="year" onChange={ props.changeFunc } placeholder="2020"/>
+        <Form.Input name="year" type="number" onChange={ props.changeFunc } placeholder="2020"/>
       </Form.Field>
       <Form.Field required>
         <label>Semester</label>
