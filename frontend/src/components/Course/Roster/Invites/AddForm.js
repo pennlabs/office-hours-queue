@@ -123,15 +123,17 @@ const AddForm = (props) => {
 
   return (
     <Form>
-      Download a <a href="/sample_users.csv" target="_blank">sample CSV file</a>
-      <div {...getRootProps({className: classes.join(' ')})}>
-        <input {...getInputProps()} />
-        <div>
-          <p>Drag and drop CSV or click to select file for bulk invitation</p>
-        </div>
-      </div>
       <Form.Field>
-        <label style={{marginTop: '10px'}}>Name or Email</label>
+        <label>Download a <a href="/sample_users.csv" target="_blank">sample CSV file</a></label>
+        <div {...getRootProps({className: classes.join(' ')})}>
+          <input {...getInputProps()} />
+          <div>
+            <p>Drag and drop CSV or click to select file for bulk invitation</p>
+          </div>
+        </div>
+      </Form.Field>
+      <Form.Field>
+        <label>Name or Email</label>
         <AsyncCreatableSelect
           cacheOptions
           defaultOptions
