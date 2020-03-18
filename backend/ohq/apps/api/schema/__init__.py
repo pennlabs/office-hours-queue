@@ -21,9 +21,12 @@ class Query(graphene.ObjectType):
     # TODO remove
     course = relay.Node.Field(types.CourseNode)
 
-    course_pretty_id = graphene.Field(types.CourseNode, course_id=graphene.String(required=True))
+    course_pretty = graphene.Field(
+        types.CourseNode,
+        course_pretty_id=graphene.String(required=True),
+    )
 
-    def resolve_course_pretty_id(self, info, course_pretty_id):
+    def resolve_course_pretty(self, info, course_pretty_id):
         if not CourseUser.objects.filter(
                 user=info.context.user.get_user(),
                 course=self.course,
