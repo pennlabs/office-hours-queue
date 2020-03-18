@@ -58,7 +58,7 @@ const QuestionCard = (props) => {
           questionId: question.id
         }
       }
-    })
+    });
     props.refetch();
   };
 
@@ -69,7 +69,7 @@ const QuestionCard = (props) => {
           questionId: question.id
         }
       }
-    })
+    });
     props.refetch();
   };
 
@@ -117,6 +117,7 @@ const QuestionCard = (props) => {
                     }
                     content= { timeString(question.timeAsked, false) }
                     basic
+                    inverted
                     position="left center"/>
                 </Header>
               </Grid.Column>
@@ -184,7 +185,9 @@ const QuestionCard = (props) => {
                       <Button compact
                         size='mini'
                         color='blue'
-                        content='Join Call'/>
+                        content='Join Call'
+                        disabled={ isLoading() }
+                      />
                     </a>
                   }
                 </Header>
@@ -214,7 +217,7 @@ const QuestionCard = (props) => {
                 }
                 {
                   (!question.tags || question.tags.length === 0) &&
-                  <span><i>No Tags</i></span>
+                  <span style={{paddingLeft: "8px"}}><i>No Tags</i></span>
                 }
 
               </Grid.Column>

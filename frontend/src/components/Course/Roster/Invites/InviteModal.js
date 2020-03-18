@@ -80,15 +80,15 @@ const InviteModal = (props) => {
       </Modal.Content>
       <Modal.Actions>
         <Button
+          content='Cancel'
+          disabled={loading}
+          onClick={ props.closeFunc }/>
+        <Button
           content='Invite'
           color='blue'
           disabled={loading || disabled}
           loading={loading}
           onClick={ inviteFunc }/>
-        <Button
-          content='Cancel'
-          disabled={loading}
-          onClick={ props.closeFunc }/>
       </Modal.Actions>
     </Modal>
   )

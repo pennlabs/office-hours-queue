@@ -52,13 +52,13 @@ const RejectQuestionModal = (props) => {
           input: input
         }
       });
-      await props.refetch();
       props.closeFunc();
+      await props.refetch();
     } catch (e) {
-      console.log(e)
-    } 
+      console.log(e);
+    }
   };
-  
+
   useEffect(() => {
     setQuestion(props.question);
   }, [props.question]);
@@ -93,8 +93,8 @@ const RejectQuestionModal = (props) => {
           </Modal.Description>
         </Modal.Content>
         <Modal.Actions>
-          <Button content="Cancel" onClick={ props.closeFunc }/>
-          <Button content="Reject" disabled={ loading || rejectDisabled } color="red" onClick={ onSubmit }/>
+          <Button content="Cancel" disabled={ loading } onClick={ props.closeFunc }/>
+          <Button content="Reject" disabled={ loading || rejectDisabled } loading={ loading } color="red" onClick={ onSubmit }/>
         </Modal.Actions>
       </Modal>
   );

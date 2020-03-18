@@ -117,6 +117,7 @@ const QuestionForm = (props) => {
           content="Submit"
           color="blue"
           disabled={ loading || disabled || !validURL }
+          loading={ loading }
           onClick={ onSubmit }/>
       </Segment>
     </div>
