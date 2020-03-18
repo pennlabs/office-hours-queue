@@ -19,7 +19,7 @@ const CourseSidebar = (props) => {
   return (
     <Grid.Column width={3}>
       <Segment basic>
-        <Link to='/home'>
+        <Link to='/'>
           <Image src='../../../ohq.png' size='tiny' style={{"marginTop":"10px"}}/>
         </Link>
         <Menu vertical secondary fluid>

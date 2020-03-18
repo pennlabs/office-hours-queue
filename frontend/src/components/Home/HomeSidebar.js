@@ -7,7 +7,7 @@ import SignOutButton from '../SignOut';
 const Sidebar = (props) => (
   <Grid.Column width={3}>
     <Segment basic>
-    <Link to={{pathName: '/home'}}>
+    <Link to={{pathName: '/'}}>
       <Image src='../../../ohq.png' size='tiny' style={{"marginTop":"10px"}}/>
     </Link>
     <Menu vertical secondary fluid>

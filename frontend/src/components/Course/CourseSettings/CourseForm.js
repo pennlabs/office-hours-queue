@@ -117,7 +117,7 @@ const CourseForm = (props) => {
       });
       await props.refetch();
       setOpen(false);
-      window.location = ROUTES.HOME;
+      window.location = ROUTES.LANDING;
     } catch (e) {
       setArchiveError(true);
     }
