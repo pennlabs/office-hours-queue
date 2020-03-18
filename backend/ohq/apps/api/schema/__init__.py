@@ -4,7 +4,7 @@ from graphql_relay.node.node import from_global_id
 from graphene_django.filter import DjangoFilterConnectionField
 
 from ohq.apps.api.schema import account, courses, queues, feedback_questions, questions, types
-from ohq.apps.api.models import Course, CourseUser, Question
+from ohq.apps.api.models import Course, CourseUser, Question, User
 from ohq.apps.api.util.errors import user_not_in_course_error
 
 
@@ -16,7 +16,10 @@ class Query(graphene.ObjectType):
         return info.context.user.get_user()
 
     # User search for invitation
-    invitable_users = DjangoFilterConnectionField(types.UserMetaNode, course_id=graphene.ID(required=True))
+    invitable_users = DjangoFilterConnectionField(types.UserMetaNode)
+
+    def resolve_invitable_users(self, info, **kwargs):
+        return User.objects.filter(searchable=True, **kwargs)
 
     # TODO remove
     course = relay.Node.Field(types.CourseNode)

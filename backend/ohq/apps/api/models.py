@@ -76,6 +76,7 @@ class User(models.Model):
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
 
     searchable_name = models.CharField(max_length=254+100+100+2, editable=False)
+    searchable = models.BooleanField(default=True)
 
     class Meta:
         constraints = [
