@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Segment, Header, Input, Label, Icon } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
@@ -9,51 +9,65 @@ const UPDATE_QUEUE = gql`
     updateQueue(input: $input) {
       queue {
         id
+        tags
       }
     }
   }
 `;
 
-const QueueForm = (props) => {
+const TagForm = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
   const [updateQueue, { loading }] = useMutation(UPDATE_QUEUE);
 
   /* STATE */
   const [queue, setQueue] = useState(props.queue);
   const [newTag, setNewTag] = useState("");
-  const [input, setInput] = useState({
-    queueId: queue.id,
-    tags: queue.tags
-  });
+  const [tags, setTags] = useState(props.queue.tags);
+
+  const tagInput = useRef();
 
   /* HANDLER FUNCTIONS */
-  const handleInputChange = (e, { name, value }) => {
+  const handleInputChange = (e, { value }) => {
     setNewTag(value);
   };
 
   const onSubmit = async () => {
     if (newTag && newTag.length !== 0) {
-      input.tags.push(newTag);
-      setInput(input);
-      await updateQueue({
+      const result = await updateQueue({
         variables: {
-          input: input
+          input: {
+            queueId: props.queue.id,
+            tags: [...tags, newTag],
+          }
         }
-      })
+      });
+      setTags(result.data.updateQueue.queue.tags);
       setNewTag("");
       await props.refetch();
     }
   };
 
   const onDelete = async (oldTag) => {
-    input.tags = queue.tags.filter((tag) => tag !== oldTag);
-    await updateQueue({
+    const filteredTags = queue.tags.filter((tag) => tag !== oldTag);
+    const result = await updateQueue({
       variables: {
-        input: input
+        input: {
+          queueId: props.queue.id,
+          tags: filteredTags,
+        }
       }
-    })
+    });
+    setTags(result.data.updateQueue.queue.tags);
     await props.refetch();
-    setNewTag(newTag);
+  };
+
+  const handleKeyDown = async (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      event.stopPropagation();
+      await onSubmit();
+      tagInput.current.focus();
+    }
   };
 
   /* PROPS UPDATE */
@@ -96,10 +110,12 @@ const QueueForm = (props) => {
           disabled={ loading }
           loading={ loading }
           value={ newTag }
-          onChange={ handleInputChange }/>
+          onKeyDown={ handleKeyDown }
+          onChange={ handleInputChange }
+          ref={ tagInput }/>
       </Segment>
     </div>
   )
 };
 
-export default QueueForm;
+export default TagForm;
