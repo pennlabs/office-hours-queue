@@ -40,8 +40,6 @@ const Main = (props) => {
     }
   }
 
-  if (error) window.location = "/"
-
   return (
     error ? <Redirect to={'/'}/> :
     <Grid columns="equal" divided style={{"width":"100%"}} stackable>
