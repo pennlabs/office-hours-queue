@@ -123,6 +123,7 @@ const AddForm = (props) => {
 
   return (
     <Form>
+      Download a <a href="/sample_users.csv" target="_blank">sample CSV file</a>
       <div {...getRootProps({className: classes.join(' ')})}>
         <input {...getInputProps()} />
         <div>
