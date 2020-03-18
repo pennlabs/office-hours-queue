@@ -248,6 +248,7 @@ class CourseNode(DjangoObjectType):
             'semester',
             'archived',
             'invite_only',
+            'pretty_id'
         )
         fields = (
             'id',
@@ -260,6 +261,7 @@ class CourseNode(DjangoObjectType):
             'invite_only',
             'video_chat_enabled',
             'require_video_chat_url_on_questions',
+            'pretty_id',
         )
         interfaces = (relay.Node,)
 
