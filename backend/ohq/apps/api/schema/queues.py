@@ -72,10 +72,12 @@ class CreateQueue(graphene.Mutation):
                 Queue.MAX_NUMBER_QUEUES
             ):
                 raise too_many_queues_error
+            seen_tags = set()
+            tags = [x for x in input.tags if not (x in seen_tags or seen_tags.add(x))]
             queue = Queue.objects.create(
                 name=input.name,
                 description=input.description or "",
-                tags=input.tags,
+                tags=tags,
                 start_end_times=CreateQueue.startEndTimesInputToJSON(input.start_end_times),
                 course=course,
             )
@@ -123,7 +125,8 @@ class UpdateQueue(graphene.Mutation):
             if input.description is not None:
                 queue.description = input.description
             if input.tags is not None:
-                queue.tags = input.tags
+                seen = set()
+                queue.tags = [x for x in input.tags if not (x in seen or seen.add(x))]
             if input.start_end_times is not None:
                 queue.start_end_times = CreateQueue.startEndTimesInputToJSON(input.start_end_times),
             if input.archived is not None:
