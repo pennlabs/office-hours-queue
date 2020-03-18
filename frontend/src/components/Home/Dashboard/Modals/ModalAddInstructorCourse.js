@@ -114,7 +114,8 @@ const ModalAddInstructorCourse = (props) => {
       </Modal.Content>
       <Modal.Actions>
         <Button content="Cancel" disabled={ loading } onClick={ onClose }/>
-        <Button content="Create"
+        <Button
+          content="Create"
           color="green"
           disabled={ disabled || loading }
           loading={ loading }

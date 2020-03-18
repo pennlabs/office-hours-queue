@@ -122,7 +122,7 @@ const AccountForm = (props) => {
         disabled={ disabled || loading }
         loading={ loading }
         onClick={ onSubmit }>
-        Submit
+        Save
       </Button>
       <Snackbar open={ success } autoHideDuration={6000} onClose={ () => setSuccess(false) }>
         <Alert severity="success" onClose={ () => setSuccess(false) }>

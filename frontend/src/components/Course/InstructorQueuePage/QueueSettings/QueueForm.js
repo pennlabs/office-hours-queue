@@ -40,8 +40,8 @@ const QueueForm = (props) => {
     if (name === 'name' && value.length > 100) return;
     input[name] = value;
     setInput(input);
-    setDescCharCount(input.description.length)
-    setNameCharCount(input.name.length)
+    setDescCharCount(input.description.length);
+    setNameCharCount(input.name.length);
     setDisabled(!input.name || !input.description ||
     (input.name === queue.name && input.description === queue.description))
   };
@@ -93,9 +93,12 @@ const QueueForm = (props) => {
               value={ input.name }
               disabled={ loading }
               onChange={ handleInputChange }/>
-              <div style={{"textAlign":"right",
-                "color": nameCharCount < 100 ? "" : "crimson"}}>
-                  {"Characters: " +  nameCharCount + "/100"}</div>
+              <div style={{
+                "textAlign":"right",
+                "color": nameCharCount < 100 ? "" : "crimson"}
+              }>
+                {"Characters: " +  nameCharCount + "/100"}
+              </div>
           </Form.Field>
           <Form.Field>
             <label>Description</label>
@@ -105,9 +108,12 @@ const QueueForm = (props) => {
               value={ input.description }
               disabled={ loading }
               onChange={ handleInputChange }/>
-              <div style={{"textAlign":"right",
-                "color": descCharCount < 500 ? "" : "crimson"}}>
-                  {"Characters: " +  descCharCount + "/500"}</div>
+              <div style={{
+                "textAlign":"right",
+                "color": descCharCount < 500 ? "" : "crimson"
+              }}>
+                {"Characters: " +  descCharCount + "/500"}
+              </div>
           </Form.Field>
           <Button
             color="blue"
@@ -115,7 +121,7 @@ const QueueForm = (props) => {
             disabled={ disabled || loading }
             loading={ loading }
             onClick={ onSubmit }>
-            Submit
+            Save
           </Button>
           <Modal open={ open }
             trigger={

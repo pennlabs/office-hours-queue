@@ -208,7 +208,7 @@ const CourseForm = (props) => {
         disabled={ disabled || loading }
         loading={ loading }
         onClick={ onSubmit }>
-        Submit
+        Save
       </Button>
       <Modal open={ open }
         trigger={

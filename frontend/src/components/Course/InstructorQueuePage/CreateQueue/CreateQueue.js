@@ -122,7 +122,7 @@ const CreateQueue = (props) => {
               />
             </Form.Field>
             <Button
-              content='Submit'
+              content='Create'
               color='blue'
               type='submit'
               disabled={ disabled || loading || refetchLoading }

@@ -82,7 +82,8 @@ const QueueForm = (props) => {
     </Segment>
     <Segment basic>
       <Header content="Add New Tags"/>
-        <Input icon="tag"
+        <Input
+          icon="tag"
           iconPosition="left"
           placeholder="Tag"
           action={{

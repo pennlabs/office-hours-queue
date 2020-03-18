@@ -130,7 +130,7 @@ const EditQuestionModal = (props) => {
       </Modal.Content>
       <Modal.Actions>
         <Button content="Cancel" disabled={ loading } onClick={() => { resetInput(); props.setOpen(false) }}/>
-        <Button content="Submit" disabled={ loading || disabled } loading={ loading } color="green" onClick={ onSubmit }/>
+        <Button content="Save" disabled={ loading || disabled } loading={ loading } color="green" onClick={ onSubmit }/>
       </Modal.Actions>
     </Modal>
   );
