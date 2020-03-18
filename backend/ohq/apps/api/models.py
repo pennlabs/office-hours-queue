@@ -167,7 +167,7 @@ class Course(models.Model):
             if self._state.adding:
                 while True:
                     pretty_id = generate_random_pretty_id()
-                    if Course.objects.filter(pretty_id=self.pretty_id).exists:
+                    if Course.objects.filter(pretty_id=self.pretty_id).exists():
                         continue
                     else:
                         self.pretty_id = pretty_id
