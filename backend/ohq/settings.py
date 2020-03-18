@@ -29,8 +29,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-# Safe on App Engine
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [] if DEBUG else ['ohq.herokuapp.com']
 
 AUTH_USER_MODEL = 'api.AuthUser'
 
