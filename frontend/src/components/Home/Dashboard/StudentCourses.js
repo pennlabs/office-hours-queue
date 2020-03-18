@@ -18,7 +18,7 @@ const StudentCourses = (props) => {
   }, [props.courses]);
 
   return (
-    <Grid style={{"width":"100%"}} stackable>
+    [
       <Grid.Row padded="true" stackable>
         <ModalAddStudentCourse
             open={ open }
@@ -44,13 +44,13 @@ const StudentCourses = (props) => {
         <Grid.Column style={{width:"240px"}}>
           <AddCard clickFunc={ () => setOpen(true) } isStudent={ true }/>
         </Grid.Column>
-      </Grid.Row>
+      </Grid.Row>,
       <Snackbar open={ success } autoHideDuration={2000} onClose={ () => setSuccess(false) }>
         <Alert severity="success" onClose={ () => setSuccess(false) }>
           Course added!
         </Alert>
       </Snackbar>
-    </Grid>
+    ]
   );
 };
 

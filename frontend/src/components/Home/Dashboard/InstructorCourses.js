@@ -33,7 +33,7 @@ const InstructorCourses = (props) => {
   }, [props.courses]);
 
   return (
-    <Grid style={{"width":"100%"}} stackable>
+    [
       <Grid.Row padded="true" stackable>
         <ModalAddInstructorCourse
           open={ open }
@@ -61,20 +61,18 @@ const InstructorCourses = (props) => {
         <Grid.Column style={{width:"240px"}}>
           <AddCard clickFunc={ () => setOpen(true) }/>
         </Grid.Column>
-      </Grid.Row>
-        {
-          courses.filter(course => course.archived).length > 0 &&
-          <Grid.Row padded="true">
-            <Grid.Column padded="true">
-              <Segment basic compact>
-                <Button color="blue"
-                  content={ showArchived ? "Hide Archived" : "Show Archived" }
-                  onClick={ handleArchivedChange }
-                  icon={ showArchived ? "angle up" : "angle down" }/>
-              </Segment>
-            </Grid.Column>
-          </Grid.Row>
-        }
+      </Grid.Row>,
+      courses.filter(course => course.archived).length > 0 &&
+      <Grid.Row padded="true">
+        <Grid.Column padded="true">
+          <Segment basic compact>
+            <Button color="blue"
+              content={ showArchived ? "Hide Archived" : "Show Archived" }
+              onClick={ handleArchivedChange }
+              icon={ showArchived ? "angle up" : "angle down" }/>
+          </Segment>
+        </Grid.Column>
+      </Grid.Row>,
       <Grid.Row padded="true" style={{width:"240px"}}>
         {
           courses.map(course => (
@@ -92,13 +90,13 @@ const InstructorCourses = (props) => {
             </Grid.Column>
           ))
         }
-      </Grid.Row>
+      </Grid.Row>,
       <Snackbar open={ toastOpen } autoHideDuration={6000} onClose={ () => setToastOpen(false) }>
         <Alert severity={ toast.success ? 'success' : 'error' } onClose={ () => setToastOpen(false) }>
           <span>{ toast.message }</span>
         </Alert>
       </Snackbar>
-    </Grid>
+    ]
   );
 }
 

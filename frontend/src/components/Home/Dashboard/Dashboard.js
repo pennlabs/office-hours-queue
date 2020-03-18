@@ -28,13 +28,15 @@ const Dashboard = (props) => {
     {
       courses &&
       <Grid padded stackable>
-        <Segment basic padded>
-          <Header as="h2">
-            <Header.Content>
-              Student Courses
-            </Header.Content>
-          </Header>
-        </Segment>
+        <Grid.Row>
+          <Segment basic padded>
+            <Header as="h2">
+              <Header.Content>
+                Student Courses
+              </Header.Content>
+            </Header>
+          </Segment>
+        </Grid.Row>
         { props.loading ?
           <Grid style={{"width":"100%"}} stackable>
             <Grid.Row padded="true" stackable>
@@ -62,13 +64,15 @@ const Dashboard = (props) => {
           <StudentCourses courses={ getCourses(courses, true) } refetch={ props.refetch }/>
         }
         { !props.loading && hasInstructorCourses && [
-            <Segment basic padded>
-              <Header as="h2">
-                <Header.Content>
-                  Instructor Courses
-                </Header.Content>
-              </Header>
-            </Segment>,
+            <Grid.Row>
+              <Segment basic padded>
+                <Header as="h2">
+                  <Header.Content>
+                    Instructor Courses
+                  </Header.Content>
+                </Header>
+              </Segment>
+            </Grid.Row>,
             <InstructorCourses courses={ getCourses(courses, false) } refetch={ props.refetch }/>
           ]
         }
