@@ -31,6 +31,6 @@ const CourseCard = (props) => {
       </Link>
     </Segment>
   );
-}
+};
 
 export default CourseCard;

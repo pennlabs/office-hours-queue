@@ -47,9 +47,7 @@ const Queue = (props) => {
 
   const getQuestions = (data) => {
     if (!data) { return [] }
-    console.log(data);
     return data.queue.queueQuestions.edges.map((item) => {
-      console.log(item.node);
       return {
         id: item.node.id,
         orderKey: item.node.orderKey,

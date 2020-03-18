@@ -113,11 +113,12 @@ const Home = (props) => {
       {
         courses && active === 'dashboard' ? <Dashboard courses={ courses } refetch={ refetch }/> :
         user && active === 'account_settings' ? <AccountSettings user={ user } refetch={ refetch }/> :
-        <Grid.Column width={13}>
-          <Dimmer active inverted>
-            <Loader size='big' inverted/>
-          </Dimmer>
-        </Grid.Column>
+        // <Grid.Column width={13}>
+        //   <Dimmer active inverted>
+        //     <Loader size='big' inverted/>
+        //   </Dimmer>
+        // </Grid.Column>
+        <Dashboard loading={ true } courses={ [] } refetch={ refetch }/>
       }
     </Grid>
   )

@@ -42,7 +42,6 @@ const AccountForm = (props) => {
   const handleInputChange = (e, { name, value }) => {
     input[name] = value;
     setInput(input);
-    console.log(input.phoneNumber === defUser.phoneNumber)
     setDisabled((!input.preferredName || !input.fullName) ||
       (input.preferredName === defUser.preferredName &&
        input.fullName === defUser.fullName &&
