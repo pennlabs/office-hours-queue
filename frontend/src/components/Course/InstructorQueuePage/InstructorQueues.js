@@ -33,8 +33,7 @@ const InstructorQueues = (props) => {
               key={ queue.id }
               queue={ queue }
               leader={ props.leader }
-              openFunc={ () => props.openFunc(queue.id) }
-              closeFunc={ () => props.closeFunc(queue.id) }
+              refetch={ props.refetch }
               editFunc={ () => props.editFunc(queue.id) }
               userId={ props.userId }/>
           </Grid.Column>

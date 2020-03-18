@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Header, Label, Grid, Segment, Button } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
-import { useQuery } from '@apollo/react-hooks';
+import {useMutation, useQuery} from '@apollo/react-hooks';
 import Questions from './Questions';
 import QueueFilterForm from './QueueFilterForm';
 
@@ -37,6 +37,26 @@ const GET_QUESTIONS = gql`
   }
 `;
 
+const ACTIVATE_QUEUE = gql`
+  mutation ManuallyActivateQueue($input: ManuallyActivateQueueInput!) {
+    manuallyActivateQueue(input: $input) {
+      queue {
+        id
+      }
+    }
+  }
+`;
+
+const DEACTIVATE_QUEUE = gql`
+mutation ManuallyDeactivateQueue($input: ManuallyDeactivateQueueInput!) {
+  manuallyDeactivateQueue(input: $input) {
+    queue {
+      id
+    }
+  }
+}
+`;
+
 const Queue = (props) => {
   const { data, refetch } = useQuery(GET_QUESTIONS, {
     variables: {
@@ -45,6 +65,8 @@ const Queue = (props) => {
     pollInterval: 1000 + Math.random() * 500,
     skip: !props.queue.id
   });
+  const [activateQueue, activateQueueRes] = useMutation(ACTIVATE_QUEUE);
+  const [deactivateQueue, deactivateQueueRes] = useMutation(DEACTIVATE_QUEUE);
 
   const getQuestions = (data) => {
     if (!data) { return [] }
@@ -63,6 +85,32 @@ const Queue = (props) => {
         videoChatUrl: item.node.videoChatUrl
       };
     });
+  };
+
+  const onOpen = async () => {
+    await activateQueue({
+      variables: {
+        input: {
+          queueId: props.queue.id
+        }
+      }
+    });
+    // Update UI immediately
+    setActive(true);
+    props.refetch();
+  };
+
+  const onClose = async () => {
+    await deactivateQueue({
+      variables: {
+        input: {
+          queueId: props.queue.id
+        }
+      }
+    });
+    // Update UI immediately
+    setActive(false);
+    props.refetch();
   };
 
   const filter = (questions, filters) => {
@@ -142,13 +190,15 @@ const Queue = (props) => {
               size="mini"
               content="Close"
               color={ !active ? null : "red" }
-              disabled={ !active }
-              onClick={ props.closeFunc }/>
+              disabled={ !active || (deactivateQueueRes && deactivateQueueRes.loading) }
+              loading={ deactivateQueueRes && deactivateQueueRes.loading  }
+              onClick={ onClose }/>
             <Button size="mini"
               content="Open"
               color={ active ? null : "green" }
-              disabled={ active }
-              onClick={ props.openFunc }/>
+              disabled={ active || (activateQueueRes && activateQueueRes.loading) }
+              loading={ activateQueueRes && activateQueueRes.loading }
+              onClick={ onOpen }/>
           </Grid.Column>
         </Grid.Row>
       </Grid>
