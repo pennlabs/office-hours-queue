@@ -23,11 +23,11 @@ export function roleSortFunc(a, b) {
 }
 
 export function leadershipSortFunc(a, b) {
-  if (a.user.fullName !== b.user.fullName) {
-    return a.fullName < b.fullName ? -1 : 1;
-  }
   if (a.kind !== b.kind) {
     return roleSortFunc(a.kind, b.kind);
+  }
+  if (a.user.fullName !== b.user.fullName) {
+    return a.user.fullName < b.user.fullName ? -1 : 1;
   }
   if (a.user.email < b.user.email) {
     return a.user.email < b.user.email ? -1 : 1;
