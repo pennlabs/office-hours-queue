@@ -9,25 +9,6 @@ import { compose } from 'recompose';
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
 
-const CURRENT_USER = gql`
-  {
-    currentUser {
-      courseUsers {
-        edges {
-          node {
-            id
-            course {
-              id
-              prettyId
-            }
-            kind
-          }
-        }
-      }
-    }
-  }
-`;
-
 const COURSE_PRETTY = gql`
   query CoursePretty($coursePrettyId: String!) {
     coursePretty(coursePrettyId: $coursePrettyId) {
@@ -38,26 +19,23 @@ const COURSE_PRETTY = gql`
 `;
 
 const Main = (props) => {
-  const { data } = useQuery(CURRENT_USER);
+  const { data } = useQuery(COURSE_PRETTY, {
+    variables: {
+      coursePrettyId: props.match.params.prettyid
+    }
+  });
+
   const [id, setId] = useState(null);
-  const [courseUserId, setCourseUserId] = useState(null);
   const [kind, setKind] = useState(null);
 
-  const getCourseUser = (data, prettyId) => {
-    if (!data || !prettyId) return null;
+  const isLeader = (kind) => {
+    return kind === "HEAD_TA" || kind === "PROFESSOR";
+  }
 
-    const courseUserList = data.currentUser.courseUsers.edges.filter(courseUser => 
-      courseUser.node.course.prettyId === prettyId
-    );
-    return courseUserList.length > 0 ? courseUserList[0] : null;
-  };
-
-  if (data && data.currentUser) {
-    const courseUser = getCourseUser(data, props.match.params.prettyid);
-    if (courseUser && courseUser.node.kind !== kind) {
-      setKind(courseUser.node.kind);
-      setCourseUserId(courseUser.node.id);
-      setId(courseUser.node.course.id)
+  if (data && data.coursePretty) {
+    if (id !== data.coursePretty.id) {
+      setId(data.coursePretty.id)
+      setKind(data.coursePretty.currentCourseUserKind);
     }
   }
 
@@ -67,7 +45,7 @@ const Main = (props) => {
         kind === 'STUDENT' && <Student id={ id }/>
       }
       {
-        kind && kind !== 'STUDENT' && <Course id={ id } courseUserId={ courseUserId }/>
+        kind && kind !== 'STUDENT' && <Course id={ id } leader={ isLeader(kind) }/>
       }
     </Grid>
   )

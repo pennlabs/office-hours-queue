@@ -59,7 +59,6 @@ const Course = (props) => {
   /* STATE */
   const [active, setActive] = useState('queues');
   const [course, setCourse] = useState({});
-  const [leader, setLeader] = useState(false);
 
   /* LOAD DATA FUNCTIONS */
   const loadCourse = (data) => {
@@ -87,14 +86,13 @@ const Course = (props) => {
     const newCourse = loadCourse(courseQuery.data);
     if (JSON.stringify(newCourse) !== JSON.stringify(course)) {
       setCourse(newCourse);
-      setLeader(newCourse.leadership.map(courseUser => courseUser.id).includes(props.courseUserId));
     }
   }
 
   /* UPDATE STATE ON QUERY */
   return (
    course ? [
-      <CourseSidebar active={ active } clickFunc={ setActive } leader={ leader } leadership={ course.leadership }/>,
+      <CourseSidebar active={ active } clickFunc={ setActive } leader={ props.leader } leadership={ course.leadership }/>,
       <Grid.Column width={13}>
         {
           course.department && <Grid.Row>
@@ -111,6 +109,7 @@ const Course = (props) => {
         {
           courseQuery.data && active === 'roster' &&
           <Roster course={ course }
+            leader={ props.leader }
             courseUserId={ props.courseUserId }
             courseRefetch={ courseQuery.refetch }/>
         }
@@ -121,7 +120,7 @@ const Course = (props) => {
         {
           courseQuery.data && active === 'queues' && currentUserQuery.data &&
           <InstructorQueuePage course={ course }
-            leader={ leader }
+            leader={ props.leader }
             userId={ currentUserQuery.data.currentUser.id }/>
         }
         {

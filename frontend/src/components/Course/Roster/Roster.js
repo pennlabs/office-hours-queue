@@ -64,7 +64,7 @@ const Roster = (props) => {
   const [tableState, setTableState] = useState({ direction: 'ascending', column: 'fullName' });
   const [showInvited, setShowInvited] = useState(false);
   const [toast, setToast] = useState({ open: false, success: true, message: "" });
-  const [leader, setLeader] = useState(null);
+  const [leader, setLeader] = useState(props.leader);
 
   /* MODAL FUNCTIONS */
   const triggerModal = () => {
@@ -142,7 +142,7 @@ const Roster = (props) => {
     if (JSON.stringify(newUsers) !== JSON.stringify(users)) {
       setUsers(newUsers);
       setFilteredUsers(newUsers);
-      setLeader(data.course.leadership.map(courseUser => courseUser.id).includes(props.courseUserId));
+      setLeader(props.leader);
     }
 
     if (JSON.stringify(newInvitedUsers) !== JSON.stringify(invitedUsers)) {
