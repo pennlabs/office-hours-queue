@@ -35,6 +35,7 @@ const StudentCourses = (props) => {
                   semester={course.semester}
                   year={course.year}
                   id={course.id}
+                  prettyId={course.prettyId}
                   kind={course.kind}
                   archived={course.archived}/>
               </Grid.Column>

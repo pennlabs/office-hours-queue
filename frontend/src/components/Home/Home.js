@@ -26,6 +26,7 @@ const CURRENT_USER = gql`
             id
             course {
               id
+              prettyId
               department
               courseCode
               courseTitle
@@ -57,6 +58,7 @@ const Home = (props) => {
       return {
         courseUserId: courseUser.node.id,
         id: courseUser.node.course.id,
+        prettyId: courseUser.node.course.prettyId,
         department: courseUser.node.course.department,
         courseCode: courseUser.node.course.courseCode,
         courseTitle: courseUser.node.course.courseTitle,

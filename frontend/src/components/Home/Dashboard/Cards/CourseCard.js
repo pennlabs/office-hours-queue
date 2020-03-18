@@ -10,9 +10,13 @@ const CourseCard = (props) => {
     state: { courseId: props.id, courseUserId: props.courseUserId }
   };
 
+  const newPath = {
+    pathname:  `${ROUTES.CLASS.split("/:")[0]}/${props.prettyId}`
+  }
+
   return (
     <Segment basic>
-      <Link to={ path }>
+      <Link to={ newPath }>
         <Segment.Group raised={ hover } onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
           <Segment attached="top" color="blue" style={{height:"70px"}}>
             <Header style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>

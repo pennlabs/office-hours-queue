@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Roster from './Roster/Roster';
 import CourseSettings from './CourseSettings/CourseSettings';
 import InstructorQueuePage from './InstructorQueuePage/InstructorQueuePage';
@@ -51,11 +51,9 @@ const CURRENT_USER = gql`
 
 const Course = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
-  const courseId = props.location.state ? props.location.state.courseId : "";
-  const courseUserId = props.location.state ? props.location.state.courseUserId : "";
   const currentUserQuery = useQuery(CURRENT_USER);
   const courseQuery = useQuery(GET_COURSE, { variables: {
-    id: courseId
+    id: props.id
   }});
 
   /* STATE */
@@ -89,14 +87,14 @@ const Course = (props) => {
     const newCourse = loadCourse(courseQuery.data);
     if (JSON.stringify(newCourse) !== JSON.stringify(course)) {
       setCourse(newCourse);
-      setLeader(newCourse.leadership.map(courseUser => courseUser.id).includes(courseUserId));
+      setLeader(newCourse.leadership.map(courseUser => courseUser.id).includes(props.courseUserId));
     }
   }
 
   /* UPDATE STATE ON QUERY */
   return (
-    <Grid columns={2} divided="horizontally" style={{"width":"100%"}} stackable>
-      <CourseSidebar active={ active } clickFunc={ setActive } leader={ leader } leadership={ course.leadership }/>
+   course ? [
+      <CourseSidebar active={ active } clickFunc={ setActive } leader={ leader } leadership={ course.leadership }/>,
       <Grid.Column width={13}>
         {
           course.department && <Grid.Row>
@@ -113,7 +111,7 @@ const Course = (props) => {
         {
           courseQuery.data && active === 'roster' &&
           <Roster course={ course }
-            courseUserId={ courseUserId }
+            courseUserId={ props.courseUserId }
             courseRefetch={ courseQuery.refetch }/>
         }
         {
@@ -135,7 +133,7 @@ const Course = (props) => {
           <Summary course={ course }/>
         }
       </Grid.Column>
-    </Grid>
+    ] : []
   )
 };
 

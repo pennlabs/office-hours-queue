@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import StudentQueuePage from './StudentQueuePage/StudentQueuePage';
 import StudentSidebar from './StudentSidebar';
 import { Grid, Segment, Header } from 'semantic-ui-react';
@@ -35,16 +35,15 @@ const GET_COURSE = gql`
 
 const Student = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
-  const courseId = props.location.state ? props.location.state.courseId : "";
   const courseQuery = useQuery(GET_COURSE, {
     variables: {
-      id: courseId
+      id: props.id
     }
   });
 
   /* STATE */
   const [active, setActive] = useState('queues');
-  const [course, setCourse] = useState({});
+  const [course, setCourse] = useState(null);
 
   /* LOAD DATA FUNCTIONS */
   const loadCourse = (data) => {
@@ -73,10 +72,9 @@ const Student = (props) => {
     }
   }
 
-  /* UPDATE STATE ON QUERY */
   return (
-    <Grid columns={2} divided="horizontally" style={{"width":"100%"}} stackable>
-      <StudentSidebar active={ active } clickFunc={ setActive } leadership={ course.leadership }/>
+    course ? [
+      <StudentSidebar active={ active } clickFunc={ setActive } leadership={ course.leadership }/>,
       <Grid.Column width={13}>
         {
           course.department && <Grid.Row>
@@ -95,10 +93,13 @@ const Student = (props) => {
           <StudentQueuePage course={ course } />
         }
       </Grid.Column>
-    </Grid>
+    ] : []
   )
 };
 
+export default Student;
+
+/*
 const condition = (authUser) => {
   return authUser && authUser.hasUserObject;
 };
@@ -106,3 +107,4 @@ const condition = (authUser) => {
 export default compose(
   withAuthorization(condition),
 )(Student);
+*/
