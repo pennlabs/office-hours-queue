@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch} from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Redirect} from 'react-router-dom';
 import * as ROUTES from '../constants/routes';
 
 import LandingPage from './LandingPage/LandingPage';
@@ -17,6 +17,7 @@ const App = () => {
         <Route exact path={ROUTES.HOME} component={ Home }/>
         <Route exact path={ROUTES.COURSE} component={ Course }/>
         <Route exact path={ROUTES.STUDENT} component={ Student }/>
+        <Redirect to="/" />
       </Switch>
     </Router>
   )
