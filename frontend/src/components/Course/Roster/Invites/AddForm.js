@@ -27,7 +27,7 @@ const AddForm = (props) => {
   const invitableUsers = useImperativeQuery(INVITABLE_USERS);
   const [values, setValues] = useState([]);
 
-  const onDrop = useCallback(acceptedFiles => {
+  const onDrop = useCallback((acceptedFiles) => {
     // Do something with the files
     acceptedFiles.forEach((file) => {
       const reader = new FileReader();

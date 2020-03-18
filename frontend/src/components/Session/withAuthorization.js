@@ -13,7 +13,7 @@ const withAuthorization = condition => Component => {
       this.listener = firebase.auth.onAuthStateChanged(
         async (authUser) => {
           if (authUser && !authUser.hasUserObject) {
-            const result = await authUser.getIdTokenResult();
+            const result = await authUser.getIdTokenResult(true);
             authUser['hasUserObject'] = result.claims.hasUserObject;
           }
           if (!condition(authUser)) {

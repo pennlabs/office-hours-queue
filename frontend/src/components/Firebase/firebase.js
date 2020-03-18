@@ -29,21 +29,21 @@ class Firebase {
 
   doSignOut = () => this.auth.signOut();
 
-  onAuthUserListener = (next, fallback) =>
-    this.auth.onAuthStateChanged(async authUser => {
-      if (authUser) {
-        const result = await authUser.getIdTokenResult();
-        authUser = {
-          uid: authUser.uid,
-          name: authUser.displayName,
-          email: authUser.email,
-          providerData: authUser.providerData,
-          hasUserObject: result.claims.hasUserObject,
-        };
-
-        next(authUser)
-      }
-    });
+  // onAuthUserListener = (next, fallback) =>
+  //   this.auth.onAuthStateChanged(async authUser => {
+  //     if (authUser) {
+  //       const result = await authUser.getIdTokenResult();
+  //       authUser = {
+  //         uid: authUser.uid,
+  //         name: authUser.displayName,
+  //         email: authUser.email,
+  //         providerData: authUser.providerData,
+  //         hasUserObject: result.claims.hasUserObject,
+  //       };
+  //
+  //       next(authUser)
+  //     }
+  //   });
 }
 
 export default new Firebase();

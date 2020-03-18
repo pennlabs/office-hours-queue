@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 import { useMutation } from '@apollo/react-hooks';
@@ -32,6 +32,10 @@ const SignInGoogleBase = (props) => {
   const [error, setError] = useState(null);
 
   const condition = (authUser) => {
+    console.log("condition", authUser);
+    if (authUser) {
+      console.log(authUser.hasUserObject)
+    }
     return authUser && authUser.hasUserObject;
   };
 
@@ -51,6 +55,10 @@ const SignInGoogleBase = (props) => {
         setError(null);
         props.history.push(ROUTES.LANDING);
       }
+      const deepCopy = JSON.parse(JSON.stringify(socialAuthUser.user));
+      deepCopy['hasUserObject'] = true;
+      props.setAuthUser(deepCopy);
+      props.setLoading(false);
     } catch (e) {
       setError(e.message);
     }
@@ -112,8 +120,8 @@ const SignInGoogle = compose(
   withRouter,
 )(SignInGoogleBase);
 
-const LandingPage = () => {
-  return <SignInGoogle />
+const LandingPage = (props) => {
+  return <SignInGoogle {...props} />
 };
 
 export default LandingPage;
