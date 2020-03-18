@@ -3,6 +3,7 @@ import { Grid } from 'semantic-ui-react'
 import Course from '../Course/Course';
 import Student from '../Student/Student'
 
+import { Redirect } from 'react-router-dom';
 import { withAuthorization } from '../Session';
 import { compose } from 'recompose';
 
@@ -19,7 +20,7 @@ const COURSE_PRETTY = gql`
 `;
 
 const Main = (props) => {
-  const { data } = useQuery(COURSE_PRETTY, {
+  const { data, error } = useQuery(COURSE_PRETTY, {
     variables: {
       coursePrettyId: props.match.params.prettyid
     }
@@ -30,7 +31,7 @@ const Main = (props) => {
 
   const isLeader = (kind) => {
     return kind === "HEAD_TA" || kind === "PROFESSOR";
-  }
+  };
 
   if (data && data.coursePretty) {
     if (id !== data.coursePretty.id) {
@@ -40,6 +41,7 @@ const Main = (props) => {
   }
 
   return (
+    error ? <Redirect to={'/'}/> :
     <Grid columns={2} divided style={{"width":"100%"}} stackable>
       {
         kind === 'STUDENT' && <Student id={ id }/>
