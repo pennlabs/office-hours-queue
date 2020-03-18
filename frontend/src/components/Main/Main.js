@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Grid } from 'semantic-ui-react'
+import { Grid, Loader, Segment, Dimmer } from 'semantic-ui-react'
 import Course from '../Course/Course';
 import Student from '../Student/Student'
 
@@ -41,13 +41,15 @@ const Main = (props) => {
   }
 
   return (
-    error ? <Redirect to={'/'}/> :
-    <Grid columns={2} divided style={{"width":"100%"}} stackable>
+    <Grid columns="equal" divided style={{"width":"100%"}} stackable>
       {
         kind === 'STUDENT' && <Student id={ id }/>
       }
       {
         kind && kind !== 'STUDENT' && <Course id={ id } leader={ isLeader(kind) }/>
+      }
+      {
+        !kind && <Dimmer active inverted><Loader inline='centered'/></Dimmer>
       }
     </Grid>
   )

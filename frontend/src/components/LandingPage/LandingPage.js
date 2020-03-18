@@ -71,8 +71,8 @@ const SignInGoogleBase = (props) => {
                 "alignItems": "center",
                 "justifyContent": "center"
               }}>
-                <Dimmer active inverted>
-                  <Loader size='big' inverted/>
+                <Dimmer active inverted inline='centered'>
+                  <Loader inverted/>
                 </Dimmer>
               </div>
               ) :
