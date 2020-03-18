@@ -19,41 +19,47 @@ export function useImperativeQuery(query) {
 
 export function roleSortFunc(a, b) {
   const order = ["PROFESSOR", "HEAD_TA", "TA", "STUDENT"];
-  return order.indexOf(a) < order.indexOf(b);
+  return order.indexOf(a) - order.indexOf(b);
 }
 
 export function leadershipSortFunc(a, b) {
   if (a.user.fullName !== b.user.fullName) {
-    return a.fullName < b.fullName;
+    return a.fullName < b.fullName ? -1 : 1;
   }
   if (a.kind !== b.kind) {
     return roleSortFunc(a.kind, b.kind);
   }
-  return a.user.email < b.user.email;
+  if (a.user.email < b.user.email) {
+    return a.user.email < b.user.email ? -1 : 1;
+  }
+  return 0;
 }
 
 export function semesterSortFunc(a, b) {
   const order = ["FALL", "SUMMER", "SPRING"];
-  return order.indexOf(a) < order.indexOf(b);
+  return order.indexOf(a) - order.indexOf(b);
 }
 
 export function courseSortFunc(a, b) {
   if (a.year !== b.year) {
     // Recent years first
-    return a.year > b.year;
+    return a.year > b.year ? -1 : 1;
   }
   if (a.semester !== b.semester) {
     return semesterSortFunc(a.semester, b.semester);
   }
   if (a.department !== b.department) {
-    return a.department < b.department;
+    return a.department < b.department ? -1 : 1;
   }
   if (a.courseCode !== b.courseCode) {
     const collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
     return collator.compare(a.courseCode, b.courseCode);
   }
   if (a.courseTitle !== b.courseTitle) {
-    return a.courseTitle < b.courseTitle;
+    return a.courseTitle < b.courseTitle ? -1 : 1;
   }
-  return a.id < b.id;
+  if (a.id < b.id) {
+    return a.id < b.id ? -1 : 1;
+  }
+  return 0;
 }
