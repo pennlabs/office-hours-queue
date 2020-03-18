@@ -28,8 +28,8 @@ class CreateUser(graphene.Mutation):
             not input.preferred_name
         ):
             raise empty_string_error
-        if not info.context.user.email.endswith("upenn.edu"):
-            raise email_not_upenn_error
+        # if not info.context.user.email.endswith("upenn.edu"):
+        #     raise email_not_upenn_error
         with transaction.atomic():
             auth.set_custom_user_claims(
                 info.context.user.firebase_uid,
