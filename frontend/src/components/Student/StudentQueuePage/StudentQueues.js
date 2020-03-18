@@ -21,9 +21,9 @@ const StudentQueues = (props) => {
   }, [props.queues]);
 
   return (
-    queues &&
-    <Grid columns={queues.length} stackable>
-      <Grid.Row columns={queues.length}>
+    [
+      queues &&
+      <Grid.Row columns={2} stackable>
         {
           queues.length !== 0 &&
             queues.map(queue => (
@@ -47,7 +47,7 @@ const StudentQueues = (props) => {
             </Segment>
           </Grid.Column>
         }
-      </Grid.Row>
+      </Grid.Row>,
       <Grid.Row columns={1}>
         {
           question && !showQuestion(question) &&
@@ -56,7 +56,7 @@ const StudentQueues = (props) => {
           </Grid.Column>
         }
       </Grid.Row>
-    </Grid>
+    ]
   );
 };
 

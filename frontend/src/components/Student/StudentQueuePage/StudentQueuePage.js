@@ -111,14 +111,11 @@ const StudentQueuePage = (props) => {
   }
 
   return (
-    <Grid>
-      {
-        active === 'queues' &&
-        <StudentQueues
-          queues={ queues }
-          question={ currentQuestion }
-          refetch={ getQuestionRes.refetch }/>
-      }
+    <Grid stackable>
+      <StudentQueues
+        queues={ queues }
+        question={ currentQuestion }
+        refetch={ getQuestionRes.refetch }/>
     </Grid>
   );
 };

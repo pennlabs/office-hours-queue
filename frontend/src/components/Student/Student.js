@@ -77,7 +77,8 @@ const Student = (props) => {
       <StudentSidebar active={ active } clickFunc={ setActive } leadership={ course.leadership }/>,
       <Grid.Column width={13}>
         {
-          course.department && <Grid.Row>
+          course.department &&
+          <Grid.Row>
             <Segment basic>
               <Header as="h1">
                 { course.department + " " + course.courseCode }
