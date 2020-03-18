@@ -41,15 +41,13 @@ const Main = (props) => {
   }
 
   return (
+    error ? <Redirect to={'/'}/> :
     <Grid columns="equal" divided style={{"width":"100%"}} stackable>
       {
         kind === 'STUDENT' && <Student id={ id }/>
       }
       {
         kind && kind !== 'STUDENT' && <Course id={ id } leader={ isLeader(kind) }/>
-      }
-      {
-        !kind && <Dimmer active inverted><Loader inline='centered'/></Dimmer>
       }
     </Grid>
   )
