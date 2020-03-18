@@ -67,10 +67,9 @@ const QueueForm = (props) => {
       <Header content="Current Tags"/>
       {
         queue && queue.tags.length > 0 && queue.tags.map(tag => (
-          <Label as="a"
-            onClick={() => { if (!loading) { onDelete(tag) } }}>
+          <Label>
             { tag }
-            <Icon name="delete"/>
+            <Icon name="delete" disabled={ loading } onClick={() => onDelete(tag) }/>
           </Label>
         ))
       }
@@ -85,14 +84,16 @@ const QueueForm = (props) => {
       <Header content="Add New Tags"/>
         <Input icon="tag"
           iconPosition="left"
-          placeholder="New Tag Here..."
+          placeholder="Tag"
           action={{
             color: "blue",
-            content: "Submit",
-            onClick: () => { if (!loading) { onSubmit() } }
+            content: "Add",
+            type: "submit",
+            onClick: onSubmit,
           }}
           name="newTag"
           disabled={ loading }
+          loading={ loading }
           value={ newTag }
           onChange={ handleInputChange }/>
       </Segment>

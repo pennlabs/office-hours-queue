@@ -4,6 +4,7 @@ import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
+import CreatableSelect from 'react-select/creatable';
 
 /* GRAPHQL QUERIES/MUTATIONS */
 const CREATE_QUEUE = gql`
@@ -30,6 +31,9 @@ const CreateQueue = (props) => {
     startEndTimes: [],
     courseId: props.courseId
   });
+  const [tags, setTags] = useState([]);
+  const [tagsInputValue, setTagsInputValue] = useState('');
+  const [refetchLoading, setRefetchLoading] = useState(false);
 
   /* HANDLER FUNCTIONS */
   const handleInputChange = (e, { name, value }) => {
@@ -39,17 +43,38 @@ const CreateQueue = (props) => {
   };
 
   const onSubmit = async () => {
-    try{
+    try {
       await createQueue({
-      variables: {
-        input: input
+        variables: {
+          input: { ...input, tags: tags.map(i => i.value) }
         }
       });
+      await setRefetchLoading(true);
       await props.refetch();
+      await setRefetchLoading(false);
       props.backFunc('queues');
       props.successFunc();
-    } catch (e){
+    } catch (e) {
       setError(true);
+    }
+  };
+
+  const handleTagChange = (items) => {
+    setTags(items || []);
+  };
+
+  const handleTagsInputChange = (inputValue) => {
+    setTagsInputValue(inputValue);
+  };
+
+  const handleTagsKeyDown = (event) => {
+    if (!tagsInputValue) return;
+    switch (event.key) {
+      case 'Enter':
+      case 'Tab':
+        setTagsInputValue('');
+        setTags([...tags, {label: tagsInputValue, value: tagsInputValue}]);
+        event.preventDefault();
     }
   };
 
@@ -70,7 +95,7 @@ const CreateQueue = (props) => {
               <Form.Input
                 placeholder="Name"
                 name='name'
-                disabled={ loading }
+                disabled={ loading || refetchLoading }
                 onChange={ handleInputChange }/>
             </Form.Field>
             <Form.Field required>
@@ -78,19 +103,35 @@ const CreateQueue = (props) => {
               <Form.Input
                 placeholder="Description"
                 name='description'
-                disabled={ loading }
+                disabled={ loading || refetchLoading }
                 onChange={ handleInputChange }/>
+            </Form.Field>
+            <Form.Field>
+              <label>Tags</label>
+              <CreatableSelect
+                components={{ DropdownIndicator: null }}
+                inputValue={tagsInputValue}
+                isClearable
+                isMulti
+                menuIsOpen={false}
+                onChange={handleTagChange}
+                onInputChange={handleTagsInputChange}
+                onKeyDown={handleTagsKeyDown}
+                placeholder="Type a tag and press enter..."
+                value={tags}
+              />
             </Form.Field>
             <Button
               content='Submit'
               color='blue'
               type='submit'
-              disabled={ disabled || loading }
+              disabled={ disabled || loading || refetchLoading }
               loading={ loading }
               onClick={ onSubmit }/>
             <Button
               content='Cancel'
               type='submit'
+              disabled={ loading || refetchLoading }
               onClick={ props.backFunc }/>
           </Form>
         </Segment>

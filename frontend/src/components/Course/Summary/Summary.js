@@ -180,7 +180,7 @@ const Summary = (props) => {
                 <Table.HeaderCell
                   sorted={tableState.column === 'state' ? tableState.direction : null}
                   onClick={() => handleSort('state')}
-                  width={1}>Result</Table.HeaderCell>
+                  width={1}>State</Table.HeaderCell>
               </Table.Row>
             </Table.Header>
             <Table.Body>
@@ -212,7 +212,7 @@ const Summary = (props) => {
             </Table.Body>
             <Table.Footer>
               <Table.Row textAlign="center">
-                <Table.HeaderCell><b>{`${filteredQuestions.length} Question(s)`}</b></Table.HeaderCell>
+                <Table.HeaderCell><b>{`${filteredQuestions.length} question${filteredQuestions.length === 1 ? '' : 's'}`}</b></Table.HeaderCell>
                 <Table.HeaderCell/>
                 <Table.HeaderCell/>
                 <Table.HeaderCell/>

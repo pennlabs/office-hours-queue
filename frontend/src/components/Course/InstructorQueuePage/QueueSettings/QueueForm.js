@@ -47,16 +47,16 @@ const QueueForm = (props) => {
   };
 
   const onSubmit = async () => {
-    try{
+    try {
       await updateQueue({
-      variables: {
-        input: input
-      }
+        variables: {
+          input: input
+        }
       });
       await props.refetch();
       setSuccess(true);
       props.backFunc();
-    } catch(e){
+    } catch(e) {
       setError(true);
     }
   };

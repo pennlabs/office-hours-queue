@@ -54,10 +54,11 @@ const SummaryForm = (props) => {
             InputLabelProps={{ shrink: true }}/>
         </Form.Field>
         <Form.Field>
-          <label>Result</label>
+          <label>State</label>
           <Form.Dropdown multiple
             selection
             name="state"
+            placeholder={ "State" }
             options={ stateOptions }
             onChange={ handleInputChange }/>
         </Form.Field>

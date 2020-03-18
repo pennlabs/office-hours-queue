@@ -37,7 +37,12 @@ const CreateCourseForm = (props) => {
       </Form.Field>
       <Form.Field required>
         <label>Semester</label>
-        <Form.Dropdown name="semester" onChange={ props.changeFunc } selection options={ semesterOptions }/>
+        <Form.Dropdown
+          name="semester"
+          onChange={ props.changeFunc }
+          selection
+          placeholder={ "Semester" }
+          options={ semesterOptions }/>
       </Form.Field>
       <Form.Field required>
         <label>Video Chat</label>
@@ -74,7 +79,8 @@ const CreateCourseForm = (props) => {
             key: "HEAD_TA",
             value: "HEAD_TA",
             text: "Head TA"
-          }]}/>
+          }]}
+          placeholder="Role"/>
       </Form.Field>
     </Form>
   );
