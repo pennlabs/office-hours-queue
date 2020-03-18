@@ -28,6 +28,15 @@ const CURRENT_USER = gql`
   }
 `;
 
+const COURSE_PRETTY = gql`
+  query CoursePretty($coursePrettyId: String!) {
+    coursePretty(coursePrettyId: $coursePrettyId) {
+      id
+      currentCourseUserKind
+    }
+  }
+`;
+
 const Main = (props) => {
   const { data } = useQuery(CURRENT_USER);
   const [id, setId] = useState(null);
