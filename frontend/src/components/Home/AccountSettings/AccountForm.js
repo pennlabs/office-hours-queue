@@ -130,7 +130,7 @@ const AccountForm = (props) => {
         <Form.Field>
           <label>Cellphone Number</label>
           <Form.Input
-            placeholder='Cellphone Number'
+            placeholder='987654321'
             defaultValue={ defUser.phoneNumber }
             name='phoneNumber'
             disabled={ loading }
