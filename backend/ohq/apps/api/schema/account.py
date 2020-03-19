@@ -41,7 +41,7 @@ class CreateUser(graphene.Mutation):
                 preferred_name=input.preferred_name,
                 email=info.context.user.email,
                 phone_number=input.phone_number,
-                sms_notifications_enabled=input.sms_notifications_enabled,
+                sms_notifications_enabled=input.sms_notifications_enabled or False,
                 auth_user=info.context.user,
             )
             user.clean_fields()
