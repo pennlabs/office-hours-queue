@@ -57,9 +57,9 @@ const condition = (authUser) => {
   return authUser && authUser.hasUserObject;
 };
 
-Notification.requestPermission(function(status) {
-    console.log('Notification permission status:', status);
-});
+// Notification.requestPermission(function(status) {
+//     console.log('Notification permission status:', status);
+// });
 
 export default compose(
   withAuthorization(condition),
