@@ -296,7 +296,7 @@ const Roster = (props) => {
                 <Table.Row>
                   <Table.Cell>{ user.email }</Table.Cell>
                   <Table.Cell>{ prettifyRole(user.role) }</Table.Cell>
-                  <Table.Cell>{ user.invitedBy.fullName }</Table.Cell>
+                  <Table.Cell>{ user.invitedBy ? user.invitedBy.fullName : '' }</Table.Cell>
                   {
                     leader && [
                       <Table.Cell textAlign="center">
