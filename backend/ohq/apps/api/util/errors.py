@@ -50,3 +50,8 @@ invalid_day_of_week_error = GraphQLError("Invalid day of the week")
 invalid_time_of_day_error = GraphQLError("Invalid time of day")
 
 empty_update_error = GraphQLError("Update cannot be empty")
+
+phone_number_not_set_error = GraphQLError("Phone number must be set")
+phone_number_already_verified_error = GraphQLError("Phone number is already verified")
+verification_code_incorrect_error = GraphQLError("Verification code is incorrect")
+verification_code_expired_error = GraphQLError("Verification code is expired")

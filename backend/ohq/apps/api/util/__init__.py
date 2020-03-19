@@ -15,6 +15,9 @@ def generate_random_pretty_id():
         range(8)
     )
 
+def generate_sms_verification_code():
+    return ''.join(random.choice(string.digits) for _ in range(6))
+
 def sorted_alphanumeric(l):
     convert = lambda text: int(text) if text.isdigit() else text
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]

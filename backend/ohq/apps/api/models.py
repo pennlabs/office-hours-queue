@@ -75,10 +75,15 @@ class User(models.Model):
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
 
     sms_notifications_enabled = models.BooleanField(default=False)
+    sms_verification_code = models.CharField(max_length=6, blank=True, null=True)
+    sms_verification_timestamp = models.DateTimeField(blank=True, null=True)
+    sms_verified = models.BooleanField(blank=True, null=True)
     phone_number = PhoneNumberField(blank=True, null=True)
 
     searchable_name = models.CharField(max_length=254+100+100+2, editable=False)
     searchable = models.BooleanField(default=True)
+
+    SMS_VERIFICATION_EXPIRATION_MINUTES = 15
 
     class Meta:
         constraints = [

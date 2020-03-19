@@ -69,6 +69,8 @@ class Query(graphene.ObjectType):
 class Mutation(graphene.ObjectType):
     create_user = account.CreateUser.Field()
     update_user = account.UpdateUser.Field()
+    send_sms_verification = account.SendSMSVerification.Field()
+    verify_phone_number = account.VerifyPhoneNumber.Field()
 
     create_course = courses.CreateCourse.Field()
     update_course = courses.UpdateCourse.Field()
