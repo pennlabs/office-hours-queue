@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Segment, Header, Tab, Button } from 'semantic-ui-react';
+import { Grid, Segment, Header, Tab, Button, Dimmer, Loader } from 'semantic-ui-react';
 import QueueForm from './QueueForm';
 import TagForm from './TagForm';
 
@@ -13,7 +13,7 @@ const QueueSettings = (props) => {
   }, [props.queue]);
 
   return (
-    <Grid.Column>
+    queue ? <Grid.Column>
       <Grid.Row>
         <Segment basic>
           <Grid columns="equal">
@@ -47,7 +47,10 @@ const QueueSettings = (props) => {
             }]}/>
         </Segment>
       </Grid.Row>
-    </Grid.Column>
+    </Grid.Column> : 
+    <Dimmer active inverted inline='centered'>
+      <Loader size='big' inverted/>
+    </Dimmer>
   );
 };
 
