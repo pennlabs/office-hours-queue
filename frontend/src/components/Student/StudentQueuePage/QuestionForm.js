@@ -105,6 +105,7 @@ const QuestionForm = (props) => {
               <label>Tags</label>
               <Form.Dropdown multiple selection
               name="tags"
+              placeholder="Select tags"
               disabled={ loading }
               onChange={ handleInputChange }
               options={ getDropdownOptions(queue.tags) } />
