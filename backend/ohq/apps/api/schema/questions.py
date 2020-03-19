@@ -148,7 +148,7 @@ def notify_up_soon(queue):
         time_rejected__isnull=True,
         time_withdrawn__isnull=True,
     ).order_by('order_key')[2:3]  # Gets the 3rd question
-    if question_to_notify.exists:
+    if question_to_notify.exists():
         send_up_soon_sms(question_to_notify.get())
 
 
