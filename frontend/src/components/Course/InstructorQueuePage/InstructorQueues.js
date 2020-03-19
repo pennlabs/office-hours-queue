@@ -55,7 +55,6 @@ const InstructorQueues = (props) => {
       }
       {
         queues && numActive() === 0 && !leader &&
-        <Grid.Column>
           <Segment basic>
             <Message info icon>
               <Icon name="lightbulb outline"/>
@@ -65,7 +64,6 @@ const InstructorQueues = (props) => {
               </Message.Content>
             </Message>
           </Segment>
-        </Grid.Column>
       }
     </Grid.Row>
   );
