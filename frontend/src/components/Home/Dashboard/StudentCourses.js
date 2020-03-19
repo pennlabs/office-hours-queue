@@ -27,6 +27,7 @@ const StudentCourses = (props) => {
             successFunc={ setSuccess }/>
           {
             courses.map((course) => (
+              !course.archived &&
               <Grid.Column key={course.id} style={{width:"280px"}}>
                 <CourseCard
                   department={course.department}
