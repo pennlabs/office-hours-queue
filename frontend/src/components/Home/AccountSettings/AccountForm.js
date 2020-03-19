@@ -12,6 +12,7 @@ const UPDATE_USER = gql`
       user {
         fullName
         preferredName
+        smsNotificationsEnabled
         phoneNumber
       }
     }
@@ -27,25 +28,32 @@ const AccountForm = (props) => {
     email: props.user.email,
     fullName: props.user.fullName,
     preferredName: props.user.preferredName,
+    smsNotificationsEnabled: props.user.smsNotificationsEnabled,
     phoneNumber: props.user.phoneNumber
   });
   const [input, setInput] = useState({
     email: props.user.email,
     fullName: props.user.fullName,
     preferredName: props.user.preferredName,
+    smsNotificationsEnabled: props.user.smsNotificationsEnabled,
     phoneNumber: props.user.phoneNumber
   });
+  const [showNumber, setShowNumber] = useState(props.user.smsNotificationsEnabled);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
   const [disabled, setDisabled] = useState(true);
 
+  const isDisabled = () => {
+    return (!input.preferredName || !input.fullName || (input.smsNotificationsEnabled && !input.phoneNumber)) ||
+      (input.preferredName === defUser.preferredName && input.fullName === defUser.fullName &&
+      input.smsNotificationsEnabled === defUser.smsNotificationsEnabled && input.phoneNumber === defUser.phoneNumber)
+  }
+
   const handleInputChange = (e, { name, value }) => {
-    input[name] = value;
+    input[name] = name === "smsNotificationsEnabled" ? !input[name] : value;
     setInput(input);
-    setDisabled((!input.preferredName || !input.fullName) ||
-      (input.preferredName === defUser.preferredName &&
-       input.fullName === defUser.fullName &&
-       input.phoneNumber === defUser.phoneNumber))
+    setShowNumber(input.smsNotificationsEnabled);
+    setDisabled(isDisabled());
   };
 
   const onSubmit = async () => {
@@ -56,6 +64,7 @@ const AccountForm = (props) => {
     const newInput = {
       fullName: fullName,
       preferredName: preferredName,
+      smsNotificationsEnabled: input.smsNotificationsEnabled,
       phoneNumber: phoneNumber
     }
     try {
@@ -66,6 +75,7 @@ const AccountForm = (props) => {
       })
       await props.refetch();
       setSuccess(true);
+      setDisabled(true);
     } catch (e) {
       setError(true);
     }
@@ -76,8 +86,9 @@ const AccountForm = (props) => {
       email: props.user.email,
       fullName: props.user.fullName,
       preferredName: props.user.preferredName,
+      smsNotificationsEnabled: props.user.smsNotificationsEnabled,
       phoneNumber: props.user.phoneNumber
-    })
+    });
   }, [props.user])
 
   return (
@@ -108,14 +119,24 @@ const AccountForm = (props) => {
           onChange={ handleInputChange }/>
       </Form.Field>
       <Form.Field>
-        <label>Cellphone Number</label>
-        <Form.Input
-          placeholder='Cellphone Number'
-          defaultValue={ defUser.phoneNumber }
-          name='phoneNumber'
-          disabled={ loading }
-          onChange={ handleInputChange }/>
+        <Form.Checkbox
+          name="smsNotificationsEnabled"
+          defaultChecked={ defUser.smsNotificationsEnabled }
+          onChange={ handleInputChange }
+          label='Enable SMS Notifications'/>
       </Form.Field>
+      {
+        showNumber &&
+        <Form.Field>
+          <label>Cellphone Number</label>
+          <Form.Input
+            placeholder='Cellphone Number'
+            defaultValue={ defUser.phoneNumber }
+            name='phoneNumber'
+            disabled={ loading }
+            onChange={ handleInputChange }/>
+        </Form.Field>
+      }
       <Button
         color='blue'
         type='submit'
