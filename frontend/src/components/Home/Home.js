@@ -21,6 +21,7 @@ const CURRENT_USER = gql`
       email
       smsNotificationsEnabled
       phoneNumber
+      verified
       courseUsers {
         edges {
           node {
@@ -80,7 +81,8 @@ const Home = (props) => {
       fullName: data.currentUser.fullName,
       preferredName: data.currentUser.preferredName,
       smsNotificationsEnabled: data.currentUser.smsNotificationsEnabled,
-      phoneNumber: data.currentUser.phoneNumber
+      phoneNumber: data.currentUser.phoneNumber,
+      verified: data.currentUser.verified
     };
   };
 

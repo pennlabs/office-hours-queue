@@ -29,16 +29,13 @@ const AccountForm = (props) => {
     fullName: props.user.fullName,
     preferredName: props.user.preferredName,
     smsNotificationsEnabled: props.user.smsNotificationsEnabled,
-    phoneNumber: props.user.phoneNumber
+    phoneNumber: props.user.phoneNumber,
+    verified: props.user.verified
   });
-  const [input, setInput] = useState({
-    email: props.user.email,
-    fullName: props.user.fullName,
-    preferredName: props.user.preferredName,
-    smsNotificationsEnabled: props.user.smsNotificationsEnabled,
-    phoneNumber: props.user.phoneNumber
-  });
+  const [input, setInput] = useState(defUser);
   const [showNumber, setShowNumber] = useState(props.user.smsNotificationsEnabled);
+  const [isVerified, setIsVerified] = useState(props.user.verified);
+
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
   const [disabled, setDisabled] = useState(true);
@@ -127,15 +124,18 @@ const AccountForm = (props) => {
       </Form.Field>
       {
         showNumber &&
-        <Form.Field>
-          <label>Cellphone Number</label>
-          <Form.Input
-            placeholder='987654321'
-            defaultValue={ defUser.phoneNumber }
-            name='phoneNumber'
-            disabled={ loading }
-            onChange={ handleInputChange }/>
-        </Form.Field>
+        [
+          <Form.Field>
+            <label>Cellphone Number</label>
+            <Form.Input
+              placeholder='Cellphone Number'
+              defaultValue={ defUser.phoneNumber }
+              name='phoneNumber'
+              disabled={ loading }
+              onChange={ handleInputChange }/>
+          </Form.Field>,
+          <Button disabled={ isVerified } color="blue" content="Verify"/>
+        ]
       }
       <Button
         color='blue'
