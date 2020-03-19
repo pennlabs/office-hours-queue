@@ -58,8 +58,9 @@ const InstructorQueues = (props) => {
         <Grid.Column>
           <Segment basic>
           <Message info>
+              <Icon name="lightbulb outline"/>
               <Message.Header>No Queues</Message.Header>
-              This course currently has no queues!
+                This course currently has no queues! Ask the course's Head TA or Professor to create one.
             </Message>
           </Segment>
         </Grid.Column>
