@@ -57,10 +57,12 @@ const InstructorQueues = (props) => {
         queues && numActive() === 0 && !leader &&
         <Grid.Column>
           <Segment basic>
-          <Message info>
+            <Message info icon>
               <Icon name="lightbulb outline"/>
-              <Message.Header>No Queues</Message.Header>
+              <Message.Content>
+                <Message.Header>No Queues</Message.Header>
                 This course currently has no queues! Ask the course's Head TA or Professor to create one.
+              </Message.Content>
             </Message>
           </Segment>
         </Grid.Column>
