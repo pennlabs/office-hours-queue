@@ -66,6 +66,7 @@ class UserNode(DjangoObjectType):
             'preferred_name',
             'email',
             'sms_notifications_enabled',
+            'sms_verified',
             'phone_number',
             'time_joined',
         )
