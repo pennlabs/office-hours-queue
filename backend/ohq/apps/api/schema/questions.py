@@ -79,7 +79,7 @@ class CreateQuestion(graphene.Mutation):
                 tags=input.tags,
                 asked_by=user,
                 video_chat_url=input.video_chat_url,
-                should_send_up_soon_notification=questions_ahead >= 5,
+                should_send_up_soon_notification=questions_ahead >= 4,
             )
             question.clean_fields()
             question.save()
