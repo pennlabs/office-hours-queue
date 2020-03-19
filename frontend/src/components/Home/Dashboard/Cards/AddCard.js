@@ -2,7 +2,7 @@ import React, { useState }from 'react';
 import { Segment, Header } from 'semantic-ui-react';
 
 const cardStyle = {
-  height:"110px",
+  height: "120px",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
@@ -11,14 +11,14 @@ const cardStyle = {
 };
 
 const hoverStyle = {
-  height:"110px",
+  height: "120px",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   cursor: "pointer",
   border: "dashed #21ba45",
   backgroundColor: "#b5f4c4"
-}
+};
 
 const AddCard = (props) => {
   const [hovered, setHovered] = useState(false);

@@ -43,7 +43,7 @@ const InstructorCourses = (props) => {
         {
           courses.map(course => (
             !course.archived &&
-            <Grid.Column key={course.id} style={{width:"240px"}}>
+            <Grid.Column key={course.id} style={{width:"280px"}}>
               <CourseCard
                 department={course.department}
                 courseCode={course.courseCode}
@@ -58,7 +58,7 @@ const InstructorCourses = (props) => {
             </Grid.Column>
           ))
         }
-        <Grid.Column style={{width:"240px"}}>
+        <Grid.Column style={{width:"280px"}}>
           <AddCard clickFunc={ () => setOpen(true) }/>
         </Grid.Column>
       </Grid.Row>,
@@ -73,11 +73,11 @@ const InstructorCourses = (props) => {
           </Segment>
         </Grid.Column>
       </Grid.Row>,
-      <Grid.Row padded="true" style={{width:"240px"}}>
+      <Grid.Row padded="true" style={{width:"280px"}}>
         {
           courses.map(course => (
             course.archived && showArchived &&
-            <Grid.Column style={{width:"240px"}}>
+            <Grid.Column style={{width:"280px"}}>
               <ArchivedCourseCard
                 department={course.department}
                 courseCode={course.courseCode}

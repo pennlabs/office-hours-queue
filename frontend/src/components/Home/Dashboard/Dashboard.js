@@ -41,7 +41,7 @@ const Dashboard = (props) => {
           <Grid style={{"width":"100%"}} stackable>
             <Grid.Row padded="true" stackable>
               { _.times(3, () => (
-                <Grid.Column style={{width: "240px", height: "110px"}}>
+                <Grid.Column style={{width: "280px", height: "120px"}}>
                   <Segment basic>
                     <Segment raised>
                       <Placeholder>

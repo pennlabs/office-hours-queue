@@ -27,7 +27,7 @@ const StudentCourses = (props) => {
             successFunc={ setSuccess }/>
           {
             courses.map((course) => (
-              <Grid.Column key={course.id} style={{width:"240px"}}>
+              <Grid.Column key={course.id} style={{width:"280px"}}>
                 <CourseCard
                   department={course.department}
                   courseCode={course.courseCode}
@@ -41,7 +41,7 @@ const StudentCourses = (props) => {
               </Grid.Column>
             ))
           }
-        <Grid.Column style={{width:"240px"}}>
+        <Grid.Column style={{width:"280px"}}>
           <AddCard clickFunc={ () => setOpen(true) } isStudent={ true }/>
         </Grid.Column>
       </Grid.Row>,

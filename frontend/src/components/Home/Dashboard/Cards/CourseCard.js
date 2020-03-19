@@ -5,20 +5,16 @@ import * as ROUTES from '../../../../constants/routes';
 
 const CourseCard = (props) => {
   const [hover, setHover] = useState(false);
-  const path = {
-    pathname: props.kind === 'STUDENT' ? ROUTES.STUDENT : ROUTES.COURSE,
-    state: { courseId: props.id, courseUserId: props.courseUserId }
-  };
 
-  const newPath = {
-    pathname:  `${ROUTES.CLASS.split("/:")[0]}/${props.prettyId}`
-  }
+  const path = {
+    pathname: `${ROUTES.CLASS.split("/:")[0]}/${props.prettyId}`
+  };
 
   return (
     <Segment basic>
-      <Link to={ newPath }>
+      <Link to={ path }>
         <Segment.Group raised={ hover } onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
-          <Segment attached="top" color="blue" style={{height:"70px"}}>
+          <Segment attached="top" color="blue" style={{height:"80px", paddingTop: "20px"}}>
             <Header style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
               { `${props.department} ${props.courseCode}`}
               <Header.Subheader style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
