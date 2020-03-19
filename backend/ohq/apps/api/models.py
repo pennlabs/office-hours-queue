@@ -71,9 +71,11 @@ class User(models.Model):
     preferred_name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     user_key = models.CharField(max_length=50, editable=False)
-    phone_number = PhoneNumberField(blank=True, null=True)
     time_joined = models.DateTimeField(auto_now_add=True)
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
+
+    sms_notifications_enabled = models.BooleanField(default=False)
+    phone_number = PhoneNumberField(blank=True, null=True)
 
     searchable_name = models.CharField(max_length=254+100+100+2, editable=False)
     searchable = models.BooleanField(default=True)
@@ -159,6 +161,10 @@ class Course(models.Model):
     @property
     def professor_users(self):
         return self.course_users.filter(kind=CourseUserKind.PROFESSOR.name)
+
+    @property
+    def formatted_course_code(self):
+        return f"{self.department} {self.course_code}"
 
     def save(self, *args, **kwargs):
         self.searchable_name = f"{self.department} {self.course_code} {self.course_title}"
@@ -367,6 +373,8 @@ class Question(models.Model):
     )
 
     order_key = models.IntegerField(default=0, editable=False)
+
+    should_send_up_soon_notification = models.BooleanField(default=False)
 
     @property
     def state(self):

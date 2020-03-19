@@ -9,6 +9,7 @@ class CreateUserInput(graphene.InputObjectType):
     full_name = graphene.String(required=True)
     preferred_name = graphene.String(required=True)
     phone_number = graphene.String(required=False)
+    sms_notifications_enabled = graphene.Boolean(required=False)
 
 
 class CreateUserResponse(graphene.ObjectType):
@@ -40,6 +41,7 @@ class CreateUser(graphene.Mutation):
                 preferred_name=input.preferred_name,
                 email=info.context.user.email,
                 phone_number=input.phone_number,
+                sms_notifications_enabled=input.sms_notifications_enabled,
                 auth_user=info.context.user,
             )
             user.clean_fields()
@@ -63,6 +65,7 @@ class UpdateUserInput(graphene.InputObjectType):
     full_name = graphene.String(required=False)
     preferred_name = graphene.String(required=False)
     phone_number = graphene.String(required=False)
+    sms_notifications_enabled = graphene.Boolean(required=False)
 
 
 class UpdateUserResponse(graphene.ObjectType):
@@ -92,6 +95,8 @@ class UpdateUser(graphene.Mutation):
                 user.preferred_name = input.preferred_name
             if input.phone_number is not None:
                 user.phone_number = input.phone_number
+            if input.sms_notifications_enabled is not None:
+                user.sms_notifications_enabled = input.sms_notifications_enabled
             user.clean_fields()
             user.save()
 

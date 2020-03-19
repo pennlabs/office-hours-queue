@@ -153,7 +153,7 @@ class QuestionNode(DjangoObjectType):
             order_key__lt=self.order_key,
             time_started__isnull=True,
             time_rejected__isnull=True,
-            time_withdrawn__isnull=True
+            time_withdrawn__isnull=True,
         ).count()
 
 

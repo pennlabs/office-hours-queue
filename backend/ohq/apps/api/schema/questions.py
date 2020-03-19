@@ -6,6 +6,7 @@ from django.db import transaction
 
 from ohq.apps.api.schema.types import *
 from ohq.apps.api.util.errors import *
+from ohq.apps.api.util.twilio import send_up_soon_sms
 
 
 class CreateQuestionInput(graphene.InputObjectType):
@@ -64,12 +65,21 @@ class CreateQuestion(graphene.Mutation):
                 raise too_many_questions_error
             if any(tag not in queue.tags for tag in input.tags):
                 raise unrecognized_tag_error
+
+            questions_ahead = Question.objects.filter(
+                queue=queue,
+                time_started__isnull=True,
+                time_rejected__isnull=True,
+                time_withdrawn__isnull=True,
+            ).count()
+
             question = Question(
                 queue=queue,
                 text=input.text,
                 tags=input.tags,
                 asked_by=user,
                 video_chat_url=input.video_chat_url,
+                should_send_up_soon_notification=questions_ahead >= 5,
             )
             question.clean_fields()
             question.save()
@@ -130,6 +140,17 @@ class UpdateQuestion(graphene.Mutation):
         return UpdateQuestionResponse(question=question)
 
 
+# TODO find better place to put this
+def notify_up_soon(queue):
+    question_to_notify = Question.objects.filter(
+        queue=queue,
+        time_started__isnull=True,
+        time_rejected__isnull=True,
+        time_withdrawn__isnull=True,
+    ).order_by('order_key')[2:3].get()  # Gets the 3rd question
+    send_up_soon_sms(question_to_notify)
+
+
 class WithdrawQuestionInput(graphene.InputObjectType):
     question_id = graphene.ID(required=True)
 
@@ -158,6 +179,8 @@ class WithdrawQuestion(graphene.Mutation):
 
             question.time_withdrawn = datetime.now()
             question.save()
+
+            notify_up_soon(question.queue)
 
         return WithdrawQuestionResponse(question=question)
 
@@ -208,6 +231,8 @@ class RejectQuestion(graphene.Mutation):
             question.time_rejected = datetime.now()
             question.save()
 
+            notify_up_soon(question.queue)
+
         return RejectQuestionResponse(question=question)
 
 
@@ -243,6 +268,8 @@ class StartQuestion(graphene.Mutation):
             question.time_started = datetime.now()
             question.answered_by = user
             question.save()
+
+            notify_up_soon(question.queue)
 
         return StartQuestionResponse(question=question)
 
@@ -306,5 +333,7 @@ class FinishQuestion(graphene.Mutation):
                 raise question_not_started_error
             question.time_answered = datetime.now()
             question.save()
+
+            notify_up_soon(question.queue)
 
         return FinishQuestionResponse(question=question)
