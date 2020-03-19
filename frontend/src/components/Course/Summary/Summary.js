@@ -210,17 +210,10 @@ const Summary = (props) => {
                 ))
               }
             </Table.Body>
-            <Table.Footer>
-              <Table.Row textAlign="center">
-                <Table.HeaderCell><b>{`${filteredQuestions.length} question${filteredQuestions.length === 1 ? '' : 's'}`}</b></Table.HeaderCell>
-                <Table.HeaderCell/>
-                <Table.HeaderCell/>
-                <Table.HeaderCell/>
-                <Table.HeaderCell/>
-                <Table.HeaderCell/>
-              </Table.Row>
-            </Table.Footer>
           </Table>
+          <div>
+            { `${filteredQuestions.length} question${filteredQuestions.length === 1 ? '' : 's'}` }
+          </div>
         </Segment>
       }
       </Grid.Row>
