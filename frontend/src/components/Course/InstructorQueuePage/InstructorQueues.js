@@ -53,6 +53,17 @@ const InstructorQueues = (props) => {
           </Segment>
         </Grid.Column>
       }
+      {
+        queues && numActive() === 0 && !leader &&
+        <Grid.Column>
+          <Segment basic>
+          <Message info>
+              <Message.Header>No Queues</Message.Header>
+              This course currently has no queues!
+            </Message>
+          </Segment>
+        </Grid.Column>
+      }
     </Grid.Row>
   );
 };
