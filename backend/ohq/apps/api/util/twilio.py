@@ -36,7 +36,7 @@ def send_verification_sms(user):
         return None
     message = client.messages.create(
         body=f"Your OHQ verification code is: {user.sms_verification_code}. Expires in "
-             f"{User.SMS_VERIFICATION_EXPIRATION_MINUTES} minutes",
+             f"{User.SMS_VERIFICATION_EXPIRATION_MINUTES} minutes.",
         messaging_service_sid='MG249e68aef1b3ca07406126424e8795a4',
         to=str(user.phone_number),
     )
