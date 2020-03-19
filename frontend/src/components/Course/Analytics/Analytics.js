@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Segment, Header, Grid } from 'semantic-ui-react';
+import { Segment, Header, Grid, Message } from 'semantic-ui-react';
 import MyPieChart from './MyPieChart';
 
 import { useQuery } from '@apollo/react-hooks';
@@ -184,6 +184,10 @@ const Analytics = (props) => {
 
   return (
     <Grid.Row>
+      <Grid.Row style={{"marginTop":"10px"}}>
+          <Message icon="exclamation triangle" header="Work in Progress"
+            content="We're working on adding new analytics tools - stay tuned!" warning/>
+      </Grid.Row>
       <Segment basic>
         <Header as="h3">Questions by Type</Header>
         {
