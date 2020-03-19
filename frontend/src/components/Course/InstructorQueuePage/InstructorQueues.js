@@ -47,7 +47,8 @@ const InstructorQueues = (props) => {
               <Icon name="lightbulb outline"/>
               <Message.Content>
                 <Message.Header>Create a Queue</Message.Header>
-                <a onClick={ props.createFunc } style={{"cursor":"pointer"}}>Create</a> a queue and augment your OHQ experience!
+                <a onClick={ props.createFunc } style={{"cursor":"pointer"}}>Create</a>{' '}
+                {queues.length === 0 ? 'a queue to get started!' : 'a second queue to augment your OHQ experience!'}
               </Message.Content>
             </Message>
           </Segment>
