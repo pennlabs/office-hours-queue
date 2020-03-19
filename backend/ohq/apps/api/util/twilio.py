@@ -9,12 +9,17 @@ auth_token = config('TWILIO_AUTH_TOKEN')
 client = Client(account_sid, auth_token)
 
 def send_up_soon_sms(question):
-    if not question.should_send_up_soon_notification:
+    if (
+        not question.should_send_up_soon_notification or
+        not question.asked_by or
+        not question.asked_by.phone_number or
+        not question.asked_by.sms_notifications_enabled
+    ):
         return None
     message = client.messages.create(
          body=f"OHQ: You are currently 3rd in line for "
               f"{question.queue.course.formatted_course_code}, be ready soon!",
          messaging_service_sid='MG249e68aef1b3ca07406126424e8795a4',
-         to='+19144096140',
+         to='+1' + question.asked_by.phone_number,
      )
     return message.sid
