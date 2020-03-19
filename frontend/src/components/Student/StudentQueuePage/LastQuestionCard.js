@@ -38,7 +38,10 @@ const LastQuestionCard = (props) => {
         {
           question.state === "REJECTED" &&
           <div>
-            The following question you asked on <b>{ timeString(question.timeAsked) }</b> was rejected by <b>{question.rejectedBy.preferredName}</b>:<br/>
+            The following question you asked on{' '}
+            <b>{ timeString(question.timeAsked) }</b>{' '}
+            was rejected { question.rejectedBy && ['by ', <b>{question.rejectedBy.preferredName}</b>]}:
+            <br/>
             <Message error>{`"${question.text}"`}</Message>
             The reason for rejection was:
             <b>{ ` ${formatReason(question.rejectedReason, question.rejectedReasonOther)}` }</b>
@@ -47,7 +50,10 @@ const LastQuestionCard = (props) => {
         {
           question.state === "ANSWERED" &&
           <div>
-            The following question you asked on <b>{timeString(question.timeAsked)}</b> was answered by <b>{question.answeredBy.preferredName}</b>:<br/>
+            The following question you asked on{' '}
+            <b>{timeString(question.timeAsked)}</b>{' '}
+            was answered { question.answeredBy && ['by ', <b>{question.answeredBy.preferredName}</b>]}:
+            <br/>
             <Message success>{`"${question.text}"`}</Message>
           </div>
         }

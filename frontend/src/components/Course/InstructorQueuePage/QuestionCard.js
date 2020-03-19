@@ -219,7 +219,6 @@ const QuestionCard = (props) => {
                   (!question.tags || question.tags.length === 0) &&
                   <span style={{paddingLeft: "8px"}}><i>No Tags</i></span>
                 }
-
               </Grid.Column>
             </Grid.Row>
           </Grid>

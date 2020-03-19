@@ -90,7 +90,7 @@ const Summary = (props) => {
 
   const formatState = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
-  }
+  };
 
   /* TABLE FUNCTIONS */
   const handleSort = (clickedColumn) => {
