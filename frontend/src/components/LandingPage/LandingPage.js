@@ -95,7 +95,12 @@ const SignInGoogleBase = (props) => {
                 <Grid columns={1} textAlign="center">
                   <Grid.Row only="computer tablet"><img src="ohq-login.png" width="600px" height="107px" alt="logo"/></Grid.Row>
                   <Grid.Row only="mobile"><img src="ohq.png" width="217px" height="107px" alt="logo-mini"/></Grid.Row>
-                  <Grid.Row><GoogleButton onClick={onSubmit}/></Grid.Row>
+                  <Grid.Row>
+                    <GoogleButton
+                      style={{width: "340px"}}
+                      label={"Sign in with Google (upenn.edu)"}
+                      onClick={onSubmit}/>
+                  </Grid.Row>
                 </Grid>
                 <Snackbar open={ error } autoHideDuration={6000} onClose={ () => setError(null) }>
                   <Alert severity="error" onClose={ () => setError(null) }>
