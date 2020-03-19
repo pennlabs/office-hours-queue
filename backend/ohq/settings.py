@@ -91,7 +91,7 @@ WSGI_APPLICATION = 'ohq.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {}
-DATABASES['default'] = dj_database_url.config(default=config('DATABASE_URL'))
+DATABASES['default'] = dj_database_url.config(conn_max_age=600, default=config('DATABASE_URL'))
 
 # DATABASES = {
 #     'default': {
