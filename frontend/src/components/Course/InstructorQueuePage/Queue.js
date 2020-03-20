@@ -25,6 +25,8 @@ const GET_QUESTIONS = gql`
             askedBy {
               id
               preferredName
+              fullName
+              email
             }
             answeredBy {
               id

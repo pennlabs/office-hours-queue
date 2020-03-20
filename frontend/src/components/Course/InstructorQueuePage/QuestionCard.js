@@ -106,7 +106,13 @@ const QuestionCard = (props) => {
             <Grid.Row>
               <Grid.Column textAlign="left">
                 <Header as="h5" style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
-                  { question.askedBy.preferredName }
+                  <Popup
+                    trigger= {
+                      <span>{ question.askedBy.preferredName }</span>
+                    }
+                    content= { question.askedBy.fullName + " (" + question.askedBy.email + ")" }
+                    basic inverted
+                    position="right center"/>
                 </Header>
               </Grid.Column>
               <Grid.Column>
