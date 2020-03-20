@@ -107,7 +107,6 @@ const AccountForm = (props) => {
       });
       setToastOpen(true);
     }
-    props.setActive('dashboard');
   };
 
   useEffect(() => {
@@ -123,14 +122,12 @@ const AccountForm = (props) => {
 
   return (
     [
-      <VerificationModal open={ smsOpen }
+      <VerificationModal
+        open={ smsOpen }
         toastFunc={ (toast) => { setToast(toast); setToastOpen(true) } }
         openFunc={ setSmsOpen }
         refetch={ props.refetch }/>,
       <Form>
-        { props.welcome && 
-          <Header>Welcome to OHQ!</Header>
-        }
         <Form.Field required>
           <label>Email Address</label>
           <Form.Input

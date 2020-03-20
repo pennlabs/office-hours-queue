@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 import { useMutation } from '@apollo/react-hooks';
@@ -28,15 +28,11 @@ const CREATE_USER = gql`
 `;
 
 const SignInGoogleBase = (props) => {
-  const [createUser, { data }] = useMutation(CREATE_USER);
+  const [createUser] = useMutation(CREATE_USER);
   const [error, setError] = useState(null);
-  const [newUser, setNewUser] = useState(false);
+  const [newUser, setNewUser] = useState(true);
 
   const condition = (authUser) => {
-    console.log("condition", authUser);
-    if (authUser) {
-      console.log(authUser.hasUserObject)
-    }
     return authUser && authUser.hasUserObject;
   };
 
@@ -45,9 +41,6 @@ const SignInGoogleBase = (props) => {
       const socialAuthUser = await firebase.doSignInWithGoogle();
       const result = await socialAuthUser.user.getIdTokenResult();
       if (!result.claims.hasUserObject) {
-        console.log('?', newUser);
-        await setNewUser(true);
-        console.log('making new user', newUser);
         await createUser({
           variables: {
             input:{
@@ -56,11 +49,10 @@ const SignInGoogleBase = (props) => {
             }
           }
         });
+        setNewUser(true);
         setError(null);
         props.history.push(ROUTES.LANDING);
       }
-
-      console.log('newuser:', newUser);
       const deepCopy = JSON.parse(JSON.stringify(socialAuthUser.user));
       deepCopy['hasUserObject'] = true;
       props.setAuthUser(deepCopy);

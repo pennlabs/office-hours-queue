@@ -14,7 +14,7 @@ const AccountSettings = (props) => {
         </Grid.Row>
         <Grid.Row>
           <Segment basic>
-            <AccountForm welcome={false} setActive={props.setActive} user={ props.user } refetch={ props.refetch }/>
+            <AccountForm user={ props.user } refetch={ props.refetch }/>
           </Segment>
         </Grid.Row>
     </Grid.Column>
