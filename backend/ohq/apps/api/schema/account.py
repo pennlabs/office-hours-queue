@@ -47,10 +47,6 @@ class CreateUser(graphene.Mutation):
         ):
             raise email_not_upenn_error
         with transaction.atomic():
-            auth.set_custom_user_claims(
-                info.context.user.firebase_uid,
-                { "hasUserObject": True },
-            )
             user = User(
                 full_name=input.full_name,
                 preferred_name=input.preferred_name,
@@ -83,6 +79,10 @@ class CreateUser(graphene.Mutation):
             user.save()
             CourseUser.objects.bulk_create(new_course_users)
             invites.delete()
+            auth.set_custom_user_claims(
+                info.context.user.firebase_uid,
+                {"hasUserObject": True},
+            )
 
         return CreateUserResponse(user=user)
 
