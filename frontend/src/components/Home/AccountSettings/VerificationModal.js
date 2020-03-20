@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import './VerificationModal.css';
+
 import { Modal, Button, Segment } from 'semantic-ui-react';
 import ReactCodeInput from 'react-code-input';
 import { gql } from 'apollo-boost';
@@ -24,6 +26,21 @@ const VerificationModal = (props) => {
   const [sendSmsVerification, { loading: sendLoading }] = useMutation(SEND_SMS_VERIFICATION);
   const [verifyPhoneNumber, { loading: verifyLoading }] = useMutation(VERIFY_PHONE_NUMBER);
 
+  const codeInput = useRef();
+
+  const clearInput = () => {
+    if (codeInput.current.textInput[0]) {
+      codeInput.current.textInput[0].focus();
+    }
+    codeInput.current.state.input[0] = "";
+    codeInput.current.state.input[1] = "";
+    codeInput.current.state.input[2] = "";
+    codeInput.current.state.input[3] = "";
+    codeInput.current.state.input[4] = "";
+    codeInput.current.state.input[5] = "";
+    codeInput.current.value = "";
+  };
+
   const sendVerification = async () => {
     try {
       await sendSmsVerification({
@@ -31,10 +48,18 @@ const VerificationModal = (props) => {
           input: {}
         }
       });
+      clearInput();
+      props.toastFunc({
+        success: true,
+        message: "Successfully resent verification code",
+      });
     } catch (e) {
-      console.log(e);
+      props.toastFunc({
+        success: false,
+        message: "An error occurred when resending",
+      });
     }
-  }
+  };
 
   const onVerify = async (value) => {
     try {
@@ -47,27 +72,43 @@ const VerificationModal = (props) => {
       });
       props.refetch();
       props.openFunc(false);
-      props.toastFunc();
+      props.toastFunc({
+        success: true,
+        message: "Phone number successfully verified",
+      });
     } catch (e) {
-      console.log(e);
+      clearInput();
+      props.toastFunc({
+        success: false,
+        message:
+          e.message.includes("incorrect") ? "Verification code incorrect" :
+          e.message.includes("expired") ? "Verification code expired, please resend" :
+          "An error occurred when verifying",
+      });
     }
-  }
+  };
 
   const handleInputChange = async (value) => {
-    if (value.length === 6) onVerify(value);
-  }
+    if (value.length === 6) {
+      await onVerify(value);
+    }
+  };
 
   return (
     <Modal open={ props.open }>
       <Modal.Header>Phone Number Verification</Modal.Header>
       <Modal.Content>
         <Segment textAlign="center" basic>
-          <ReactCodeInput fields={6} onChange={ handleInputChange }/>
+          <ReactCodeInput type="number" fields={6} onChange={ handleInputChange } ref={codeInput}/>
         </Segment>
-        <div>Missed your verification code? <a onClick={ () => { if(!sendLoading || !verifyLoading) sendVerification() } } style={{"cursor":"pointer"}}>Resend.</a></div>
+        <div>
+          Missed your verification code?{' '}
+          <a onClick={ () => { if (!sendLoading || !verifyLoading) return sendVerification() } }
+            style={{"cursor":"pointer"}}>Resend</a>
+        </div>
       </Modal.Content>
       <Modal.Actions>
-        <Button content="Done" onClick={ () => props.openFunc(false) }/>
+        <Button content="Cancel" onClick={ () => props.openFunc(false) }/>
       </Modal.Actions>
     </Modal>
   );
