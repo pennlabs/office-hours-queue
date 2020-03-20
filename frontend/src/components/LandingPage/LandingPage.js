@@ -30,7 +30,7 @@ const CREATE_USER = gql`
 const SignInGoogleBase = (props) => {
   const [createUser] = useMutation(CREATE_USER);
   const [error, setError] = useState(null);
-  const [newUser, setNewUser] = useState(true);
+  const [newUser, setNewUser] = useState(false);
 
   const condition = (authUser) => {
     return authUser && authUser.hasUserObject;
