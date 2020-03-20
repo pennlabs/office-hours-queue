@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Dashboard from './Dashboard/Dashboard';
 import AccountSettings from './AccountSettings/AccountSettings';
 import HomeSidebar from './HomeSidebar'
+import CreateUserModal from './Dashboard/Modals/CreateUserModal';
 import {Dimmer, Grid, Loader, Segment} from 'semantic-ui-react';
 
 import { withAuthorization } from '../Session';
@@ -49,7 +50,7 @@ const Home = (props) => {
   const { data, refetch } = useQuery(CURRENT_USER);
 
   /* STATE */
-  const [active, setActive] = useState('dashboard');
+  const [active, setActive] = useState(props.newUser ? 'test': 'dashboard');
   const [courses,  setCourses] = useState(null);
   const [user, setUser] = useState(null);
 
@@ -117,6 +118,7 @@ const Home = (props) => {
     <Grid columns={2} divided="horizontally" style={{"width":"100%"}} stackable>
       <HomeSidebar active={ active } clickFunc={ setActive }/>
       {
+        active === 'test' ? <CreateUserModal setActive={setActive} user={user} refetch={ refetch }></CreateUserModal> : 
         courses && active === 'dashboard' ? <Dashboard courses={ courses } refetch={ refetch }/> :
         user && active === 'account_settings' ? <AccountSettings user={ user } refetch={ refetch }/> :
         // <Grid.Column width={13}>

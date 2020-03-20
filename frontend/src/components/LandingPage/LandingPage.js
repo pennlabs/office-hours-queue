@@ -30,6 +30,7 @@ const CREATE_USER = gql`
 const SignInGoogleBase = (props) => {
   const [createUser, { data }] = useMutation(CREATE_USER);
   const [error, setError] = useState(null);
+  const [newUser, setNewUser] = useState(false);
 
   const condition = (authUser) => {
     console.log("condition", authUser);
@@ -44,6 +45,9 @@ const SignInGoogleBase = (props) => {
       const socialAuthUser = await firebase.doSignInWithGoogle();
       const result = await socialAuthUser.user.getIdTokenResult();
       if (!result.claims.hasUserObject) {
+        console.log('?', newUser);
+        await setNewUser(true);
+        console.log('making new user', newUser);
         await createUser({
           variables: {
             input:{
@@ -55,6 +59,8 @@ const SignInGoogleBase = (props) => {
         setError(null);
         props.history.push(ROUTES.LANDING);
       }
+
+      console.log('newuser:', newUser);
       const deepCopy = JSON.parse(JSON.stringify(socialAuthUser.user));
       deepCopy['hasUserObject'] = true;
       props.setAuthUser(deepCopy);
@@ -69,7 +75,7 @@ const SignInGoogleBase = (props) => {
     <AuthUserContext.Consumer>
       { authUser =>
         condition(authUser) ?
-          <Home/> :
+          <Home newUser={newUser} setNewUser={setNewUser} /> :
           <LoadingContext.Consumer>
             { loading => loading ? (
               <div style={{
@@ -99,7 +105,7 @@ const SignInGoogleBase = (props) => {
                     <GoogleButton
                       style={{width: "340px"}}
                       label={"Sign in with Google (upenn.edu)"}
-                      onClick={onSubmit}/>
+                      onClick={ onSubmit }/>
                   </Grid.Row>
                 </Grid>
                 <Snackbar open={ error } autoHideDuration={6000} onClose={ () => setError(null) }>
