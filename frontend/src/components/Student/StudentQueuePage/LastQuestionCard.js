@@ -40,7 +40,7 @@ const LastQuestionCard = (props) => {
           <div>
             The following question you asked on{' '}
             <b>{ timeString(question.timeAsked) }</b>{' '}
-            was rejected { question.rejectedBy && ['by ', <b>{question.rejectedBy.preferredName}</b>]}:
+            was rejected{ question.rejectedBy && [' by ', <b>{question.rejectedBy.preferredName}</b>]}:
             <br/>
             <Message error>{`"${question.text}"`}</Message>
             The reason for rejection was:
@@ -52,7 +52,7 @@ const LastQuestionCard = (props) => {
           <div>
             The following question you asked on{' '}
             <b>{timeString(question.timeAsked)}</b>{' '}
-            was answered { question.answeredBy && ['by ', <b>{question.answeredBy.preferredName}</b>]}:
+            was answered{ question.answeredBy && [' by ', <b>{question.answeredBy.preferredName}</b>]}:
             <br/>
             <Message success>{`"${question.text}"`}</Message>
           </div>
