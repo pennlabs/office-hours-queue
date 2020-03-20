@@ -120,7 +120,7 @@ const Home = (props) => {
       {
         user && active === 'test' ? <CreateUserModal setActive={setActive} user={ user } refetch={ refetch }/> : 
         courses && active === 'dashboard' ? <Dashboard courses={ courses } refetch={ refetch }/> :
-        user && active === 'account_settings' ? <AccountSettings user={ user } refetch={ refetch }/> :
+        user && active === 'account_settings' ? <AccountSettings setActive={setActive} user={ user } refetch={ refetch }/> :
         // <Grid.Column width={13}>
         //   <Dimmer active inverted>
         //     <Loader size='big' inverted/>

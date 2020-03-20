@@ -105,6 +105,7 @@ const AccountForm = (props) => {
       });
       setToastOpen(true);
     }
+    props.setActive('dashboard');
   };
 
   useEffect(() => {
