@@ -25,7 +25,7 @@ const CreateUserModal = (props) => {
   return (
     <Modal open={true}>
       <Modal.Content>
-        <AccountForm setActive={props.setActive} user={props.user} refetch={props.refetch}/>
+        <AccountForm welcome={true} setActive={props.setActive} user={props.user} refetch={props.refetch}/>
       </Modal.Content>
     </Modal>
   );
