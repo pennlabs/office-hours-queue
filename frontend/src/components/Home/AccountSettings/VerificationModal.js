@@ -56,7 +56,9 @@ const VerificationModal = (props) => {
     } catch (e) {
       props.toastFunc({
         success: false,
-        message: "An error occurred when resending",
+        message:
+          e.message.includes("wait") ? "Please wait 30 seconds before resending" :
+          "An error occurred when resending",
       });
     }
   };

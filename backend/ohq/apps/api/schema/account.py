@@ -13,6 +13,7 @@ from ohq.apps.api.util.errors import (
     phone_number_already_verified_error,
     verification_code_incorrect_error,
     verification_code_expired_error,
+    verification_resend_wait_error,
 )
 from ohq.apps.api.util.twilio import send_verification_sms
 
@@ -162,6 +163,11 @@ class SendSMSVerification(graphene.Mutation):
                 raise phone_number_not_set_error
             if user.sms_verified:
                 raise phone_number_already_verified_error
+            if (
+                user.sms_verification_timestamp and
+                (datetime.now(timezone.utc) - user.sms_verification_timestamp).total_seconds() < 30
+            ):
+                raise verification_resend_wait_error
 
             user.sms_verification_code = generate_sms_verification_code()
             user.sms_verification_timestamp = datetime.now(timezone.utc)
