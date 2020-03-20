@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
-import { Form, Button, Icon } from 'semantic-ui-react';
+import { Form, Button, Icon, Popup } from 'semantic-ui-react';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 import VerificationModal from './VerificationModal';
@@ -155,11 +155,17 @@ const AccountForm = (props) => {
             name="smsNotificationsEnabled"
             defaultChecked={ defUser.smsNotificationsEnabled }
             onChange={ handleInputChange }
-            label='Enable SMS Notifications'/>
+            label={[
+              'Enable SMS Notifications ',
+              <Popup
+                trigger={ <Icon name="question circle outline"/> }
+                content="Get text message alerts when you're almost up next in line!"
+                position="top center"/>
+            ]}/>
         </Form.Field>
         { showNumber &&
           <Form.Field>
-            <label>Cellphone Number</label>
+            <label>Cell Phone Number</label>
             <Form.Input
               placeholder='9876543210'
               defaultValue={ defUser.phoneNumber }
