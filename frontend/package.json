@@ -31,11 +31,13 @@
     "typeface-roboto": "0.0.75"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "REACT_APP_GCLOUD_PROJECT=office-hour-q react-scripts start",
+    "build-prod": "REACT_APP_GCLOUD_PROJECT=office-hour-q react-scripts build",
+    "build-stg": "REACT_APP_GCLOUD_PROJECT=office-hour-q-stg react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "build-deploy": "npm run build && firebase deploy --only hosting"
+    "build-deploy-prod": "npm run build-prod && firebase deploy --only hosting -P prod",
+    "build-deploy-stg": "npm run build-stg && firebase deploy --only hosting -P stg"
   },
   "eslintConfig": {
     "extends": "react-app"

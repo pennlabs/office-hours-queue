@@ -10,8 +10,13 @@ import { createHttpLink } from 'apollo-link-http';
 import { setContext } from 'apollo-link-context';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 
+const project = process.env.REACT_APP_GCLOUD_PROJECT;
+const backendUri =
+  project === 'office-hour-q' ? 'https://api.ohq.io/graphql' :
+  project === 'office-hour-q-stg' ? 'https://api.stg.ohq.io/graphql' : undefined;
+
 const httpLink = createHttpLink({
-  uri: 'https://api.ohq.io/graphql',
+  uri: backendUri,
 });
 
 const authLink = setContext(async (_, { headers }) => {
