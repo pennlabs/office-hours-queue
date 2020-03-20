@@ -270,8 +270,6 @@ class StartQuestion(graphene.Mutation):
             question.answered_by = user
             question.save()
 
-            notify_up_soon(question.queue)
-
         return StartQuestionResponse(question=question)
 
 
