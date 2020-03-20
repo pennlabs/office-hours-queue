@@ -63,7 +63,7 @@ const AccountForm = (props) => {
   };
 
   const needVerification = (oldUser, newUser) => {
-    return (newUser.smsNotificationsEnabled && 
+    return (newUser.smsNotificationsEnabled &&
       oldUser.smsNotificationsEnabled !== newUser.smsNotificationsEnabled) ||
       oldUser.phoneNumber !== newUser.phoneNumber;
   }
@@ -153,7 +153,7 @@ const AccountForm = (props) => {
             <Form.Field>
               <label>Cellphone Number</label>
               <Form.Input
-                placeholder='Cellphone Number'
+                placeholder='9876543210'
                 defaultValue={ defUser.phoneNumber }
                 name='phoneNumber'
                 onChange={ handleInputChange }
