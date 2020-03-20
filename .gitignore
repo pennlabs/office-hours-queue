@@ -78,7 +78,8 @@ local_settings.py
 db.sqlite3
 backend/static
 backend/staticfiles
-backend/ohq-firebase-adminsdk.json
+backend/ohq-firebase-adminsdk-prod.json
+backend/ohq-firebase-adminsdk-stg.json
 
 .idea/
 *.cache

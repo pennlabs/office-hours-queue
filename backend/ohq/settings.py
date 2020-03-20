@@ -169,7 +169,13 @@ CORS_ALLOW_METHODS = [
 CORS_ORIGIN_ALLOW_ALL = True
 
 # Firebase
-FIREBASE_KEY_FILE = os.path.join(BASE_DIR, 'ohq-firebase-adminsdk.json')
+if config('ENVIRONMENT') == "prod":
+    FIREBASE_SERVICE_ACCOUNT = 'ohq-firebase-adminsdk-prod.json'
+elif config('ENVIRONMENT') == "stg":
+    FIREBASE_SERVICE_ACCOUNT = 'ohq-firebase-adminsdk-stg.json'
+else:
+    raise ValueError
+FIREBASE_KEY_FILE = os.path.join(BASE_DIR, FIREBASE_SERVICE_ACCOUNT)
 
 # Phone number field
 PHONENUMBER_DEFAULT_REGION = "US"
