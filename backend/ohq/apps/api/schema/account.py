@@ -1,3 +1,4 @@
+from decouple import config
 from datetime import datetime, timezone
 from firebase_admin import auth
 from django.db import transaction
@@ -40,7 +41,10 @@ class CreateUser(graphene.Mutation):
             not input.preferred_name
         ):
             raise empty_string_error
-        if not info.context.user.email.endswith("upenn.edu"):
+        if (
+            config("ENVIRONMENT", default="prod") == "prod" and
+            not info.context.user.email.endswith("upenn.edu")
+        ):
             raise email_not_upenn_error
         with transaction.atomic():
             auth.set_custom_user_claims(
