@@ -8,6 +8,14 @@ from django.conf import settings
 
 from ..models import CourseUser, InvitedCourseUser, CourseUserKind
 
+PROD_WEB_URL = "https://ohq.io"
+STG_WEB_URL = "https://stg.ohq.io"
+WEB_URL = PROD_WEB_URL if config("ENVIRONMENT", default="prod") == "prod" else STG_WEB_URL
+
+PROD_FROM_EMAIL = "info@ohq.io"
+STG_FROM_EMAIL = "info@stg.ohq.io"
+FROM_EMAIL = PROD_FROM_EMAIL if config("ENVIRONMENT", default="prod") == "prod" else STG_FROM_EMAIL
+
 def send_invitation_email(invited_course_user: InvitedCourseUser):
     path = os.path.join(settings.BASE_DIR, 'ohq/apps/api/emails/invitation.html')
     with open(path) as f:
@@ -29,10 +37,10 @@ def send_invitation_email(invited_course_user: InvitedCourseUser):
         title=title,
         body=body,
         body_p2=body_p2,
-        sign_up_link="https://ohq.io",
+        sign_up_link=WEB_URL,
     )
     message = Mail(
-        from_email=Email("info@ohq.io", "Office Hour Queue"),
+        from_email=Email(FROM_EMAIL, "Office Hour Queue"),
         to_emails=invited_course_user.email,
         subject=subject,
         html_content=html_content,
@@ -65,10 +73,10 @@ def send_added_to_course_email(course_user: CourseUser):
         title=title,
         body=body,
         body_p2=body_p2,
-        sign_up_link="https://ohq.io",
+        sign_up_link=WEB_URL,
     )
     message = Mail(
-        from_email=Email("info@ohq.io", "Office Hour Queue"),
+        from_email=Email(FROM_EMAIL, "Office Hour Queue"),
         to_emails=course_user.user.email,
         subject=subject,
         html_content=html_content,

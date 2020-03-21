@@ -169,9 +169,9 @@ CORS_ALLOW_METHODS = [
 CORS_ORIGIN_ALLOW_ALL = True
 
 # Firebase
-if config('ENVIRONMENT') == "prod":
+if config("ENVIRONMENT") == "prod":
     FIREBASE_SERVICE_ACCOUNT = 'ohq-firebase-adminsdk-prod.json'
-elif config('ENVIRONMENT') == "stg":
+elif config("ENVIRONMENT") == "stg":
     FIREBASE_SERVICE_ACCOUNT = 'ohq-firebase-adminsdk-stg.json'
 else:
     raise ValueError
