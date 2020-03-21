@@ -33,8 +33,7 @@ const AccountForm = (props) => {
     fullName: props.user.fullName,
     preferredName: props.user.preferredName,
     smsNotificationsEnabled: props.user.smsNotificationsEnabled,
-    phoneNumber: props.user.phoneNumber,
-    smsVerified: props.user.smsVerified
+    phoneNumber: props.user.phoneNumber
   });
   const [input, setInput] = useState({
     email: props.user.email,
