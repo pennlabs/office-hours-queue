@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import './LandingPage.css';
+
 import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 import { useMutation } from '@apollo/react-hooks';
@@ -15,6 +17,7 @@ import Home from '../Home/Home';
 import firebase from '../Firebase';
 import AuthUserContext from '../Session/context';
 import LoadingContext from "./context";
+import AboutModal from './AboutModal';
 
 //graphql mutation for creating user
 const CREATE_USER = gql`
@@ -31,6 +34,7 @@ const SignInGoogleBase = (props) => {
   const [createUser] = useMutation(CREATE_USER);
   const [error, setError] = useState(null);
   const [newUser, setNewUser] = useState(false);
+  const [showAboutModal, setShowAboutModal] = useState(false);
 
   const condition = (authUser) => {
     return authUser && authUser.hasUserObject;
@@ -99,6 +103,10 @@ const SignInGoogleBase = (props) => {
                       label={"Sign in with Google (upenn.edu)"}
                       onClick={ onSubmit }/>
                   </Grid.Row>
+                  <div className='about about-landing' onClick={() => setShowAboutModal(true)}>
+                    <label>About</label>
+                  </div>
+                  <AboutModal open={showAboutModal} closeFunc={() => setShowAboutModal(false)}/>
                 </Grid>
                 <Snackbar open={ error } autoHideDuration={6000} onClose={ () => setError(null) }>
                   <Alert severity="error" onClose={ () => setError(null) }>

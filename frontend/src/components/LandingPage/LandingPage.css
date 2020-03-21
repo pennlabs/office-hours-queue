@@ -1,0 +1,20 @@
+.about-landing {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  margin: 10px 5px 15px 10px;
+}
+
+.about-dashboard {
+  /*position: absolute;*/
+  position: fixed;
+  bottom: 0;
+  margin: 12px 12px 12px 13px;
+}
+
+.about label {
+  color: #4285F5;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 800;
+}
