@@ -33,7 +33,7 @@ const Sidebar = (props) => {
         </Menu>
       </Segment>
       <div className='about about-dashboard' onClick={() => setShowAboutModal(true)}>
-        <label>About</label>
+        <label>Feedback</label>
       </div>
       <AboutModal open={showAboutModal} closeFunc={() => setShowAboutModal(false)}/>
     </Grid.Column>

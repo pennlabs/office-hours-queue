@@ -13,8 +13,9 @@
 }
 
 .about label {
+  cursor: pointer;
   color: #4285F5;
   text-decoration: underline;
-  cursor: pointer;
+  font-size: 10pt;
   font-weight: 800;
 }
