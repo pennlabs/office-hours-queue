@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Grid, Segment, Header, Tab, Button, Dimmer, Loader } from 'semantic-ui-react';
+import Linkify from 'react-linkify';
 import QueueForm from './QueueForm';
 import TagForm from './TagForm';
 
@@ -22,7 +23,7 @@ const QueueSettings = (props) => {
                 <Header as="h3">
                   { queue.name }
                   <Header.Subheader>
-                    { queue.description }
+                    <Linkify>{ queue.description }</Linkify>
                   </Header.Subheader>
                 </Header>
               </Grid.Column>
@@ -47,7 +48,7 @@ const QueueSettings = (props) => {
             }]}/>
         </Segment>
       </Grid.Row>
-    </Grid.Column> : 
+    </Grid.Column> :
     <Dimmer active inverted inline='centered'>
       <Loader size='big' inverted/>
     </Dimmer>

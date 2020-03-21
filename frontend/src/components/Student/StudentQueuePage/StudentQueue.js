@@ -4,6 +4,7 @@ import QuestionForm from './QuestionForm';
 import QuestionCard from './QuestionCard';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
+import Linkify from 'react-linkify';
 
 const StudentQueue = (props) => {
   const [queue, setQueue] = useState(props.queue);
@@ -36,7 +37,7 @@ const StudentQueue = (props) => {
       <Header as="h3">
         { queue.name }
         <Header.Subheader>
-            { queue.description }
+          <Linkify>{ queue.description }</Linkify>
         </Header.Subheader>
       </Header>
       <Label

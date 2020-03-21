@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Header, Label, Grid, Segment, Button } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import {useMutation, useQuery} from '@apollo/react-hooks';
+import Linkify from 'react-linkify';
 import Questions from './Questions';
 import QueueFilterForm from './QueueFilterForm';
 
@@ -164,7 +165,7 @@ const Queue = (props) => {
       <Header as="h3">
         { queue.name }
         <Header.Subheader>
-            { queue.description }
+          <Linkify>{ queue.description }</Linkify>
         </Header.Subheader>
       </Header>
       <Grid>
