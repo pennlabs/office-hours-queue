@@ -40,6 +40,7 @@ const CourseForm = (props) => {
     department: props.course.department,
     courseCode: props.course.courseCode,
     courseTitle: props.course.courseTitle,
+    semester: props.course.semester,
     year: props.course.year
   });
   const [check, setCheck] = useState(videoChatNum(props.course));
@@ -54,12 +55,18 @@ const CourseForm = (props) => {
   const handleInputChange = (e, { name, value }) => {
     input[name] =  name === "inviteOnly" ? !input[name] : value;
     setInput(input);
-    setDisabled(!input.department || !input.courseCode || !input.courseTitle || !input.year ||
-    (input.department === defCourse.department &&
-    input.courseCode === defCourse.courseCode &&
-    input.courseTitle === defCourse.courseTitle &&
-    input.year === defCourse.year &&
-    input.inviteOnly === defCourse.inviteOnly));
+    setDisabled(
+      !input.department ||
+      !input.courseCode ||
+      !input.courseTitle ||
+      !input.year ||
+      !input.semester ||
+      (input.department === defCourse.department &&
+        input.courseCode === defCourse.courseCode &&
+        input.courseTitle === defCourse.courseTitle &&
+        input.year === defCourse.year &&
+        input.inviteOnly === defCourse.inviteOnly &&
+        input.semester === defCourse.semester));
   };
 
   const handleVideoChatInputChange = (e, { name }) => {
