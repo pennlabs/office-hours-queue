@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Form, Button } from 'semantic-ui-react';
 import { useMutation } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
+import firebase from "../../Firebase";
 
 const UPDATE_QUESTION = gql`
   mutation UpdateQuestion($input: UpdateQuestionInput!) {
@@ -30,7 +31,7 @@ const EditQuestionModal = (props) => {
     return (input.text && (!queue.requireVideoChatUrlOnQuestions || input.videoChatUrl)) &&
       (question.text !== input.text || JSON.stringify(question.tags) !== JSON.stringify(input.tags) ||
       question.videoChatUrl !== input.videoChatUrl);
-  }
+  };
 
   const handleInputChange = (e, { name, value }) => {
     if (name === 'text' && value.length > 250) return;
@@ -58,6 +59,7 @@ const EditQuestionModal = (props) => {
           input: input
         }
       });
+      firebase.analytics.logEvent('question_edited');
       props.refetch();
       props.setOpen(false);
       props.toastFunc("Question successfully updated", null);

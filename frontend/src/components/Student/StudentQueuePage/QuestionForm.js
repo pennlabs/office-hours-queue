@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Segment, Form, Header, Button} from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
+import firebase from '../../Firebase';
 import { isValidURL } from "../../../utils";
 
 
@@ -25,7 +26,7 @@ const QuestionForm = (props) => {
   });
   const [charCount, setCharCount] = useState(0);
   const [disabled, setDisabled] = useState(true);
-  const [validURL, setValidURL] = useState(queue.requireVideoChatUrlOnQuestions ? false : true);
+  const [validURL, setValidURL] = useState(!queue.requireVideoChatUrlOnQuestions);
 
   const handleInputChange = (e, { name, value }) => {
     if (name === 'text' && value.length > 250) return;
@@ -58,6 +59,7 @@ const QuestionForm = (props) => {
           input: input
         }
       });
+      firebase.analytics.logEvent('question_created');
       await props.refetch();
       props.toastFunc("Question successfully added to queue", null);
     } catch (e) {

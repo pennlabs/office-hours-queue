@@ -6,6 +6,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 import VerificationModal from './VerificationModal';
 import { Header } from 'semantic-ui-react';
+import firebase from "../../Firebase";
 
 
 /* GRAPHQL QUERIES/MUTATIONS */
@@ -99,6 +100,7 @@ const AccountForm = (props) => {
       if (result.data.updateUser.user.phoneNumber !== defUser.phoneNumber) {
         setSmsOpen(true);
         setIsVerified(false);
+        firebase.analytics.logEvent('sms_attempted_verification');
       }
     } catch (e) {
       setToast({

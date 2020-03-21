@@ -1,5 +1,6 @@
 import * as firebase from "firebase/app";
 import "firebase/auth";
+import "firebase/analytics";
 
 const project = process.env.REACT_APP_GCLOUD_PROJECT;
 
@@ -35,6 +36,7 @@ class Firebase {
 
     this.firebase = firebase;
     this.auth = firebase.auth();
+    this.analytics = firebase.analytics();
     this.googleProvider = new firebase.auth.GoogleAuthProvider();
     this.googleProvider.setCustomParameters({
       prompt: 'select_account'
@@ -45,22 +47,6 @@ class Firebase {
     this.auth.signInWithPopup(this.googleProvider);
 
   doSignOut = () => this.auth.signOut();
-
-  // onAuthUserListener = (next, fallback) =>
-  //   this.auth.onAuthStateChanged(async authUser => {
-  //     if (authUser) {
-  //       const result = await authUser.getIdTokenResult();
-  //       authUser = {
-  //         uid: authUser.uid,
-  //         name: authUser.displayName,
-  //         email: authUser.email,
-  //         providerData: authUser.providerData,
-  //         hasUserObject: result.claims.hasUserObject,
-  //       };
-  //
-  //       next(authUser)
-  //     }
-  //   });
 }
 
 export default new Firebase();

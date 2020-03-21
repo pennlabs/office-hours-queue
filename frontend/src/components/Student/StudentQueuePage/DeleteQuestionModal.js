@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Segment, Button } from 'semantic-ui-react';
 import { useMutation } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
+import firebase from "../../Firebase";
 
 const WITHDRAW_QUESTION = gql`
   mutation WithdrawQuestion($input: WithdrawQuestionInput!) {
@@ -27,6 +28,7 @@ const DeleteQuestionModal = (props) => {
           }
         }
       });
+      firebase.analytics.logEvent('question_withdrawn');
       await props.refetch();
       props.setOpen(false);
       props.toastFunc("Question withdrawn!", null);

@@ -5,6 +5,7 @@ import { Segment } from 'semantic-ui-react';
 import ReactCodeInput from 'react-code-input';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
+import firebase from "../../Firebase";
 
 const SEND_SMS_VERIFICATION = gql`
   mutation SendSmsVerification($input: SendSMSVerificationInput!) {
@@ -72,6 +73,7 @@ const VerificationForm = (props) => {
           }
         }
       });
+      firebase.analytics.logEvent('sms_verified');
       props.refetch();
       props.openFunc(false);
       props.toastFunc({

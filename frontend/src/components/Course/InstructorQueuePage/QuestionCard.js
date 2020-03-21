@@ -4,6 +4,7 @@ import RejectQuestionModal from './RejectQuestionModal';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks'
 import moment from 'moment';
+import firebase from "../../Firebase";
 
 const START_QUESTION = gql`
   mutation StartQuestion($input: StartQuestionInput!) {
@@ -59,6 +60,7 @@ const QuestionCard = (props) => {
         }
       }
     });
+    firebase.analytics.logEvent('question_started');
     props.refetch();
   };
 
@@ -70,6 +72,7 @@ const QuestionCard = (props) => {
         }
       }
     });
+    firebase.analytics.logEvent('question_finished');
     props.refetch();
   };
 
@@ -81,6 +84,7 @@ const QuestionCard = (props) => {
         }
       }
     });
+    firebase.analytics.logEvent('question_undo');
     props.refetch();
   };
 
