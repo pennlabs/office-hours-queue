@@ -62,7 +62,7 @@ def send_added_to_course_email(course_user: CourseUser):
     )
 
     subject = f"A new course has been added to your account"
-    title = f"{formatted_course_name} as been added to your account"
+    title = f"{formatted_course_name} has been added to your account"
     body = f"You have been added to {formatted_course_name} as " \
            f"{'an' if course_user.kind == CourseUserKind.ADMIN.name else 'a'} " \
            f"{CourseUserKind.to_pretty(course_user.kind)} by " \
