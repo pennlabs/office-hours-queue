@@ -20,7 +20,7 @@ const AboutModal = (props) => {
         <a target='_blank'
            rel="noopener noreferrer"
            href={'mailto:support@ohq.io'}>
-          officehourqueue@gmail.com
+          support@ohq.io
         </a>.
       </Modal.Content>
       <Modal.Actions>
