@@ -19,7 +19,7 @@ const AboutModal = (props) => {
         If you have any questions, feedback, or suggestions you can reach us at{' '}
         <a target='_blank'
            rel="noopener noreferrer"
-           href={'mailto:officehourqueue@gmail.com'}>
+           href={'mailto:support@ohq.io'}>
           officehourqueue@gmail.com
         </a>.
       </Modal.Content>
