@@ -1,4 +1,5 @@
 import {useQuery} from "@apollo/react-hooks";
+import React from 'react';
 
 export function isValidEmail(email) {
   const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -69,4 +70,12 @@ export function queueSortFunc(a, b) {
     return a.name < b.name ? -1 : 1;
   }
   return 0;
+}
+
+export function linkifyComponentDecorator (href, text, key) {
+  return (
+    <a href={href} key={key} target="_blank" rel="noopener noreferrer">
+      {text}
+    </a>
+  );
 }

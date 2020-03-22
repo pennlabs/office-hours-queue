@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Grid, Segment, Header, Tab, Button, Dimmer, Loader } from 'semantic-ui-react';
+import { linkifyComponentDecorator } from '../../../../utils';
 import Linkify from 'react-linkify';
 import QueueForm from './QueueForm';
 import TagForm from './TagForm';
@@ -23,7 +24,9 @@ const QueueSettings = (props) => {
                 <Header as="h3">
                   { queue.name }
                   <Header.Subheader>
-                    <Linkify>{ queue.description }</Linkify>
+                    <Linkify componentDecorator={linkifyComponentDecorator}>
+                      { queue.description }
+                    </Linkify>
                   </Header.Subheader>
                 </Header>
               </Grid.Column>

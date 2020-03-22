@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Segment, Label, Header, Grid, Message } from 'semantic-ui-react';
+import { linkifyComponentDecorator } from '../../../utils';
 import QuestionForm from './QuestionForm';
 import QuestionCard from './QuestionCard';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -37,7 +38,9 @@ const StudentQueue = (props) => {
       <Header as="h3">
         { queue.name }
         <Header.Subheader>
-          <Linkify>{ queue.description }</Linkify>
+          <Linkify componentDecorator={linkifyComponentDecorator}>
+            { queue.description }
+          </Linkify>
         </Header.Subheader>
       </Header>
       <Label

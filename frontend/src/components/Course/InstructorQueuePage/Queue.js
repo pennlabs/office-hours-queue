@@ -5,6 +5,7 @@ import {useMutation, useQuery} from '@apollo/react-hooks';
 import Linkify from 'react-linkify';
 import Questions from './Questions';
 import QueueFilterForm from './QueueFilterForm';
+import { linkifyComponentDecorator } from '../../../utils';
 
 const GET_QUESTIONS = gql`
   query GetQuestions($id: ID!) {
@@ -165,7 +166,9 @@ const Queue = (props) => {
       <Header as="h3">
         { queue.name }
         <Header.Subheader>
-          <Linkify>{ queue.description }</Linkify>
+          <Linkify componentDecorator={linkifyComponentDecorator}>
+            { queue.description }
+          </Linkify>
         </Header.Subheader>
       </Header>
       <Grid>
