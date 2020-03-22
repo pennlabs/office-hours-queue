@@ -5,7 +5,6 @@ import { Form, Button, Icon, Popup } from 'semantic-ui-react';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 import VerificationModal from './VerificationModal';
-import { Header } from 'semantic-ui-react';
 import firebase from "../../Firebase";
 
 

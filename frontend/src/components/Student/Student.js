@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import StudentQueuePage from './StudentQueuePage/StudentQueuePage';
 import StudentSidebar from './StudentSidebar';
 import { Grid, Segment, Header } from 'semantic-ui-react';
-
-import { withAuthorization } from '../Session';
-import { compose } from 'recompose';
 
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
@@ -99,13 +96,3 @@ const Student = (props) => {
 };
 
 export default Student;
-
-/*
-const condition = (authUser) => {
-  return authUser && authUser.hasUserObject;
-};
-
-export default compose(
-  withAuthorization(condition),
-)(Student);
-*/

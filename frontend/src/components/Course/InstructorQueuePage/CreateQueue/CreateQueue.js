@@ -75,6 +75,8 @@ const CreateQueue = (props) => {
         setTagsInputValue('');
         setTags([...tags, {label: tagsInputValue, value: tagsInputValue}]);
         event.preventDefault();
+        return;
+      default: return;
     }
   };
 

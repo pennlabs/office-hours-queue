@@ -3,8 +3,6 @@ import { Modal, Button } from 'semantic-ui-react';
 import AddForm from './AddForm';
 import {gql} from "apollo-boost";
 import {useMutation} from "@apollo/react-hooks";
-import Alert from "@material-ui/lab/Alert";
-import Snackbar from "@material-ui/core/Snackbar";
 
 const INVITE_OR_ADD_EMAILS = gql`
   mutation InviteOrAddEmails($input: InviteOrAddEmailsInput!) {

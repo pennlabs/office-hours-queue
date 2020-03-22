@@ -14,10 +14,10 @@ const LastQuestionCard = (props) => {
       case 'NOT_HERE': return 'Not Here';
       case 'OH_ENDED': return 'OH Ended';
       case 'NOT_SPECIFIC': return 'Not Specific';
-      case 'WRONG_QUEUE': return 'Wrong Queue'
+      case 'WRONG_QUEUE': return 'Wrong Queue';
       default: return reason;
     }
-  }
+  };
 
   const segmentColor = (state) => {
     switch (state) {

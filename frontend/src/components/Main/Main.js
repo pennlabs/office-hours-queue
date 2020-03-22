@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Grid, Loader, Segment, Dimmer } from 'semantic-ui-react'
+import { Grid } from 'semantic-ui-react'
 import Course from '../Course/Course';
 import Student from '../Student/Student'
 

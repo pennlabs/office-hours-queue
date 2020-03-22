@@ -78,7 +78,6 @@ const StudentQueuePage = (props) => {
 
   const [queues, setQueues] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(null);
-  const [active, setActive] = useState('queues');
 
   const loadQueues = (data) => {
     return data.course.queues.edges.filter(item => !item.node.archived).map(item => {
