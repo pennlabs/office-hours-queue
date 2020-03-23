@@ -197,7 +197,7 @@ const QuestionCard = (props) => {
                         color='blue'
                         content={
                           b64Equal(question.answeredBy.id, props.userId) ?
-                            'Join Call' :
+                            'Rejoin Call' :
                             `Join Call (with ${question.answeredBy.preferredName})`
                         }
                         disabled={ isLoading() }
