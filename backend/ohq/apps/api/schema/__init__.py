@@ -52,11 +52,6 @@ class Query(graphene.ObjectType):
     joinable_courses = DjangoFilterConnectionField(types.CourseMetaNode)
 
     def resolve_joinable_courses(self, info, **kwargs):
-        course_ids = (
-            CourseUser.objects
-                .filter(user=info.context.user.get_user())
-                .values_list('course_id', flat=True)
-        )
         return Course.objects.filter(
             invite_only=False,
             archived=False,
