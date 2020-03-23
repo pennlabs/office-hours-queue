@@ -1,25 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Grid, Message } from 'semantic-ui-react';
 import _ from 'lodash';
 import QuestionCard from './QuestionCard';
 
 const Questions = (props) => {
-  const [filteredQuestions, setFilteredQuestions] = useState(props.questions);
-  const [active, setActive] = useState(props.active);
-
-  useEffect(() => {
-    setFilteredQuestions(props.questions);
-  }, [props.questions]);
-
-  useEffect(() => {
-    setActive(props.active);
-  }, [props.active])
-
   return [
     <Grid.Column>
       {
-        filteredQuestions && filteredQuestions.length !== 0 &&
-        _.sortBy(filteredQuestions, "timeAsked").map(question => (
+        props.questions && props.questions.length !== 0 &&
+        _.sortBy(props.questions, "orderKey").map(question => (
           <Grid.Row>
             <QuestionCard key={ question.id }
               question={ question }
@@ -29,7 +18,7 @@ const Questions = (props) => {
         ))
       }
     </Grid.Column>,
-    active && filteredQuestions && filteredQuestions.length === 0 &&
+    props.active && props.questions && props.questions.length === 0 &&
     <Grid>
       <Grid.Row>
         <Grid.Column>
@@ -38,7 +27,7 @@ const Questions = (props) => {
         </Grid.Column>
       </Grid.Row>
     </Grid>,
-    !active && filteredQuestions.length === 0 &&
+    !props.active && props.questions.length === 0 &&
     <Grid>
       <Grid.Row>
         <Grid.Column>
