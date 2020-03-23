@@ -15,8 +15,8 @@ const Questions = (props) => {
     setActive(props.active);
   }, [props.active])
 
-  return (
-    <Grid.Row>
+  return [
+    <Grid.Column>
       {
         filteredQuestions && filteredQuestions.length !== 0 &&
         _.sortBy(filteredQuestions, "timeAsked").map(question => (
@@ -28,22 +28,26 @@ const Questions = (props) => {
           </Grid.Row>
         ))
       }
-      {
-        active && filteredQuestions && filteredQuestions.length === 0 &&
-        <Grid.Row style={{"marginTop":"10px"}}>
+    </Grid.Column>,
+    active && filteredQuestions && filteredQuestions.length === 0 &&
+    <Grid>
+      <Grid.Row>
+        <Grid.Column>
           <Message icon="folder open outline" header="Empty Queue"
             content="This queue currently has no questions, or no questions match your tag filter."/>
-        </Grid.Row>
-      }
-      {
-        !active && filteredQuestions.length === 0 &&
-        <Grid.Row style={{"marginTop":"10px"}}>
+        </Grid.Column>
+      </Grid.Row>
+    </Grid>,
+    !active && filteredQuestions.length === 0 &&
+    <Grid>
+      <Grid.Row>
+        <Grid.Column>
           <Message icon="calendar times outline" header="Closed Queue"
             content="This queue is currently closed. You can open it by using the 'open' button above." error/>
-        </Grid.Row>
-      }
-    </Grid.Row>
-  );
+        </Grid.Column>
+      </Grid.Row>
+    </Grid>
+  ];
 };
 
 export default Questions;

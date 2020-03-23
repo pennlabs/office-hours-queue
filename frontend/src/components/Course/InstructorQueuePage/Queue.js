@@ -208,19 +208,29 @@ const Queue = (props) => {
           </Grid.Column>
         </Grid.Row>
       </Grid>
-      {
-        tags.length > 0 &&
-        <Grid.Row>
-        <QueueFilterForm tags={ tags } changeFunc={ handleFilterChange }/>
+      <Grid style={{marginTop: "-5px"}}>
+        <Grid.Row columns="equal">
+          {
+            tags.length > 0 &&
+            <Grid.Column>
+              <QueueFilterForm tags={ tags } changeFunc={ handleFilterChange }/>
+            </Grid.Column>
+          }
+          {
+            !active && questions.length > 0 &&
+            <Grid.Column textAlign="right" floated="right" only="computer mobile">
+              <Button content="Clear Queue" size="medium" basic color="red"/>
+            </Grid.Column>
+          }
         </Grid.Row>
-      }
-      <Grid.Row columns={1} padded="true">
-          <Questions
-            questions={ filteredQuestions }
-            filters={ filters }
-            refetch={ refetch }
-            active={ active }
-            userId={ props.userId }/>
+      </Grid>
+      <Grid.Row columns={1}>
+        <Questions
+          questions={ filteredQuestions }
+          filters={ filters }
+          refetch={ refetch }
+          active={ active }
+          userId={ props.userId }/>
       </Grid.Row>
     </Segment>
   );

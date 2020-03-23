@@ -18,21 +18,20 @@ const QueueFilterForm = (props) => {
   };
 
   return (
-    <Form style={{"marginTop":"10px"}}>
-      {
-        tagOptions && <Form.Group>
-        <Form.Field>
-          {/*<label>Tags</label>*/}
-          <Form.Dropdown multiple
-            selection
-            name="tags"
-            placeholder="Filter by tags"
-            options={ tagOptions }
-            onChange={ handleInputChange }/>
-        </Form.Field>
-      </Form.Group>
-      }
-    </Form>
+<Form.Group>
+  {
+    tagOptions && 
+    <Form.Field>
+    {/*<label>Tags</label>*/}
+    <Form.Dropdown multiple
+      selection
+      name="tags"
+      placeholder="Filter by tags"
+      options={ tagOptions }
+      onChange={ handleInputChange }/>
+  </Form.Field>
+  }
+  </Form.Group>
   )
 };
 
