@@ -234,7 +234,7 @@ class ClearQueue(graphene.Mutation):
                 raise user_not_staff_error
             if queue.course.archived:
                 raise course_archived_error
-            if queue.active_override_time is None:
+            if queue.active_override_time is not None:
                 raise queue_active_error
 
             started_questions = Question.objects.filter(
