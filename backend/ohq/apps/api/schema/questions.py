@@ -53,7 +53,7 @@ class CreateQuestion(graphene.Mutation):
             if course.archived:
                 raise course_archived_error
             if queue.active_override_time is None:
-                raise queue_closed_error
+                raise queue_inactive_error
             # Check for any other active questions in this course
             if Question.objects.filter(
                 asked_by=user,

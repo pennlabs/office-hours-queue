@@ -205,3 +205,57 @@ class ManuallyDeactivateQueue(graphene.Mutation):
             queue.save()
 
         return ManuallyDeactivateQueueResponse(queue=queue)
+
+
+class ClearQueueInput(graphene.InputObjectType):
+    queue_id = graphene.ID(required=True)
+
+
+class ClearQueueResponse(graphene.ObjectType):
+    success = graphene.Boolean(required=True)
+
+
+class ClearQueue(graphene.Mutation):
+    class Arguments:
+        input = ClearQueueInput(required=True)
+
+    Output = ClearQueueResponse
+
+    @staticmethod
+    def mutate(root, info, input):
+        with transaction.atomic():
+            user = info.context.user.get_user()
+            queue = Queue.objects.get(pk=from_global_id(input.queue_id)[1])
+            if not CourseUser.objects.filter(
+                user=user,
+                course=queue.course,
+                kind__in=CourseUserKind.staff(),
+            ).exists():
+                raise user_not_staff_error
+            if queue.course.archived:
+                raise course_archived_error
+            if queue.active_override_time is None:
+                raise queue_active_error
+
+            started_questions = Question.objects.filter(
+                queue=queue,
+                time_rejected__isnull=True,
+                time_withdrawn__isnull=True,
+                time_answered__isnull=True,
+                time_started__isnull=False,
+            )
+            active_questions = Question.objects.filter(
+                queue=queue,
+                time_rejected__isnull=True,
+                time_withdrawn__isnull=True,
+                time_started__isnull=True,
+            )
+            now = datetime.now()
+            started_questions.bulk_update(time_finished=now)
+            active_questions.bulk_update(
+                time_rejected=now,
+                rejected_reason=QuestionRejectionReason.OH_ENDED.name,
+                rejected_by=user,
+            )
+
+        return ClearQueueResponse(success=True)
