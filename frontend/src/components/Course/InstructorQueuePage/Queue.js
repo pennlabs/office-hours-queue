@@ -52,13 +52,21 @@ const ACTIVATE_QUEUE = gql`
 `;
 
 const DEACTIVATE_QUEUE = gql`
-mutation ManuallyDeactivateQueue($input: ManuallyDeactivateQueueInput!) {
-  manuallyDeactivateQueue(input: $input) {
-    queue {
-      id
+  mutation ManuallyDeactivateQueue($input: ManuallyDeactivateQueueInput!) {
+    manuallyDeactivateQueue(input: $input) {
+      queue {
+        id
+      }
     }
   }
-}
+`;
+
+const CLEAR_QUEUE = gql`
+  mutation ClearQueue($input: ClearQueueInput!) {
+    clearQueue(input: $input) {
+      success
+    }
+  }
 `;
 
 const Queue = (props) => {
@@ -71,6 +79,7 @@ const Queue = (props) => {
   });
   const [activateQueue, activateQueueRes] = useMutation(ACTIVATE_QUEUE);
   const [deactivateQueue, deactivateQueueRes] = useMutation(DEACTIVATE_QUEUE);
+  const [clearQueue, clearQueueRes] = useMutation(CLEAR_QUEUE)
 
   const getQuestions = (data) => {
     if (!data) { return [] }
@@ -116,6 +125,21 @@ const Queue = (props) => {
     setActive(false);
     props.refetch();
   };
+
+  const onClear = async () => {
+    try {
+      await clearQueue({
+        variables: {
+          input: {
+            queueId: props.queue.id
+          }
+        }
+      });
+      props.refetch();
+    } catch (e) {
+      console.log(e)
+    } 
+  }
 
   const filter = (questions, filters) => {
     return questions.filter(question => {
@@ -219,7 +243,12 @@ const Queue = (props) => {
           {
             !active && questions.length > 0 &&
             <Grid.Column textAlign="right" floated="right" only="computer mobile">
-              <Button content="Clear Queue" size="medium" basic color="red"/>
+              <Button content="Clear Queue" 
+                size="medium"
+                basic color="red"
+                disabled={ (clearQueueRes && clearQueueRes.loading) || 
+                  (activateQueueRes && activateQueueRes.loading) }
+                onClick={ onClear }/>
             </Grid.Column>
           }
         </Grid.Row>
