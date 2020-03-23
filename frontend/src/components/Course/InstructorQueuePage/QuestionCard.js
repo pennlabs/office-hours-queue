@@ -195,7 +195,11 @@ const QuestionCard = (props) => {
                       <Button compact
                         size='mini'
                         color='blue'
-                        content='Join Call'
+                        content={
+                          b64Equal(question.answeredBy.id, props.userId) ?
+                            'Join Call' :
+                            `Join Call (with ${question.answeredBy.preferredName})`
+                        }
                         disabled={ isLoading() }
                       />
                     </a>

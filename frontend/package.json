@@ -33,6 +33,7 @@
   },
   "scripts": {
     "start": "REACT_APP_GCLOUD_PROJECT=office-hour-q react-scripts start",
+    "start-stg": "REACT_APP_GCLOUD_PROJECT=office-hour-q-stg react-scripts start",
     "build-prod": "REACT_APP_GCLOUD_PROJECT=office-hour-q react-scripts build",
     "build-stg": "REACT_APP_GCLOUD_PROJECT=office-hour-q-stg react-scripts build",
     "test": "react-scripts test",
