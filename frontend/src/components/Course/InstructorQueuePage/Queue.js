@@ -62,14 +62,6 @@ const DEACTIVATE_QUEUE = gql`
   }
 `;
 
-const CLEAR_QUEUE = gql`
-  mutation ClearQueue($input: ClearQueueInput!) {
-    clearQueue(input: $input) {
-      success
-    }
-  }
-`;
-
 const Queue = (props) => {
   const { data, refetch } = useQuery(GET_QUESTIONS, {
     variables: {
@@ -80,7 +72,6 @@ const Queue = (props) => {
   });
   const [activateQueue, activateQueueRes] = useMutation(ACTIVATE_QUEUE);
   const [deactivateQueue, deactivateQueueRes] = useMutation(DEACTIVATE_QUEUE);
-  const [clearQueue, clearQueueRes] = useMutation(CLEAR_QUEUE);
   const [clearModalOpen, setClearModalOpen] = useState(false);
 
   const getQuestions = (data) => {
@@ -128,21 +119,6 @@ const Queue = (props) => {
     props.refetch();
   };
 
-  const onClear = async () => {
-    try {
-      await clearQueue({
-        variables: {
-          input: {
-            queueId: props.queue.id
-          }
-        }
-      });
-      props.refetch();
-    } catch (e) {
-      console.log(e)
-    } 
-  }
-
   const filter = (questions, filters) => {
     return questions.filter(question => {
       return isSubset(question.tags, filters.tags);
@@ -189,10 +165,11 @@ const Queue = (props) => {
 
   return (
     <Segment basic>
-      <ClearQueueModal open={ clearModalOpen }
+      <ClearQueueModal
+        open={ clearModalOpen }
         queue={ queue }
-        openFunc={ setClearModalOpen }
-        clearFunc={ onClear }/>
+        refetch={ props.refetch }
+        closeFunc={ () => setClearModalOpen(false) }/>
       <Header as="h3">
         { queue.name }
         <Header.Subheader>
@@ -252,8 +229,8 @@ const Queue = (props) => {
               <Button content="Clear Queue"
                 fluid size="medium"
                 basic color="red"
-                disabled={ (clearQueueRes && clearQueueRes.loading) || 
-                  (activateQueueRes && activateQueueRes.loading) }
+                // disabled={ (clearQueueRes && clearQueueRes.loading) ||
+                //   (activateQueueRes && activateQueueRes.loading) }
                 onClick={ () => setClearModalOpen(true) }/>
             </Grid.Column>
           }

@@ -1,43 +1,69 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Modal, List, Button } from 'semantic-ui-react';
+import { gql } from "apollo-boost";
+import { useMutation } from "@apollo/react-hooks";
+
+const CLEAR_QUEUE = gql`
+  mutation ClearQueue($input: ClearQueueInput!) {
+    clearQueue(input: $input) {
+      success
+    }
+  }
+`;
+
 
 const ClearQueueModal = (props) => {
-  const [queue, setQueue] = useState(props.queue);
-  const [open, setOpen] = useState(props.open);
 
-  const onSubmit = () => {
-    props.clearFunc();
-    props.openFunc(false);
-  }
+  const [clearQueue, { loading }] = useMutation(CLEAR_QUEUE);
+  const [refetchLoading, setRefetchLoading] = useState(false);
 
-  useEffect(() => {
-    setQueue(props.queue)
-  }, [props.queue]);
-
-  useEffect(() => {
-    setOpen(props.open)
-  }, [props.open])
+  const onSubmit = async () => {
+    try {
+      await clearQueue({
+        variables: {
+          input: {
+            queueId: props.queue.id
+          }
+        }
+      });
+      await setRefetchLoading(true);
+      await props.refetch();
+      await setRefetchLoading(false);
+      props.closeFunc();
+    } catch (e) {
+      console.log(e)
+      await setRefetchLoading(false);
+    }
+  };
 
   return (
-    <Modal open={ open }>
-        <Modal.Header content="Clear Queue"/>
-        <Modal.Content>
-          <div>
-            You are about to clear all remaining questions on: <b>{ queue.name }</b><br/>
-            <br/>
-            Doing so will:
-            <List ordered>
-              <List.Item>Reject all pending questions.</List.Item>
-              <List.Item>Finish all questions currently being answered.</List.Item>
-            </List>
-          </div>
-        </Modal.Content>
-        <Modal.Actions>
-          <Button content="Cancel" onClick={ () => props.openFunc(false) }/>
-          <Button color="red" content="Clear" onClick={ onSubmit }/>
-        </Modal.Actions>
-      </Modal>
+    <Modal open={ props.open }>
+      <Modal.Header content="Clear Queue"/>
+      <Modal.Content>
+        <div>
+          You are about to clear all remaining questions on <b>{ props.queue.name }</b>.<br/>
+          <br/>
+          Doing so will:
+          <List ordered>
+            <List.Item>Reject all pending questions.</List.Item>
+            <List.Item>Finish all questions currently being answered.</List.Item>
+          </List>
+        </div>
+      </Modal.Content>
+      <Modal.Actions>
+        <Button
+          content="Cancel"
+          disabled={ loading || refetchLoading }
+          onClick={ () => props.closeFunc() }/>
+        <Button
+          color="red"
+          content="Clear"
+          disabled={ loading || refetchLoading }
+          loading={ loading || refetchLoading }
+          onClick={ onSubmit }/>
+      </Modal.Actions>
+    </Modal>
   )
-}
+};
 
 export default ClearQueueModal;
