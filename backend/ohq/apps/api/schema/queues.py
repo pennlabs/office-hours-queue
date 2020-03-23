@@ -237,6 +237,7 @@ class ClearQueue(graphene.Mutation):
             if queue.active_override_time is not None:
                 raise queue_active_error
 
+            now = datetime.now()
             started_questions = Question.objects.filter(
                 queue=queue,
                 time_rejected__isnull=True,
@@ -244,18 +245,23 @@ class ClearQueue(graphene.Mutation):
                 time_answered__isnull=True,
                 time_started__isnull=False,
             )
+            for question in started_questions:
+                question.time_answered = now
+            Question.objects.bulk_update(started_questions, ["time_answered"])
+
             active_questions = Question.objects.filter(
                 queue=queue,
                 time_rejected__isnull=True,
                 time_withdrawn__isnull=True,
                 time_started__isnull=True,
             )
-            now = datetime.now()
-            started_questions.bulk_update(time_answered=now)
-            active_questions.bulk_update(
-                time_rejected=now,
-                rejected_reason=QuestionRejectionReason.OH_ENDED.name,
-                rejected_by=user,
+            for question in active_questions:
+                question.time_rejected = now
+                question.rejected_reason = QuestionRejectionReason.OH_ENDED.name
+                question.rejected_by = user
+            Question.objects.bulk_update(
+                active_questions,
+                ["time_rejected", "rejected_reason", "rejected_by"],
             )
 
         return ClearQueueResponse(success=True)

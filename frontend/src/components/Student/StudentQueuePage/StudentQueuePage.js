@@ -4,6 +4,7 @@ import StudentQueues from './StudentQueues';
 
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
+import { queueSortFunc } from "../../../utils";
 
 /* GRAPHQL QUERIES/MUTATIONS */
 const GET_QUEUES = gql`
@@ -12,7 +13,7 @@ const GET_QUEUES = gql`
       id
       videoChatEnabled
       requireVideoChatUrlOnQuestions
-      queues {
+      queues(archived: false) {
         edges {
           node {
             id
@@ -80,7 +81,7 @@ const StudentQueuePage = (props) => {
   const [currentQuestion, setCurrentQuestion] = useState(null);
 
   const loadQueues = (data) => {
-    return data.course.queues.edges.filter(item => !item.node.archived).map(item => {
+    return data.course.queues.edges.map(item => {
       return {
         id: item.node.id,
         videoChatEnabled: data.course.videoChatEnabled,
@@ -92,7 +93,7 @@ const StudentQueuePage = (props) => {
         estimatedWaitTime: item.node.estimatedWaitTime,
         numberActiveQuestions: item.node.numberActiveQuestions
       };
-    });
+    }).sort(queueSortFunc);
   };
 
   if (getQueuesRes.data && getQueuesRes.data.course) {
