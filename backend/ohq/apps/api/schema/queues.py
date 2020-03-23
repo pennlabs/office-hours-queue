@@ -251,7 +251,7 @@ class ClearQueue(graphene.Mutation):
                 time_started__isnull=True,
             )
             now = datetime.now()
-            started_questions.bulk_update(time_finished=now)
+            started_questions.bulk_update(time_answered=now)
             active_questions.bulk_update(
                 time_rejected=now,
                 rejected_reason=QuestionRejectionReason.OH_ENDED.name,
