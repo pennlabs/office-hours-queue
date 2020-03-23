@@ -79,3 +79,11 @@ export function linkifyComponentDecorator (href, text, key) {
     </a>
   );
 }
+
+export function uidFromGlobalId(globalId) {
+  return atob(globalId).split(":")[1]
+}
+
+export function globalIdEquals(string1, string2) {
+  return uidFromGlobalId(string1) === uidFromGlobalId(string2)
+};

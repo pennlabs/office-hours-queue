@@ -57,7 +57,7 @@ class Query(graphene.ObjectType):
                 .filter(user=info.context.user.get_user())
                 .values_list('course_id', flat=True)
         )
-        return Course.objects.exclude(id__in=course_ids).filter(
+        return Course.objects.filter(
             invite_only=False,
             archived=False,
             **kwargs

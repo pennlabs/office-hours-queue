@@ -4,7 +4,8 @@ import RejectQuestionModal from './RejectQuestionModal';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks'
 import moment from 'moment';
-import firebase from "../../Firebase";
+import firebase from '../../Firebase';
+import { globalIdEquals } from '../../../utils';
 
 const START_QUESTION = gql`
   mutation StartQuestion($input: StartQuestionInput!) {
@@ -94,10 +95,6 @@ const QuestionCard = (props) => {
       (undoStartQuestionRes && undoStartQuestionRes.loading);
   };
 
-  const b64Equal = (string1, string2) => {
-    return atob(string1).split(":")[1] === atob(string2).split(":")[1]
-  };
-
   useEffect(() => {
     setQuestion(props.question);
   }, [props.question]);
@@ -166,7 +163,7 @@ const QuestionCard = (props) => {
                     </Header.Content>
                   }
                   {
-                    question.timeStarted && b64Equal(question.answeredBy.id, props.userId) &&
+                    question.timeStarted && globalIdEquals(question.answeredBy.id, props.userId) &&
                     <Header.Content>
                       <Button compact
                         size='mini'
@@ -178,7 +175,7 @@ const QuestionCard = (props) => {
                     </Header.Content>
                   }
                   {
-                    question.timeStarted && b64Equal(question.answeredBy.id, props.userId) &&
+                    question.timeStarted && globalIdEquals(question.answeredBy.id, props.userId) &&
                     <Header.Content>
                       <Button compact
                         size='mini'
@@ -196,7 +193,7 @@ const QuestionCard = (props) => {
                         size='mini'
                         color='blue'
                         content={
-                          b64Equal(question.answeredBy.id, props.userId) ?
+                          globalIdEquals(question.answeredBy.id, props.userId) ?
                             'Rejoin Call' :
                             `Join Call (with ${question.answeredBy.preferredName})`
                         }

@@ -10,23 +10,24 @@ import Alert from '@material-ui/lab/Alert';
 const StudentCourses = (props) => {
   /* STATE */
   const [open, setOpen] = useState(false);
-  const [courses, setCourses] = useState(props.courses);
   const [success, setSuccess] = useState(false); //opening snackbar
 
-  useEffect(() => {
-    setCourses(props.courses);
-  }, [props.courses]);
+  // const [courses, setCourses] = useState(props.courses);
+  // useEffect(() => {
+  //   setCourses(props.courses);
+  // }, [props.courses]);
 
   return (
     [
       <Grid.Row padded="true" stackable>
         <ModalAddStudentCourse
             open={ open }
+            allCourses={ props.allCourses }
             closeFunc={ () => setOpen(false) }
             refetch={ props.refetch }
             successFunc={ setSuccess }/>
           {
-            courses.map((course) => (
+            props.courses.map((course) => (
               !course.archived &&
               <Grid.Column key={course.id} style={{width:"280px"}}>
                 <CourseCard

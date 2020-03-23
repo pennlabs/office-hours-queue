@@ -80,7 +80,7 @@ const Dashboard = (props) => {
                 }
               </Grid.Row>
             </Grid> :
-            <StudentCourses courses={ getCourses(courses, true) } refetch={ props.refetch }/>
+            <StudentCourses allCourses={ courses } courses={ getCourses(courses, true) } refetch={ props.refetch }/>
           }
           { !props.loading && hasInstructorCourses && [
               <Grid.Row>

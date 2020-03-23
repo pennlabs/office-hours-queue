@@ -46,7 +46,7 @@ const ModalAddStudentCourse = (props) => {
     <Modal open={ props.open }>
       <Modal.Header>Join Courses</Modal.Header>
       <Modal.Content>
-        <AddStudentForm changeFunc={ handleInputChange }/>
+        <AddStudentForm allCourses={ props.allCourses } changeFunc={ handleInputChange }/>
       </Modal.Content>
       <Modal.Actions>
         <Button
