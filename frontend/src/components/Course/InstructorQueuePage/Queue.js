@@ -5,6 +5,7 @@ import {useMutation, useQuery} from '@apollo/react-hooks';
 import Linkify from 'react-linkify';
 import Questions from './Questions';
 import QueueFilterForm from './QueueFilterForm';
+import ClearQueueModal from './ClearQueueModal';
 import { linkifyComponentDecorator } from '../../../utils';
 
 const GET_QUESTIONS = gql`
@@ -79,7 +80,8 @@ const Queue = (props) => {
   });
   const [activateQueue, activateQueueRes] = useMutation(ACTIVATE_QUEUE);
   const [deactivateQueue, deactivateQueueRes] = useMutation(DEACTIVATE_QUEUE);
-  const [clearQueue, clearQueueRes] = useMutation(CLEAR_QUEUE)
+  const [clearQueue, clearQueueRes] = useMutation(CLEAR_QUEUE);
+  const [clearModalOpen, setClearModalOpen] = useState(false);
 
   const getQuestions = (data) => {
     if (!data) { return [] }
@@ -187,6 +189,10 @@ const Queue = (props) => {
 
   return (
     <Segment basic>
+      <ClearQueueModal open={ clearModalOpen }
+        queue={ queue }
+        openFunc={ setClearModalOpen }
+        clearFunc={ onClear }/>
       <Header as="h3">
         { queue.name }
         <Header.Subheader>
@@ -243,12 +249,12 @@ const Queue = (props) => {
           {
             !active && questions.length > 0 &&
             <Grid.Column textAlign="right" floated="right" only="computer mobile">
-              <Button content="Clear Queue" 
-                size="medium"
+              <Button content="Clear Queue"
+                fluid size="medium"
                 basic color="red"
                 disabled={ (clearQueueRes && clearQueueRes.loading) || 
                   (activateQueueRes && activateQueueRes.loading) }
-                onClick={ onClear }/>
+                onClick={ () => setClearModalOpen(true) }/>
             </Grid.Column>
           }
         </Grid.Row>
