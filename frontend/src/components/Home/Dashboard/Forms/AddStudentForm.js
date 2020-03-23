@@ -42,7 +42,6 @@ const AddStudentForm = (props) => {
       searchableName_Icontains: inputValue,
     });
     return data.joinableCourses.edges.map((item) => {
-      console.log("id", uidFromGlobalId(item.node.id));
       const existing = existingCourses.has(uidFromGlobalId(item.node.id));
       const courseString = `${item.node.department} ${item.node.courseCode} (${item.node.courseTitle}, ${prettifySemester(item.node.semester)} ${item.node.year})`;
       return {
