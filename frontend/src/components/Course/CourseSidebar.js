@@ -3,10 +3,13 @@ import { Segment, Menu, Grid, Image, Header, List, Icon } from 'semantic-ui-reac
 import { Link } from 'react-router-dom';
 import { prettifyRole } from "../../utils/enums";
 
+import AboutModal from "../LandingPage/AboutModal";
+
 const CourseSidebar = (props) => {
   const [leadership, setLeadership] = useState(props.leadership);
   const [leader, setLeader] = useState(props.leader);
   const noWrapStyle = {whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}
+  const [showAboutModal, setShowAboutModal] = useState(false);
 
   useEffect(() => {
     setLeadership(props.leadership)
@@ -85,6 +88,10 @@ const CourseSidebar = (props) => {
           </List>
         </Segment>
       }
+      <div className='about about-dashboard' onClick={() => setShowAboutModal(true)}>
+        <label>Feedback</label>
+      </div>
+      <AboutModal open={showAboutModal} closeFunc={() => setShowAboutModal(false)}/>
     </Grid.Column>
   )
 };
