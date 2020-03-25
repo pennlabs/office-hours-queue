@@ -67,7 +67,7 @@ const Queue = (props) => {
     variables: {
       id: props.queue.id
     },
-    pollInterval: 1000 + Math.random() * 500,
+    pollInterval: 3000 + Math.random() * 500,
     skip: !props.queue.id
   });
   const [activateQueue, activateQueueRes] = useMutation(ACTIVATE_QUEUE);
