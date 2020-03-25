@@ -64,7 +64,10 @@ const StudentQueue = (props) => {
         }
         {
           queue.activeOverrideTime && !props.hasQuestion &&
-          <QuestionForm queue={ queue } refetch={ props.refetch } toastFunc={ updateToast }/>
+          <QuestionForm queue={ queue }
+            refetch={ props.refetch }
+            toastFunc={ updateToast }
+            startPolling={ props.startPolling }/>
         }
         {
           queue.activeOverrideTime && props.hasQuestion && !question &&

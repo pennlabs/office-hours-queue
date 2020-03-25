@@ -110,12 +110,20 @@ const StudentQueuePage = (props) => {
     }
   }
 
+  const shouldStopPolling = () => {
+    return getQuestionRes.data && getQuestionRes.data.currentQuestion && 
+    getQuestionRes.data.currentQuestion.state !== "ACTIVE" && getQuestionRes.data.currentQuestion.state !== "STARTED"
+  }
+
+  if (shouldStopPolling()) getQuestionRes.stopPolling();
+
   return (
     <Grid stackable>
       <StudentQueues
         queues={ queues }
         question={ currentQuestion }
-        refetch={ () => { getQuestionRes.refetch(); getQueuesRes.refetch() } }/>
+        refetch={ () => { getQuestionRes.refetch(); getQueuesRes.refetch() } }
+        startPolling={ getQuestionRes.startPolling }/>
     </Grid>
   );
 };

@@ -32,7 +32,8 @@ const StudentQueues = (props) => {
                   queue={ queue }
                   hasQuestion={ question !== null && showQuestion(question)  }
                   question={ question && showQuestion(question) && question.queue.id === queue.id ? question : null }
-                  refetch={ props.refetch }/>
+                  refetch={ props.refetch }
+                  startPolling={ props.startPolling }/>
               </Grid.Column>
             ))
         }
