@@ -61,7 +61,6 @@ const QuestionForm = (props) => {
       });
       firebase.analytics.logEvent('question_created');
       await props.refetch();
-      props.startPolling();
       props.toastFunc("Question successfully added to queue", null);
     } catch (e) {
       await props.refetch();

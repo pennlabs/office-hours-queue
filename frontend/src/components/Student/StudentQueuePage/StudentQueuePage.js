@@ -69,11 +69,12 @@ const StudentQueuePage = (props) => {
     skip: !props.course.id
   });
 
+  const pollInterval = 5000 + Math.random() * 500
   const getQuestionRes = useQuery(CURRENT_QUESTION, {
     variables: {
       courseId: props.course.id
     },
-    pollInterval: 5000 + Math.random() * 500,
+    pollInterval: pollInterval,
     skip: !props.course.id
   });
 
@@ -96,6 +97,11 @@ const StudentQueuePage = (props) => {
     }).sort(queueSortFunc);
   };
 
+  const shouldStopPolling = () => {
+    return getQuestionRes.data && getQuestionRes.data.currentQuestion && 
+    getQuestionRes.data.currentQuestion.state !== "ACTIVE" && getQuestionRes.data.currentQuestion.state !== "STARTED"
+  }
+
   if (getQueuesRes.data && getQueuesRes.data.course) {
     const newQueues = loadQueues(getQueuesRes.data);
     if (JSON.stringify(newQueues) !== JSON.stringify(queues)) {
@@ -108,22 +114,16 @@ const StudentQueuePage = (props) => {
     if (JSON.stringify(newCurrentQuestion) !== JSON.stringify(currentQuestion)) {
       setCurrentQuestion(newCurrentQuestion);
     }
-  }
 
-  const shouldStopPolling = () => {
-    return getQuestionRes.data && getQuestionRes.data.currentQuestion && 
-    getQuestionRes.data.currentQuestion.state !== "ACTIVE" && getQuestionRes.data.currentQuestion.state !== "STARTED"
+    shouldStopPolling() ? getQuestionRes.stopPolling() : getQuestionRes.startPolling(pollInterval);
   }
-
-  if (shouldStopPolling()) getQuestionRes.stopPolling();
 
   return (
     <Grid stackable>
       <StudentQueues
         queues={ queues }
         question={ currentQuestion }
-        refetch={ () => { getQuestionRes.refetch(); getQueuesRes.refetch() } }
-        startPolling={ getQuestionRes.startPolling }/>
+        refetch={ () => { getQuestionRes.refetch(); getQueuesRes.refetch() } }/>
     </Grid>
   );
 };

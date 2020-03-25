@@ -63,11 +63,12 @@ const DEACTIVATE_QUEUE = gql`
 `;
 
 const Queue = (props) => {
-  const { data, refetch } = useQuery(GET_QUESTIONS, {
+  const pollInterval = 3000 + Math.random() * 500
+  const { data, refetch, startPolling, stopPolling } = useQuery(GET_QUESTIONS, {
     variables: {
       id: props.queue.id
     },
-    pollInterval: 3000 + Math.random() * 500,
+    pollInterval: pollInterval,
     skip: !props.queue.id
   });
   const [activateQueue, activateQueueRes] = useMutation(ACTIVATE_QUEUE);
@@ -144,6 +145,11 @@ const Queue = (props) => {
   const [tags, setTags] = useState([]);
   const [filters, setFilters] = useState({ tags: [], status: null });
 
+  const shouldStopPolling = () => {
+    return !active && data && data.queue.queueQuestions.edges &&
+      data.queue.queueQuestions.edges.length == 0;
+  }
+
   if (data && data.queue) {
     const newQuestions = getQuestions(data);
     if (JSON.stringify(newQuestions) !== JSON.stringify(questions)) {
@@ -154,6 +160,7 @@ const Queue = (props) => {
     if (JSON.stringify(data.queue.tags) !== JSON.stringify(tags)) {
       setTags(data.queue.tags);
     }
+    shouldStopPolling() ? stopPolling() : startPolling(pollInterval);
   }
 
   useEffect(() => {
