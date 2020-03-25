@@ -104,16 +104,14 @@ const StudentQueuePage = (props) => {
     }
   }
 
-  const shouldStopPolling = (question) => {
-    return question.state !== "ACTIVE" && question.state !== "STARTED"
-  }
-
   if (getQuestionRes.data && getQuestionRes.data.currentQuestion) {
     const newCurrentQuestion = getQuestionRes.data.currentQuestion;
     if (JSON.stringify(newCurrentQuestion) !== JSON.stringify(currentQuestion)) {
       setCurrentQuestion(newCurrentQuestion);
-      shouldStopPolling(newCurrentQuestion) ? getQuestionRes.stopPolling() : getQuestionRes.startPolling(pollInterval);
     }
+
+    newCurrentQuestion.state !== "ACTIVE" && newCurrentQuestion.state !== "STARTED" ? 
+      getQuestionRes.stopPolling() : getQuestionRes.startPolling(pollInterval);
   }
 
   return (
