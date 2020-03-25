@@ -145,9 +145,8 @@ const Queue = (props) => {
   const [tags, setTags] = useState([]);
   const [filters, setFilters] = useState({ tags: [], status: null });
 
-  const shouldStopPolling = () => {
-    return !active && data && data.queue.queueQuestions.edges &&
-      data.queue.queueQuestions.edges.length == 0;
+  const shouldStopPolling = (active, questions) => {
+    return !active && questions.length == 0;
   }
 
   if (data && data.queue) {
@@ -155,12 +154,12 @@ const Queue = (props) => {
     if (JSON.stringify(newQuestions) !== JSON.stringify(questions)) {
       setQuestions(newQuestions);
       setFilteredQuestions(filter(newQuestions, filters));
+      shouldStopPolling(active, newQuestions) ? stopPolling() : startPolling(pollInterval);
     }
 
     if (JSON.stringify(data.queue.tags) !== JSON.stringify(tags)) {
       setTags(data.queue.tags);
     }
-    shouldStopPolling() ? stopPolling() : startPolling(pollInterval);
   }
 
   useEffect(() => {

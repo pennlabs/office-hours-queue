@@ -97,11 +97,6 @@ const StudentQueuePage = (props) => {
     }).sort(queueSortFunc);
   };
 
-  const shouldStopPolling = () => {
-    return getQuestionRes.data && getQuestionRes.data.currentQuestion && 
-    getQuestionRes.data.currentQuestion.state !== "ACTIVE" && getQuestionRes.data.currentQuestion.state !== "STARTED"
-  }
-
   if (getQueuesRes.data && getQueuesRes.data.course) {
     const newQueues = loadQueues(getQueuesRes.data);
     if (JSON.stringify(newQueues) !== JSON.stringify(queues)) {
@@ -109,13 +104,16 @@ const StudentQueuePage = (props) => {
     }
   }
 
+  const shouldStopPolling = (question) => {
+    return question.state !== "ACTIVE" && question.state !== "STARTED"
+  }
+
   if (getQuestionRes.data && getQuestionRes.data.currentQuestion) {
     const newCurrentQuestion = getQuestionRes.data.currentQuestion;
     if (JSON.stringify(newCurrentQuestion) !== JSON.stringify(currentQuestion)) {
       setCurrentQuestion(newCurrentQuestion);
+      shouldStopPolling(newCurrentQuestion) ? getQuestionRes.stopPolling() : getQuestionRes.startPolling(pollInterval);
     }
-
-    shouldStopPolling() ? getQuestionRes.stopPolling() : getQuestionRes.startPolling(pollInterval);
   }
 
   return (
