@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Header, Label, Grid, Segment, Button } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import {useMutation, useQuery} from '@apollo/react-hooks';
@@ -152,7 +152,6 @@ const Queue = (props) => {
   };
 
   if (data && data.queue) {
-    console.log("data", data, questions, isFirstLoad)
     const newQuestions = getQuestions(data);
     if (JSON.stringify(newQuestions) !== JSON.stringify(questions)) {
       if (!isFirstLoad && questions.length === 0) {
