@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Header, Label, Grid, Segment, Button } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import {useMutation, useQuery} from '@apollo/react-hooks';
@@ -7,6 +7,11 @@ import Questions from './Questions';
 import QueueFilterForm from './QueueFilterForm';
 import ClearQueueModal from './ClearQueueModal';
 import { linkifyComponentDecorator } from '../../../utils';
+
+import UIFx from 'uifx';
+import notificationMp3 from './notification.mp3';
+
+const notification = new UIFx(notificationMp3);
 
 const GET_QUESTIONS = gql`
   query GetQuestions($id: ID!) {
@@ -139,15 +144,21 @@ const Queue = (props) => {
 
   /* STATE */
   const [queue, setQueue] = useState(props.queue);
-  const [active, setActive] = useState(props.queue.activeOverrideTime !== null)
+  const [active, setActive] = useState(props.queue.activeOverrideTime !== null);
   const [questions, setQuestions] = useState([]);
   const [filteredQuestions, setFilteredQuestions] = useState([]);
   const [tags, setTags] = useState([]);
   const [filters, setFilters] = useState({ tags: [], status: null });
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
 
   if (data && data.queue) {
     const newQuestions = getQuestions(data);
     if (JSON.stringify(newQuestions) !== JSON.stringify(questions)) {
+      if (isFirstLoad) {
+        setIsFirstLoad(false);
+      } else if (questions.length === 0) {
+        notification.play();
+      }
       setQuestions(newQuestions);
       setFilteredQuestions(filter(newQuestions, filters));
     }
@@ -229,11 +240,10 @@ const Queue = (props) => {
           {
             !active && questions.length > 0 &&
             <Grid.Column textAlign="right" floated="right" only="computer mobile">
-              <Button content="Clear Queue"
+              <Button
+                content="Clear Queue"
                 fluid size="medium"
                 basic color="red"
-                // disabled={ (clearQueueRes && clearQueueRes.loading) ||
-                //   (activateQueueRes && activateQueueRes.loading) }
                 onClick={ () => setClearModalOpen(true) }/>
             </Grid.Column>
           }
