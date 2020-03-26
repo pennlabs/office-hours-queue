@@ -78,7 +78,16 @@ const Queue = (props) => {
   });
   const [activateQueue, activateQueueRes] = useMutation(ACTIVATE_QUEUE);
   const [deactivateQueue, deactivateQueueRes] = useMutation(DEACTIVATE_QUEUE);
+
+  /* STATE */
+  const [queue, setQueue] = useState(props.queue);
+  const [active, setActive] = useState(props.queue.activeOverrideTime !== null);
+  const [questions, setQuestions] = useState([]);
+  const [filteredQuestions, setFilteredQuestions] = useState([]);
+  const [tags, setTags] = useState([]);
+  const [filters, setFilters] = useState({ tags: [], status: null });
   const [clearModalOpen, setClearModalOpen] = useState(false);
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
 
   const getQuestions = (data) => {
     if (!data) { return [] }
@@ -142,21 +151,11 @@ const Queue = (props) => {
     setFilteredQuestions(filter(questions, input));
   };
 
-  /* STATE */
-  const [queue, setQueue] = useState(props.queue);
-  const [active, setActive] = useState(props.queue.activeOverrideTime !== null);
-  const [questions, setQuestions] = useState([]);
-  const [filteredQuestions, setFilteredQuestions] = useState([]);
-  const [tags, setTags] = useState([]);
-  const [filters, setFilters] = useState({ tags: [], status: null });
-  const [isFirstLoad, setIsFirstLoad] = useState(true);
-
   if (data && data.queue) {
+    console.log("data", data, questions, isFirstLoad)
     const newQuestions = getQuestions(data);
     if (JSON.stringify(newQuestions) !== JSON.stringify(questions)) {
-      if (isFirstLoad) {
-        setIsFirstLoad(false);
-      } else if (questions.length === 0) {
+      if (!isFirstLoad && questions.length === 0) {
         notification.play();
       }
       setQuestions(newQuestions);
@@ -167,7 +166,9 @@ const Queue = (props) => {
       setTags(data.queue.tags);
     }
 
-    !active && data.queue.queueQuestions.edges.length == 0 ? stopPolling() : startPolling(pollInterval);
+    !active && data.queue.queueQuestions.edges.length === 0 ? stopPolling() : startPolling(pollInterval);
+
+    if (isFirstLoad) { setIsFirstLoad(false) }
   }
 
   useEffect(() => {
