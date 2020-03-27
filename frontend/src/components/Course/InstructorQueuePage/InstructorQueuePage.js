@@ -33,11 +33,17 @@ query GetQueues($id: ID!) {
 }
 `;
 
+const docTitle = document.title;
+
 const InstructorQueuePage = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
-  const { data, refetch } = useQuery(GET_QUEUES, { variables: {
-    id: props.course.id
-  }});
+  const { data, refetch } = useQuery(GET_QUEUES, {
+    variables: {
+      id: props.course.id
+    },
+    pollInterval: 5000,
+    skip: !props.course.id
+  });
 
   /* STATE */
   const [success, setSuccess] = useState(false);
@@ -79,6 +85,17 @@ const InstructorQueuePage = (props) => {
   /* LOAD DATA */
   if (data && data.course) {
     const newQueues = loadQueues(data);
+    var numQuestions = 0;
+    var q;
+    for (q in newQueues) {
+      numQuestions += newQueues[q].numberActiveQuestions;
+    }
+    if (numQuestions === 0) {
+      document.title = docTitle;
+    } else {
+      var newTitle = '(' + numQuestions + ') ' + docTitle;
+      document.title = newTitle;
+    }
     if (JSON.stringify(newQueues) !== JSON.stringify(queues)) {
       setQueues(newQueues);
     }
