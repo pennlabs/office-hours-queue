@@ -33,7 +33,7 @@ query GetQueues($id: ID!) {
 }
 `;
 
-const docTitle = document.title;
+const defaultDocumentTitle = document.title;
 
 const InstructorQueuePage = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
@@ -85,17 +85,10 @@ const InstructorQueuePage = (props) => {
   /* LOAD DATA */
   if (data && data.course) {
     const newQueues = loadQueues(data);
-    var numQuestions = 0;
-    var q;
-    for (q in newQueues) {
-      numQuestions += newQueues[q].numberActiveQuestions;
-    }
-    if (numQuestions === 0) {
-      document.title = docTitle;
-    } else {
-      var newTitle = '(' + numQuestions + ') ' + docTitle;
-      document.title = newTitle;
-    }
+
+    const numQuestions = newQueues.map((q) => q.numberActiveQuestions).reduce((a, b) => a + b, 0);
+    document.title = numQuestions === 0 ? defaultDocumentTitle : `(${numQuestions}) ${defaultDocumentTitle}`;
+
     if (JSON.stringify(newQueues) !== JSON.stringify(queues)) {
       setQueues(newQueues);
     }
