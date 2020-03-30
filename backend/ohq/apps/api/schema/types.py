@@ -193,12 +193,10 @@ class QueueNode(DjangoObjectType):
     queue_questions = DjangoFilterConnectionField(QuestionNode)
     start_end_times = graphene.List(StartEndTimes, required=True)
 
-    # Warning: this field's name is a misnomer. It returns the number of active questions + started
-    # questions.
     def resolve_number_active_questions(self, info, **kwargs):
         return Question.objects.filter(
             queue=self,
-            time_answered__isnull=True,
+            time_started__isnull=True,
             time_rejected__isnull=True,
             time_withdrawn__isnull=True,
             **kwargs,
