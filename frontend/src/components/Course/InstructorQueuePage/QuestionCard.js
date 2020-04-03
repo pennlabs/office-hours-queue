@@ -125,9 +125,14 @@ const QuestionCard = (props) => {
                 <Header as="h5" color="blue" textAlign="right">
                   <Popup
                     trigger= {
-                      <span>
-                        Asked { moment.duration(moment().diff(moment(props.question.timeAsked))).humanize() } ago
-                      </span>
+                      props.question.timeStarted === null ? 
+                        <span>
+                          Asked { moment.duration(moment().diff(moment(props.question.timeAsked))).humanize() } ago
+                        </span>
+                      : 
+                        <span> 
+                          Started { moment.duration(moment().diff(moment(props.question.timeStarted))).humanize() } ago 
+                        </span>
                     }
                     content= { timeString(props.question.timeAsked, false) }
                     basic
