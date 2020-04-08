@@ -24,6 +24,7 @@ const GET_QUEUES = gql`
             activeOverrideTime
             archived
             numberActiveQuestions
+            numberStartedQuestions
           }
         }
       }
@@ -92,7 +93,8 @@ const StudentQueuePage = (props) => {
         tags: item.node.tags,
         activeOverrideTime: item.node.activeOverrideTime,
         estimatedWaitTime: item.node.estimatedWaitTime,
-        numberActiveQuestions: item.node.numberActiveQuestions
+        numberActiveQuestions: item.node.numberActiveQuestions,
+        numberStartedQuestions: item.node.numberStartedQuestions
       };
     }).sort(queueSortFunc);
   };

@@ -46,7 +46,13 @@ const StudentQueue = (props) => {
       <Label
         content={ queue.numberActiveQuestions + ` user${queue.numberActiveQuestions === 1 ? '' : 's'} in queue` }
         color="blue"
-        icon="user"/>
+        icon="users"/>
+      {
+        queue.numberStartedQuestions !== 0 && 
+        <Label
+          content={ queue.numberStartedQuestions + ` user${queue.numberStartedQuestions === 1 ? '' : 's'} currently being helped`}
+          icon="user"/>
+      }
       {
         /*
           <Label content={ `${queue.estimatedWaitTime} mins`} color="blue" icon="clock"/>
