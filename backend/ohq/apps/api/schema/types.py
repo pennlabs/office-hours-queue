@@ -189,6 +189,7 @@ class QueueNode(DjangoObjectType):
         interfaces = (relay.Node,)
 
     number_active_questions = graphene.Int(required=True)
+    number_started_questions = graphene.Int(required=True)
     questions = DjangoFilterConnectionField(QuestionNode)
     queue_questions = DjangoFilterConnectionField(QuestionNode)
     start_end_times = graphene.List(StartEndTimes, required=True)
@@ -197,6 +198,16 @@ class QueueNode(DjangoObjectType):
         return Question.objects.filter(
             queue=self,
             time_started__isnull=True,
+            time_rejected__isnull=True,
+            time_withdrawn__isnull=True,
+            **kwargs,
+        ).count()
+
+    def resolve_number_started_questions(self, info, **kwargs):
+        return Question.objects.filter(
+            queue=self,
+            time_started__isnull=False,
+            time_answered__isnull=True,
             time_rejected__isnull=True,
             time_withdrawn__isnull=True,
             **kwargs,
