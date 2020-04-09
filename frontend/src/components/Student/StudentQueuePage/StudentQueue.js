@@ -53,7 +53,7 @@ const StudentQueue = (props) => {
         <Popup
           trigger={
             <Label
-              content={ props.queue.activeStaff.length + ` TA${props.queue.activeStaff.length === 1 ? '' : 's'} active` }
+              content={ props.queue.activeStaff.length + ` staff active` }
               icon={<Icon name={"sync"} loading={true}/>}/>
           }
           content={ props.queue.activeStaff.map((courseUser) => courseUser.user.fullName).sort().join(', ') }

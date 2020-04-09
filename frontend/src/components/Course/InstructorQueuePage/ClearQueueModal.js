@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Modal, List, Button } from 'semantic-ui-react';
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
+import firebase from "../../Firebase";
 
 const CLEAR_QUEUE = gql`
   mutation ClearQueue($input: ClearQueueInput!) {
@@ -18,6 +19,7 @@ const ClearQueueModal = (props) => {
   const [refetchLoading, setRefetchLoading] = useState(false);
 
   const onSubmit = async () => {
+    firebase.analytics.logEvent('queue_clear');
     try {
       await clearQueue({
         variables: {
@@ -31,7 +33,6 @@ const ClearQueueModal = (props) => {
       await setRefetchLoading(false);
       props.closeFunc();
     } catch (e) {
-      console.log(e)
       await setRefetchLoading(false);
     }
   };

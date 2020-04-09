@@ -3,6 +3,7 @@ import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
 import { Form, Button, Icon, Popup } from 'semantic-ui-react';
 import { Header } from 'semantic-ui-react';
+import firebase from "../../../Firebase";
 
 
 /* GRAPHQL QUERIES/MUTATIONS */
@@ -76,6 +77,7 @@ const NewUserForm = (props) => {
       });
 
       if (result.data.updateUser.user.phoneNumber !== props.user.phoneNumber) {
+        firebase.analytics.logEvent('sms_attempted_verification');
         props.setModalView('verification');
       } else {
         props.closeFunc();

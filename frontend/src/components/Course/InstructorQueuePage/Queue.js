@@ -10,6 +10,7 @@ import { linkifyComponentDecorator } from '../../../utils';
 
 import UIFx from 'uifx';
 import notificationMp3 from './notification.mp3';
+import firebase from "../../Firebase";
 
 const notification = new UIFx(notificationMp3);
 
@@ -109,6 +110,7 @@ const Queue = (props) => {
   };
 
   const onOpen = async () => {
+    firebase.analytics.logEvent('queue_activate');
     await activateQueue({
       variables: {
         input: {
@@ -122,6 +124,7 @@ const Queue = (props) => {
   };
 
   const onClose = async () => {
+    firebase.analytics.logEvent('queue_deactivate');
     await deactivateQueue({
       variables: {
         input: {
@@ -195,10 +198,12 @@ const Queue = (props) => {
       <Grid>
         <Grid.Row columns="equal">
           <Grid.Column width={5} only="computer mobile">
-            <Label
-              content={ queueQuestions.length + ` user${queueQuestions.length === 1 ? '' : 's'}` }
-              color="blue"
-              icon="user"/>
+            { (queue.activeOverrideTime || queueQuestions.length !== 0) &&
+              <Label
+                content={ queueQuestions.length + ` user${queueQuestions.length === 1 ? '' : 's'}` }
+                color="blue"
+                icon="user"/>
+            }
             {
               /*
               <Label content={queue.estimatedWaitTime + " mins"} color="blue" icon="clock"/>
