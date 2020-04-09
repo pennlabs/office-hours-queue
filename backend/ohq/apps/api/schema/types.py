@@ -148,7 +148,6 @@ class QuestionNode(DjangoObjectType):
     feedback_answers = graphene.List(lambda: FeedbackAnswerNode)
 
     questions_ahead = graphene.Int()
-    active_staff = graphene.List(CourseUserNode)
 
     def resolve_feedback_answers(self, info, **kwargs):
         return FeedbackAnswer.objects.filter(question=self, **kwargs)
@@ -161,14 +160,6 @@ class QuestionNode(DjangoObjectType):
             time_rejected__isnull=True,
             time_withdrawn__isnull=True,
         ).count()
-
-    def resolve_active_staff(self, info, **kwargs):
-        time_threshold = datetime.now() - timedelta(seconds=30)
-        return CourseUser.objects.filter(
-            course=self.queue.course,
-            kind__in=CourseUserKind.staff(),
-            last_active__gt=time_threshold,
-        )
 
 
 class StartEndMinutes(graphene.ObjectType):
@@ -259,7 +250,6 @@ class QueueNode(DjangoObjectType):
         )
 
     def resolve_start_end_times(self, info, **kwargs):
-        # TODO change days of the week to an enum
         return [
             StartEndTimes(day=s["day"], times=[
                 StartEndMinutes(start=time["start"], end=time["end"])
@@ -303,6 +293,7 @@ class CourseNode(DjangoObjectType):
     invited_course_users = DjangoFilterConnectionField(InvitedCourseUserNode)
     queues = DjangoFilterConnectionField(QueueNode)
 
+    active_staff = graphene.List(CourseUserNode)
     leadership = graphene.List(lambda: CourseUserNode)
     feedback_questions = graphene.List(lambda: FeedbackQuestionNode)
 
@@ -323,6 +314,14 @@ class CourseNode(DjangoObjectType):
 
     def resolve_queues(self, info, **kwargs):
         return Queue.objects.filter(course=self, **kwargs)
+
+    def resolve_active_staff(self, info, **kwargs):
+        time_threshold = datetime.now() - timedelta(seconds=30)
+        return CourseUser.objects.filter(
+            course=self,
+            kind__in=CourseUserKind.staff(),
+            last_active__gt=time_threshold,
+        )
 
     def resolve_leadership(self, info, **kwargs):
         return CourseUser.objects.filter(course=self, kind__in=CourseUserKind.leadership())
