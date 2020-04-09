@@ -33,13 +33,13 @@ const StudentQueue = (props) => {
           </Linkify>
         </Header.Subheader>
       </Header>
-      { props.queue.activeOverrideTime &&
+      { (props.queue.activeOverrideTime || props.queue.numberActiveQuestions !== 0) &&
         <Label
           content={props.queue.numberActiveQuestions + ` user${props.queue.numberActiveQuestions === 1 ? '' : 's'} in queue`}
           color="blue"
           icon="users"/>
       }
-      { props.queue.numberStartedQuestions !== 0 &&
+      { (props.queue.activeOverrideTime || props.queue.numberStartedQuestions) !== 0 &&
         <Label
           content={ props.queue.numberStartedQuestions + ` user${props.queue.numberStartedQuestions === 1 ? '' : 's'} currently being helped`}
           icon="user"/>
@@ -54,7 +54,6 @@ const StudentQueue = (props) => {
           trigger={
             <Label
               content={ props.queue.activeStaff.length + ` TA${props.queue.activeStaff.length === 1 ? '' : 's'} active` }
-              color="blue"
               icon={<Icon name={"sync"} loading={true}/>}/>
           }
           content={ props.queue.activeStaff.map((courseUser) => courseUser.user.fullName).sort().join(', ') }
