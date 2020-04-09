@@ -1,43 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Segment, Grid, Message } from 'semantic-ui-react';
 import StudentQueue from './StudentQueue';
 import LastQuestionCard from './LastQuestionCard'
 
 const StudentQueues = (props) => {
-  const [queues, setQueues] = useState(props.queues);
-  const [question, setQuestion] = useState(props.question);
 
   const showQuestion = (question) => {
     return question.state === "ACTIVE" || question.state === "STARTED";
   };
 
-  useEffect(() => {
-    setQuestion(props.question);
-  }, [props.question]);
-
-
-  useEffect(() => {
-    setQueues(props.queues);
-  }, [props.queues]);
-
   return (
     [
-      queues &&
+      props.queues &&
       <Grid.Row columns="equal" stackable>
         {
-          queues.length !== 0 &&
-            queues.map(queue => (
+          props.queues.length !== 0 &&
+            props.queues.map(queue => (
               <Grid.Column>
                 <StudentQueue key={ queue.id }
                   queue={ queue }
-                  hasQuestion={ question !== null && showQuestion(question)  }
-                  question={ question && showQuestion(question) && question.queue.id === queue.id ? question : null }
+                  hasQuestion={ props.question !== null && showQuestion(props.question)  }
+                  question={ props.question && showQuestion(props.question) && props.question.queue.id === queue.id ? props.question : null }
                   refetch={ props.refetch }/>
               </Grid.Column>
             ))
         }
         {
-          queues.length === 0 &&
+          props.queues.length === 0 &&
           <Grid.Column>
             <Segment basic>
             <Message info>
@@ -50,9 +39,9 @@ const StudentQueues = (props) => {
       </Grid.Row>,
       <Grid.Row columns={1}>
         {
-          question && !showQuestion(question) &&
+          props.question && !showQuestion(props.question) &&
           <Grid.Column>
-            <LastQuestionCard question={ question }/>
+            <LastQuestionCard question={ props.question }/>
           </Grid.Column>
         }
       </Grid.Row>

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Segment, Label, Header, Grid, Message } from 'semantic-ui-react';
+import React, { useState } from 'react';
+import {Segment, Label, Header, Grid, Message, Popup, Icon} from 'semantic-ui-react';
 import { linkifyComponentDecorator } from '../../../utils';
 import QuestionForm from './QuestionForm';
 import QuestionCard from './QuestionCard';
@@ -8,8 +8,6 @@ import Alert from '@material-ui/lab/Alert';
 import Linkify from 'react-linkify';
 
 const StudentQueue = (props) => {
-  const [queue, setQueue] = useState(props.queue);
-  const [question, setQuestion] = useState(props.question);
   const [toast, setToast] = useState({ message: "", success: true });
   const [toastOpen, setToastOpen] = useState(false);
 
@@ -25,57 +23,60 @@ const StudentQueue = (props) => {
     return error.message.split(":")[1];
   };
 
-  useEffect(() => {
-    setQuestion(props.question);
-  }, [props.question]);
-
-  useEffect(() => {
-    setQueue(props.queue);
-  }, [props.queue]);
-
   return (
     <Segment basic>
       <Header as="h3">
-        { queue.name }
+        { props.queue.name }
         <Header.Subheader>
           <Linkify componentDecorator={linkifyComponentDecorator}>
-            { queue.description }
+            { props.queue.description }
           </Linkify>
         </Header.Subheader>
       </Header>
       <Label
-        content={ queue.numberActiveQuestions + ` user${queue.numberActiveQuestions === 1 ? '' : 's'} in queue` }
+        content={ props.queue.numberActiveQuestions + ` user${props.queue.numberActiveQuestions === 1 ? '' : 's'} in queue` }
         color="blue"
         icon="users"/>
+      <Popup
+        trigger={
+          <Label
+            content={ props.queue.activeStaff.length + ` TA${props.queue.activeStaff.length === 1 ? '' : 's'} active` }
+            color="blue"
+            icon={<Icon name={"sync"} loading={true}/>}/>
+        }
+        content={ props.queue.activeStaff.map((courseUser) => courseUser.user.fullName).sort().join(', ') }
+        on={ 'hover' }
+        position={ 'top center' }
+      />
       {
-        queue.numberStartedQuestions !== 0 && 
+        props.queue.numberStartedQuestions !== 0 &&
         <Label
-          content={ queue.numberStartedQuestions + ` user${queue.numberStartedQuestions === 1 ? '' : 's'} currently being helped`}
+          content={ props.queue.numberStartedQuestions + ` user${props.queue.numberStartedQuestions === 1 ? '' : 's'} currently being helped`}
           icon="user"/>
       }
       {
         /*
-          <Label content={ `${queue.estimatedWaitTime} mins`} color="blue" icon="clock"/>
+          <Label content={ `${props.queue.estimatedWaitTime} mins`} color="blue" icon="clock"/>
         */
       }
       <Grid.Row>
         {
-          props.hasQuestion && question &&
-          <QuestionCard question={ question } queue={ queue } refetch={ props.refetch } toastFunc={ updateToast }/>
+          props.hasQuestion && props.question &&
+          <QuestionCard question={ props.question } queue={ props.queue } refetch={ props.refetch } toastFunc={ updateToast }/>
         }
         {
-          !queue.activeOverrideTime && !question &&
+          !props.queue.activeOverrideTime && !props.question &&
           <Message style={{"marginTop":"10px"}} header="Queue Closed" error icon="calendar times outline"
             content="This queue is currently closed. Contact course staff if you think this is an error."/>
         }
         {
-          queue.activeOverrideTime && !props.hasQuestion &&
-          <QuestionForm queue={ queue }
+          props.queue.activeOverrideTime && !props.hasQuestion &&
+          <QuestionForm queue={ props.queue }
             refetch={ props.refetch }
             toastFunc={ updateToast }/>
         }
         {
-          queue.activeOverrideTime && props.hasQuestion && !question &&
+          props.queue.activeOverrideTime && props.hasQuestion && !props.question &&
           <Message style={{"marginTop":"10px"}} info header="Question already in queue" icon="comment alternate outline" content="You already have asked a question in another queue"/>
         }
       </Grid.Row>

@@ -13,6 +13,11 @@ const GET_QUEUES = gql`
       id
       videoChatEnabled
       requireVideoChatUrlOnQuestions
+      activeStaff {
+        user {
+          fullName
+        }
+      }
       queues(archived: false) {
         edges {
           node {
@@ -85,16 +90,17 @@ const StudentQueuePage = (props) => {
   const loadQueues = (data) => {
     return data.course.queues.edges.map(item => {
       return {
-        id: item.node.id,
         videoChatEnabled: data.course.videoChatEnabled,
         requireVideoChatUrlOnQuestions: data.course.requireVideoChatUrlOnQuestions,
+        activeStaff: data.course.activeStaff,
+        id: item.node.id,
         name: item.node.name,
         description: item.node.description,
         tags: item.node.tags,
         activeOverrideTime: item.node.activeOverrideTime,
         estimatedWaitTime: item.node.estimatedWaitTime,
         numberActiveQuestions: item.node.numberActiveQuestions,
-        numberStartedQuestions: item.node.numberStartedQuestions
+        numberStartedQuestions: item.node.numberStartedQuestions,
       };
     }).sort(queueSortFunc);
   };
@@ -112,7 +118,7 @@ const StudentQueuePage = (props) => {
       setCurrentQuestion(newCurrentQuestion);
     }
 
-    newCurrentQuestion.state !== "ACTIVE" && newCurrentQuestion.state !== "STARTED" ? 
+    newCurrentQuestion.state !== "ACTIVE" && newCurrentQuestion.state !== "STARTED" ?
       getQuestionRes.stopPolling() : getQuestionRes.startPolling(pollInterval);
   }
 
