@@ -58,6 +58,7 @@ const StudentQueue = (props) => {
           }
           content={ props.queue.activeStaff.map((courseUser) => courseUser.user.fullName).sort().join(', ') }
           on={ 'hover' }
+          disabled={ props.queue.activeStaff.length === 0 }
           position={ 'top center' }
         />
       }
