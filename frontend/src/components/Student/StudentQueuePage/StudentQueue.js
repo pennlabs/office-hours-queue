@@ -33,23 +33,13 @@ const StudentQueue = (props) => {
           </Linkify>
         </Header.Subheader>
       </Header>
-      <Label
-        content={ props.queue.numberActiveQuestions + ` user${props.queue.numberActiveQuestions === 1 ? '' : 's'} in queue` }
-        color="blue"
-        icon="users"/>
-      <Popup
-        trigger={
-          <Label
-            content={ props.queue.activeStaff.length + ` TA${props.queue.activeStaff.length === 1 ? '' : 's'} active` }
-            color="blue"
-            icon={<Icon name={"sync"} loading={true}/>}/>
-        }
-        content={ props.queue.activeStaff.map((courseUser) => courseUser.user.fullName).sort().join(', ') }
-        on={ 'hover' }
-        position={ 'top center' }
-      />
-      {
-        props.queue.numberStartedQuestions !== 0 &&
+      { props.queue.activeOverrideTime &&
+        <Label
+          content={props.queue.numberActiveQuestions + ` user${props.queue.numberActiveQuestions === 1 ? '' : 's'} in queue`}
+          color="blue"
+          icon="users"/>
+      }
+      { props.queue.numberStartedQuestions !== 0 &&
         <Label
           content={ props.queue.numberStartedQuestions + ` user${props.queue.numberStartedQuestions === 1 ? '' : 's'} currently being helped`}
           icon="user"/>
@@ -58,6 +48,19 @@ const StudentQueue = (props) => {
         /*
           <Label content={ `${props.queue.estimatedWaitTime} mins`} color="blue" icon="clock"/>
         */
+      }
+      { props.queue.activeOverrideTime &&
+        <Popup
+          trigger={
+            <Label
+              content={ props.queue.activeStaff.length + ` TA${props.queue.activeStaff.length === 1 ? '' : 's'} active` }
+              color="blue"
+              icon={<Icon name={"sync"} loading={true}/>}/>
+          }
+          content={ props.queue.activeStaff.map((courseUser) => courseUser.user.fullName).sort().join(', ') }
+          on={ 'hover' }
+          position={ 'top center' }
+        />
       }
       <Grid.Row>
         {
