@@ -316,7 +316,7 @@ class CourseNode(DjangoObjectType):
         return Queue.objects.filter(course=self, **kwargs)
 
     def resolve_active_staff(self, info, **kwargs):
-        time_threshold = datetime.now() - timedelta(seconds=30)
+        time_threshold = datetime.now() - timedelta(seconds=15)
         return CourseUser.objects.filter(
             course=self,
             kind__in=CourseUserKind.staff(),
