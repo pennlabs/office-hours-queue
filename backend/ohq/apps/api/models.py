@@ -240,6 +240,9 @@ class CourseUser(models.Model):
         null=True,
     )
 
+    # For staff
+    last_active = models.DateTimeField(blank=True, null=True)
+
     class Meta:
         constraints = [
             models.UniqueConstraint(

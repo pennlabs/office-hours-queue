@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 import graphene
 from graphene import relay
 from graphene_django.types import DjangoObjectType
@@ -32,6 +34,7 @@ class CourseUserNode(DjangoObjectType):
         fields = (
             # 'deactivated',
             'time_created',
+            'last_active',
         )
         interfaces = (relay.Node,)
 
@@ -145,6 +148,7 @@ class QuestionNode(DjangoObjectType):
     feedback_answers = graphene.List(lambda: FeedbackAnswerNode)
 
     questions_ahead = graphene.Int()
+    active_staff = graphene.List(CourseUserNode)
 
     def resolve_feedback_answers(self, info, **kwargs):
         return FeedbackAnswer.objects.filter(question=self, **kwargs)
@@ -157,6 +161,14 @@ class QuestionNode(DjangoObjectType):
             time_rejected__isnull=True,
             time_withdrawn__isnull=True,
         ).count()
+
+    def resolve_active_staff(self, info, **kwargs):
+        time_threshold = datetime.now() - timedelta(seconds=30)
+        return CourseUser.objects.filter(
+            course=self.queue.course,
+            kind__in=CourseUserKind.staff(),
+            last_active__gt=time_threshold,
+        )
 
 
 class StartEndMinutes(graphene.ObjectType):
@@ -223,14 +235,21 @@ class QueueNode(DjangoObjectType):
             raise user_not_staff_error
         return Question.objects.filter(queue=self, **kwargs)
 
+    # Return started and active questions
     def resolve_queue_questions(self, info, **kwargs):
         # Restrict questions to staff
-        if not CourseUser.objects.filter(
-                user=info.context.user.get_user(),
-                course=self.course,
-                kind__in=CourseUserKind.staff(),
-        ).exists():
+        course_user_query = CourseUser.objects.filter(
+            user=info.context.user.get_user(),
+            course=self.course,
+            kind__in=CourseUserKind.staff(),
+        )
+        if not course_user_query.exists():
             raise user_not_staff_error
+
+        course_user = course_user_query.get()
+        course_user.last_active = datetime.now()
+        course_user.save()
+
         return Question.objects.filter(
             queue=self,
             time_rejected__isnull=True,
