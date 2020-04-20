@@ -4,7 +4,7 @@ from graphql_relay.node.node import from_global_id
 from graphene_django.filter import DjangoFilterConnectionField
 
 from ohq.apps.api.schema import account, courses, queues, feedback_questions, questions, types
-from ohq.apps.api.models import Course, CourseUser, Question, User
+from ohq.apps.api.models import Course, CourseUser, Question, Queue, User
 from ohq.apps.api.util.errors import user_not_in_course_error
 
 
@@ -21,7 +21,16 @@ class Query(graphene.ObjectType):
     def resolve_invitable_users(self, info, **kwargs):
         return User.objects.filter(searchable=True, **kwargs)
 
-    course = relay.Node.Field(types.CourseNode)
+    course = graphene.Field(types.CourseNode, id=graphene.ID(required=True))
+
+    def resolve_course(self, info, id):
+        course = Course.objects.get(pk=from_global_id(id)[1])
+        if not CourseUser.objects.filter(
+                user=info.context.user.get_user(),
+                course=course,
+        ).exists():
+            raise user_not_in_course_error
+        return course
 
     course_pretty = graphene.Field(
         types.CourseNode,
@@ -47,7 +56,6 @@ class Query(graphene.ObjectType):
             queue__course=course
         ).order_by('-time_asked')[:1].get()
 
-
     # Course search for students joining
     joinable_courses = DjangoFilterConnectionField(types.CourseMetaNode)
 
@@ -55,10 +63,18 @@ class Query(graphene.ObjectType):
         return Course.objects.filter(
             invite_only=False,
             archived=False,
-            **kwargs
         )
 
-    queue = relay.Node.Field(types.QueueNode)
+    queue = graphene.Field(types.QueueNode, id=graphene.ID(required=True))
+
+    def resolve_queue(self, info, id):
+        queue = Queue.objects.get(pk=from_global_id(id)[1])
+        if not CourseUser.objects.filter(
+                user=info.context.user.get_user(),
+                course=queue.course,
+        ).exists():
+            raise user_not_in_course_error
+        return queue
 
 
 class Mutation(graphene.ObjectType):

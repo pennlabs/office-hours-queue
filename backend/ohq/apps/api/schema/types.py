@@ -307,13 +307,13 @@ class CourseNode(DjangoObjectType):
                 kind__in=CourseUserKind.staff(),
         ).exists():
             raise user_not_staff_error
-        return CourseUser.objects.filter(course=self, **kwargs)
+        return CourseUser.objects.filter(course=self)
 
     def resolve_invited_course_users(self, info, **kwargs):
-        return InvitedCourseUser.objects.filter(course=self, **kwargs)
+        return InvitedCourseUser.objects.filter(course=self)
 
     def resolve_queues(self, info, **kwargs):
-        return Queue.objects.filter(course=self, **kwargs)
+        return Queue.objects.filter(course=self)
 
     def resolve_active_staff(self, info, **kwargs):
         time_threshold = datetime.now() - timedelta(seconds=15)
@@ -327,7 +327,7 @@ class CourseNode(DjangoObjectType):
         return CourseUser.objects.filter(course=self, kind__in=CourseUserKind.leadership())
 
     def resolve_feedback_questions(self, info, **kwargs):
-        return FeedbackQuestion.objects.filter(course=self, **kwargs)
+        return FeedbackQuestion.objects.filter(course=self)
 
     def resolve_current_course_user_kind(self, info, **kwargs):
         return CourseUser.objects.get(
@@ -362,7 +362,7 @@ class CourseMetaNode(DjangoObjectType):
     professors = graphene.List(UserMetaNode, required=True)
 
     def resolve_professors(self, info, **kwargs):
-        return CourseUser.objects.filter(course=self, kind=CourseUserKind.PROFESSOR.name, **kwargs)
+        return CourseUser.objects.filter(course=self, kind=CourseUserKind.PROFESSOR.name)
 
 
 class ShortAnswerFeedbackQuestionNode(DjangoObjectType):
