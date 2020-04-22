@@ -5,10 +5,10 @@ import _ from "lodash";
 import SummaryForm from "./SummaryForm";
 
 import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery, useLazyQuery } from "@apollo/react-hooks";
 
 const GET_QUESTIONS = gql`
-  query GetQuestions($id: ID!) {
+  query GetQuestions($id: ID!, $limit: Int) {
     course(id: $id) {
       id
       queues {
@@ -17,7 +17,7 @@ const GET_QUESTIONS = gql`
             id
             name
             tags
-            questions {
+            questions(first: $limit) {
               edges {
                 node {
                   id
@@ -59,11 +59,14 @@ const GET_QUESTIONS = gql`
 `;
 
 const Summary = (props) => {
-  const { data, loading } = useQuery(GET_QUESTIONS, {
+  const { data, loading, error } = useQuery(GET_QUESTIONS, {
     variables: {
       id: props.course.id,
+      limit: 20,
     },
   });
+
+  console.log(error);
 
   /* STATE */
   const [questions, setQuestions] = useState(null);
