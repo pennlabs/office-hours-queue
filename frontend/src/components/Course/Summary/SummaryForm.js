@@ -1,28 +1,33 @@
-import React, { useState } from 'react';
-import { Form } from 'semantic-ui-react';
-import TextField from '@material-ui/core/TextField';
+import React, { useState } from "react";
+import { Form } from "semantic-ui-react";
+import TextField from "@material-ui/core/TextField";
 
 const SummaryForm = (props) => {
   const [input, setInput] = useState({ search: "", state: [] });
-  const stateOptions = [{
-    key: "ACTIVE",
-    value: "ACTIVE",
-    text: "Active"
-  }, {
-    key: "WITHDRAWN",
-    value: "WITHDRAWN",
-    text: "Withdrawn",
-  }, {
-    key: "REJECTED",
-    value: "REJECTED",
-    text: "Rejected",
-  }, {
-    key: "ANSWERED",
-    value: "ANSWERED",
-    text: "Answered",
-  }]
+  const stateOptions = [
+    {
+      key: "ACTIVE",
+      value: "ACTIVE",
+      text: "Active",
+    },
+    {
+      key: "WITHDRAWN",
+      value: "WITHDRAWN",
+      text: "Withdrawn",
+    },
+    {
+      key: "REJECTED",
+      value: "REJECTED",
+      text: "Rejected",
+    },
+    {
+      key: "ANSWERED",
+      value: "ANSWERED",
+      text: "Answered",
+    },
+  ];
 
-  const handleInputChange = (e, {name, value}) => {
+  const handleInputChange = (e, { name, value }) => {
     input[name] = value;
     setInput(input);
     props.filterFunc(input);
@@ -35,43 +40,75 @@ const SummaryForm = (props) => {
           <label>After</label>
           <TextField
             type="date"
-            onChange={ (event) => {
+            onChange={(event) => {
               input.after = event.target.value;
               setInput(input);
               props.filterFunc(input);
-            } }
-            InputLabelProps={{ shrink: true }}/>
+            }}
+            InputLabelProps={{ shrink: true }}
+          />
         </Form.Field>
         <Form.Field>
           <label>Before</label>
           <TextField
             type="date"
-            onChange={ (event) => {
+            onChange={(event) => {
               input.before = event.target.value;
               setInput(input);
               props.filterFunc(input);
-            } }
-            InputLabelProps={{ shrink: true }}/>
+            }}
+            InputLabelProps={{ shrink: true }}
+          />
         </Form.Field>
         <Form.Field>
           <label>State</label>
-          <Form.Dropdown multiple
+          <Form.Dropdown
+            multiple
             selection
             name="state"
-            placeholder={ "State" }
-            options={ stateOptions }
-            onChange={ handleInputChange }/>
+            placeholder={"State"}
+            options={stateOptions}
+            onChange={handleInputChange}
+          />
         </Form.Field>
         <Form.Field>
           <label>Search</label>
-          <Form.Input icon="search"
+          <Form.Input
+            icon="search"
             placeholder="Search..."
             name="search"
-            onChange={ handleInputChange }/>
+            onChange={handleInputChange}
+          />
+        </Form.Field>
+        <Form.Field>
+          <label>Most Recent</label>
+          <Form.Dropdown
+            name="limit"
+            placeholder={"Limit"}
+            defaultValue={20}
+            options={[
+              {
+                key: 20,
+                value: 20,
+                text: "20 Questions",
+              },
+              {
+                key: 50,
+                value: 50,
+                text: "50 Questions",
+              },
+              {
+                key: -1,
+                value: -1,
+                text: "All Questions",
+              },
+            ]}
+            onChange={(e, { value }) => props.limitFunc(value)}
+          />
         </Form.Field>
       </Form.Group>
     </Form>
-  )
+  );
 };
 
 export default SummaryForm;

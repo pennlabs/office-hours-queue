@@ -1,5 +1,5 @@
 // WIP
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Segment, Grid, Table, Dimmer, Loader } from "semantic-ui-react";
 import _ from "lodash";
 import SummaryForm from "./SummaryForm";
@@ -17,7 +17,10 @@ const GET_QUESTIONS = gql`
             id
             name
             tags
-            questions(first: $limit) {
+            questions(last: $limit) {
+              pageInfo {
+                hasNextPage
+              }
               edges {
                 node {
                   id
@@ -59,14 +62,7 @@ const GET_QUESTIONS = gql`
 `;
 
 const Summary = (props) => {
-  const { data, loading, error } = useQuery(GET_QUESTIONS, {
-    variables: {
-      id: props.course.id,
-      limit: 20,
-    },
-  });
-
-  console.log(error);
+  const [getQuestions, { data, loading }] = useLazyQuery(GET_QUESTIONS);
 
   /* STATE */
   const [questions, setQuestions] = useState(null);
@@ -95,7 +91,23 @@ const Summary = (props) => {
       );
     });
     setFilteredQuestions(newFilteredQuestions);
-    setTableState({ direction: null, column: null });
+  };
+
+  const handleLimitChange = (value) => {
+    if (value === -1) {
+      getQuestions({
+        variables: {
+          id: props.course.id,
+        },
+      });
+    } else {
+      getQuestions({
+        variables: {
+          id: props.course.id,
+          limit: value,
+        },
+      });
+    }
   };
 
   const formatState = (string) => {
@@ -153,15 +165,24 @@ const Summary = (props) => {
       setFilteredQuestions(_.sortBy(newQuestions, "timeAsked").reverse());
       setTableState({
         column: "timeAsked",
-        direction: "ascending",
+        direction: "descending",
       });
     }
   }
 
+  useEffect(() => {
+    getQuestions({
+      variables: {
+        id: props.course.id,
+        limit: 20,
+      },
+    });
+  }, []);
+
   return (
     <div>
       <Grid.Row>
-        {loading && !questions && (
+        {loading && (
           <Dimmer active inverted inline="centered">
             <Loader size="big" inverted />
           </Dimmer>
@@ -169,7 +190,11 @@ const Summary = (props) => {
         {questions && (
           <Segment basic>
             {questions && (
-              <SummaryForm filterFunc={filterQuestions} queues={queues} />
+              <SummaryForm
+                filterFunc={filterQuestions}
+                queues={queues}
+                limitFunc={handleLimitChange}
+              />
             )}
             <Table sortable celled padded striped>
               <Table.Header>
