@@ -81,16 +81,16 @@ class UserNode(DjangoObjectType):
     answered_questions = DjangoFilterConnectionField(lambda: QuestionNode)
 
     def resolve_course_users(self, info, **kwargs):
-        return CourseUser.objects.filter(user=self, **kwargs)
+        return CourseUser.objects.filter(user=self)
 
     def resolve_rejected_questions(self, info, **kwargs):
-        return Question.objects.filter(course_user=self, **kwargs)
+        return Question.objects.filter(course_user=self)
 
     def resolve_asked_questions(self, info, **kwargs):
-        return Question.objects.filter(course_user=self, **kwargs)
+        return Question.objects.filter(course_user=self)
 
     def resolve_answered_questions(self, info, **kwargs):
-        return Question.objects.filter(course_user=self, **kwargs)
+        return Question.objects.filter(course_user=self)
 
 
 class UserMetaNode(DjangoObjectType):
@@ -150,7 +150,7 @@ class QuestionNode(DjangoObjectType):
     questions_ahead = graphene.Int()
 
     def resolve_feedback_answers(self, info, **kwargs):
-        return FeedbackAnswer.objects.filter(question=self, **kwargs)
+        return FeedbackAnswer.objects.filter(question=self)
 
     def resolve_questions_ahead(self, info, **kwargs):
         return Question.objects.filter(
@@ -203,7 +203,6 @@ class QueueNode(DjangoObjectType):
             time_started__isnull=True,
             time_rejected__isnull=True,
             time_withdrawn__isnull=True,
-            **kwargs,
         ).count()
 
     def resolve_number_started_questions(self, info, **kwargs):
@@ -213,7 +212,6 @@ class QueueNode(DjangoObjectType):
             time_answered__isnull=True,
             time_rejected__isnull=True,
             time_withdrawn__isnull=True,
-            **kwargs,
         ).count()
 
     def resolve_questions(self, info, **kwargs):
@@ -224,7 +222,7 @@ class QueueNode(DjangoObjectType):
                 kind__in=CourseUserKind.staff(),
         ).exists():
             raise user_not_staff_error
-        return Question.objects.filter(queue=self, **kwargs)
+        return Question.objects.filter(queue=self)
 
     # Return started and active questions
     def resolve_queue_questions(self, info, **kwargs):
@@ -246,7 +244,6 @@ class QueueNode(DjangoObjectType):
             time_rejected__isnull=True,
             time_withdrawn__isnull=True,
             time_answered__isnull=True,
-            **kwargs,
         )
 
     def resolve_start_end_times(self, info, **kwargs):
