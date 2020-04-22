@@ -63,6 +63,7 @@ const GET_QUESTIONS = gql`
 
 const Summary = (props) => {
   const [getQuestions, { data, loading }] = useLazyQuery(GET_QUESTIONS);
+  const [limit, setLimit] = useState(20);
 
   /* STATE */
   const [questions, setQuestions] = useState(null);
@@ -94,6 +95,7 @@ const Summary = (props) => {
   };
 
   const handleLimitChange = (value) => {
+    if (value === limit) return;
     if (value === -1) {
       getQuestions({
         variables: {
@@ -108,6 +110,7 @@ const Summary = (props) => {
         },
       });
     }
+    setLimit(value);
   };
 
   const formatState = (string) => {
