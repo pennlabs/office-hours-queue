@@ -111,18 +111,72 @@ class UserMetaNode(DjangoObjectType):
         interfaces = (relay.Node,)
 
 
-# class UserMetaFilter(django_filters.FilterSet):
-#     @property
-#     def qs(self):
-#         # The query context can be found in self.request.
-#         return super(UserMetaFilter, self).qs.filter(owner=self.request.user)
+class QuestionFilter(django_filters.FilterSet):
+    time_asked__gt = django_filters.DateTimeFilter(field_name='time_asked', lookup_expr='gt')
+    time_asked__lt = django_filters.DateTimeFilter(field_name='time_asked', lookup_expr='lt')
+
+    state = django_filters.TypedChoiceFilter(
+        choices=[(key.value, key.name) for key in QuestionState],
+        coerce=lambda s: QuestionState[s],
+        method='state_filter',
+    )
+
+    def state_filter(self, queryset, name, value):
+        if value is QuestionState.ACTIVE:
+            return queryset.filter(
+                time_started__isnull=True,
+                time_answered__isnull=True,
+                time_rejected__isnull=True,
+                time_withdrawn__isnull=True,
+            )
+        elif value is QuestionState.ANSWERED:
+            return queryset.filter(
+                # time_started__isnull=False,
+                time_answered__isnull=False,
+                time_rejected__isnull=True,
+                time_withdrawn__isnull=True,
+            )
+        elif value is QuestionState.STARTED:
+            return queryset.filter(
+                time_started__isnull=False,
+                time_answered__isnull=True,
+                time_rejected__isnull=True,
+                time_withdrawn__isnull=True,
+            )
+        elif value is QuestionState.REJECTED:
+            return queryset.filter(
+                time_started__isnull=True,
+                time_answered__isnull=True,
+                time_rejected__isnull=False,
+                time_withdrawn__isnull=True,
+            )
+        elif value is QuestionState.WITHDRAWN:
+            return queryset.filter(
+                time_started__isnull=True,
+                time_answered__isnull=True,
+                time_rejected__isnull=True,
+                time_withdrawn__isnull=False,
+            )
+        else:
+            # Should never reach here
+            raise ValueError
+
+    order_by = django_filters.OrderingFilter(
+        fields=(
+            ('time_asked', 'time_asked'),
+        )
+    )
+
+    class Meta:
+        model = Question
+        fields = ['time_asked']
 
 
 class QuestionNode(DjangoObjectType):
     class Meta:
         model = Question
         # TODO better filtering class
-        filter_fields = ('id',)
+        # filter_fields = ('id',)
         fields = (
             'id',
             'text',
@@ -138,6 +192,7 @@ class QuestionNode(DjangoObjectType):
             'order_key',
             'video_chat_url',
         )
+        filterset_class = QuestionFilter
         interfaces = (relay.Node,)
 
     state = graphene.Field(QuestionStateType)
@@ -289,6 +344,7 @@ class CourseNode(DjangoObjectType):
     course_users = DjangoFilterConnectionField(CourseUserNode)
     invited_course_users = DjangoFilterConnectionField(InvitedCourseUserNode)
     queues = DjangoFilterConnectionField(QueueNode)
+    questions = DjangoFilterConnectionField(QuestionNode)
 
     active_staff = graphene.List(CourseUserNode)
     leadership = graphene.List(lambda: CourseUserNode)
@@ -311,6 +367,16 @@ class CourseNode(DjangoObjectType):
 
     def resolve_queues(self, info, **kwargs):
         return Queue.objects.filter(course=self)
+
+    def resolve_questions(self, info, **kwargs):
+        # # Restrict questions to staff
+        # if not CourseUser.objects.filter(
+        #         user=info.context.user.get_user(),
+        #         course=self,
+        #         kind__in=CourseUserKind.staff(),
+        # ).exists():
+        #     raise user_not_staff_error
+        return Question.objects.filter(queue__course=self)
 
     def resolve_active_staff(self, info, **kwargs):
         time_threshold = datetime.now() - timedelta(seconds=15)
