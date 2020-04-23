@@ -3,7 +3,7 @@ import { Form } from "semantic-ui-react";
 import TextField from "@material-ui/core/TextField";
 
 const SummaryForm = (props) => {
-  const [input, setInput] = useState({ search: "", state: [] });
+  const [input, setInput] = useState({});
   const stateOptions = [
     {
       key: "ACTIVE",
@@ -33,6 +33,10 @@ const SummaryForm = (props) => {
     props.filterFunc(input);
   };
 
+  const onSearchChange = (e, { name, value }) => {
+    props.searchFunc(value);
+  };
+
   return (
     <Form>
       <Form.Group>
@@ -41,7 +45,8 @@ const SummaryForm = (props) => {
           <TextField
             type="date"
             onChange={(event) => {
-              input.after = event.target.value;
+              const time = event.target.value;
+              input.timeAsked_Gt = time === "" ? "" : time + "T00:00:00";
               setInput(input);
               props.filterFunc(input);
             }}
@@ -53,7 +58,8 @@ const SummaryForm = (props) => {
           <TextField
             type="date"
             onChange={(event) => {
-              input.before = event.target.value;
+              const time = event.target.value;
+              input.timeAsked_Lt = time === "" ? "" : time + "T22:59:59";
               setInput(input);
               props.filterFunc(input);
             }}
@@ -63,7 +69,6 @@ const SummaryForm = (props) => {
         <Form.Field>
           <label>State</label>
           <Form.Dropdown
-            multiple
             selection
             name="state"
             placeholder={"State"}
@@ -76,34 +81,7 @@ const SummaryForm = (props) => {
           <Form.Input
             icon="search"
             placeholder="Search..."
-            name="search"
-            onChange={handleInputChange}
-          />
-        </Form.Field>
-        <Form.Field>
-          <label>Most Recent</label>
-          <Form.Dropdown
-            name="limit"
-            placeholder={"Limit"}
-            defaultValue={20}
-            options={[
-              {
-                key: 20,
-                value: 20,
-                text: "20 Questions",
-              },
-              {
-                key: 50,
-                value: 50,
-                text: "50 Questions",
-              },
-              {
-                key: -1,
-                value: -1,
-                text: "All Questions",
-              },
-            ]}
-            onChange={(e, { value }) => props.limitFunc(value)}
+            onChange={onSearchChange}
           />
         </Form.Field>
       </Form.Group>

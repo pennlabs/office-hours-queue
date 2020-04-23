@@ -1,14 +1,28 @@
 // WIP
 import React, { useState, useEffect } from "react";
-import { Segment, Grid, Table, Dimmer, Loader } from "semantic-ui-react";
+import {
+  Segment,
+  Grid,
+  Table,
+  Dimmer,
+  Loader,
+  Button,
+} from "semantic-ui-react";
 import _ from "lodash";
 import SummaryForm from "./SummaryForm";
 
 import { gql } from "apollo-boost";
-import { useQuery, useLazyQuery } from "@apollo/react-hooks";
+import { useLazyQuery } from "@apollo/react-hooks";
 
 const GET_QUESTIONS = gql`
-  query GetQuestions($id: ID!, $limit: Int) {
+  query GetQuestions(
+    $id: ID!
+    $timeAsked_Gt: DateTime
+    $timeAsked_Lt: DateTime
+    $state: String
+    $orderBy: String
+    $first: Int
+  ) {
     course(id: $id) {
       id
       queues {
@@ -17,42 +31,48 @@ const GET_QUESTIONS = gql`
             id
             name
             tags
-            questions(last: $limit) {
-              pageInfo {
-                hasNextPage
-              }
-              edges {
-                node {
-                  id
-                  text
-                  tags
-                  state
-                  queue {
-                    name
-                  }
-                  timeAsked
-                  timeWithdrawn
-                  timeRejected
-                  timeStarted
-                  timeAnswered
-                  rejectedReason
-                  rejectedBy {
-                    id
-                    fullName
-                    preferredName
-                  }
-                  askedBy {
-                    id
-                    fullName
-                    preferredName
-                  }
-                  answeredBy {
-                    id
-                    fullName
-                    preferredName
-                  }
-                }
-              }
+          }
+        }
+      }
+      questions(
+        timeAsked_Gt: $timeAsked_Gt
+        timeAsked_Lt: $timeAsked_Lt
+        state: $state
+        orderBy: $orderBy
+        first: $first
+      ) {
+        pageInfo {
+          hasNextPage
+        }
+        edges {
+          node {
+            id
+            text
+            tags
+            state
+            queue {
+              name
+            }
+            timeAsked
+            timeWithdrawn
+            timeRejected
+            timeStarted
+            timeAnswered
+            rejectedReason
+            rejectedBy {
+              id
+              fullName
+              preferredName
+            }
+            askedBy {
+              id
+              fullName
+              preferredName
+            }
+            answeredBy {
+              id
+              fullName
+              preferredName
             }
           }
         }
@@ -63,98 +83,107 @@ const GET_QUESTIONS = gql`
 
 const Summary = (props) => {
   const [getQuestions, { data, loading }] = useLazyQuery(GET_QUESTIONS);
-  const [limit, setLimit] = useState(20);
 
   /* STATE */
   const [questions, setQuestions] = useState(null);
+  const [queues, setQueues] = useState(null);
   const [filteredQuestions, setFilteredQuestions] = useState(null);
-  const [tableState, setTableState] = useState({
-    direction: null,
-    column: null,
-  });
-
-  /* FILTER USERS BASED ON INPUT */
-  const filterQuestions = (input) => {
-    const newFilteredQuestions = questions.filter((question) => {
-      return (
-        (question.text.toUpperCase().includes(input.search.toUpperCase()) ||
-          question.askedBy.toUpperCase().includes(input.search.toUpperCase()) ||
-          question.answeredBy
-            .toUpperCase()
-            .includes(input.search.toUpperCase())) &&
-        (!input.before ||
-          new Date(question.timeAsked).getTime() <=
-            new Date(input.before).getTime()) &&
-        (!input.after ||
-          new Date(question.timeAsked).getTime() >=
-            new Date(input.after).getTime()) &&
-        (input.state.length === 0 || input.state.includes(question.state))
-      );
-    });
-    setFilteredQuestions(newFilteredQuestions);
-  };
-
-  const handleLimitChange = (value) => {
-    if (value === limit) return;
-    if (value === -1) {
-      getQuestions({
-        variables: {
-          id: props.course.id,
-        },
-      });
-    } else {
-      getQuestions({
-        variables: {
-          id: props.course.id,
-          limit: value,
-        },
-      });
-    }
-    setLimit(value);
-  };
+  const [first, setFirst] = useState(20);
+  const [hasNextPage, setHasNextPage] = useState(null);
+  const [orderBy, setOrderBy] = useState("-time_asked");
+  const [search, setSearch] = useState("");
+  const [input, setInput] = useState({});
 
   const formatState = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   };
 
-  /* TABLE FUNCTIONS */
-  const handleSort = (clickedColumn) => {
-    if (tableState.column !== clickedColumn) {
-      setTableState({
-        column: clickedColumn,
-        direction: "ascending",
-      });
-      setFilteredQuestions(_.sortBy(filteredQuestions, clickedColumn));
-    } else {
-      setTableState({
-        column: tableState.column,
-        direction:
-          tableState.direction === "ascending" ? "descending" : "ascending",
-      });
-      setFilteredQuestions(filteredQuestions.reverse());
-    }
+  /* HANDLE FILTER CHANGES */
+  const onOrderByChange = () => {
+    const newOrderBy = orderBy === "-time_asked" ? "time_asked" : "-time_asked";
+    const variables = {
+      ...input,
+      orderBy: newOrderBy,
+      id: props.course.id,
+      first: 20,
+    };
+    getQuestions({
+      variables: variables,
+    });
+    setOrderBy(newOrderBy);
+    setFirst(20);
+  };
+
+  const onFilterChange = (input) => {
+    /* need to filter out empty fields when they clear */
+    const filteredInput = {};
+    Object.keys(input)
+      .filter((key) => {
+        return input[key] !== "";
+      })
+      .forEach((key) => (filteredInput[key] = input[key]));
+    const variables = {
+      ...filteredInput,
+      orderBy,
+      id: props.course.id,
+      first: 20,
+    };
+    getQuestions({ variables });
+    setInput(input);
+    setFirst(20);
+  };
+
+  const filterBySearch = (questions, text) => {
+    return questions.filter((question) => {
+      return (
+        question.text.toUpperCase().includes(text.toUpperCase()) ||
+        question.askedBy.toUpperCase().includes(text.toUpperCase()) ||
+        question.answeredBy.toUpperCase().includes(text.toUpperCase())
+      );
+    });
+  };
+
+  const onSearchChange = (text) => {
+    setFilteredQuestions(filterBySearch(questions, text));
+    setSearch(text);
+  };
+
+  /* HANDLE PAGE CHANGE */
+  const nextPage = () => {
+    const variables = {
+      ...input,
+      orderBy,
+      id: props.course.id,
+      first: first + 20,
+    };
+    getQuestions({ variables });
+    setFirst(first + 20);
   };
 
   /* GET QUESTIONS FROM DATA */
-  const queues = [];
-  const loadQuestions = (data) => {
-    const questions = [];
+  const loadQueues = (data) => {
+    const queues = [];
     data.course.queues.edges.forEach((item) => {
       queues.push({
         name: item.node.name,
         tags: item.node.tags,
       });
-      item.node.questions.edges.forEach((qs) => {
-        questions.push({
-          text: qs.node.text,
-          tags: qs.node.tags,
-          queue: qs.node.queue.name,
-          timeAsked: qs.node.timeAsked,
-          askedBy: qs.node.askedBy ? qs.node.askedBy.fullName : "",
-          answeredBy: qs.node.answeredBy ? qs.node.answeredBy.fullName : "",
-          rejectedBy: qs.node.rejectedBy ? qs.node.rejectedBy.fullName : "",
-          state: qs.node.state,
-        });
+    });
+    return queues;
+  };
+
+  const loadQuestions = (data) => {
+    const questions = [];
+    data.course.questions.edges.forEach((item) => {
+      questions.push({
+        text: item.node.text,
+        tags: item.node.tags,
+        queue: item.node.queue.name,
+        timeAsked: item.node.timeAsked,
+        askedBy: item.node.askedBy ? item.node.askedBy.fullName : "",
+        answeredBy: item.node.answeredBy ? item.node.answeredBy.fullName : "",
+        rejectedBy: item.node.rejectedBy ? item.node.rejectedBy.fullName : "",
+        state: item.node.state,
       });
     });
     return questions;
@@ -163,13 +192,12 @@ const Summary = (props) => {
   /* LOAD DATA AND SORT BY TIME ASKED */
   if (data && data.course) {
     const newQuestions = loadQuestions(data);
+    const newQueues = loadQueues(data);
     if (JSON.stringify(newQuestions) !== JSON.stringify(questions)) {
       setQuestions(newQuestions);
-      setFilteredQuestions(_.sortBy(newQuestions, "timeAsked").reverse());
-      setTableState({
-        column: "timeAsked",
-        direction: "descending",
-      });
+      setQueues(newQueues);
+      setFilteredQuestions(filterBySearch(newQuestions, search));
+      setHasNextPage(data.course.questions.pageInfo.hasNextPage);
     }
   }
 
@@ -177,7 +205,8 @@ const Summary = (props) => {
     getQuestions({
       variables: {
         id: props.course.id,
-        limit: 20,
+        orderBy: "-time_asked",
+        first: 20,
       },
     });
   }, []);
@@ -194,78 +223,28 @@ const Summary = (props) => {
           <Segment basic>
             {questions && (
               <SummaryForm
-                filterFunc={filterQuestions}
+                filterFunc={onFilterChange}
                 queues={queues}
-                limitFunc={handleLimitChange}
+                searchFunc={onSearchChange}
               />
             )}
             <Table sortable celled padded striped>
               <Table.Header>
                 <Table.Row>
+                  <Table.HeaderCell width={2}>Student</Table.HeaderCell>
+                  <Table.HeaderCell width={2}>Instructor</Table.HeaderCell>
+                  <Table.HeaderCell width={4}>Question</Table.HeaderCell>
+                  <Table.HeaderCell width={2}>Queue</Table.HeaderCell>
                   <Table.HeaderCell
-                    sorted={
-                      tableState.column === "askedBy"
-                        ? tableState.direction
-                        : null
-                    }
-                    onClick={() => handleSort("askedBy")}
                     width={2}
-                  >
-                    Student
-                  </Table.HeaderCell>
-                  <Table.HeaderCell
                     sorted={
-                      tableState.column === "answeredBy"
-                        ? tableState.direction
-                        : null
+                      orderBy === "-time_asked" ? "descending" : "ascending"
                     }
-                    onClick={() => handleSort("answeredBy")}
-                    width={2}
-                  >
-                    Instructor
-                  </Table.HeaderCell>
-                  <Table.HeaderCell
-                    sorted={
-                      tableState.column === "text" ? tableState.direction : null
-                    }
-                    onClick={() => handleSort("text")}
-                    width={4}
-                  >
-                    Question
-                  </Table.HeaderCell>
-                  <Table.HeaderCell
-                    sorted={
-                      tableState.column === "queue"
-                        ? tableState.direction
-                        : null
-                    }
-                    onClick={() => handleSort("queue")}
-                    width={2}
-                  >
-                    Queue
-                  </Table.HeaderCell>
-                  <Table.HeaderCell
-                    sorted={
-                      tableState.column === "timeAsked"
-                        ? tableState.direction
-                        : null
-                    }
-                    onClick={() => handleSort("timeAsked")}
-                    width={2}
+                    onClick={onOrderByChange}
                   >
                     Time Asked
                   </Table.HeaderCell>
-                  <Table.HeaderCell
-                    sorted={
-                      tableState.column === "state"
-                        ? tableState.direction
-                        : null
-                    }
-                    onClick={() => handleSort("state")}
-                    width={1}
-                  >
-                    State
-                  </Table.HeaderCell>
+                  <Table.HeaderCell width={1}>State</Table.HeaderCell>
                 </Table.Row>
               </Table.Header>
               <Table.Body>
@@ -291,6 +270,19 @@ const Summary = (props) => {
                   </Table.Row>
                 ))}
               </Table.Body>
+              <Table.Footer>
+                <Table.Row textAlign="right">
+                  <Table.HeaderCell colSpan="6">
+                    <Button
+                      primary
+                      content="Show More"
+                      icon="angle down"
+                      disabled={!hasNextPage}
+                      onClick={nextPage}
+                    />
+                  </Table.HeaderCell>
+                </Table.Row>
+              </Table.Footer>
             </Table>
             <div>
               {`${filteredQuestions.length} question${
