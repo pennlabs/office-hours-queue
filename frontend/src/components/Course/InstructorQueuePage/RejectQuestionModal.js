@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Modal, Button, Segment } from 'semantic-ui-react';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
+import firebase from '../../Firebase';
 
 /* GRAPHQL QUERIES/MUTATIONS */
 const REJECT_QUESTION = gql`
@@ -52,6 +53,7 @@ const RejectQuestionModal = (props) => {
           input: input
         }
       });
+      firebase.analytics.logEvent('question_rejected');
       props.closeFunc();
       await props.refetch();
     } catch (e) {
