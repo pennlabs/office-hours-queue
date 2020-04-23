@@ -369,13 +369,13 @@ class CourseNode(DjangoObjectType):
         return Queue.objects.filter(course=self)
 
     def resolve_questions(self, info, **kwargs):
-        # # Restrict questions to staff
-        # if not CourseUser.objects.filter(
-        #         user=info.context.user.get_user(),
-        #         course=self,
-        #         kind__in=CourseUserKind.staff(),
-        # ).exists():
-        #     raise user_not_staff_error
+        # Restrict questions to staff
+        if not CourseUser.objects.filter(
+                user=info.context.user.get_user(),
+                course=self,
+                kind__in=CourseUserKind.staff(),
+        ).exists():
+            raise user_not_staff_error
         return Question.objects.filter(queue__course=self)
 
     def resolve_active_staff(self, info, **kwargs):
