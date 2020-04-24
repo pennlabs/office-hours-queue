@@ -6,6 +6,7 @@ from graphene_django.types import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 
 import django_filters
+from django.db.models import Q
 
 from ohq.apps.api.models import *
 from ohq.apps.api.util.errors import user_not_staff_error
@@ -160,6 +161,20 @@ class QuestionFilter(django_filters.FilterSet):
         else:
             # Should never reach here
             raise ValueError
+
+    search = django_filters.CharFilter(method='search_filter')
+
+    def search_filter(self, queryset, name, value):
+        return queryset.filter(
+            Q(text__icontains=value) |
+            Q(queue__name__icontains=value) |
+            Q(asked_by__full_name__icontains=value) |
+            Q(asked_by__preferred_name__icontains=value) |
+            Q(answered_by__full_name__icontains=value) |
+            Q(answered_by__preferred_name__icontains=value) |
+            Q(rejected_by__full_name__icontains=value) |
+            Q(rejected_by__preferred_name__icontains=value)
+        )
 
     order_by = django_filters.OrderingFilter(
         fields=(
