@@ -148,13 +148,20 @@ const Summary = (props) => {
   };
 
   const onSearchChange = (text) => {
+    const filteredInput = {};
+    Object.keys(input)
+      .filter((key) => {
+        return input[key] !== "";
+      })
+      .forEach((key) => (filteredInput[key] = input[key]));
     const variables = {
-      ...input,
+      ...filteredInput,
       orderBy,
       id: props.course.id,
       search: text,
       first: 20,
     };
+    console.log(variables);
     getQuestions({ variables });
     setSearch(text);
   };
