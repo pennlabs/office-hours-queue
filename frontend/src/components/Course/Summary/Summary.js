@@ -89,7 +89,6 @@ const Summary = (props) => {
   /* STATE */
   const [questions, setQuestions] = useState(null);
   const [queues, setQueues] = useState(null);
-  const [filteredQuestions, setFilteredQuestions] = useState(null);
   const [first, setFirst] = useState(20);
   const [hasNextPage, setHasNextPage] = useState(null);
   const [orderBy, setOrderBy] = useState("-time_asked");
@@ -138,16 +137,6 @@ const Summary = (props) => {
     setFirst(20);
   };
 
-  const filterBySearch = (questions, text) => {
-    return questions.filter((question) => {
-      return (
-        question.text.toUpperCase().includes(text.toUpperCase()) ||
-        question.askedBy.toUpperCase().includes(text.toUpperCase()) ||
-        question.answeredBy.toUpperCase().includes(text.toUpperCase())
-      );
-    });
-  };
-
   const onSearchChange = (text) => {
     const filteredInput = {};
     Object.keys(input)
@@ -163,7 +152,6 @@ const Summary = (props) => {
       id: props.course.id,
       first: 20,
     };
-    console.log(variables);
     getQuestions({ variables });
     setSearch(text);
     setFirst(20);
@@ -225,7 +213,6 @@ const Summary = (props) => {
     if (JSON.stringify(newQuestions) !== JSON.stringify(questions)) {
       setQuestions(newQuestions);
       setQueues(newQueues);
-      setFilteredQuestions(filterBySearch(newQuestions, search));
       setHasNextPage(data.course.questions.pageInfo.hasNextPage);
     }
   }
@@ -271,7 +258,7 @@ const Summary = (props) => {
             {loading && <Loader size="big" inverted />}
             {questions && (
               <Table.Body>
-                {filteredQuestions.map((qs) => (
+                {questions.map((qs) => (
                   <Table.Row>
                     <Table.Cell>{qs.askedBy}</Table.Cell>
                     <Table.Cell>
@@ -310,9 +297,9 @@ const Summary = (props) => {
             </Table.Footer>
           </Table>
           <div>
-            {filteredQuestions &&
-              `${filteredQuestions.length} question${
-                filteredQuestions.length === 1 ? "" : "s"
+            {questions &&
+              `${questions.length} question${
+                questions.length === 1 ? "" : "s"
               }`}
           </div>
         </Segment>
