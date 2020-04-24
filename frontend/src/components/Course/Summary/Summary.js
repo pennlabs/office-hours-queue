@@ -102,8 +102,15 @@ const Summary = (props) => {
   /* HANDLE FILTER CHANGES */
   const onOrderByChange = () => {
     const newOrderBy = orderBy === "-time_asked" ? "time_asked" : "-time_asked";
+    const filteredInput = {};
+    Object.keys(input)
+      .filter((key) => {
+        return input[key] !== "";
+      })
+      .forEach((key) => (filteredInput[key] = input[key]));
+
     const variables = {
-      ...input,
+      ...filteredInput,
       search,
       orderBy: newOrderBy,
       id: props.course.id,
