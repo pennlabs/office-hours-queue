@@ -71,6 +71,7 @@ const SummaryForm = (props) => {
           <Form.Dropdown
             selection
             name="state"
+            clearable
             placeholder={"State"}
             options={stateOptions}
             onChange={handleInputChange}

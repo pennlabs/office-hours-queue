@@ -17,6 +17,7 @@ import { useLazyQuery } from "@apollo/react-hooks";
 const GET_QUESTIONS = gql`
   query GetQuestions(
     $id: ID!
+    $search: String
     $timeAsked_Gt: DateTime
     $timeAsked_Lt: DateTime
     $state: String
@@ -35,6 +36,7 @@ const GET_QUESTIONS = gql`
         }
       }
       questions(
+        search: $search
         timeAsked_Gt: $timeAsked_Gt
         timeAsked_Lt: $timeAsked_Lt
         state: $state
@@ -103,6 +105,7 @@ const Summary = (props) => {
     const newOrderBy = orderBy === "-time_asked" ? "time_asked" : "-time_asked";
     const variables = {
       ...input,
+      search,
       orderBy: newOrderBy,
       id: props.course.id,
       first: 20,
@@ -125,6 +128,7 @@ const Summary = (props) => {
     const variables = {
       ...filteredInput,
       orderBy,
+      search,
       id: props.course.id,
       first: 20,
     };
@@ -144,7 +148,14 @@ const Summary = (props) => {
   };
 
   const onSearchChange = (text) => {
-    setFilteredQuestions(filterBySearch(questions, text));
+    const variables = {
+      ...input,
+      orderBy,
+      id: props.course.id,
+      search: text,
+      first: 20,
+    };
+    getQuestions({ variables });
     setSearch(text);
   };
 
@@ -214,39 +225,33 @@ const Summary = (props) => {
   return (
     <div>
       <Grid.Row>
-        {loading && (
-          <Dimmer active inverted inline="centered">
-            <Loader size="big" inverted />
-          </Dimmer>
-        )}
-        {questions && (
-          <Segment basic>
+        <Segment basic>
+          <SummaryForm
+            filterFunc={onFilterChange}
+            queues={queues}
+            searchFunc={onSearchChange}
+          />
+          <Table sortable celled padded striped>
+            <Table.Header>
+              <Table.Row>
+                <Table.HeaderCell width={2}>Student</Table.HeaderCell>
+                <Table.HeaderCell width={2}>Instructor</Table.HeaderCell>
+                <Table.HeaderCell width={4}>Question</Table.HeaderCell>
+                <Table.HeaderCell width={2}>Queue</Table.HeaderCell>
+                <Table.HeaderCell
+                  width={2}
+                  sorted={
+                    orderBy === "-time_asked" ? "descending" : "ascending"
+                  }
+                  onClick={onOrderByChange}
+                >
+                  Time Asked
+                </Table.HeaderCell>
+                <Table.HeaderCell width={1}>State</Table.HeaderCell>
+              </Table.Row>
+            </Table.Header>
+            {loading && <Loader size="big" inverted />}
             {questions && (
-              <SummaryForm
-                filterFunc={onFilterChange}
-                queues={queues}
-                searchFunc={onSearchChange}
-              />
-            )}
-            <Table sortable celled padded striped>
-              <Table.Header>
-                <Table.Row>
-                  <Table.HeaderCell width={2}>Student</Table.HeaderCell>
-                  <Table.HeaderCell width={2}>Instructor</Table.HeaderCell>
-                  <Table.HeaderCell width={4}>Question</Table.HeaderCell>
-                  <Table.HeaderCell width={2}>Queue</Table.HeaderCell>
-                  <Table.HeaderCell
-                    width={2}
-                    sorted={
-                      orderBy === "-time_asked" ? "descending" : "ascending"
-                    }
-                    onClick={onOrderByChange}
-                  >
-                    Time Asked
-                  </Table.HeaderCell>
-                  <Table.HeaderCell width={1}>State</Table.HeaderCell>
-                </Table.Row>
-              </Table.Header>
               <Table.Body>
                 {filteredQuestions.map((qs) => (
                   <Table.Row>
@@ -270,27 +275,28 @@ const Summary = (props) => {
                   </Table.Row>
                 ))}
               </Table.Body>
-              <Table.Footer>
-                <Table.Row textAlign="right">
-                  <Table.HeaderCell colSpan="6">
-                    <Button
-                      primary
-                      content="Show More"
-                      icon="angle down"
-                      disabled={!hasNextPage}
-                      onClick={nextPage}
-                    />
-                  </Table.HeaderCell>
-                </Table.Row>
-              </Table.Footer>
-            </Table>
-            <div>
-              {`${filteredQuestions.length} question${
+            )}
+            <Table.Footer>
+              <Table.Row textAlign="right">
+                <Table.HeaderCell colSpan="6">
+                  <Button
+                    primary
+                    content="Show More"
+                    icon="angle down"
+                    disabled={!hasNextPage}
+                    onClick={nextPage}
+                  />
+                </Table.HeaderCell>
+              </Table.Row>
+            </Table.Footer>
+          </Table>
+          <div>
+            {filteredQuestions &&
+              `${filteredQuestions.length} question${
                 filteredQuestions.length === 1 ? "" : "s"
               }`}
-            </div>
-          </Segment>
-        )}
+          </div>
+        </Segment>
       </Grid.Row>
     </div>
   );
