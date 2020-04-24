@@ -125,6 +125,7 @@ const Summary = (props) => {
         return input[key] !== "";
       })
       .forEach((key) => (filteredInput[key] = input[key]));
+
     const variables = {
       ...filteredInput,
       orderBy,
@@ -154,22 +155,32 @@ const Summary = (props) => {
         return input[key] !== "";
       })
       .forEach((key) => (filteredInput[key] = input[key]));
+
     const variables = {
       ...filteredInput,
+      search: text,
       orderBy,
       id: props.course.id,
-      search: text,
       first: 20,
     };
     console.log(variables);
     getQuestions({ variables });
     setSearch(text);
+    setFirst(20);
   };
 
   /* HANDLE PAGE CHANGE */
   const nextPage = () => {
+    const filteredInput = {};
+    Object.keys(input)
+      .filter((key) => {
+        return input[key] !== "";
+      })
+      .forEach((key) => (filteredInput[key] = input[key]));
+
     const variables = {
-      ...input,
+      ...filteredInput,
+      search,
       orderBy,
       id: props.course.id,
       first: first + 20,
@@ -288,6 +299,7 @@ const Summary = (props) => {
                 <Table.HeaderCell colSpan="6">
                   <Button
                     primary
+                    loading={loading}
                     content="Show More"
                     icon="angle down"
                     disabled={!hasNextPage}
