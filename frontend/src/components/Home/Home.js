@@ -56,6 +56,7 @@ const Home = (props) => {
   /* LOAD DATA FUNCTIONS */
   const loadCourses = (data) => {
     if (!data) return;
+    document.title = "OHQ";
     return data.currentUser.courseUsers.edges.map((courseUser) => {
       return {
         courseUserId: courseUser.node.id,
