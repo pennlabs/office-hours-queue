@@ -5,16 +5,14 @@ from django.views.generic import TemplateView
 from rest_framework.schemas import get_schema_view
 
 
-admin.site.site_header = "Penn Labs Default Admin (change this in ohq/urls.py)"
+admin.site.site_header = "OHQ Admin"
 
 urlpatterns = [
     # Normal URL Patterns go here
     path("admin/", admin.site.urls),
     path("accounts/", include("accounts.urls", namespace="accounts")),
     path(
-        "openapi/",
-        get_schema_view(title="ohq Documentation", public=True),
-        name="openapi-schema",
+        "openapi/", get_schema_view(title="OHQ Documentation", public=True), name="openapi-schema",
     ),
     path(
         "documentation/",
@@ -24,6 +22,8 @@ urlpatterns = [
         name="documentation",
     ),
 ]
+
+urlpatterns = [path("api/", include(urlpatterns))]
 
 if settings.DEBUG:  # pragma: no cover
     import debug_toolbar
