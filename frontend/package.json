@@ -39,6 +39,7 @@
     "build-stg": "REACT_APP_GCLOUD_PROJECT=office-hour-q-stg react-scripts build",
     "lint": "exit 0",
     "test": "exit 0",
+    "codecov": "exit 0",
     "eject": "react-scripts eject",
     "build-deploy-prod": "npm run build-prod && firebase deploy --only hosting -P prod",
     "build-deploy-stg": "npm run build-stg && firebase deploy --only hosting -P stg"
