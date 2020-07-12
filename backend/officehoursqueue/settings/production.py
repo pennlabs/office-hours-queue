@@ -3,8 +3,8 @@ import os
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
-from ohq.settings.base import *  # noqa: F401, F403
-from ohq.settings.base import DOMAIN
+from officehoursqueue.settings.base import *  # noqa: F401, F403
+from officehoursqueue.settings.base import DOMAIN
 
 
 DEBUG = False

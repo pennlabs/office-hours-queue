@@ -1,4 +1,4 @@
-from ohq.settings.base import *  # noqa: F401, F403
+from officehoursqueue.settings.base import *  # noqa: F401, F403
 
 
 TEST_RUNNER = "xmlrunner.extra.djangotestrunner.XMLTestRunner"

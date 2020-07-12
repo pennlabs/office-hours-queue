@@ -1,7 +1,7 @@
 import os
 
-from ohq.settings.base import *  # noqa: F401, F403
-from ohq.settings.base import INSTALLED_APPS, MIDDLEWARE
+from officehoursqueue.settings.base import *  # noqa: F401, F403
+from officehoursqueue.settings.base import INSTALLED_APPS, MIDDLEWARE
 
 
 # Development extensions
