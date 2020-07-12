@@ -8,7 +8,7 @@ from rest_framework.schemas import get_schema_view
 admin.site.site_header = "Office Hours Queue Admin"
 
 urlpatterns = [
-    # Normal URL Patterns go here
+    path("", include("ohq.urls")),
     path("admin/", admin.site.urls),
     path("accounts/", include("accounts.urls", namespace="accounts")),
     path(

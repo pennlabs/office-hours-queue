@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework",
     "accounts.apps.AccountsConfig",
+    "ohq.apps.OhqConfig",
 ]
 
 MIDDLEWARE = [
