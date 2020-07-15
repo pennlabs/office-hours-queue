@@ -10,7 +10,7 @@ User = settings.AUTH_USER_MODEL
 
 class Profile(models.Model):
     """
-    An extension to a User object that includes additional information
+    An extension to a User object that includes additional information.
     """
 
     preferred_name = models.CharField(max_length=100)
@@ -63,8 +63,7 @@ class Semester(models.Model):
 
 class Course(models.Model):
     """
-    A course TODO: finish these comments
-    Courses are specific to a semester
+    A course taught in a specific semester.
     """
 
     course_code = models.CharField(max_length=10)
@@ -112,6 +111,10 @@ class Course(models.Model):
 
 
 class Membership(models.Model):
+    """
+    Represents a relationship between a user and a course.
+    """
+
     KIND_STUDENT = "STUDENT"
     KIND_TA = "TA"
     KIND_HEAD_TA = "HEAD_TA"
@@ -145,6 +148,10 @@ class Membership(models.Model):
 
 
 class MembershipInvite(models.Model):
+    """
+    Represents an invitation to a course.
+    """
+
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     email = models.EmailField()
     kind = models.CharField(
@@ -165,6 +172,10 @@ class MembershipInvite(models.Model):
 
 
 class Queue(models.Model):
+    """
+    A single office hours queue for a class.
+    """
+
     name = models.CharField(max_length=255)
     description = models.TextField()
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
@@ -189,6 +200,10 @@ class Queue(models.Model):
 
 
 class Question(models.Model):
+    """
+    A question asked within a queue.
+    """
+
     # TODO: save status?
     text = models.TextField()
     queue = models.ForeignKey(Queue, on_delete=models.CASCADE)
