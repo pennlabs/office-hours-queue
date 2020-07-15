@@ -14,7 +14,6 @@ class Profile(models.Model):
     """
 
     preferred_name = models.CharField(max_length=100)
-    time_joined = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     sms_notifications_enabled = models.BooleanField(default=False)
@@ -222,7 +221,7 @@ class Question(models.Model):
     rejected_by = models.ForeignKey(
         User, related_name="rejected_questions", on_delete=models.SET_NULL, blank=True, null=True
     )
-    # rejected_reason = models.CharField(blank=True, null=True, **QuestionRejectionReason.choices())
+    rejected_reason = models.CharField(max_length=20, blank=True, null=True)
     rejected_reason_other = models.CharField(max_length=200, blank=True, null=True)
 
     time_started = models.DateTimeField(blank=True, null=True)
@@ -231,7 +230,7 @@ class Question(models.Model):
         User, related_name="answered_questions", on_delete=models.SET_NULL, blank=True, null=True
     )
 
-    order_key = models.IntegerField(default=0, editable=False)
+    # order_key = models.IntegerField(default=0, editable=False)
 
     should_send_up_soon_notification = models.BooleanField(default=False)
 
