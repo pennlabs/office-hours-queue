@@ -25,6 +25,7 @@ pyyaml = "*"
 uritemplate = "*"
 uwsgi = "*"
 django-labs-accounts = "*"
+django-phonenumber-field = {extras = ["phonenumbers"],version = "*"}
 
 [requires]
 python_version = "3.7"
