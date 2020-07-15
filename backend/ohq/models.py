@@ -14,7 +14,7 @@ class Profile(models.Model):
     """
 
     preferred_name = models.CharField(max_length=100)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     sms_notifications_enabled = models.BooleanField(default=False)
     sms_verification_code = models.CharField(max_length=6, blank=True, null=True)
