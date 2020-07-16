@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.dispatch import receiver
 from phonenumber_field.modelfields import PhoneNumberField
@@ -16,6 +15,7 @@ class Profile(models.Model):
     preferred_name = models.CharField(max_length=100)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
+    # TODO: verification process
     sms_notifications_enabled = models.BooleanField(default=False)
     sms_verification_code = models.CharField(max_length=6, blank=True, null=True)
     sms_verification_timestamp = models.DateTimeField(blank=True, null=True)
@@ -107,7 +107,6 @@ class Membership(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     kind = models.CharField(max_length=9, choices=KIND_CHOICES, default=KIND_STUDENT)
-    deactivated = models.BooleanField(default=False)
     time_created = models.DateTimeField(auto_now_add=True)
     invited_by = models.ForeignKey(
         User, related_name="invited_memberships", on_delete=models.SET_NULL, blank=True, null=True
@@ -169,7 +168,7 @@ class Queue(models.Model):
     archived = models.BooleanField(default=False)
 
     estimated_wait_time = models.IntegerField(default=0)
-    start_end_times = JSONField()
+    active = models.BooleanField(default=False)
 
     active_override_time = models.DateTimeField(blank=True, null=True)
 
