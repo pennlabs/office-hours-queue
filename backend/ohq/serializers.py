@@ -29,24 +29,6 @@ class QueueRouteMixin(serializers.ModelSerializer):
         return super().save()
 
 
-class ProfileSerializer(serializers.ModelSerializer):
-    phone_number = PhoneNumberField()
-
-    class Meta:
-        model = Profile
-        fields = ("sms_notifications_enabled", "phone_number")
-
-
-class UserSerializer(serializers.ModelSerializer):
-    profile = ProfileSerializer(read_only=False)
-
-    class Meta:
-        model = get_user_model()
-        fields = ("first_name", "last_name", "email", "profile")
-
-    # TODO: need to add logic to update profile from here
-
-
 class SemesterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Semester
@@ -119,3 +101,38 @@ class QuestionSerializer(QueueRouteMixin):
             "should_send_up_soon_notification",
         )
         # TODO: restrict what fields students/TAs can modify
+
+
+class MembershipPrivateSerializer(CourseRouteMixin):
+    """
+    Private serializer that contains course information
+    """
+
+    course = CourseSerializer(read_only=True)
+
+    class Meta:
+        model = Membership
+        fields = ("id", "course", "kind", "time_created", "last_active")
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    phone_number = PhoneNumberField()
+
+    class Meta:
+        model = Profile
+        fields = ("sms_notifications_enabled", "phone_number")
+
+
+class UserPrivateSerializer(serializers.ModelSerializer):
+    """
+    Private serializer to allow users to see/modify their profiles.
+    """
+
+    profile = ProfileSerializer(read_only=False)
+    membership_set = MembershipPrivateSerializer(many=True)
+
+    class Meta:
+        model = get_user_model()
+        fields = ("first_name", "last_name", "email", "profile", "membership_set")
+
+    # TODO: need to add logic to update profile from here

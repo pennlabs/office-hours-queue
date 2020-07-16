@@ -18,7 +18,7 @@ from ohq.serializers import (
     QuestionSerializer,
     QueueSerializer,
     SemesterSerializer,
-    UserSerializer,
+    UserPrivateSerializer,
 )
 
 
@@ -37,7 +37,7 @@ class UserViews(generics.RetrieveUpdateAPIView):
     """
 
     permission_classes = [IsAuthenticated]
-    serializer_class = UserSerializer
+    serializer_class = UserPrivateSerializer
     queryset = get_user_model().objects.none()
 
     def get_object(self):
