@@ -1,6 +1,8 @@
-from rest_framework import viewsets
+from django.contrib.auth import get_user_model
+from rest_framework import generics, viewsets
+from rest_framework.permissions import IsAuthenticated
 
-from ohq.models import Course, Membership, MembershipInvite, Profile, Question, Queue, Semester
+from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester
 from ohq.permissions import (
     CoursePermission,
     IsSuperuser,
@@ -20,7 +22,26 @@ from ohq.serializers import (
 )
 
 
-# TODO: permissions for all views
+class UserViews(generics.RetrieveUpdateAPIView):
+    """
+    get:
+    Return information about the logged in user.
+
+    update:
+    Update information about the logged in user.
+    You must specify all of the fields or use a patch request.
+
+    patch:
+    Update information about the logged in user.
+    Only updates fields that are passed to the server.
+    """
+
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer
+    queryset = get_user_model().objects.none()
+
+    def get_object(self):
+        return self.request.user
 
 
 class CourseViewSet(viewsets.ModelViewSet):
