@@ -1,0 +1,19 @@
+{% extends 'emails/base.html' %}
+
+<h1 class="title">Invitation to join {{ course }} OHQ</h1>
+
+<p>You have been invited to join {{ course }} as a {{ role }} by {{ invited_by }}.</p>
+
+<p>Click below to create your account!</p>
+
+<div class="link-container">
+  <a href="{{ product_link }}">
+    <h1>
+      <span class="line">Get</span>
+      <span class="line">started</span>
+    </h1>
+  </a>
+</div>
+
+{% block content %}
+{% endblock %}

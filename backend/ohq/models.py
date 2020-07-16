@@ -1,6 +1,8 @@
 from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
 from django.db import models
 from django.dispatch import receiver
+from django.template.loader import render_to_string
 from phonenumber_field.modelfields import PhoneNumberField
 
 
@@ -151,10 +153,35 @@ class MembershipInvite(models.Model):
             models.UniqueConstraint(fields=["course", "email"], name="unique_invited_course_user")
         ]
 
+    def kind_to_pretty(self):
+        return [pretty for raw, pretty in Membership.KIND_CHOICES if raw == self.kind][0]
+
+    def send_email(self):
+        """
+        Send the email associated with this invitation to the user.
+        """
+
+        context = {
+            "course": f"{self.coursed.epartment} {self.course.course_code}",
+            "role": self.kind_to_pretty(),
+            "invited_by": self.invited_by.full_name(),
+            "product_link": f"https://{settings.DOMAIN}",
+        }
+
+        html_content = render_to_string("emails/course_invitation.html", context)
+        text_content = "TODO: do this"
+
+        msg = EmailMultiAlternatives(
+            f"Invitation to join {context['course']} OHQ",
+            text_content,
+            settings.FROM_EMAIL,
+            [self.email],
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send(fail_silently=False)
+
     def __str__(self):
         return f"<MembershipInvite: {self.course} - {self.email}>"
-
-    # TODO: claim + sendemail
 
 
 class Queue(models.Model):

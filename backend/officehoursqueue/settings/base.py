@@ -140,3 +140,7 @@ PLATFORM_ACCOUNTS = {
     "PLATFORM_URL": "https://platform-dev.pennlabs.org",
     "CUSTOM_ADMIN": False,
 }
+
+# Email Settings
+
+FROM_EMAIL = "OHQ <contact@ohq.io>"
