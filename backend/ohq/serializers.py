@@ -57,8 +57,6 @@ class MembershipSerializer(CourseRouteMixin):
     class Meta:
         model = Membership
         fields = ("kind", "time_created", "last_active")
-        # TODO: make different serializers for membership
-        # for within a user's profile (private to them)
 
 
 class MembershipInviteSerializer(CourseRouteMixin):
