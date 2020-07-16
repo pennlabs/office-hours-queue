@@ -71,6 +71,20 @@ class CourseSerializer(serializers.ModelSerializer):
         )
 
 
+class MembershipSerializer(CourseRouteMixin):
+    class Meta:
+        model = Membership
+        fields = ("kind", "time_created", "last_active")
+        # TODO: make different serializers for membership
+        # for within a user's profile (private to them)
+
+
+class MembershipInviteSerializer(CourseRouteMixin):
+    class Meta:
+        model = MembershipInvite
+        fields = ("email", "kind", "time_created")
+
+
 class QueueSerializer(CourseRouteMixin):
     class Meta:
         model = Queue
@@ -85,7 +99,6 @@ class QueueSerializer(CourseRouteMixin):
         )
 
 
-# TODO: show different serializers if your a prof/TA or student
 class QuestionSerializer(QueueRouteMixin):
     class Meta:
         model = Question
@@ -105,6 +118,4 @@ class QuestionSerializer(QueueRouteMixin):
             "answered_by",
             "should_send_up_soon_notification",
         )
-
-
-# TODO: membership serializers
+        # TODO: restrict what fields students/TAs can modify
