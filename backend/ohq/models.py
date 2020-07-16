@@ -196,14 +196,9 @@ class Queue(models.Model):
 
     estimated_wait_time = models.IntegerField(default=0)
     active = models.BooleanField(default=False)
-
-    active_override_time = models.DateTimeField(blank=True, null=True)
+    # TODO: re-add some sort of scheduling feature?
 
     # MAX_NUMBER_QUEUES = 2
-
-    def is_active(self):
-        # TODO: ?
-        return None
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["course", "name"], name="unique_queue_name")]
