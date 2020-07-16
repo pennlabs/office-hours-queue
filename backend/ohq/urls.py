@@ -25,7 +25,7 @@ queue_router = routers.NestedSimpleRouter(course_router, "queues", lookup="queue
 queue_router.register("questions", QuestionViewSet, basename="question")
 
 additional_urls = [
-    path("me/", UserViews.as_view(), name="me-detail"),
+    path("me/", UserViews.as_view(), name="me"),
 ]
 
 urlpatterns = router.urls + course_router.urls + queue_router.urls + additional_urls
