@@ -1,4 +1,4 @@
-from django.conf import settings
+from django.contrib.auth import get_user_model
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 
@@ -34,15 +34,15 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ("preferred_name", "sms_notifications_enabled", "phone_number")
+        fields = ("sms_notifications_enabled", "phone_number")
 
 
 class UserSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(read_only=False)
 
     class Meta:
-        model = settings.AUTH_USER_MODEL
-        fields = ("last_name", "email", "profile")
+        model = get_user_model()
+        fields = ("first_name", "last_name", "email", "profile")
 
     # TODO: need to add logic to update profile from here
 
@@ -94,7 +94,7 @@ class QueueSerializer(CourseRouteMixin):
             "description",
             "archived",
             "estimated_wait_time",
-            "start_end_times",
+            "active",
             "active_override_time",
         )
 

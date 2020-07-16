@@ -12,7 +12,7 @@ class Profile(models.Model):
     An extension to a User object that includes additional information.
     """
 
-    preferred_name = models.CharField(max_length=100)
+    # preferred_name = models.CharField(max_length=100)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     # TODO: verification process
