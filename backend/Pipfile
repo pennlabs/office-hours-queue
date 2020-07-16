@@ -26,6 +26,7 @@ uritemplate = "*"
 uwsgi = "*"
 django-labs-accounts = "*"
 django-phonenumber-field = {extras = ["phonenumbers"],version = "*"}
+drf-nested-routers = "*"
 
 [requires]
 python_version = "3.7"
