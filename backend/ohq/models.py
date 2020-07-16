@@ -85,26 +85,6 @@ class Course(models.Model):
             )
         ]
 
-    # @property
-    # def student_users(self):
-    #     return self.course_users.filter(kind=CourseUserKind.STUDENT.name)
-
-    # @property
-    # def ta_users(self):
-    #     return self.course_users.filter(kind=CourseUserKind.TA.name)
-
-    # @property
-    # def head_ta_users(self):
-    #     return self.course_users.filter(kind=CourseUserKind.HEAD_TA.name)
-
-    # @property
-    # def professor_users(self):
-    #     return self.course_users.filter(kind=CourseUserKind.PROFESSOR.name)
-
-    # @property
-    # def formatted_course_code(self):
-    #     return f"{self.department} {self.course_code}"
-
     def __str__(self):
         return f"{self.department} {self.course_code}: {str(self.semester)}"
 
@@ -138,6 +118,14 @@ class Membership(models.Model):
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["course", "user"], name="unique_membership")]
+
+    @property
+    def is_leadership(self):
+        return self.kind is Membership.KIND_PROFESSOR or self.kind is Membership.KIND_HEAD_TA
+
+    @property
+    def is_ta(self):
+        return self.is_leadership or self.kind is Membership.KIND_TA
 
     def kind_to_pretty(self):
         return [pretty for raw, pretty in self.KIND_CHOICES if raw == self.kind][0]
