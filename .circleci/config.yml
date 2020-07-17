@@ -16,7 +16,7 @@ workflows:
   build-and-deploy:
     jobs:
       - django-tools/check:
-          project-name: office-hours-queue
+          project-name: officehoursqueue
           project-location: backend
       - react-tools/check:
           project-location: frontend
