@@ -13,6 +13,7 @@ flake8-isort = "*"
 flake8-quotes = "*"
 django-debug-toolbar = "*"
 django-extensions = "*"
+parameterized = "*"
 
 [packages]
 dj-database-url = "*"

@@ -12,6 +12,8 @@ from ohq.views import (
 )
 
 
+app_name = "ohq"
+
 router = routers.SimpleRouter()
 router.register("semesters", SemesterViewSet, basename="semester")
 router.register("courses", CourseViewSet, basename="course")

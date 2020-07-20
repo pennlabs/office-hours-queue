@@ -30,9 +30,7 @@ class CoursePermission(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
-        # Anonymous users can't do anything
-        # if not request.user.is_authenticated:
-        #     return False
+        membership = Membership.objects.get(course=obj, user=request.user)
 
         # Anyone can get a single course
         if view.action == "retrieve":
@@ -42,24 +40,25 @@ class CoursePermission(permissions.BasePermission):
         if view.action == "destroy":
             return False
 
-        membership = Membership.objects.filter(course=obj, user=request.user).first()
-        if membership is None:
-            return False
-
         # Course leadership can make changes
         if view.action in ["update", "partial_update"]:
             return membership.is_leadership
 
     def has_permission(self, request, view):
-        # No one can list all courses
-        if view.action == "list":
+        # Anonymous users can't do anything
+        if not request.user.is_authenticated:
             return False
+
+        # Members can list courses
+        if view.action == "list":
+            return True
+
         if view.action == "create":
             # TODO: who can create courses?
             # Should probably use DLA and restrict to faculty/staff/previous head TAs
-            return True
-        # Anonymous users can't do anything
-        return request.user.is_authenticated
+            return False
+
+        return True
 
 
 class QueuePermission(permissions.BasePermission):
@@ -68,6 +67,21 @@ class QueuePermission(permissions.BasePermission):
     Only head TAs or professors can create or delete queues.
     Students+ can get or list queues
     """
+
+    def has_object_permission(self, request, view, obj):
+        membership = Membership.objects.get(course=view.kwargs["course_pk"], user=request.user)
+
+        # Students+ can get a single queue
+        if view.action == "retrieve":
+            return True
+
+        # TAs+ can make changes
+        if view.action in ["update", "partial_update"]:
+            return membership.is_ta
+
+        # Head TAs+ can create or delete a queue
+        if view.action == "destroy":
+            return membership.is_leadership
 
     def has_permission(self, request, view):
         # Anonymous users can't do anything
@@ -82,17 +96,15 @@ class QueuePermission(permissions.BasePermission):
         if membership is None:
             return False
 
-        # Students+ can get a single queue
-        if view.action == "retrieve":
-            return True
-
         # TAs+ can make changes
         if view.action in ["update", "partial_update"]:
             return membership.is_ta
 
         # Head TAs+ can create or delete a queue
-        if view.action in ["create", "destroy"]:
-            return False
+        if view.action == "create":
+            return membership.is_leadership
+
+        return True
 
 
 class QuestionPermission(permissions.BasePermission):
@@ -110,8 +122,6 @@ class QuestionPermission(permissions.BasePermission):
         # TAs+ can get or modify any questions
         if view.action in ["retrieve", "update", "partial_update"]:
             return obj.asked_by is request.user or membership.is_ta
-
-        return False
 
     def has_permission(self, request, view):
         # Anonymous users can't do anything
@@ -132,7 +142,7 @@ class QuestionPermission(permissions.BasePermission):
 
         # Students can create questions:
         if view.action == "create":
-            return membership.kind is Membership.KIND_STUDENT
+            return membership.kind == Membership.KIND_STUDENT
 
         # TAs+ can list questions
         if view.action == "list":
@@ -147,7 +157,7 @@ class MembershipPermission(permissions.BasePermission):
     """
     Students can get their own membership.
     TAs+ can list memberships.
-    Students can create a membership (from an invite).
+    No one can create a membership.
     Head TAs+ can modify and delete memberships.
     Students can delete their own memberships.
     """
@@ -173,17 +183,14 @@ class MembershipPermission(permissions.BasePermission):
         if view.action in ["update", "partial_update"]:
             return membership.is_leadership
 
-        return False
-
     def has_permission(self, request, view):
         # Anonymous users can't do anything
         if not request.user.is_authenticated:
             return False
 
-        # Anyone can create a membership
-        # With restrictions defined in has_object_permission
+        # No one can create a membership
         if view.action == "create":
-            return True
+            return False
 
         membership = Membership.objects.filter(
             course=view.kwargs["course_pk"], user=request.user
@@ -218,8 +225,6 @@ class MembershipInvitePermission(permissions.BasePermission):
         # Head TAs+ can modify or delete any memberships
         if view.action in ["destroy", "update", "partial_update"]:
             return membership.is_leadership
-
-        return False
 
     def has_permission(self, request, view):
         # Anonymous users can't do anything

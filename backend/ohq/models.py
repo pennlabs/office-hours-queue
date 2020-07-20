@@ -122,11 +122,11 @@ class Membership(models.Model):
 
     @property
     def is_leadership(self):
-        return self.kind is Membership.KIND_PROFESSOR or self.kind is Membership.KIND_HEAD_TA
+        return self.kind in [Membership.KIND_PROFESSOR, Membership.KIND_HEAD_TA]
 
     @property
     def is_ta(self):
-        return self.is_leadership or self.kind is Membership.KIND_TA
+        return self.is_leadership or self.kind == Membership.KIND_TA
 
     def kind_to_pretty(self):
         return [pretty for raw, pretty in self.KIND_CHOICES if raw == self.kind][0]

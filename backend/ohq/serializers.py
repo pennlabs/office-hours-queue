@@ -75,7 +75,6 @@ class QueueSerializer(CourseRouteMixin):
             "archived",
             "estimated_wait_time",
             "active",
-            "active_override_time",
         )
 
 
