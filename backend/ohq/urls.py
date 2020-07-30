@@ -3,6 +3,7 @@ from rest_framework_nested import routers
 
 from ohq.views import (
     CourseViewSet,
+    MassInviteView,
     MembershipInviteViewSet,
     MembershipViewSet,
     QuestionViewSet,
@@ -28,6 +29,7 @@ queue_router.register("questions", QuestionViewSet, basename="question")
 
 additional_urls = [
     path("me/", UserViews.as_view(), name="me"),
+    path("courses/<slug:course_pk>/mass-invite/", MassInviteView.as_view(), name="mass-invite"),
 ]
 
 urlpatterns = router.urls + course_router.urls + queue_router.urls + additional_urls

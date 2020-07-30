@@ -1,11 +1,17 @@
+import re
+
 from django.contrib.auth import get_user_model
+from django.core.validators import ValidationError, validate_email
 from rest_framework import generics, viewsets
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester
 from ohq.permissions import (
     CoursePermission,
     IsSuperuser,
+    MassInvitePermission,
     MembershipInvitePermission,
     MembershipPermission,
     QuestionPermission,
@@ -20,6 +26,9 @@ from ohq.serializers import (
     SemesterSerializer,
     UserPrivateSerializer,
 )
+
+
+User = get_user_model()
 
 
 class UserViews(generics.RetrieveUpdateAPIView):
@@ -38,7 +47,6 @@ class UserViews(generics.RetrieveUpdateAPIView):
 
     permission_classes = [IsAuthenticated]
     serializer_class = UserPrivateSerializer
-    queryset = get_user_model().objects.none()
 
     def get_object(self):
         return self.request.user
@@ -205,3 +213,53 @@ class SemesterViewSet(viewsets.ReadOnlyModelViewSet):
 
     serializer_class = SemesterSerializer
     queryset = Semester.objects.all()
+
+
+class MassInviteView(APIView):
+    """
+    Sends out invitations to join a course to multiple recipients.
+    """
+
+    permission_classes = [MassInvitePermission | IsSuperuser]
+
+    def post(self, request, course_pk, format=None):
+        kind = request.data.get("kind")
+        course = Course.objects.get(id=self.kwargs["course_pk"])
+        # Get list of emails
+        emails = [x.strip() for x in re.split("\n|,", request.data.get("emails", ""))]
+        emails = [x for x in emails if x]
+
+        # Validate emails
+        try:
+            for email in emails:
+                validate_email(email)
+        except ValidationError:
+            return Response({"detail": "invalid emails"}, status=400)
+        # Remove invitees already in class
+        existing = Membership.objects.filter(course=course, user__email__in=emails).values_list(
+            "user__email", flat=True
+        )
+        emails = list(set(emails) - set(existing))
+
+        # Remove invitees already sent an invite
+        existing = MembershipInvite.objects.filter(course=course, email__in=emails).values_list(
+            "email", flat=True
+        )
+        emails = list(set(emails) - set(existing))
+
+        # Directly add invitees with existing accounts
+        users = User.objects.filter(email__in=emails)
+        for user in users:
+            membership = Membership.objects.create(course=course, user=user, kind=kind)
+            membership.send_email()
+
+        # Create membership invites for invitees without an account
+        emails = list(set(emails) - set(users.values_list("email", flat=True)))
+        for email in emails:
+            invite = MembershipInvite.objects.create(email=email, course=course, kind=kind)
+            invite.send_email()
+
+        return Response(
+            data={"detail": "success", "members_added": len(users), "invites_sent": len(emails)},
+            status=201,
+        )

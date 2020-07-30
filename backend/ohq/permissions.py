@@ -253,3 +253,24 @@ class MembershipInvitePermission(permissions.BasePermission):
         # TAs+ can get, modify, and delete memberships
         # With restrictions defined in has_object_permission
         return membership.is_ta
+
+
+class MassInvitePermission(permissions.BasePermission):
+    """
+    Head TAs+ can create mass membership invites.
+    """
+
+    def has_permission(self, request, view):
+        # Anonymous users can't do anything
+        if not request.user.is_authenticated:
+            return False
+
+        membership = Membership.objects.filter(
+            course=view.kwargs["course_pk"], user=request.user
+        ).first()
+
+        # Non-Students can't do anything
+        if membership is None:
+            return False
+
+        return membership.is_leadership
