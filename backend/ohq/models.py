@@ -109,9 +109,6 @@ class Membership(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     kind = models.CharField(max_length=9, choices=KIND_CHOICES, default=KIND_STUDENT)
     time_created = models.DateTimeField(auto_now_add=True)
-    invited_by = models.ForeignKey(
-        User, related_name="invited_memberships", on_delete=models.SET_NULL, blank=True, null=True
-    )
 
     # For staff
     last_active = models.DateTimeField(blank=True, null=True)
@@ -130,6 +127,19 @@ class Membership(models.Model):
     def kind_to_pretty(self):
         return [pretty for raw, pretty in self.KIND_CHOICES if raw == self.kind][0]
 
+    def send_email(self):
+        """
+        Send the email associated with this invitation to the user.
+        """
+
+        context = {
+            "course": f"{self.course.department} {self.course.course_code}",
+            "role": self.kind_to_pretty(),
+            "product_link": f"https://{settings.DOMAIN}",
+        }
+        subject = f"You've been added to {context['course']} OHQ"
+        send_email("emails/course_added.html", context, subject, self.user.email)
+
     def __str__(self):
         return f"<Membership: {self.user} - {self.course} ({self.kind_to_pretty()})>"
 
@@ -145,7 +155,6 @@ class MembershipInvite(models.Model):
         max_length=9, choices=Membership.KIND_CHOICES, default=Membership.KIND_STUDENT
     )
     time_created = models.DateTimeField(auto_now_add=True)
-    invited_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
 
     class Meta:
         constraints = [
@@ -161,16 +170,15 @@ class MembershipInvite(models.Model):
         """
 
         context = {
-            "course": f"{self.coursed.epartment} {self.course.course_code}",
+            "course": f"{self.course.department} {self.course.course_code}",
             "role": self.kind_to_pretty(),
-            "invited_by": self.invited_by.full_name(),
             "product_link": f"https://{settings.DOMAIN}",
         }
         subject = f"Invitation to join {context['course']} OHQ"
         send_email("emails/course_invitation.html", context, subject, self.email)
 
     def __str__(self):
-        return f"<MembershipInvite: {self.course} - {self.email}>"
+        return f"<MembershipInvite: {self.email} - {self.course} ({self.kind_to_pretty()})>"
 
 
 class Queue(models.Model):
