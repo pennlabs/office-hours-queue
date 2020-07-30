@@ -1,8 +1,7 @@
 from django.conf import settings
-from django.core.mail import EmailMultiAlternatives
 from django.db import models
 from django.dispatch import receiver
-from django.template.loader import render_to_string
+from email_tools.emails import send_email
 from phonenumber_field.modelfields import PhoneNumberField
 
 
@@ -167,18 +166,8 @@ class MembershipInvite(models.Model):
             "invited_by": self.invited_by.full_name(),
             "product_link": f"https://{settings.DOMAIN}",
         }
-
-        html_content = render_to_string("emails/course_invitation.html", context)
-        text_content = "TODO: do this"
-
-        msg = EmailMultiAlternatives(
-            f"Invitation to join {context['course']} OHQ",
-            text_content,
-            settings.FROM_EMAIL,
-            [self.email],
-        )
-        msg.attach_alternative(html_content, "text/html")
-        msg.send(fail_silently=False)
+        subject = f"Invitation to join {context['course']} OHQ"
+        send_email("emails/course_invitation.html", context, subject, self.email)
 
     def __str__(self):
         return f"<MembershipInvite: {self.course} - {self.email}>"

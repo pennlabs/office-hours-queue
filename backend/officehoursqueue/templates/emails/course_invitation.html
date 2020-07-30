@@ -1,5 +1,7 @@
 {% extends 'emails/base.html' %}
 
+{% block content %}
+
 <h1 class="title">Invitation to join {{ course }} OHQ</h1>
 
 <p>You have been invited to join {{ course }} as a {{ role }} by {{ invited_by }}.</p>
@@ -14,6 +16,4 @@
     </h1>
   </a>
 </div>
-
-{% block content %}
 {% endblock %}
