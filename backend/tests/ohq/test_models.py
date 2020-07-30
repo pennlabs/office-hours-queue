@@ -47,7 +47,7 @@ class MembershipTestCase(TestCase):
     def test_str(self):
         mem = self.membership
         self.assertEqual(
-            str(mem), f"<Membership: {mem.user} - {mem.course} ({mem.kind_to_pretty()})>",
+            str(mem), f"<Membership: {mem.user} - {mem.course} ({mem.kind_to_pretty()})>"
         )
 
     def test_send_email(self):
@@ -73,7 +73,7 @@ class MembershipInviteTestCase(TestCase):
     def test_str(self):
         inv = self.invite
         self.assertEqual(
-            str(inv), f"<MembershipInvite: {inv.email} - {inv.course} ({inv.kind_to_pretty()})>",
+            str(inv), f"<MembershipInvite: {inv.email} - {inv.course} ({inv.kind_to_pretty()})>"
         )
 
     def test_send_email(self):
