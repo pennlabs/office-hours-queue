@@ -4,7 +4,7 @@ from django.urls import reverse
 from parameterized import parameterized
 from rest_framework.test import APIClient
 
-from ohq.models import Course, Queue, Membership, MembershipInvite, Question, Semester
+from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester
 
 
 User = get_user_model()
