@@ -6,9 +6,22 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 
 from ohq.models import Course, Membership, MembershipInvite, Semester
+from ohq.serializers import UserPrivateSerializer
 
 
 User = get_user_model()
+
+
+class UserViewTestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create(username="user")
+        self.serializer = UserPrivateSerializer(self.user)
+
+    def test_get_object(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(reverse("ohq:me"))
+        self.assertEqual(json.loads(response.content), self.serializer.data)
 
 
 class MassInviteTestCase(TestCase):

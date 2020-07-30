@@ -9,7 +9,7 @@ from ohq.views import (
     QuestionViewSet,
     QueueViewSet,
     SemesterViewSet,
-    UserViews,
+    UserView,
 )
 
 
@@ -28,7 +28,7 @@ queue_router = routers.NestedSimpleRouter(course_router, "queues", lookup="queue
 queue_router.register("questions", QuestionViewSet, basename="question")
 
 additional_urls = [
-    path("me/", UserViews.as_view(), name="me"),
+    path("me/", UserView.as_view(), name="me"),
     path("courses/<slug:course_pk>/mass-invite/", MassInviteView.as_view(), name="mass-invite"),
 ]
 

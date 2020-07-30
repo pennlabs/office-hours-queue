@@ -31,7 +31,7 @@ from ohq.serializers import (
 User = get_user_model()
 
 
-class UserViews(generics.RetrieveUpdateAPIView):
+class UserView(generics.RetrieveUpdateAPIView):
     """
     get:
     Return information about the logged in user.

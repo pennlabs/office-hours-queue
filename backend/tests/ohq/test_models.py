@@ -19,7 +19,6 @@ class ProfileTestCase(TestCase):
 class CourseTestCase(TestCase):
     def setUp(self):
         self.semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
-        self.name = "Test course"
         self.course = Course.objects.create(
             course_code="000", department="TEST", course_title="Title", semester=self.semester
         )
