@@ -76,8 +76,8 @@ class CourseTestCase(TestCase):
                 "anonymous": 403,
             },
             "create": {
-                "professor": 403,
-                "head_ta": 403,
+                "professor": 201,
+                "head_ta": 201,
                 "ta": 403,
                 "student": 403,
                 "non_member": 403,
@@ -115,7 +115,19 @@ class CourseTestCase(TestCase):
 
     @parameterized.expand(users, name_func=get_test_name)
     def test_create(self, user):
-        test(self, user, "create", "post", reverse("ohq:course-list"), {"name": "new"})
+        test(
+            self,
+            user,
+            "create",
+            "post",
+            reverse("ohq:course-list"),
+            {
+                "course_code": "000",
+                "department": "TEST",
+                "course_title": "Course",
+                "semester": self.semester.id,
+            },
+        )
 
     @parameterized.expand(users, name_func=get_test_name)
     def test_retrieve(self, user):

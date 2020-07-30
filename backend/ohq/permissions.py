@@ -26,6 +26,7 @@ class CoursePermission(permissions.BasePermission):
     """
     Anyone can get or list courses.
     Only head TAs or professors should be able to modify a course.
+    Current Head TAs+ or faculty members can create courses.
     No one can delete courses.
     """
 
@@ -54,9 +55,11 @@ class CoursePermission(permissions.BasePermission):
             return True
 
         if view.action == "create":
-            # TODO: who can create courses?
-            # Should probably use DLA and restrict to faculty/staff/previous head TAs
-            return False
+            return (
+                request.user.groups.filter(name="faculty").exists()
+                or Membership.objects.filter(user=request.user, kind=Membership.KIND_HEAD_TA)
+                or Membership.objects.filter(user=request.user, kind=Membership.KIND_PROFESSOR)
+            )
 
         return True
 
