@@ -19,6 +19,7 @@ htmlcov/
 
 # Test database
 db.sqlite3
+postgres
 
 # Mac
 .DS_Store
