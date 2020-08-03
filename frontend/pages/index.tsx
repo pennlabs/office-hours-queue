@@ -3,6 +3,7 @@ import { Grid, Button } from "semantic-ui-react";
 import { useRouter } from "next/router";
 import { AuthProvider, AuthUserContext } from "../context/auth";
 import AboutModal from "../components/LandingPage/AboutModal";
+import styles from "../styles/landingpage.module.css";
 
 const LandingPage = () => {
     const { authUser } = useContext(AuthUserContext);
@@ -42,10 +43,12 @@ const LandingPage = () => {
                     <Button
                         style={{ width: "340px" }}
                         href={`/api/accounts/login/?next=${router.pathname}`}
-                    />
+                    >
+                        Log In
+                    </Button>
                 </Grid.Row>
                 <div
-                    className="about about-landing"
+                    className={`${styles.about} ${styles["about-landing"]}`}
                     onClick={() => setShowAboutModal(true)}
                 >
                     <label>About</label>
