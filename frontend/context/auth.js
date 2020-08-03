@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
     const router = useRouter();
 
     useEffect(() => {
-        fetch("/api/me").then((res) => {
+        fetch("/api/accounts/me/").then((res) => {
             if (res.ok) {
                 res.json().then((user) => {
                     setAuthUser(user);
