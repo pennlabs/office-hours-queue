@@ -106,7 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Authentication Backends
 
 AUTHENTICATION_BACKENDS = [
-    "accounts.backends.LabsUserBackend",
+    "ohq.backends.OHQBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
 
