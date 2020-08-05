@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import styles from "../../styles/landingpage.module.css";
 
 import { Segment, Menu, Grid, Image } from "semantic-ui-react";
 import Link from "next/link";
 
 import SignOutButton from "../SignOut";
+import styles from "../../styles/landingpage.module.css";
 import AboutModal from "../LandingPage/AboutModal";
 
 const Sidebar = (props) => {

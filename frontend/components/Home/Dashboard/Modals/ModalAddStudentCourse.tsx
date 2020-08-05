@@ -16,7 +16,8 @@ import AddStudentForm from "../Forms/AddStudentForm";
 // `;
 //
 const ModalAddStudentCourse = (props) => {
-    const [joinCourses, { loading }] = useMutation(JOIN_COURSES);
+    // const [joinCourses, { loading }] = useMutation(JOIN_COURSES);
+    const loading = false;
     const [input, setInput] = useState({ courseIds: [] });
     const [disabled, setDisabled] = useState(true);
 

@@ -23,6 +23,9 @@ import { Header } from "semantic-ui-react";
 const NewUserForm = (props) => {
     /* GRAPHQL QUERIES/MUTATIONS */
     // const [updateUser, { loading }] = useMutation(UPDATE_USER);
+
+    const loading = false;
+
     //
     /* STATE */
     const [input, setInput] = useState({

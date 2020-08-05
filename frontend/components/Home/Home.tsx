@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Grid } from "semantic-ui-react";
 import Dashboard from "./Dashboard/Dashboard";
-// import AccountSettings from "./AccountSettings/AccountSettings";
+import AccountSettings from "./AccountSettings/AccountSettings";
 import HomeSidebar from "./HomeSidebar";
 
 import { courseSortFunc } from "../../utils";
@@ -47,9 +47,9 @@ const Home = ({}) => {
     //
     /* STATE */
     const [active, setActive] = useState("dashboard");
-    const [courses, setCourses] = useState(null);
-    const [user, setUser] = useState(null);
-    const [newUser, setNewUser] = useState(true);
+    const [courses, setCourses] = useState([]);
+    const [user, setUser] = useState({});
+    const [newUser, setNewUser] = useState(false);
 
     /* LOAD DATA FUNCTIONS */
     // const loadCourses = (data) => {
@@ -122,35 +122,28 @@ const Home = ({}) => {
             stackable
         >
             <HomeSidebar active={active} clickFunc={setActive} />
-            <Dashboard
-                user={user}
-                courses={courses}
-                newUser={newUser}
-                setNewUser={setNewUser}
-                refetch={refetch}
-            />
-            {/* {user && courses && active === "dashboard" ? ( */}
-            {/*     <Dashboard */}
-            {/*         user={user} */}
-            {/*         courses={courses} */}
-            {/*         newUser={newUser} */}
-            {/*         setNewUser={setNewUser} */}
-            {/*         refetch={refetch} */}
-            {/*     /> */}
-            {/* ) : user && active === "account_settings" ? ( */}
-            {/*     <AccountSettings */}
-            {/*         setActive={setActive} */}
-            {/*         user={user} */}
-            {/*         refetch={refetch} */}
-            {/*     /> */}
-            {/* ) : ( */}
-            {/*     <Dashboard */}
-            {/*         loading={true} */}
-            {/*         courses={[]} */}
-            {/*         newUser={newUser} */}
-            {/*         refetch={refetch} */}
-            {/*     /> */}
-            {/* )} */}
+            {user && courses && active === "dashboard" ? (
+                <Dashboard
+                    user={user}
+                    courses={courses}
+                    newUser={newUser}
+                    setNewUser={setNewUser}
+                    refetch={refetch}
+                />
+            ) : user && active === "account_settings" ? (
+                <AccountSettings
+                    setActive={setActive}
+                    user={user}
+                    refetch={refetch}
+                />
+            ) : (
+                <Dashboard
+                    loading={true}
+                    courses={[]}
+                    newUser={newUser}
+                    refetch={refetch}
+                />
+            )}
         </Grid>
     );
 };
