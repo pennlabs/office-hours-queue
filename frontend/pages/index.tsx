@@ -3,6 +3,7 @@ import { Grid, Button } from "semantic-ui-react";
 import { useRouter } from "next/router";
 import { AuthProvider, AuthUserContext } from "../context/auth";
 import AboutModal from "../components/LandingPage/AboutModal";
+import Home from "../components/Home/Home";
 import styles from "../styles/landingpage.module.css";
 
 const LandingPage = () => {
@@ -11,7 +12,7 @@ const LandingPage = () => {
     const [showAboutModal, setShowAboutModal] = useState(false);
 
     return authUser ? (
-        <div />
+        <Home />
     ) : (
         <div
             style={{

@@ -14,6 +14,7 @@
     },
     "rules": {
         "prettier/prettier": "error",
+        "import/extensions": [".js", ".jsx", ".ts", ".tsx"],
         "quotes": [
             "error",
             "double",
@@ -33,5 +34,12 @@
         "react/jsx-boolean-value": 0,
         "no-bitwise": "off",
         "no-await-in-loop": "warn"
+    },
+    "settings": {
+        "import/resolver": {
+            "node": {
+                "extensions": [".js", ".jsx", ".ts", ".tsx"]
+            }
+        }
     }
 }
