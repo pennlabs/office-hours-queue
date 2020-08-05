@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
                 setLoading(false);
             }
         });
-    });
+    }, [router]);
 
     return loading ? (
         <div
