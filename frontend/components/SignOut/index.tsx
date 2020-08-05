@@ -1,9 +1,8 @@
 import React from "react";
-import { useRouter } from "next/router";
 import { Menu, Icon } from "semantic-ui-react";
 
 const SignOutButton = () => {
-    const router = useRouter();
+
     return (
         <Menu.Item
             style={{
@@ -13,12 +12,7 @@ const SignOutButton = () => {
             }}
             name="Signout"
             active={false}
-            onClick={() => {
-                fetch("/api/accounts/logout").then(() => {
-                    router.replace("/");
-                    router.reload();
-                });
-            }}
+            href="/api/accounts/logout/?next=/"
         >
             <Icon name="sign-out" />
             Sign Out
