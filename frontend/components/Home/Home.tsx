@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import useSWR from "swr";
 import { Grid } from "semantic-ui-react";
 import Dashboard from "./Dashboard/Dashboard";
 import AccountSettings from "./AccountSettings/AccountSettings";
@@ -45,6 +46,7 @@ const Home = ({}) => {
     /* GRAPHQL QUERIES/MUTATIONS */
     // const { data, refetch } = useQuery(CURRENT_USER);
     //
+
     /* STATE */
     const [active, setActive] = useState("dashboard");
     const [courses, setCourses] = useState([]);
@@ -131,11 +133,7 @@ const Home = ({}) => {
                     refetch={refetch}
                 />
             ) : user && active === "account_settings" ? (
-                <AccountSettings
-                    setActive={setActive}
-                    user={user}
-                    refetch={refetch}
-                />
+                <AccountSettings />
             ) : (
                 <Dashboard
                     loading={true}

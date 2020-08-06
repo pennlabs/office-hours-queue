@@ -16,6 +16,7 @@
         "@material-ui/lab": "^4.0.0-alpha.56",
         "express": "^4.17.1",
         "http-proxy-middleware": "^1.0.5",
+        "libphonenumber-js": "^1.7.56",
         "next": "9.4.4",
         "react": "16.13.1",
         "react-code-input": "^3.10.0",
@@ -23,6 +24,7 @@
         "react-select": "^3.1.0",
         "semantic-ui-css": "^2.4.1",
         "semantic-ui-react": "^1.1.0",
+        "swr": "^0.3.0",
         "typescript": "^3.9.7"
     },
     "devDependencies": {

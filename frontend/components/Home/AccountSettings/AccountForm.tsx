@@ -1,53 +1,36 @@
-import React, { useState, useEffect } from "react";
-// import { gql } from 'apollo-boost';
-// import { useMutation } from '@apollo/react-hooks';
+import React, { useState, useContext } from "react";
 import { Form, Button, Icon, Popup } from "semantic-ui-react";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
-import VerificationModal from "./VerificationModal";
-import firebase from "../../Firebase";
+import { useAccountInfo, updateUser, User } from "./AccountRequests";
+import { AuthUserContext } from "../../../context/auth";
+// import VerificationModal from "./VerificationModal";
 
-/* GRAPHQL QUERIES/MUTATIONS */
-// const UPDATE_USER = gql`
-//   mutation UpdateUser($input: UpdateUserInput!) {
-//     updateUser(input: $input) {
-//       user {
-//         fullName
-//         preferredName
-//         smsNotificationsEnabled
-//         phoneNumber
-//       }
-//     }
-//   }
-// `;
+const AccountForm = () => {
+    const { user: initialUser } = useContext(AuthUserContext);
 
-const AccountForm = (props) => {
-    /* GRAPHQL QUERIES/MUTATIONS */
-    // const [updateUser, { loading }] = useMutation(UPDATE_USER);
-    const loading = false;
+    const [user, error, loading, mutate]: [
+        User,
+        any,
+        any,
+        any
+    ] = useAccountInfo(initialUser);
 
-    /* STATE */
-    const [defUser, setDefUser] = useState({
-        email: props.user.email,
-        fullName: props.user.fullName,
-        preferredName: props.user.preferredName,
-        smsNotificationsEnabled: props.user.smsNotificationsEnabled,
-        phoneNumber: props.user.phoneNumber,
-    });
     const [input, setInput] = useState({
-        email: props.user.email,
-        fullName: props.user.fullName,
-        preferredName: props.user.preferredName,
-        smsNotificationsEnabled: props.user.smsNotificationsEnabled,
-        phoneNumber: props.user.phoneNumber,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        smsNotificationsEnabled: user.smsNotificationsEnabled,
+        phoneNumber: user.phoneNumber,
     });
-    const [showNumber, setShowNumber] = useState(
-        props.user.smsNotificationsEnabled
-    );
-    const [isVerified, setIsVerified] = useState(
-        props.user.smsVerified !== false
-    );
-    const [smsOpen, setSmsOpen] = useState(false);
+
+    const [showNumber, setShowNumber] = useState(user.smsNotificationsEnabled);
+
+    // const [isVerified, setIsVerified] = useState(
+    //     props.user.smsVerified !== false
+    // );
+    // const [smsOpen, setSmsOpen] = useState(false);
+    //
 
     const [toast, setToast] = useState({ message: "", success: true });
     const [toastOpen, setToastOpen] = useState(false);
@@ -55,14 +38,14 @@ const AccountForm = (props) => {
 
     const isDisabled = () => {
         return (
-            !input.preferredName ||
-            !input.fullName ||
+            !input.firstName ||
+            !input.lastName ||
             (input.smsNotificationsEnabled && !input.phoneNumber) ||
-            (input.preferredName === defUser.preferredName &&
-                input.fullName === defUser.fullName &&
+            (input.firstName === user.firstName &&
+                input.lastName === user.lastName &&
                 input.smsNotificationsEnabled ===
-                    defUser.smsNotificationsEnabled &&
-                input.phoneNumber === defUser.phoneNumber)
+                    user.smsNotificationsEnabled &&
+                input.phoneNumber === user.phoneNumber)
         );
     };
 
@@ -75,28 +58,24 @@ const AccountForm = (props) => {
 
     const onSubmit = async () => {
         const newInput = {};
-        if (input.fullName !== defUser.fullName) {
-            newInput.fullName = input.fullName;
+        if (input.firstName !== user.firstName) {
+            newInput.firstName = input.firstName;
         }
-        if (input.preferredName !== defUser.preferredName) {
-            newInput.preferredName = input.preferredName;
+        if (input.lastName !== user.lastName) {
+            newInput.lastName = input.lastName;
         }
-        if (input.smsNotificationsEnabled !== defUser.smsNotificationsEnabled) {
+        if (input.smsNotificationsEnabled !== user.smsNotificationsEnabled) {
             newInput.smsNotificationsEnabled = input.smsNotificationsEnabled;
         }
         if (
-            input.phoneNumber !== defUser.phoneNumber &&
+            input.phoneNumber !== user.phoneNumber &&
             input.smsNotificationsEnabled
         ) {
             newInput.phoneNumber = input.phoneNumber;
         }
         try {
-            const result = await updateUser({
-                variables: {
-                    input: newInput,
-                },
-            });
-            await props.refetch();
+            await updateUser(newInput);
+            mutate("/api/accounts/me");
             setToast({
                 success: true,
                 message: "Your account was successfully updated",
@@ -104,13 +83,12 @@ const AccountForm = (props) => {
             setToastOpen(true);
             setDisabled(true);
 
-            if (
-                result.data.updateUser.user.phoneNumber !== defUser.phoneNumber
-            ) {
-                setSmsOpen(true);
-                setIsVerified(false);
-                firebase.analytics.logEvent("sms_attempted_verification");
-            }
+            // if (
+            //     result.data.updateUser.user.phoneNumber !== defUser.phoneNumber
+            // ) {
+            //     setSmsOpen(true);
+            //     setIsVerified(false);
+            // }
         } catch (e) {
             setToast({
                 success: false,
@@ -120,52 +98,41 @@ const AccountForm = (props) => {
         }
     };
 
-    useEffect(() => {
-        setDefUser({
-            email: props.user.email,
-            fullName: props.user.fullName,
-            preferredName: props.user.preferredName,
-            smsNotificationsEnabled: props.user.smsNotificationsEnabled,
-            phoneNumber: props.user.phoneNumber,
-        });
-        setIsVerified(props.user.smsVerified !== false);
-    }, [props.user]);
-
     return [
-        <VerificationModal
-            open={smsOpen}
-            toastFunc={(toast) => {
-                setToast(toast);
-                setToastOpen(true);
-            }}
-            openFunc={setSmsOpen}
-            refetch={props.refetch}
-        />,
+        // <VerificationModal
+        //     open={smsOpen}
+        //     toastFunc={(toast) => {
+        //         setToast(toast);
+        //         setToastOpen(true);
+        //     }}
+        //     openFunc={setSmsOpen}
+        //     refetch={props.refetch}
+        // />,
         <Form>
             <Form.Field required>
                 <label>Email Address</label>
                 <Form.Input
-                    defaultValue={defUser.email}
+                    defaultValue={input.email}
                     disabled
                     onChange={handleInputChange}
                 />
             </Form.Field>
             <Form.Field required>
-                <label>Full Name</label>
+                <label>First Name</label>
                 <Form.Input
-                    placeholder="Full Name"
-                    defaultValue={defUser.fullName}
-                    name="fullName"
+                    placeholder="First Name"
+                    defaultValue={input.firstName}
+                    name="firstName"
                     disabled={loading}
                     onChange={handleInputChange}
                 />
             </Form.Field>
             <Form.Field required>
-                <label>Preferred Name</label>
+                <label>Last Name</label>
                 <Form.Input
-                    placeholder="Preferred Name"
-                    defaultValue={defUser.preferredName}
-                    name="preferredName"
+                    placeholder="Last Name"
+                    defaultValue={input.lastName}
+                    name="lastName"
                     disabled={loading}
                     onChange={handleInputChange}
                 />
@@ -173,7 +140,7 @@ const AccountForm = (props) => {
             <Form.Field>
                 <Form.Checkbox
                     name="smsNotificationsEnabled"
-                    defaultChecked={defUser.smsNotificationsEnabled}
+                    defaultChecked={input.smsNotificationsEnabled}
                     onChange={handleInputChange}
                     label={[
                         "Enable SMS Notifications ",
@@ -190,22 +157,22 @@ const AccountForm = (props) => {
                     <label>Cell Phone Number</label>
                     <Form.Input
                         placeholder="9876543210"
-                        defaultValue={defUser.phoneNumber}
+                        defaultValue={input.phoneNumber}
                         name="phoneNumber"
                         onChange={handleInputChange}
-                        action={
-                            !isVerified && (
-                                <Button
-                                    disabled={isVerified}
-                                    color="red"
-                                    content="Not Verified"
-                                    icon="shield alternate"
-                                    onClick={() => {
-                                        setSmsOpen(true);
-                                    }}
-                                ></Button>
-                            )
-                        }
+                        /* action={ */
+                        /*     !isVerified && ( */
+                        /*         <Button */
+                        /*             disabled={isVerified} */
+                        /*             color="red" */
+                        /*             content="Not Verified" */
+                        /*             icon="shield alternate" */
+                        /*             onClick={() => { */
+                        /*                 setSmsOpen(true); */
+                        /*             }} */
+                        /*         ></Button> */
+                        /*     ) */
+                        /* } */
                         disabled={loading}
                     />
                 </Form.Field>
