@@ -7,11 +7,11 @@ import Home from "../components/Home/Home";
 import styles from "../styles/landingpage.module.css";
 
 const LandingPage = () => {
-    const { authUser } = useContext(AuthUserContext);
+    const { authed } = useContext(AuthUserContext);
     const router = useRouter();
     const [showAboutModal, setShowAboutModal] = useState(false);
 
-    return authUser ? (
+    return authed ? (
         <Home />
     ) : (
         <div

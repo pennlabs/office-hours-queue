@@ -5,23 +5,18 @@ import { useRouter } from "next/router";
 export const AuthUserContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [authUser, setAuthUser] = useState(null);
+    const [authed, setAuthed] = useState(null);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
 
     useEffect(() => {
         fetch("/api/accounts/me/").then((res) => {
             if (res.ok) {
-                res.json().then((user) => {
-                    setAuthUser(user);
-                    setLoading(false);
-                });
-            } else {
-                if (router.pathname !== "/") {
-                    router.push("/");
-                }
-                setLoading(false);
+                setAuthed(true);
+            } else if (router.pathname !== "/") {
+                router.push("/");
             }
+            setLoading(false);
         });
     }, [router]);
 
@@ -40,7 +35,7 @@ export const AuthProvider = ({ children }) => {
             </Dimmer>
         </div>
     ) : (
-        <AuthUserContext.Provider value={{ authUser }}>
+        <AuthUserContext.Provider value={{ authed }}>
             {children}
         </AuthUserContext.Provider>
     );
