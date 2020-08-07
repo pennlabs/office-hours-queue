@@ -148,4 +148,3 @@ EMAIL_TOOLS = {
     "FROM_EMAIL": f"OHQ <contact@{DOMAIN}>",
     "TEMPLATE_DIRECTORY": os.path.join(BASE_DIR, "officehoursqueue", "templates", "emails"),
 }
-print(os.path.join(BASE_DIR, "officehourqueue", "templates", "emails"))
