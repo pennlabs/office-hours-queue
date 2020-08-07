@@ -11,7 +11,7 @@ export interface User {
 }
 
 export function useAccountInfo(initialUser) {
-    const { data, error, isValidating, mutate } = useSWR("/api/accounts/me", {
+    const { data, error, isValidating, mutate } = useSWR("/api/accounts/me/", {
         initialData: initialUser,
     });
 
