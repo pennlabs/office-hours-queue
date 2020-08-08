@@ -22,7 +22,6 @@ const StudentCourses = (props) => {
       <Grid.Row padded="true" stackable>
         <ModalAddStudentCourse
             open={ open }
-            allCourses={ props.allCourses }
             closeFunc={ () => setOpen(false) }
             refetch={ props.refetch }
             successFunc={ setSuccess }/>
@@ -35,9 +34,7 @@ const StudentCourses = (props) => {
                   courseCode={course.courseCode}
                   courseTitle={course.courseTitle}
                   semester={course.semester}
-                  year={course.year}
                   id={course.id}
-                  prettyId={course.prettyId}
                   kind={course.kind}
                   archived={course.archived}/>
               </Grid.Column>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import { Segment, Header, Grid, Placeholder } from "semantic-ui-react";
 import InstructorCourses from "./InstructorCourses";
 import StudentCourses from "./StudentCourses";
@@ -6,34 +6,30 @@ import _ from "lodash";
 import NewUserModal from "./Modals/NewUserModal";
 import Alert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
+import { AuthUserContext } from "../../../context/auth";
+import { getMemberships, Course, Membership } from "./DashboardRequests"
 
 const Dashboard = (props) => {
-    const getCourses = (allCourses, isStudent) => {
-        if (!allCourses) {
-            return [];
-        }
-        return allCourses.filter((course) => {
+    const { user: initalUser } = useContext(AuthUserContext);
+
+    const [memberships, error, loading, mutate]: [Membership[], any, any, any] = getMemberships(initalUser);
+
+    const getCourses = (isStudent: boolean): Course[] => {
+        return memberships.filter((membership) => {
             return (
-                (isStudent && course.kind === "STUDENT") ||
-                (!isStudent && course.kind !== "STUDENT")
+                (isStudent && membership.kind === "STUDENT") ||
+                (!isStudent && membership.kind !== "STUDENT")
             );
-        });
+        }).map((membership) => membership.course);
     };
 
     /* STATE */
     const [newUserModalOpen, setNewUserModalOpen] = useState(props.newUser);
-    const [courses, setCourses] = useState(props.courses);
     const [hasInstructorCourses, setHasInstructorCourses] = useState(
-        getCourses(props.courses).length > 0
+        getCourses(false).length > 0
     );
     const [toast, setToast] = useState({ message: "", success: true });
     const [toastOpen, setToastOpen] = useState(false);
-
-    /* UPDATE ON PROPS CHANGE */
-    useEffect(() => {
-        setCourses(props.courses);
-        setHasInstructorCourses(getCourses(props.courses).length > 0);
-    }, [props.courses]);
 
     return (
         <Grid.Column width={13}>
@@ -52,7 +48,7 @@ const Dashboard = (props) => {
                     refetch={props.refetch}
                 />
             )}
-            {courses && (
+            {memberships && (
                 <Grid padded stackable>
                     <Grid.Row>
                         <Segment basic padded>
@@ -90,12 +86,11 @@ const Dashboard = (props) => {
                             </Grid.Row>
                         </Grid>
                     ) : (
-                        <StudentCourses
-                            allCourses={courses}
-                            courses={getCourses(courses, true)}
-                            refetch={props.refetch}
-                        />
-                    )}
+                            <StudentCourses
+                                courses={getCourses(true)}
+                                refetch={props.refetch}
+                            />
+                        )}
                     {!props.loading &&
                         hasInstructorCourses && [
                             <Grid.Row>
@@ -108,7 +103,7 @@ const Dashboard = (props) => {
                                 </Segment>
                             </Grid.Row>,
                             <InstructorCourses
-                                courses={getCourses(courses, false)}
+                                courses={getCourses(false)}
                                 refetch={props.refetch}
                             />,
                         ]}

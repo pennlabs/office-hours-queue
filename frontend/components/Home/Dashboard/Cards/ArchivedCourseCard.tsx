@@ -16,7 +16,7 @@ export default class ArchivedCourseCard extends React.Component {
         </Segment>
         <Segment attached="bottom" tertiary textAlign="right">
           <Header as="h6" style={{whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
-            { this.props.semester } { this.props.year }
+            { this.props.semester }
           </Header>
         </Segment>
       </Segment>

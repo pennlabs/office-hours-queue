@@ -39,6 +39,8 @@ class SemesterSerializer(serializers.ModelSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
+    semester = serializers.StringRelatedField()
+
     class Meta:
         model = Course
         fields = (

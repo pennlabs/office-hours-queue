@@ -7,7 +7,7 @@ const CourseCard = (props) => {
     const [hover, setHover] = useState(false);
 
     const path = {
-        pathname: `${ROUTES.CLASS.split("/:")[0]}/${props.prettyId}`,
+        pathname: `${ROUTES.CLASS.split("/:")[0]}/${props.id}`,
     };
 
     return (
@@ -56,7 +56,7 @@ const CourseCard = (props) => {
                                 overflow: "hidden",
                             }}
                         >
-                            {props.semester} {props.year}
+                            {props.semester}
                         </Header>
                     </Segment>
                 </Segment.Group>
