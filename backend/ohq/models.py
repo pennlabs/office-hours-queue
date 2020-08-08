@@ -16,14 +16,13 @@ class Profile(models.Model):
     # preferred_name = models.CharField(max_length=100)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    # TODO: verification process
     sms_notifications_enabled = models.BooleanField(default=False)
     sms_verification_code = models.CharField(max_length=6, blank=True, null=True)
     sms_verification_timestamp = models.DateTimeField(blank=True, null=True)
     sms_verified = models.BooleanField(default=False)
     phone_number = PhoneNumberField(blank=True, null=True)
 
-    # SMS_VERIFICATION_EXPIRATION_MINUTES = 15
+    SMS_VERIFICATION_EXPIRATION_MINUTES = 10
 
     def __str__(self):
         return str(self.user)

@@ -155,7 +155,7 @@ class UserPrivateSerializer(serializers.ModelSerializer):
                 and profile_fields["sms_verification_code"] == profile.sms_verification_code
             ):
                 elapsed_time = timezone.now() - profile.sms_verification_timestamp
-                if elapsed_time.total_seconds() < 600:
+                if elapsed_time.total_seconds() < Profile.SMS_VERIFICATION_EXPIRATION_MINUTES * 60:
                     profile.sms_verified = True
 
             profile.save()
