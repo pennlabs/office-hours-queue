@@ -7,6 +7,7 @@ export interface User {
     lastName: string;
     email: string;
     smsNotificationsEnabled: boolean;
+    smsVerified: boolean;
     phoneNumber?: string;
 }
 
@@ -21,6 +22,7 @@ export function useAccountInfo(initialUser) {
               lastName: data.last_name,
               email: data.email,
               smsNotificationsEnabled: data.profile?.sms_notifications_enabled,
+              smsVerified: data.profile?.sms_verified,
               phoneNumber: data.profile?.phone_number,
           }
         : null;
@@ -36,13 +38,10 @@ export async function updateUser(user) {
     if (user.lastName) {
         payload.last_name = user.lastName;
     }
-    if (user.smsNotificationsEnabled || user.phoneNumber) {
-        payload.profile = {};
-    }
-    if (user.smsNotificationsEnabled) {
-        payload.profile.sms_notifications_enabled =
-            user.smsNotificationsEnabled;
-    }
+
+    payload.profile = {};
+    payload.profile.sms_notifications_enabled = user.smsNotificationsEnabled;
+
     if (user.phoneNumber) {
         // TODO: Better error handling
         payload.profile.phone_number = parsePhoneNumberFromString(

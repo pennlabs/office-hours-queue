@@ -1,8 +1,11 @@
 from django.contrib.auth import get_user_model
+from django.utils import timezone
+from django.utils.crypto import get_random_string
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 
 from ohq.models import Course, Membership, MembershipInvite, Profile, Question, Queue, Semester
+from ohq.sms import sendSMSVerification
 
 
 class CourseRouteMixin(serializers.ModelSerializer):
@@ -110,7 +113,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ("sms_notifications_enabled", "phone_number")
+        fields = ("sms_notifications_enabled", "sms_verified", "phone_number")
 
 
 class UserPrivateSerializer(serializers.ModelSerializer):
@@ -125,4 +128,35 @@ class UserPrivateSerializer(serializers.ModelSerializer):
         model = get_user_model()
         fields = ("first_name", "last_name", "email", "profile", "membership_set")
 
-    # TODO: need to add logic to update profile from here
+    def update(self, instance, validated_data):
+        if "profile" in validated_data:
+            profile_fields = validated_data.pop("profile")
+            profile = instance.profile
+            # Set sms notifications enabled
+            if "sms_notifications_enabled" in profile_fields:
+                profile.sms_notifications_enabled = profile_fields["sms_notifications_enabled"]
+
+            # Handle new phone number
+            if (
+                "phone_number" in profile_fields
+                and profile_fields["phone_number"] != profile.phone_number
+            ):
+                profile.phone_number = profile_fields["phone_number"]
+                profile.sms_verified = False
+                profile.sms_verification_code = get_random_string(
+                    length=6, allowed_chars="1234567890"
+                )
+                profile.sms_verification_timestamp = timezone.now()
+                sendSMSVerification(profile.phone_number, profile.sms_verification_code)
+
+            # Handle SMS verification
+            if (
+                "sms_verification_code" in profile_fields
+                and profile_fields["sms_verification_code"] == profile.sms_verification_code
+            ):
+                elapsed_time = timezone.now() - profile.sms_verification_timestamp
+                if elapsed_time.total_seconds() < 600:
+                    profile.sms_verified = True
+
+            profile.save()
+        return super().update(instance, validated_data)

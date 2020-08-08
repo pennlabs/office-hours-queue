@@ -29,6 +29,7 @@ django-labs-accounts = "*"
 django-phonenumber-field = {extras = ["phonenumbers"],version = "*"}
 drf-nested-routers = "*"
 django-email-tools = "*"
+twilio = "*"
 
 [requires]
 python_version = "3.7"

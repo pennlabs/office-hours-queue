@@ -148,3 +148,9 @@ EMAIL_TOOLS = {
     "FROM_EMAIL": f"OHQ <contact@{DOMAIN}>",
     "TEMPLATE_DIRECTORY": os.path.join(BASE_DIR, "officehoursqueue", "templates", "emails"),
 }
+
+# Twilio Settings
+
+TWILIO_SID = os.environ.get("TWILIO_SID", "")
+TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_TOKEN", "")
+TWILIO_NUMBER = os.environ.get("TWILIO_NUMBER", "")

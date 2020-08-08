@@ -26,11 +26,11 @@ const AccountForm = () => {
 
     const [showNumber, setShowNumber] = useState(user.smsNotificationsEnabled);
 
-    // const [isVerified, setIsVerified] = useState(
-    //     props.user.smsVerified !== false
-    // );
-    // const [smsOpen, setSmsOpen] = useState(false);
-    //
+    const [isVerified, setIsVerified] = useState(
+        user.smsVerified !== false
+    );
+    const [smsOpen, setSmsOpen] = useState(false);
+
 
     const [toast, setToast] = useState({ message: "", success: true });
     const [toastOpen, setToastOpen] = useState(false);
@@ -44,7 +44,7 @@ const AccountForm = () => {
             (input.firstName === user.firstName &&
                 input.lastName === user.lastName &&
                 input.smsNotificationsEnabled ===
-                    user.smsNotificationsEnabled &&
+                user.smsNotificationsEnabled &&
                 input.phoneNumber === user.phoneNumber)
         );
     };
@@ -83,12 +83,12 @@ const AccountForm = () => {
             setToastOpen(true);
             setDisabled(true);
 
-            // if (
-            //     result.data.updateUser.user.phoneNumber !== defUser.phoneNumber
-            // ) {
-            //     setSmsOpen(true);
-            //     setIsVerified(false);
-            // }
+            if (
+                input.phoneNumber !== user.phoneNumber
+            ) {
+                setSmsOpen(true);
+                setIsVerified(false);
+            }
         } catch (e) {
             setToast({
                 success: false,
@@ -160,19 +160,19 @@ const AccountForm = () => {
                         defaultValue={input.phoneNumber}
                         name="phoneNumber"
                         onChange={handleInputChange}
-                        /* action={ */
-                        /*     !isVerified && ( */
-                        /*         <Button */
-                        /*             disabled={isVerified} */
-                        /*             color="red" */
-                        /*             content="Not Verified" */
-                        /*             icon="shield alternate" */
-                        /*             onClick={() => { */
-                        /*                 setSmsOpen(true); */
-                        /*             }} */
-                        /*         ></Button> */
-                        /*     ) */
-                        /* } */
+                        action={
+                            !isVerified && (
+                                <Button
+                                    disabled={isVerified}
+                                    color="red"
+                                    content="Not Verified"
+                                    icon="shield alternate"
+                                    onClick={() => {
+                                        setSmsOpen(true);
+                                    }}
+                                ></Button>
+                            )
+                        }
                         disabled={loading}
                     />
                 </Form.Field>
