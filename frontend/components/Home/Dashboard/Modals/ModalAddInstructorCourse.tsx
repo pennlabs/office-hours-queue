@@ -32,7 +32,8 @@ const ModalAddInstructorCourse = (props) => {
     });
     const [check, setCheck] = useState(2);
     const [disabled, setDisabled] = useState(true);
-    const [createCourse, { loading }] = useMutation(CREATE_COURSE);
+    const [loading, setLoading] = useState(false);
+    // const [createCourse, { loading }] = useMutation(CREATE_COURSE);
 
     const handleInputChange = (e, { name, value }) => {
         input[name] = name === "inviteOnly" ? !input[name] : value;
