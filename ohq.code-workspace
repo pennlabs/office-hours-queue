@@ -7,5 +7,54 @@
 			"path": "frontend"
 		}
 	],
-  "settings": {}
+	"settings": {},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "Run frontend",
+				"type": "shell",
+				"args": [
+					"dev",
+				],
+				"command": "yarn",
+				"options": {
+					"cwd": "${workspaceFolder:frontend}"
+				},
+			},
+			{
+				"label": "Run database",
+				"type": "shell",
+				"args": [
+					"up",
+				],
+				"command": "docker-compose",
+				"options": {
+					"cwd": "${workspaceFolder:backend}"
+				},
+			},
+			{
+				"label": "Run backend",
+				"type": "shell",
+				"args": [
+					"run",
+					"./manage.py",
+					"runserver",
+				],
+				"command": "pipenv",
+				"options": {
+					"cwd": "${workspaceFolder:backend}"
+				},
+			},
+			{
+				"label": "Run OHQ",
+				"dependsOrder": "sequence",
+				"dependsOn": [
+					"Run database",
+					"Run backend",
+					"Run frontend",
+				],
+			},
+		]
+	}
 }
