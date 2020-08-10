@@ -123,4 +123,4 @@ class SemesterTestCase(TestCase):
         self.assertEqual(self.semester.term_to_pretty(), self.semester.term.title())
 
     def test_str(self):
-        self.assertEqual(str(self.semester), f"{self.semester.year} - {self.semester.term.title()}")
+        self.assertEqual(str(self.semester), f"{self.semester.term.title()} {self.semester.year}")

@@ -57,7 +57,7 @@ class Semester(models.Model):
         return self.term.title()
 
     def __str__(self):
-        return f"{self.year} - {self.term_to_pretty()}"
+        return f"{self.term_to_pretty()} {self.year}"
 
 
 class Course(models.Model):
