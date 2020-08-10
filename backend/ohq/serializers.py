@@ -142,8 +142,8 @@ class UserPrivateSerializer(serializers.ModelSerializer):
     Private serializer to allow users to see/modify their profiles.
     """
 
-    profile = ProfileSerializer(read_only=False)
-    membership_set = MembershipPrivateSerializer(many=True)
+    profile = ProfileSerializer(read_only=False, required=False)
+    membership_set = MembershipPrivateSerializer(many=True, read_only=True)
 
     class Meta:
         model = get_user_model()

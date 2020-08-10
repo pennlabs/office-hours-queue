@@ -18,6 +18,7 @@ from ohq.permissions import (
     QuestionPermission,
     QueuePermission,
 )
+from ohq.schemas import MassInviteSchema
 from ohq.serializers import (
     CourseSerializer,
     MembershipInviteSerializer,
@@ -225,6 +226,7 @@ class MassInviteView(APIView):
     """
 
     permission_classes = [MassInvitePermission | IsSuperuser]
+    schema = MassInviteSchema()
 
     def post(self, request, course_pk, format=None):
         kind = request.data.get("kind")
