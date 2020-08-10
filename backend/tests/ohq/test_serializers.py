@@ -1,10 +1,11 @@
 from datetime import datetime
 
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.test import RequestFactory, TestCase
 from django.utils import timezone
 
-from ohq.serializers import UserPrivateSerializer
+from ohq.models import Course, Membership, Semester
+from ohq.serializers import CourseSerializer, MembershipSerializer, UserPrivateSerializer
 
 
 User = get_user_model()
@@ -53,3 +54,45 @@ class UserPrivateSerializerTestCase(TestCase):
             {"profile": {"sms_verification_code": self.user.profile.sms_verification_code}},
         )
         self.assertFalse(self.user.profile.sms_verified)
+
+
+class CourseSerializerTestCase(TestCase):
+    def test_create_membership(self):
+        semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
+        user = User.objects.create(username="professor")
+        data = {
+            "course_code": "000",
+            "department": "Penn Labs",
+            "course_title": "Course",
+            "semester": semester.id,
+        }
+
+        request = RequestFactory().get("/")
+        request.user = user
+        serializer = CourseSerializer(data=data, context={"request": request})
+        serializer.is_valid()
+        serializer.save()
+        self.assertEqual(1, len(Membership.objects.all()))
+
+
+class MembershipSerializerTestCase(TestCase):
+    def test_create_membership(self):
+        semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
+        course = Course.objects.create(course_code="000", department="Penn Labs", semester=semester)
+
+        user = User.objects.create(username="professor")
+
+        class View(object):
+            """
+            Mock view object to provide a course pk
+            """
+
+            def __init__(self):
+                self.kwargs = {"course_pk": course.id}
+
+        request = RequestFactory().get("/")
+        request.user = user
+        serializer = MembershipSerializer(data={}, context={"request": request, "view": View()})
+        serializer.is_valid()
+        serializer.save()
+        self.assertEqual(1, len(Membership.objects.all()))

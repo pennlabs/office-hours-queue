@@ -88,7 +88,7 @@ const Dashboard = (props) => {
                     ) : (
                             <StudentCourses
                                 courses={getCourses(true)}
-                                refetch={props.refetch}
+                                refetch={mutate}
                             />
                         )}
                     {!props.loading &&
@@ -104,7 +104,7 @@ const Dashboard = (props) => {
                             </Grid.Row>,
                             <InstructorCourses
                                 courses={getCourses(false)}
-                                refetch={props.refetch}
+                                refetch={mutate}
                             />,
                         ]}
                 </Grid>

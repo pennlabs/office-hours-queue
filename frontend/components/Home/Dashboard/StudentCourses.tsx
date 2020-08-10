@@ -12,10 +12,6 @@ const StudentCourses = (props) => {
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState(false); //opening snackbar
 
-  // const [courses, setCourses] = useState(props.courses);
-  // useEffect(() => {
-  //   setCourses(props.courses);
-  // }, [props.courses]);
 
   return (
     [

@@ -88,7 +88,7 @@ class CourseTestCase(TestCase):
                 "head_ta": 200,
                 "ta": 200,
                 "student": 200,
-                "non_member": 404,
+                "non_member": 403,
                 "anonymous": 403,
             },
             "destroy": {
@@ -96,7 +96,7 @@ class CourseTestCase(TestCase):
                 "head_ta": 403,
                 "ta": 403,
                 "student": 403,
-                "non_member": 404,
+                "non_member": 403,
                 "anonymous": 403,
             },
             "modify": {
@@ -104,7 +104,7 @@ class CourseTestCase(TestCase):
                 "head_ta": 200,
                 "ta": 403,
                 "student": 403,
-                "non_member": 404,
+                "non_member": 403,
                 "anonymous": 403,
             },
         }
@@ -363,7 +363,15 @@ class MembershipTestCase(TestCase):
                 "non_member": 403,
                 "anonymous": 403,
             },
-            "create": {
+            "create-open": {
+                "professor": 403,
+                "head_ta": 403,
+                "ta": 403,
+                "student": 403,
+                "non_member": 201,
+                "anonymous": 403,
+            },
+            "create-invite-only": {
                 "professor": 403,
                 "head_ta": 403,
                 "ta": 403,
@@ -402,14 +410,27 @@ class MembershipTestCase(TestCase):
         test(self, user, "list", "get", reverse("ohq:member-list", args=[self.course.id]))
 
     @parameterized.expand(users, name_func=get_test_name)
-    def test_create(self, user):
+    def test_create_open(self, user):
         test(
             self,
             user,
-            "create",
+            "create-open",
             "post",
             reverse("ohq:member-list", args=[self.course.id]),
-            {"name": "new", "description": "description"},
+            {},
+        )
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_create_invite_only(self, user):
+        self.course.invite_only = True
+        self.course.save()
+        test(
+            self,
+            user,
+            "create-invite-only",
+            "post",
+            reverse("ohq:member-list", args=[self.course.id]),
+            {},
         )
 
     @parameterized.expand(users, name_func=get_test_name)

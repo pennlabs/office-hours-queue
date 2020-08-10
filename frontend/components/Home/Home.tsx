@@ -40,7 +40,6 @@ import { courseSortFunc } from "../../utils";
 //     }
 // `;
 //
-const refetch = () => {};
 
 const Home = ({}) => {
     /* GRAPHQL QUERIES/MUTATIONS */
@@ -130,7 +129,6 @@ const Home = ({}) => {
                     courses={courses}
                     newUser={newUser}
                     setNewUser={setNewUser}
-                    refetch={refetch}
                 />
             ) : user && active === "account_settings" ? (
                 <AccountSettings />
@@ -139,7 +137,6 @@ const Home = ({}) => {
                     loading={true}
                     courses={[]}
                     newUser={newUser}
-                    refetch={refetch}
                 />
             )}
         </Grid>

@@ -1,23 +1,10 @@
 import React, { useState } from "react";
 import { Modal, Button } from "semantic-ui-react";
 import AddStudentForm from "../Forms/AddStudentForm";
-// import {gql} from "apollo-boost";
-// import {useMutation} from "@apollo/react-hooks";
-//
-// const JOIN_COURSES = gql`
-//   mutation JoinCourse($input: JoinCoursesInput!) {
-//     joinCourses(input: $input) {
-//       courseUsers {
-//         id
-//         kind
-//       }
-//     }
-//   }
-// `;
-//
+import { joinCourse } from "../DashboardRequests";
+
 const ModalAddStudentCourse = (props) => {
-    // const [joinCourses, { loading }] = useMutation(JOIN_COURSES);
-    const loading = false;
+    const [loading, setLoading] = useState(false);
     const [input, setInput] = useState({ courseIds: [] });
     const [disabled, setDisabled] = useState(true);
 
@@ -31,13 +18,11 @@ const ModalAddStudentCourse = (props) => {
         if (input.courseIds.length === 0) {
             return;
         }
-        await joinCourses({
-            variables: {
-                input: {
-                    courseIds: input.courseIds,
-                },
-            },
-        });
+        setLoading(true)
+        for (let index = 0; index < input.courseIds.length; index++) {
+            await joinCourse(input.courseIds[index]);
+        }
+        setLoading(false)
         props.refetch();
         props.closeFunc();
         props.successFunc(true); // trigger snackbar
@@ -48,7 +33,6 @@ const ModalAddStudentCourse = (props) => {
             <Modal.Header>Join Courses</Modal.Header>
             <Modal.Content>
                 <AddStudentForm
-                    allCourses={props.allCourses}
                     changeFunc={handleInputChange}
                 />
             </Modal.Content>

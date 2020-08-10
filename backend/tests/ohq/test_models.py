@@ -44,6 +44,12 @@ class MembershipTestCase(TestCase):
     def test_kind_to_pretty(self):
         self.assertEqual(self.membership.kind_to_pretty(), "Professor")
 
+    def test_is_leadership(self):
+        self.assertTrue(self.membership.is_leadership)
+
+    def test_is_ta(self):
+        self.assertTrue(self.membership.is_ta)
+
     def test_str(self):
         mem = self.membership
         self.assertEqual(

@@ -1,65 +1,26 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { Form } from "semantic-ui-react";
 
-// import { gql } from "apollo-boost";
-import { prettifySemester } from "../../../../utils/enums";
-import { isValidEmail, uidFromGlobalId } from "../../../../utils";
 import AsyncSelect from "react-select/async";
+import { getCourses, Course } from "../DashboardRequests";
 
-/* GRAPHQL QUERIES/MUTATIONS */
-// const JOINABLE_COURSES = gql`
-//     query JoinableCourses($searchableName_Icontains: String) {
-//         joinableCourses(searchableName_Icontains: $searchableName_Icontains) {
-//             edges {
-//                 node {
-//                     id
-//                     department
-//                     courseCode
-//                     courseTitle
-//                     year
-//                     semester
-//                 }
-//             }
-//         }
-//     }
-// `;
-//
-/* FUNCTIONAL COMPONENT */
 const AddStudentForm = (props) => {
-    /* GRAPHQL QUERIES/MUTATIONS */
-    // const joinableCourses = useImperativeQuery(JOINABLE_COURSES);
-    //
-    const existingCourses = useMemo(
-        () =>
-            new Set(
-                props.allCourses.map((course) => uidFromGlobalId(course.id))
-            ),
-        [props.allCourses]
-    );
 
-    const promiseOptions = async (inputValue) => {
+    const promiseOptions = async (inputValue: string) => {
         if (inputValue.length === 0) {
             return [];
         }
-        const { data } = await joinableCourses({
-            searchableName_Icontains: inputValue,
-        });
-        return data.joinableCourses.edges.map((item) => {
-            const existing = existingCourses.has(uidFromGlobalId(item.node.id));
-            const courseString = `${item.node.department} ${
-                item.node.courseCode
-            } (${item.node.courseTitle}, ${prettifySemester(
-                item.node.semester
-            )} ${item.node.year})`;
+        const courses: Course[] = await getCourses(inputValue);
+
+        return courses.map((course) => {
+            const suffix = course.isMember ? " - Already Enrolled" : "";
             return {
-                label: `${
-                    existing ? "Already enrolled in " : ""
-                } ${courseString}`,
-                value: item.node.id,
-                disabled: existing,
-            };
+                label: `${course.department} ${course.courseCode} (${course.semester})${suffix}`,
+                value: course.id,
+                disabled: course.isMember,
+            }
         });
-    };
+    }
 
     return (
         <Form>
@@ -71,7 +32,6 @@ const AddStudentForm = (props) => {
                     loadOptions={promiseOptions}
                     isMulti
                     placeholder={"Search..."}
-                    isValidNewOption={isValidEmail}
                     isOptionDisabled={(option) => option.disabled}
                     onChange={(items) => {
                         props.changeFunc(undefined, {

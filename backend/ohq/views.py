@@ -2,7 +2,8 @@ import re
 
 from django.contrib.auth import get_user_model
 from django.core.validators import ValidationError, validate_email
-from rest_framework import generics, viewsets
+from django.db.models import Exists, OuterRef
+from rest_framework import filters, generics, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -77,9 +78,12 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     permission_classes = [CoursePermission | IsSuperuser]
     serializer_class = CourseSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ["course_code", "department"]
 
     def get_queryset(self):
-        return Course.objects.filter(membership__user=self.request.user)
+        is_member = Membership.objects.filter(course=OuterRef("pk"), user=self.request.user)
+        return Course.objects.filter(invite_only=False).annotate(is_member=Exists(is_member))
 
 
 class QuestionViewSet(viewsets.ModelViewSet):

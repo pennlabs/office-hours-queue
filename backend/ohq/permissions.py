@@ -1,6 +1,6 @@
 from rest_framework import permissions
 
-from ohq.models import Membership
+from ohq.models import Course, Membership
 
 
 # Hierarchy of permissions is usually:
@@ -31,7 +31,11 @@ class CoursePermission(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
-        membership = Membership.objects.get(course=obj, user=request.user)
+        membership = Membership.objects.filter(course=obj, user=request.user).first()
+
+        # Non members can't do anything
+        if membership is None:
+            return False
 
         # Anyone can get a single course
         if view.action == "retrieve":
@@ -58,8 +62,12 @@ class CoursePermission(permissions.BasePermission):
         if view.action == "create":
             return (
                 request.user.groups.filter(name="faculty").exists()
-                or Membership.objects.filter(user=request.user, kind=Membership.KIND_HEAD_TA)
-                or Membership.objects.filter(user=request.user, kind=Membership.KIND_PROFESSOR)
+                or Membership.objects.filter(
+                    user=request.user, kind=Membership.KIND_HEAD_TA
+                ).exists()
+                or Membership.objects.filter(
+                    user=request.user, kind=Membership.KIND_PROFESSOR
+                ).exists()
             )
 
         return True
@@ -161,7 +169,7 @@ class MembershipPermission(permissions.BasePermission):
     """
     Students can get their own membership.
     TAs+ can list memberships.
-    No one can create a membership.
+    Users can create a Student membership with open courses.
     Head TAs+ can modify and delete memberships.
     Students can delete their own memberships.
     """
@@ -192,13 +200,14 @@ class MembershipPermission(permissions.BasePermission):
         if not request.user.is_authenticated:
             return False
 
-        # No one can create a membership
-        if view.action == "create":
-            return False
-
         membership = Membership.objects.filter(
             course=view.kwargs["course_pk"], user=request.user
         ).first()
+
+        # No one can create a membership
+        if view.action == "create":
+            course = Course.objects.get(id=view.kwargs["course_pk"])
+            return membership is None and not course.invite_only
 
         # Non-Students can't do anything besides create a membership
         if membership is None:

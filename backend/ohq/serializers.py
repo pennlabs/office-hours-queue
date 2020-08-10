@@ -39,7 +39,8 @@ class SemesterSerializer(serializers.ModelSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
-    semester = serializers.StringRelatedField()
+    semester_pretty = serializers.StringRelatedField(source="semester")
+    is_member = serializers.BooleanField(default=False, read_only=True)
 
     class Meta:
         model = Course
@@ -50,18 +51,30 @@ class CourseSerializer(serializers.ModelSerializer):
             "course_title",
             "description",
             "semester",
+            "semester_pretty",
             "archived",
             "invite_only",
             "video_chat_enabled",
             "require_video_chat_url_on_questions",
-            # "members",
+            "is_member",
         )
+
+    def create(self, validated_data):
+        instance = super().create(validated_data)
+        Membership.objects.create(course=instance, user=self.context["request"].user)
+        return instance
 
 
 class MembershipSerializer(CourseRouteMixin):
     class Meta:
         model = Membership
         fields = ("kind", "time_created", "last_active")
+
+    def create(self, validated_data):
+        ModelClass = self.Meta.model
+        validated_data["user"] = self.context["request"].user
+        validated_data["kind"] = Membership.KIND_STUDENT
+        return ModelClass._default_manager.create(**validated_data)
 
 
 class MembershipInviteSerializer(CourseRouteMixin):
