@@ -4,7 +4,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 import { useAccountInfo, updateUser, User } from "./AccountRequests";
 import { AuthUserContext } from "../../../context/auth";
-// import VerificationModal from "./VerificationModal";
+import VerificationModal from "./VerificationModal";
 
 const AccountForm = () => {
     const { user: initialUser } = useContext(AuthUserContext);
@@ -26,9 +26,7 @@ const AccountForm = () => {
 
     const [showNumber, setShowNumber] = useState(user.smsNotificationsEnabled);
 
-    const [isVerified, setIsVerified] = useState(
-        user.smsVerified !== false
-    );
+
     const [smsOpen, setSmsOpen] = useState(false);
 
 
@@ -87,7 +85,6 @@ const AccountForm = () => {
                 input.phoneNumber !== user.phoneNumber
             ) {
                 setSmsOpen(true);
-                setIsVerified(false);
             }
         } catch (e) {
             setToast({
@@ -99,15 +96,15 @@ const AccountForm = () => {
     };
 
     return [
-        // <VerificationModal
-        //     open={smsOpen}
-        //     toastFunc={(toast) => {
-        //         setToast(toast);
-        //         setToastOpen(true);
-        //     }}
-        //     openFunc={setSmsOpen}
-        //     refetch={props.refetch}
-        // />,
+        <VerificationModal
+            open={smsOpen}
+            toastFunc={(toast) => {
+                setToast(toast);
+                setToastOpen(true);
+            }}
+            openFunc={setSmsOpen}
+            refetch={mutate}
+        />,
         <Form>
             <Form.Field required>
                 <label>Email Address</label>
@@ -161,15 +158,22 @@ const AccountForm = () => {
                         name="phoneNumber"
                         onChange={handleInputChange}
                         action={
-                            !isVerified && (
+                            !user.smsVerified && (
                                 <Button
-                                    disabled={isVerified}
+                                    disabled={user.smsVerified}
                                     color="red"
                                     content="Not Verified"
                                     icon="shield alternate"
                                     onClick={() => {
                                         setSmsOpen(true);
                                     }}
+                                ></Button>
+                            ) ||
+                            user.smsVerified && (
+                                <Button
+                                    color="green"
+                                    content="Verified"
+                                    icon="shield alternate"
                                 ></Button>
                             )
                         }

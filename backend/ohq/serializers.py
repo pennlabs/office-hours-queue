@@ -128,7 +128,13 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ("sms_notifications_enabled", "sms_verified", "phone_number")
+        fields = (
+            "sms_notifications_enabled",
+            "sms_verified",
+            "sms_verification_code",
+            "phone_number",
+        )
+        extra_kwargs = {"sms_verification_code": {"write_only": True}}
 
 
 class UserPrivateSerializer(serializers.ModelSerializer):
@@ -165,13 +171,24 @@ class UserPrivateSerializer(serializers.ModelSerializer):
                 sendSMSVerification(profile.phone_number, profile.sms_verification_code)
 
             # Handle SMS verification
-            if (
-                "sms_verification_code" in profile_fields
-                and profile_fields["sms_verification_code"] == profile.sms_verification_code
-            ):
+            if "sms_verification_code" in profile_fields:
                 elapsed_time = timezone.now() - profile.sms_verification_timestamp
-                if elapsed_time.total_seconds() < Profile.SMS_VERIFICATION_EXPIRATION_MINUTES * 60:
+                if (
+                    profile_fields["sms_verification_code"] == profile.sms_verification_code
+                    and elapsed_time.total_seconds()
+                    < Profile.SMS_VERIFICATION_EXPIRATION_MINUTES * 60
+                ):
                     profile.sms_verified = True
+                elif (
+                    elapsed_time.total_seconds() >= Profile.SMS_VERIFICATION_EXPIRATION_MINUTES * 60
+                ):
+                    raise serializers.ValidationError(
+                        detail={"detail": "Verification code has expired"}
+                    )
+                else:
+                    raise serializers.ValidationError(
+                        detail={"detail": "Incorrect verification code"}
+                    )
 
             profile.save()
         return super().update(instance, validated_data)

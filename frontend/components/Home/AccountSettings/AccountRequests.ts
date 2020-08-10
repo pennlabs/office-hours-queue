@@ -30,6 +30,30 @@ export function useAccountInfo(initialUser) {
     return [profile, error, isValidating, mutate];
 }
 
+export async function validateSMS(code) {
+    const payload = {
+        "profile": {
+            "sms_verification_code": code,
+        },
+    };
+    let res = await fetch("/api/accounts/me/", {
+        method: "PATCH",
+        credentials: "include",
+        mode: "same-origin",
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCsrf(),
+        },
+        body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+        // TODO: figure out how to pass through django error to this error
+        throw new Error("validate phone failed");
+    }
+}
+
 export async function updateUser(user) {
     const payload: any = {};
     if (user.firstName) {

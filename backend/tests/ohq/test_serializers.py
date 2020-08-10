@@ -3,6 +3,7 @@ from datetime import datetime
 from django.contrib.auth import get_user_model
 from django.test import RequestFactory, TestCase
 from django.utils import timezone
+from rest_framework import serializers
 
 from ohq.models import Course, Membership, Semester
 from ohq.serializers import CourseSerializer, MembershipSerializer, UserPrivateSerializer
@@ -40,20 +41,20 @@ class UserPrivateSerializerTestCase(TestCase):
 
     def test_verify_phone_number_invalid(self):
         self.serializer.update(self.user, {"profile": {"phone_number": "+15555555555"}})
-        self.serializer.update(
-            self.user, {"profile": {"sms_verification_code": "ABC123"}},
-        )
-        self.assertFalse(self.user.profile.sms_verified)
+        with self.assertRaises(serializers.ValidationError):
+            self.serializer.update(
+                self.user, {"profile": {"sms_verification_code": "ABC123"}},
+            )
 
     def test_verify_phone_number_time_expired(self):
         self.serializer.update(self.user, {"profile": {"phone_number": "+15555555555"}})
         date = timezone.make_aware(datetime(2020, 1, 1))
         self.user.profile.sms_verification_timestamp = date
-        self.serializer.update(
-            self.user,
-            {"profile": {"sms_verification_code": self.user.profile.sms_verification_code}},
-        )
-        self.assertFalse(self.user.profile.sms_verified)
+        with self.assertRaises(serializers.ValidationError):
+            self.serializer.update(
+                self.user,
+                {"profile": {"sms_verification_code": self.user.profile.sms_verification_code}},
+            )
 
 
 class CourseSerializerTestCase(TestCase):

@@ -12,7 +12,7 @@ import { getMemberships, Course, Membership } from "./DashboardRequests"
 const Dashboard = (props) => {
     const { user: initalUser } = useContext(AuthUserContext);
 
-    const [memberships, error, loading, mutate]: [Membership[], any, any, any] = getMemberships(initalUser);
+    const [memberships, error, loading, mutate]: [Membership[], any, boolean, (data: any, shouldRevalidate: boolean) => Promise<any>] = getMemberships(initalUser);
 
     const getCourses = (isStudent: boolean): Course[] => {
         return memberships.filter((membership) => {

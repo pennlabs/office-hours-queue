@@ -3,34 +3,11 @@ import "./VerificationModal.module.css";
 
 import { Segment } from "semantic-ui-react";
 import ReactCodeInput from "react-code-input";
-// import { gql } from "apollo-boost";
-// import { useMutation } from "@apollo/react-hooks";
-// import firebase from "../../Firebase";
-//
-// const SEND_SMS_VERIFICATION = gql`
-//     mutation SendSmsVerification($input: SendSMSVerificationInput!) {
-//         sendSmsVerification(input: $input) {
-//             success
-//         }
-//     }
-// `;
-//
-// const VERIFY_PHONE_NUMBER = gql`
-//     mutation VerifyPhoneNumber($input: VerifyPhoneNumberInput!) {
-//         verifyPhoneNumber(input: $input) {
-//             success
-//         }
-//     }
-// `;
-//
+import { validateSMS } from "./AccountRequests";
+
+
 const VerificationForm = (props) => {
-    // const [sendSmsVerification, { loading: sendLoading }] = useMutation(
-    //     SEND_SMS_VERIFICATION
-    // );
-    // const [verifyPhoneNumber, { loading: verifyLoading }] = useMutation(
-    //     VERIFY_PHONE_NUMBER
-    // );
-    //
+
     const codeInput = useRef();
 
     const clearInput = () => {
@@ -46,69 +23,40 @@ const VerificationForm = (props) => {
         codeInput.current.value = "";
     };
 
-    // const sendVerification = async () => {
-    //     try {
-    //         await sendSmsVerification({
-    //             variables: {
-    //                 input: {},
-    //             },
-    //         });
-    //         clearInput();
-    //         props.toastFunc({
-    //             success: true,
-    //             message: "Successfully resent verification code",
-    //         });
-    //     } catch (e) {
-    //         props.toastFunc({
-    //             success: false,
-    //             message: e.message.includes("wait")
-    //                 ? "Please wait 30 seconds before resending"
-    //                 : "An error occurred when resending",
-    //         });
-    //     }
-    // };
-    //
-    // const onVerify = async (value) => {
-    //     try {
-    //         await verifyPhoneNumber({
-    //             variables: {
-    //                 input: {
-    //                     code: value,
-    //                 },
-    //             },
-    //         });
-    //         firebase.analytics.logEvent("sms_verified");
-    //         props.refetch();
-    //         props.openFunc(false);
-    //         props.toastFunc({
-    //             success: true,
-    //             message: "Phone number successfully verified",
-    //         });
-    //     } catch (e) {
-    //         clearInput();
-    //         props.toastFunc({
-    //             success: false,
-    //             message: e.message.includes("incorrect")
-    //                 ? "Verification code incorrect"
-    //                 : e.message.includes("expired")
-    //                 ? "Verification code expired, please resend"
-    //                 : "An error occurred when verifying",
-    //         });
-    //     }
-    // };
-    //
-    // const handleInputChange = async (value) => {
-    //     if (value.length === 6) {
-    //         await onVerify(value);
-    //     }
-    // };
-    //
+    const onVerify = async (code) => {
+        try {
+            await validateSMS(code);
+            props.refetch();
+            props.openFunc(false);
+            props.toastFunc({
+                success: true,
+                message: "Phone number successfully verified",
+            });
+        } catch (e) {
+            clearInput();
+            props.toastFunc({
+                success: false,
+                message: e.message.includes("Incorrect")
+                    ? "Verification code incorrect"
+                    : e.message.includes("expired")
+                        ? "Verification code expired, please resend"
+                        : "An error occurred when verifying",
+            });
+        }
+    };
+
+    const handleInputChange = async (value) => {
+        if (value.length === 6) {
+            await onVerify(value);
+        }
+    };
+
     return [
         <Segment textAlign="center" basic>
             <ReactCodeInput
                 type="number"
                 fields={6}
-                /* onChange={handleInputChange}  */
+                onChange={handleInputChange}
                 ref={codeInput}
             />
         </Segment>,
@@ -118,6 +66,7 @@ const VerificationForm = (props) => {
                 onClick={() => {
                     /* if (!sendLoading || !verifyLoading) */
                     /*     return sendVerification(); */
+                    // TODO: add resend verification code ability
                 }}
                 style={{ cursor: "pointer" }}
             >

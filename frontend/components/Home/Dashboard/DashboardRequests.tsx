@@ -61,7 +61,7 @@ export async function joinCourse(courseId: string): Promise<void> {
     }
 }
 
-export function getMemberships(initialUser): [Membership[], any, any, any] {
+export function getMemberships(initialUser): [Membership[], any, boolean, (data: any, shouldRevalidate: boolean) => Promise<any>] {
     const { data, error, isValidating, mutate } = useSWR("/api/accounts/me/", {
         initialData: initialUser,
     });
