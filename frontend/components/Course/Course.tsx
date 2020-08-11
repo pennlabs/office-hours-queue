@@ -13,6 +13,7 @@ import { Grid, Segment, Header } from 'semantic-ui-react';
 // import { gql } from 'apollo-boost';
 // import { useQuery } from '@apollo/react-hooks';
 import { leadershipSortFunc } from "../../utils";
+import { getCourse } from './CourseRequests';
 
 /* GRAPHQL QUERIES/MUTATIONS */
 // const GET_COURSE = gql`
@@ -59,28 +60,35 @@ const Course = (props) => {
   const currentUserQuery = {};
   /* STATE */
   const [active, setActive] = useState('queues');
-  const [course, setCourse] = useState({});
-
+  // const [course, setCourse] = useState({});
+  const [course, error, loading, mutate] = getCourse(props.courseId);
+  //   const [memberships, error, loading, mutate]: [
+  //     Membership[],
+  //     any,
+  //     boolean,
+  //     (data: any, shouldRevalidate: boolean) => Promise<any>
+  // ] = getMemberships(initalUser);
   /* LOAD DATA FUNCTIONS */
-  const loadCourse = (data) => {
-    if (data && data.course) {
-      return {
-        id: data.course.id,
-        department: data.course.department,
-        courseCode: data.course.courseCode,
-        courseTitle: data.course.courseTitle,
-        description: data.course.description,
-        year: data.course.year,
-        semester: data.course.semester,
-        inviteOnly: data.course.inviteOnly,
-        requireVideoChatUrlOnQuestions: data.course.requireVideoChatUrlOnQuestions,
-        videoChatEnabled: data.course.videoChatEnabled,
-        leadership: data.course.leadership.sort(leadershipSortFunc),
-      }
-    } else {
-      return {}
-    }
-  };
+
+  // const loadCourse = (data) => {
+  //   if (data && data.course) {
+  //     return {
+  //       id: data.course.id,
+  //       department: data.course.department,
+  //       courseCode: data.course.courseCode,
+  //       courseTitle: data.course.courseTitle,
+  //       description: data.course.description,
+  //       year: data.course.year,
+  //       semester: data.course.semester,
+  //       inviteOnly: data.course.inviteOnly,
+  //       requireVideoChatUrlOnQuestions: data.course.requireVideoChatUrlOnQuestions,
+  //       videoChatEnabled: data.course.videoChatEnabled,
+  //       leadership: data.course.leadership.sort(leadershipSortFunc),
+  //     }
+  //   } else {
+  //     return {}
+  //   }
+  // };
 
   /* UPDATE STATE */
   // if (courseQuery && courseQuery.data) {
@@ -91,6 +99,7 @@ const Course = (props) => {
   // }
 
   /* UPDATE STATE ON QUERY */
+
   return (
     course ? [
       <CourseSidebar active={active} clickFunc={setActive} leader={props.leader} leadership={course.leadership} />,
@@ -108,28 +117,28 @@ const Course = (props) => {
           </Grid.Row>
         }
         {
-          courseQuery.data && active === 'roster' &&
+          active === 'roster' &&
           <Roster course={course}
             leader={props.leader}
-            courseUserId={props.courseUserId}
-            courseRefetch={courseQuery.refetch} />
+            courseUserId={props.courseUserId} />
         }
         {
-          courseQuery.data && active === 'settings' &&
-          <CourseSettings course={course} refetch={courseQuery.refetch} />
+          active === 'settings' &&
+          <CourseSettings course={course} refetch={mutate} />
         }
         {
-          courseQuery.data && active === 'queues' && currentUserQuery.data &&
+          active === 'queues' &&
           <InstructorQueuePage course={course}
             leader={props.leader}
-            userId={currentUserQuery.data.currentUser.id} />
+            userId={0} />
+          // userId={currentUserQuery.data.currentUser.id} />
         }
         {
           active === 'analytics' &&
           <Analytics course={course} />
         }
         {
-          courseQuery.data && active === 'summary' &&
+          active === 'summary' &&
           <Summary course={course} />
         }
       </Grid.Column>

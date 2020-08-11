@@ -28,7 +28,8 @@ export function getCourse(
         boolean,
         (data: any, shouldRevalidate: boolean) => Promise<any>
     ] {
-    const { data, error, isValidating, mutate } = useSWR("/api/courses/${courseId}/");
+    // TODO: figure out initial data
+    const { data, error, isValidating, mutate } = useSWR('/api/courses/' + courseId + '/', { initialData: {} });
     const course = parseCourse(data);
     return [course, error, isValidating, mutate];
 }
