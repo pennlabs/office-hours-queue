@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { Modal, List, Button } from 'semantic-ui-react';
-import { gql } from "apollo-boost";
-import { useMutation } from "@apollo/react-hooks";
+// import { gql } from "apollo-boost";
+// import { useMutation } from "@apollo/react-hooks";
 import firebase from "../../Firebase";
 
-const CLEAR_QUEUE = gql`
-  mutation ClearQueue($input: ClearQueueInput!) {
-    clearQueue(input: $input) {
-      success
-    }
-  }
-`;
+// const CLEAR_QUEUE = gql`
+//   mutation ClearQueue($input: ClearQueueInput!) {
+//     clearQueue(input: $input) {
+//       success
+//     }
+//   }
+// `;
 
 
 const ClearQueueModal = (props) => {
@@ -38,12 +38,12 @@ const ClearQueueModal = (props) => {
   };
 
   return (
-    <Modal open={ props.open }>
-      <Modal.Header content="Clear Queue"/>
+    <Modal open={props.open}>
+      <Modal.Header content="Clear Queue" />
       <Modal.Content>
         <div>
-          You are about to clear all remaining questions on <b>{ props.queue.name }</b>.<br/>
-          <br/>
+          You are about to clear all remaining questions on <b>{props.queue.name}</b>.<br />
+          <br />
           Doing so will:
           <List ordered>
             <List.Item>Reject all pending questions.</List.Item>
@@ -54,14 +54,14 @@ const ClearQueueModal = (props) => {
       <Modal.Actions>
         <Button
           content="Cancel"
-          disabled={ loading || refetchLoading }
-          onClick={ () => props.closeFunc() }/>
+          disabled={loading || refetchLoading}
+          onClick={() => props.closeFunc()} />
         <Button
           color="red"
           content="Clear"
-          disabled={ loading || refetchLoading }
-          loading={ loading || refetchLoading }
-          onClick={ onSubmit }/>
+          disabled={loading || refetchLoading}
+          loading={loading || refetchLoading}
+          onClick={onSubmit} />
       </Modal.Actions>
     </Modal>
   )

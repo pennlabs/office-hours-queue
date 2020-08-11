@@ -8,48 +8,48 @@ import _ from 'lodash';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 
-import { gql } from 'apollo-boost';
-import { useQuery } from '@apollo/react-hooks';
+// import { gql } from 'apollo-boost';
+// import { useQuery } from '@apollo/react-hooks';
 import { prettifyRole, isLeadershipRole } from "../../../utils/enums";
 import ChangeRoleDropdown from "./ChangeRoleDropdown";
 
 /* GRAPHQL QUERIES/MUTATIONS */
-const GET_USERS = gql`
-query GetUsers($id: ID!) {
-  course(id: $id) {
-    id
-    leadership {
-      id
-    }
-    courseUsers {
-      edges {
-        node {
-          id
-          kind
-          user {
-            id
-            fullName
-            preferredName
-            email
-          }
-        }
-      }
-    }
-    invitedCourseUsers {
-      edges {
-        node {
-          id
-          email
-          kind
-          invitedBy {
-            fullName
-          }
-        }
-      }
-    }
-  }
-}
-`;
+// const GET_USERS = gql`
+// query GetUsers($id: ID!) {
+//   course(id: $id) {
+//     id
+//     leadership {
+//       id
+//     }
+//     courseUsers {
+//       edges {
+//         node {
+//           id
+//           kind
+//           user {
+//             id
+//             fullName
+//             preferredName
+//             email
+//           }
+//         }
+//       }
+//     }
+//     invitedCourseUsers {
+//       edges {
+//         node {
+//           id
+//           email
+//           kind
+//           invitedBy {
+//             fullName
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
+// `;
 
 const Roster = (props) => {
   const { data, refetch } = useQuery(GET_USERS, { variables: {

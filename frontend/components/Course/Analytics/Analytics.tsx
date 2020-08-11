@@ -2,51 +2,52 @@ import React, { useState } from 'react';
 import { Segment, Header, Grid, Message } from 'semantic-ui-react';
 import MyPieChart from './MyPieChart';
 
-import { useQuery } from '@apollo/react-hooks';
-import { gql } from 'apollo-boost';
+// import { useQuery } from '@apollo/react-hooks';
+// import { gql } from 'apollo-boost';
 
-const GET_COURSE = gql`
-  query GetCourse($id: ID!) {
-    course(id: $id) {
-      id
-      queues {
-        edges {
-          node {
-            id
-            name
-            archived
-            tags
-            questions {
-              edges {
-                node {
-                  id
-                  tags
-                  timeAsked
-                  askedBy {
-                    id
-                    preferredName
-                  }
-                  answeredBy {
-                    id
-                    preferredName
-                  }
-                  state
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`;
+// const GET_COURSE = gql`
+//   query GetCourse($id: ID!) {
+//     course(id: $id) {
+//       id
+//       queues {
+//         edges {
+//           node {
+//             id
+//             name
+//             archived
+//             tags
+//             questions {
+//               edges {
+//                 node {
+//                   id
+//                   tags
+//                   timeAsked
+//                   askedBy {
+//                     id
+//                     preferredName
+//                   }
+//                   answeredBy {
+//                     id
+//                     preferredName
+//                   }
+//                   state
+//                 }
+//               }
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+// `;
 
 const Analytics = (props) => {
-  const { data } = useQuery(GET_COURSE, {
-    variables: {
-      id: props.course.id
-    }
-  });
+  // const { data } = useQuery(GET_COURSE, {
+  //   variables: {
+  //     id: props.course.id
+  //   }
+  // });
+  const data = {};
   const [pieChartData, setPieChartData] = useState(null);
   const [lineChartData, setLineChartData] = useState(null);
 
@@ -119,7 +120,7 @@ const Analytics = (props) => {
 
     const stringLabels = Object.keys(allCounts).sort();
     const dateLabels = stringLabels.map(label => new Date(label));
-    const datasets = edges.filter(item => !item.node.archived).map((item, i) =>{
+    const datasets = edges.filter(item => !item.node.archived).map((item, i) => {
       const color = getRandomColor();
       return {
         fill: false,
@@ -184,22 +185,22 @@ const Analytics = (props) => {
 
   return (
     <Grid.Row>
-      <Grid.Row style={{"marginTop":"10px"}}>
-          <Message icon="exclamation triangle" header="Work in Progress"
-            content="We're working on adding new analytics tools - stay tuned!" warning/>
+      <Grid.Row style={{ "marginTop": "10px" }}>
+        <Message icon="exclamation triangle" header="Work in Progress"
+          content="We're working on adding new analytics tools - stay tuned!" warning />
       </Grid.Row>
       <Segment basic>
         <Header as="h3">Questions by Type</Header>
         {
           pieChartData && pieChartData.map(dataset => {
-            return <MyPieChart dataset={ dataset } />
+            return <MyPieChart dataset={dataset} />
           })
         }
       </Segment>
       <Segment basic>
         <Header as="h3">Queue Traffic</Header>
         {
-          lineChartData &&  <MyPieChart dataset={ lineChartData } />
+          lineChartData && <MyPieChart dataset={lineChartData} />
         }
       </Segment>
     </Grid.Row>

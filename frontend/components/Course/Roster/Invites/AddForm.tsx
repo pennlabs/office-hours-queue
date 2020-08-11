@@ -1,30 +1,30 @@
 import React, { useCallback, useState, useMemo } from 'react';
-import './AddForm.css';
+// import './AddForm.css';
 
 import { Form } from 'semantic-ui-react';
-import { gql } from 'apollo-boost';
+// import { gql } from 'apollo-boost';
 import { useDropzone } from 'react-dropzone'
-import parse from 'csv-parse/lib/sync';
+// import parse from 'csv-parse/lib/sync';
 import { roleOptions } from '../../../../utils/enums';
 import AsyncCreatableSelect from 'react-select/async-creatable';
-import { isValidEmail, useImperativeQuery } from "../../../../utils";
+import { isValidEmail } from "../../../../utils";
 
-const INVITABLE_USERS = gql`
-  query InvitableUsers($searchableName_Icontains: String) {
-    invitableUsers(searchableName_Icontains: $searchableName_Icontains) {
-      edges {
-        node {
-          id
-          fullName
-          email
-        }
-      }
-    }
-  }
-`;
+// const INVITABLE_USERS = gql`
+//   query InvitableUsers($searchableName_Icontains: String) {
+//     invitableUsers(searchableName_Icontains: $searchableName_Icontains) {
+//       edges {
+//         node {
+//           id
+//           fullName
+//           email
+//         }
+//       }
+//     }
+//   }
+// `;
 
 const AddForm = (props) => {
-  const invitableUsers = useImperativeQuery(INVITABLE_USERS);
+  // const invitableUsers = useImperativeQuery(INVITABLE_USERS);
   const [values, setValues] = useState([]);
 
   const onDrop = useCallback((acceptedFiles) => {
@@ -37,7 +37,8 @@ const AddForm = (props) => {
       reader.onload = () => {
         // Do whatever you want with the file contents
         try {
-          const records = parse(reader.result);
+          // const records = parse(reader.result);
+          const records = [];
           const allNewEmails = records.map((line) => line[0]).filter(isValidEmail);
           const existingEmails = values.map((item) => item.value);
           const emails = Array.from(new Set(allNewEmails.concat(existingEmails)));
@@ -48,7 +49,8 @@ const AddForm = (props) => {
         }
       };
       reader.readAsText(file)
-    })  }, []);
+    })
+  }, []);
 
   const {
     getRootProps,
@@ -91,7 +93,7 @@ const AddForm = (props) => {
 
   const formatCreateLabel = (inputValue) => {
     return (
-      <div>Invite <i><b>{ inputValue }</b></i></div>
+      <div>Invite <i><b>{inputValue}</b></i></div>
     );
   };
 
@@ -125,7 +127,7 @@ const AddForm = (props) => {
     <Form>
       <Form.Field>
         <label>Download a <a href="/sample_users.csv" target="_blank">sample CSV file</a></label>
-        <div {...getRootProps({className: classes.join(' ')})}>
+        <div {...getRootProps({ className: classes.join(' ') })}>
           <input {...getInputProps()} />
           <div>
             <p>Drag and drop CSV or click to select file for bulk invitation</p>
@@ -141,7 +143,7 @@ const AddForm = (props) => {
           isMulti
           placeholder={'Search...'}
           onCreateOption={onCreateOption}
-          isOptionDisabled={(option) => option.disabled }
+          isOptionDisabled={(option) => option.disabled}
           formatCreateLabel={formatCreateLabel}
           onChange={onChange}
           value={values}

@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
 import { Grid, Segment, Header, Form, Button } from 'semantic-ui-react';
-import { gql } from 'apollo-boost';
-import { useMutation } from '@apollo/react-hooks';
+// import { gql } from 'apollo-boost';
+// import { useMutation } from '@apollo/react-hooks';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 import CreatableSelect from 'react-select/creatable';
 
 /* GRAPHQL QUERIES/MUTATIONS */
-const CREATE_QUEUE = gql`
-  mutation CreateQueue($input: CreateQueueInput!) {
-    createQueue(input: $input) {
-      queue {
-        id
-      }
-    }
-  }
-`;
+// const CREATE_QUEUE = gql`
+//   mutation CreateQueue($input: CreateQueueInput!) {
+//     createQueue(input: $input) {
+//       queue {
+//         id
+//       }
+//     }
+//   }
+// `;
 
 const CreateQueue = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
@@ -73,7 +73,7 @@ const CreateQueue = (props) => {
       case 'Enter':
       case 'Tab':
         setTagsInputValue('');
-        setTags([...tags, {label: tagsInputValue, value: tagsInputValue}]);
+        setTags([...tags, { label: tagsInputValue, value: tagsInputValue }]);
         event.preventDefault();
         return;
       default: return;
@@ -97,16 +97,16 @@ const CreateQueue = (props) => {
               <Form.Input
                 placeholder="Name"
                 name='name'
-                disabled={ loading || refetchLoading }
-                onChange={ handleInputChange }/>
+                disabled={loading || refetchLoading}
+                onChange={handleInputChange} />
             </Form.Field>
             <Form.Field required>
               <label>Description</label>
               <Form.Input
                 placeholder="Description"
                 name='description'
-                disabled={ loading || refetchLoading }
-                onChange={ handleInputChange }/>
+                disabled={loading || refetchLoading}
+                onChange={handleInputChange} />
             </Form.Field>
             <Form.Field>
               <label>Tags</label>
@@ -127,19 +127,19 @@ const CreateQueue = (props) => {
               content='Create'
               color='blue'
               type='submit'
-              disabled={ disabled || loading || refetchLoading }
-              loading={ loading }
-              onClick={ onSubmit }/>
+              disabled={disabled || loading || refetchLoading}
+              loading={loading}
+              onClick={onSubmit} />
             <Button
               content='Cancel'
               type='submit'
-              disabled={ loading || refetchLoading }
-              onClick={ props.backFunc }/>
+              disabled={loading || refetchLoading}
+              onClick={props.backFunc} />
           </Form>
         </Segment>
       </Grid.Row>
-      <Snackbar open={ error } autoHideDuration={6000} onClose={ () => setError(false) }>
-        <Alert severity="error" onClose={ () => setError(false) }>
+      <Snackbar open={error} autoHideDuration={6000} onClose={() => setError(false)}>
+        <Alert severity="error" onClose={() => setError(false)}>
           <span>There was an error creating this queue. Names must be unique.</span>
         </Alert>
       </Snackbar>

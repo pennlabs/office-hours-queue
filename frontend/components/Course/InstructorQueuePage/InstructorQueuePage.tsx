@@ -4,46 +4,47 @@ import InstructorQueues from './InstructorQueues';
 import QueueSettings from './QueueSettings/QueueSettings';
 import CreateQueue from './CreateQueue/CreateQueue';
 
-import { gql } from 'apollo-boost';
-import { useQuery } from '@apollo/react-hooks';
+// import { gql } from 'apollo-boost';
+// import { useQuery } from '@apollo/react-hooks';
 import Alert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
 import { queueSortFunc } from "../../../utils";
 
 /* GRAPHQL QUERIES/MUTATIONS */
-const GET_QUEUES = gql`
-query GetQueues($id: ID!) {
-  course(id: $id) {
-    id
-    queues(archived: false) {
-      edges {
-        node {
-          id
-          archived
-          name
-          description
-          tags
-          activeOverrideTime
-          estimatedWaitTime
-          numberActiveQuestions
-        }
-      }
-    }
-  }
-}
-`;
+// const GET_QUEUES = gql`
+// query GetQueues($id: ID!) {
+//   course(id: $id) {
+//     id
+//     queues(archived: false) {
+//       edges {
+//         node {
+//           id
+//           archived
+//           name
+//           description
+//           tags
+//           activeOverrideTime
+//           estimatedWaitTime
+//           numberActiveQuestions
+//         }
+//       }
+//     }
+//   }
+// }
+// `;
 
-const defaultDocumentTitle = document.title;
+// const defaultDocumentTitle = document.title;
 
 const InstructorQueuePage = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
-  const { data, refetch } = useQuery(GET_QUEUES, {
-    variables: {
-      id: props.course.id
-    },
-    pollInterval: 5000,
-    skip: !props.course.id
-  });
+  // const { data, refetch } = useQuery(GET_QUEUES, {
+  //   variables: {
+  //     id: props.course.id
+  //   },
+  //   pollInterval: 5000,
+  //   skip: !props.course.id
+  // });
+  const data = {};
 
   /* STATE */
   const [success, setSuccess] = useState(false);
@@ -87,7 +88,7 @@ const InstructorQueuePage = (props) => {
     const newQueues = loadQueues(data);
 
     const numQuestions = newQueues.map((q) => q.numberActiveQuestions).reduce((a, b) => a + b, 0);
-    document.title = numQuestions === 0 ? defaultDocumentTitle : `(${numQuestions}) ${defaultDocumentTitle}`;
+    // document.title = numQuestions === 0 ? defaultDocumentTitle : `(${numQuestions}) ${defaultDocumentTitle}`;
 
     if (JSON.stringify(newQueues) !== JSON.stringify(queues)) {
       setQueues(newQueues);
@@ -102,34 +103,34 @@ const InstructorQueuePage = (props) => {
     <Grid stackable>
       {
         active === 'queues' && data &&
-        <InstructorQueues queues={ queues }
-          editFunc={ onQueueSettings }
-          createFunc={ () => { setActive('create') } }
-          refetch={ refetch }
-          leader={ leader }
-          userId={ props.userId }/>
+        <InstructorQueues queues={queues}
+          editFunc={onQueueSettings}
+          createFunc={() => { setActive('create') }}
+          refetch={refetch}
+          leader={leader}
+          userId={props.userId} />
       }
       {
         active === 'settings' &&
         <Grid.Row>
           <QueueSettings
-            queue={ getQueue(activeQueueId) }
-            refetch={ refetch }
-            backFunc={ () => setActive('queues') }/>
+            queue={getQueue(activeQueueId)}
+            refetch={refetch}
+            backFunc={() => setActive('queues')} />
         </Grid.Row>
       }
       {
         active === 'create' && data &&
         <Grid.Row>
           <CreateQueue
-            courseId={ props.course.id }
-            refetch={ refetch }
-            successFunc={ () => setSuccess(true) }
-            backFunc={ () => setActive('queues') }/>
+            courseId={props.course.id}
+            refetch={refetch}
+            successFunc={() => setSuccess(true)}
+            backFunc={() => setActive('queues')} />
         </Grid.Row>
       }
-      <Snackbar open={ success } autoHideDuration={6000} onClose={ () => setSuccess(false) }>
-        <Alert severity="success" onClose={ () => setSuccess(false) }>
+      <Snackbar open={success} autoHideDuration={6000} onClose={() => setSuccess(false)}>
+        <Alert severity="success" onClose={() => setSuccess(false)}>
           <span>Queue successfully created</span>
         </Alert>
       </Snackbar>

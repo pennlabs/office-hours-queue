@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Modal } from 'semantic-ui-react';
-import { gql } from 'apollo-boost';
-import { useMutation } from '@apollo/react-hooks';
+// import { gql } from 'apollo-boost';
+// import { useMutation } from '@apollo/react-hooks';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 
 /* GRAPHQL QUERIES/MUTATIONS */
-const UPDATE_QUEUE = gql`
-  mutation UpdateQueue($input: UpdateQueueInput!) {
-    updateQueue(input: $input) {
-      queue {
-        id
-      }
-    }
-  }
-`;
+// const UPDATE_QUEUE = gql`
+//   mutation UpdateQueue($input: UpdateQueueInput!) {
+//     updateQueue(input: $input) {
+//       queue {
+//         id
+//       }
+//     }
+//   }
+// `;
 
 const QueueForm = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
@@ -43,7 +43,7 @@ const QueueForm = (props) => {
     setDescCharCount(input.description.length);
     setNameCharCount(input.name.length);
     setDisabled(!input.name || !input.description ||
-    (input.name === queue.name && input.description === queue.description))
+      (input.name === queue.name && input.description === queue.description))
   };
 
   const onSubmit = async () => {
@@ -56,7 +56,7 @@ const QueueForm = (props) => {
       await props.refetch();
       setSuccess(true);
       props.backFunc();
-    } catch(e) {
+    } catch (e) {
       setError(true);
     }
   };
@@ -88,66 +88,67 @@ const QueueForm = (props) => {
           <Form.Field>
             <label>Name</label>
             <Form.Input
-              defaultValue={ input.name }
+              defaultValue={input.name}
               name='name'
-              value={ input.name }
-              disabled={ loading }
-              onChange={ handleInputChange }/>
-              <div style={{
-                "textAlign":"right",
-                "color": nameCharCount < 100 ? "" : "crimson"}
-              }>
-                {"Characters: " +  nameCharCount + "/100"}
-              </div>
+              value={input.name}
+              disabled={loading}
+              onChange={handleInputChange} />
+            <div style={{
+              "textAlign": "right",
+              "color": nameCharCount < 100 ? "" : "crimson"
+            }
+            }>
+              {"Characters: " + nameCharCount + "/100"}
+            </div>
           </Form.Field>
           <Form.Field>
             <label>Description</label>
             <Form.Input
-              defaultValue={ input.description }
+              defaultValue={input.description}
               name='description'
-              value={ input.description }
-              disabled={ loading }
-              onChange={ handleInputChange }/>
-              <div style={{
-                "textAlign":"right",
-                "color": descCharCount < 500 ? "" : "crimson"
-              }}>
-                {"Characters: " +  descCharCount + "/500"}
-              </div>
+              value={input.description}
+              disabled={loading}
+              onChange={handleInputChange} />
+            <div style={{
+              "textAlign": "right",
+              "color": descCharCount < 500 ? "" : "crimson"
+            }}>
+              {"Characters: " + descCharCount + "/500"}
+            </div>
           </Form.Field>
           <Button
             color="blue"
             type="submit"
-            disabled={ disabled || loading }
-            loading={ loading }
-            onClick={ onSubmit }>
+            disabled={disabled || loading}
+            loading={loading}
+            onClick={onSubmit}>
             Save
           </Button>
-          <Modal open={ open }
+          <Modal open={open}
             trigger={
-              <Button type='submit' onClick={ () => setOpen(true) }>Archive</Button>
+              <Button type='submit' onClick={() => setOpen(true)}>Archive</Button>
             }>
             <Modal.Header>Archive Queue</Modal.Header>
             <Modal.Content>You are about to archive this queue: <b>{queue.name}</b>.</Modal.Content>
             <Modal.Actions>
               <Button content="Cancel"
-                disabled={ loading }
-                onClick={ () => setOpen(false) }/>
+                disabled={loading}
+                onClick={() => setOpen(false)} />
               <Button content="Archive"
-                onClick={ onArchived }
-                disabled={ loading }
-                color="red"/>
+                onClick={onArchived}
+                disabled={loading}
+                color="red" />
             </Modal.Actions>
           </Modal>
         </div>
       }
-      <Snackbar open={ success } autoHideDuration={2000} onClose={ () => setSuccess(false) }>
-        <Alert severity="success" onClose={ () => setSuccess(false) }>
+      <Snackbar open={success} autoHideDuration={2000} onClose={() => setSuccess(false)}>
+        <Alert severity="success" onClose={() => setSuccess(false)}>
           <span><b>{queue.name}</b> successfully updated</span>
         </Alert>
       </Snackbar>
-      <Snackbar open={ error } autoHideDuration={6000} onClose={ () => setError(false) }>
-        <Alert severity="error" onClose={ () => setError(false) }>
+      <Snackbar open={error} autoHideDuration={6000} onClose={() => setError(false)}>
+        <Alert severity="error" onClose={() => setError(false)}>
           <span>There was an error editing <b>{queue.name}</b></span>
         </Alert>
       </Snackbar>

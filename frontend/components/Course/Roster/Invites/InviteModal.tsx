@@ -1,33 +1,33 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { Modal, Button } from 'semantic-ui-react';
 import AddForm from './AddForm';
-import {gql} from "apollo-boost";
-import {useMutation} from "@apollo/react-hooks";
+// import {gql} from "apollo-boost";
+// import {useMutation} from "@apollo/react-hooks";
 
-const INVITE_OR_ADD_EMAILS = gql`
-  mutation InviteOrAddEmails($input: InviteOrAddEmailsInput!) {
-    inviteOrAddEmails(input: $input) {
-      invitedCourseUsers {
-        email
-      }
-      addedCourseUsers {
-        user {
-          fullName
-          email
-        }
-      }
-      existingInvitedCourseUsers {
-        email
-      }
-      existingCourseUsers {
-        user {
-          fullName
-          email
-        }
-      }
-    }
-  }
-`;
+// const INVITE_OR_ADD_EMAILS = gql`
+//   mutation InviteOrAddEmails($input: InviteOrAddEmailsInput!) {
+//     inviteOrAddEmails(input: $input) {
+//       invitedCourseUsers {
+//         email
+//       }
+//       addedCourseUsers {
+//         user {
+//           fullName
+//           email
+//         }
+//       }
+//       existingInvitedCourseUsers {
+//         email
+//       }
+//       existingCourseUsers {
+//         user {
+//           fullName
+//           email
+//         }
+//       }
+//     }
+//   }
+// `;
 
 const InviteModal = (props) => {
   const [inviteOrAddEmails, { loading }] = useMutation(INVITE_OR_ADD_EMAILS);
@@ -67,25 +67,25 @@ const InviteModal = (props) => {
   };
 
   return (
-    <Modal open={ props.open }>
+    <Modal open={props.open}>
       <Modal.Header>Invite User</Modal.Header>
       <Modal.Content>
         <AddForm
-          users={ props.users }
-          changeFunc={ handleInputChange }
-          setToast={ props.setToast }/>
+          users={props.users}
+          changeFunc={handleInputChange}
+          setToast={props.setToast} />
       </Modal.Content>
       <Modal.Actions>
         <Button
           content='Cancel'
           disabled={loading}
-          onClick={ props.closeFunc }/>
+          onClick={props.closeFunc} />
         <Button
           content='Invite'
           color='blue'
           disabled={loading || disabled}
           loading={loading}
-          onClick={ inviteFunc }/>
+          onClick={inviteFunc} />
       </Modal.Actions>
     </Modal>
   )

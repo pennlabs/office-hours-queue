@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Grid, Segment, Header, Tab, Button, Dimmer, Loader } from 'semantic-ui-react';
 import { linkifyComponentDecorator } from '../../../../utils';
-import Linkify from 'react-linkify';
+// import Linkify from 'react-linkify';
 import QueueForm from './QueueForm';
 import TagForm from './TagForm';
 
@@ -22,17 +22,17 @@ const QueueSettings = (props) => {
             <Grid.Row>
               <Grid.Column textAlign="left">
                 <Header as="h3">
-                  { queue.name }
+                  {queue.name}
                   <Header.Subheader>
-                    <Linkify componentDecorator={linkifyComponentDecorator}>
-                      { queue.description }
-                    </Linkify>
+                    {/* <Linkify componentDecorator={linkifyComponentDecorator}> */}
+                    {queue.description}
+                    {/* </Linkify> */}
                   </Header.Subheader>
                 </Header>
               </Grid.Column>
               <Grid.Column textAlign="right">
                 <Header as="h3">
-                  <Button content="Back" onClick={ () => props.backFunc() }/>
+                  <Button content="Back" onClick={() => props.backFunc()} />
                 </Header>
               </Grid.Column>
             </Grid.Row>
@@ -44,17 +44,17 @@ const QueueSettings = (props) => {
           <Tab menu={{ pointing: true, secondary: true }} panes={
             [{
               menuItem: "General",
-              render: () => { return <QueueForm refetch={ props.refetch } queue={ queue } backFunc={ props.backFunc }/> }
+              render: () => { return <QueueForm refetch={props.refetch} queue={queue} backFunc={props.backFunc} /> }
             }, {
               menuItem: "Tags",
-              render: () => { return <TagForm refetch={ props.refetch } queue={ queue }/>}
-            }]}/>
+              render: () => { return <TagForm refetch={props.refetch} queue={queue} /> }
+            }]} />
         </Segment>
       </Grid.Row>
     </Grid.Column> :
-    <Dimmer active inverted inline='centered'>
-      <Loader size='big' inverted/>
-    </Dimmer>
+      <Dimmer active inverted inline='centered'>
+        <Loader size='big' inverted />
+      </Dimmer>
   );
 };
 

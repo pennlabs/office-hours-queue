@@ -1,72 +1,72 @@
 import React, { useState, useEffect } from 'react';
 import { Header, Label, Grid, Segment, Button } from 'semantic-ui-react';
-import { gql } from 'apollo-boost';
-import {useMutation, useQuery} from '@apollo/react-hooks';
-import Linkify from 'react-linkify';
+// import { gql } from 'apollo-boost';
+// import { useMutation, useQuery } from '@apollo/react-hooks';
+// import Linkify from 'react-linkify';
 import Questions from './Questions';
 import QueueFilterForm from './QueueFilterForm';
 import ClearQueueModal from './ClearQueueModal';
 import { linkifyComponentDecorator } from '../../../utils';
 
-import UIFx from 'uifx';
-import notificationMp3 from './notification.mp3';
+// import UIFx from 'uifx';
+// import notificationMp3 from './notification.mp3';
 import firebase from "../../Firebase";
 
-const notification = new UIFx(notificationMp3);
+// const notification = new UIFx(notificationMp3);
 
-const GET_QUESTIONS = gql`
-  query GetQuestions($id: ID!) {
-    queue(id: $id) {
-      id
-      tags
-      queueQuestions {
-        edges {
-          node {
-            id
-            text
-            tags
-            state
-            timeAsked
-            timeStarted
-            timeAnswered
-            orderKey
-            videoChatUrl
-            askedBy {
-              id
-              preferredName
-              fullName
-              email
-            }
-            answeredBy {
-              id
-              preferredName
-            }
-          }
-        }
-      }
-    }
-  }
-`;
+// const GET_QUESTIONS = gql`
+//   query GetQuestions($id: ID!) {
+//     queue(id: $id) {
+//       id
+//       tags
+//       queueQuestions {
+//         edges {
+//           node {
+//             id
+//             text
+//             tags
+//             state
+//             timeAsked
+//             timeStarted
+//             timeAnswered
+//             orderKey
+//             videoChatUrl
+//             askedBy {
+//               id
+//               preferredName
+//               fullName
+//               email
+//             }
+//             answeredBy {
+//               id
+//               preferredName
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+// `;
 
-const ACTIVATE_QUEUE = gql`
-  mutation ManuallyActivateQueue($input: ManuallyActivateQueueInput!) {
-    manuallyActivateQueue(input: $input) {
-      queue {
-        id
-      }
-    }
-  }
-`;
+// const ACTIVATE_QUEUE = gql`
+//   mutation ManuallyActivateQueue($input: ManuallyActivateQueueInput!) {
+//     manuallyActivateQueue(input: $input) {
+//       queue {
+//         id
+//       }
+//     }
+//   }
+// `;
 
-const DEACTIVATE_QUEUE = gql`
-  mutation ManuallyDeactivateQueue($input: ManuallyDeactivateQueueInput!) {
-    manuallyDeactivateQueue(input: $input) {
-      queue {
-        id
-      }
-    }
-  }
-`;
+// const DEACTIVATE_QUEUE = gql`
+//   mutation ManuallyDeactivateQueue($input: ManuallyDeactivateQueueInput!) {
+//     manuallyDeactivateQueue(input: $input) {
+//       queue {
+//         id
+//       }
+//     }
+//   }
+// `;
 
 const Queue = (props) => {
   const pollInterval = 3000 + Math.random() * 500
@@ -145,7 +145,7 @@ const Queue = (props) => {
 
   // Returns true if l1 is a subset of l2
   const isSubset = (l1, l2) => {
-    if (l2.length === 0)  return true;
+    if (l2.length === 0) return true;
     return l1.filter(value => l2.includes(value)).length > 0;
   };
 
@@ -158,7 +158,7 @@ const Queue = (props) => {
     const newQuestions = getQuestions(data);
     if (JSON.stringify(newQuestions) !== JSON.stringify(questions)) {
       if (!isFirstLoad && questions.length === 0) {
-        notification.play();
+        // notification.play();
       }
       setQuestions(newQuestions);
       setFilteredQuestions(filter(newQuestions, filters));
@@ -183,26 +183,26 @@ const Queue = (props) => {
   return (
     <Segment basic>
       <ClearQueueModal
-        open={ clearModalOpen }
-        queue={ queue }
-        refetch={ props.refetch }
-        closeFunc={ () => setClearModalOpen(false) }/>
+        open={clearModalOpen}
+        queue={queue}
+        refetch={props.refetch}
+        closeFunc={() => setClearModalOpen(false)} />
       <Header as="h3">
-        { queue.name }
+        {queue.name}
         <Header.Subheader>
-          <Linkify componentDecorator={linkifyComponentDecorator}>
-            { queue.description }
-          </Linkify>
+          {/* <Linkify componentDecorator={linkifyComponentDecorator}> */}
+          {queue.description}
+          {/* </Linkify> */}
         </Header.Subheader>
       </Header>
       <Grid>
         <Grid.Row columns="equal">
           <Grid.Column width={5} only="computer mobile">
-            { (queue.activeOverrideTime || queueQuestions.length !== 0) &&
+            {(queue.activeOverrideTime || queueQuestions.length !== 0) &&
               <Label
-                content={ queueQuestions.length + ` user${queueQuestions.length === 1 ? '' : 's'}` }
+                content={queueQuestions.length + ` user${queueQuestions.length === 1 ? '' : 's'}`}
                 color="blue"
-                icon="user"/>
+                icon="user" />
             }
             {
               /*
@@ -211,35 +211,35 @@ const Queue = (props) => {
             }
           </Grid.Column>
           <Grid.Column textAlign="right" floated="right">
-            { props.leader &&
+            {props.leader &&
               <Button
                 size="mini"
                 content="Edit"
                 icon="cog"
-                onClick={ props.editFunc }/>
+                onClick={props.editFunc} />
             }
             <Button
               size="mini"
               content="Close"
-              color={ !active ? null : "red" }
-              disabled={ !active || (deactivateQueueRes && deactivateQueueRes.loading) }
-              loading={ deactivateQueueRes && deactivateQueueRes.loading  }
-              onClick={ onClose }/>
+              color={!active ? null : "red"}
+              disabled={!active || (deactivateQueueRes && deactivateQueueRes.loading)}
+              loading={deactivateQueueRes && deactivateQueueRes.loading}
+              onClick={onClose} />
             <Button size="mini"
               content="Open"
-              color={ active ? null : "green" }
-              disabled={ active || (activateQueueRes && activateQueueRes.loading) }
-              loading={ activateQueueRes && activateQueueRes.loading }
-              onClick={ onOpen }/>
+              color={active ? null : "green"}
+              disabled={active || (activateQueueRes && activateQueueRes.loading)}
+              loading={activateQueueRes && activateQueueRes.loading}
+              onClick={onOpen} />
           </Grid.Column>
         </Grid.Row>
       </Grid>
-      <Grid style={{marginTop: "-5px"}}>
+      <Grid style={{ marginTop: "-5px" }}>
         <Grid.Row columns="equal">
           {
             tags.length > 0 &&
             <Grid.Column>
-              <QueueFilterForm tags={ tags } changeFunc={ handleFilterChange }/>
+              <QueueFilterForm tags={tags} changeFunc={handleFilterChange} />
             </Grid.Column>
           }
           {
@@ -249,18 +249,18 @@ const Queue = (props) => {
                 content="Clear Queue"
                 fluid size="medium"
                 basic color="red"
-                onClick={ () => setClearModalOpen(true) }/>
+                onClick={() => setClearModalOpen(true)} />
             </Grid.Column>
           }
         </Grid.Row>
       </Grid>
       <Grid.Row columns={1}>
         <Questions
-          questions={ filteredQuestions }
-          filters={ filters }
-          refetch={ refetch }
-          active={ active }
-          userId={ props.userId }/>
+          questions={filteredQuestions}
+          filters={filters}
+          refetch={refetch}
+          active={active}
+          userId={props.userId} />
       </Grid.Row>
     </Segment>
   );

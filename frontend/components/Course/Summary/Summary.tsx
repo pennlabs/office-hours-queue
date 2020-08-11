@@ -11,80 +11,80 @@ import {
 import _ from "lodash";
 import SummaryForm from "./SummaryForm";
 
-import { gql } from "apollo-boost";
-import { useLazyQuery } from "@apollo/react-hooks";
+// import { gql } from "apollo-boost";
+// import { useLazyQuery } from "@apollo/react-hooks";
 
-const GET_QUESTIONS = gql`
-  query GetQuestions(
-    $id: ID!
-    $search: String
-    $timeAsked_Gt: DateTime
-    $timeAsked_Lt: DateTime
-    $state: String
-    $orderBy: String
-    $first: Int
-  ) {
-    course(id: $id) {
-      id
-      queues {
-        edges {
-          node {
-            id
-            name
-            tags
-          }
-        }
-      }
-      questions(
-        search: $search
-        timeAsked_Gt: $timeAsked_Gt
-        timeAsked_Lt: $timeAsked_Lt
-        state: $state
-        orderBy: $orderBy
-        first: $first
-      ) {
-        pageInfo {
-          hasNextPage
-        }
-        edges {
-          node {
-            id
-            text
-            tags
-            state
-            queue {
-              name
-            }
-            timeAsked
-            timeWithdrawn
-            timeRejected
-            timeStarted
-            timeAnswered
-            rejectedReason
-            rejectedBy {
-              id
-              fullName
-              preferredName
-            }
-            askedBy {
-              id
-              fullName
-              preferredName
-            }
-            answeredBy {
-              id
-              fullName
-              preferredName
-            }
-          }
-        }
-      }
-    }
-  }
-`;
+// const GET_QUESTIONS = gql`
+//   query GetQuestions(
+//     $id: ID!
+//     $search: String
+//     $timeAsked_Gt: DateTime
+//     $timeAsked_Lt: DateTime
+//     $state: String
+//     $orderBy: String
+//     $first: Int
+//   ) {
+//     course(id: $id) {
+//       id
+//       queues {
+//         edges {
+//           node {
+//             id
+//             name
+//             tags
+//           }
+//         }
+//       }
+//       questions(
+//         search: $search
+//         timeAsked_Gt: $timeAsked_Gt
+//         timeAsked_Lt: $timeAsked_Lt
+//         state: $state
+//         orderBy: $orderBy
+//         first: $first
+//       ) {
+//         pageInfo {
+//           hasNextPage
+//         }
+//         edges {
+//           node {
+//             id
+//             text
+//             tags
+//             state
+//             queue {
+//               name
+//             }
+//             timeAsked
+//             timeWithdrawn
+//             timeRejected
+//             timeStarted
+//             timeAnswered
+//             rejectedReason
+//             rejectedBy {
+//               id
+//               fullName
+//               preferredName
+//             }
+//             askedBy {
+//               id
+//               fullName
+//               preferredName
+//             }
+//             answeredBy {
+//               id
+//               fullName
+//               preferredName
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+// `;
 
 const Summary = (props) => {
-  const [getQuestions, { data, loading }] = useLazyQuery(GET_QUESTIONS);
+  // const [getQuestions, { data, loading }] = useLazyQuery(GET_QUESTIONS);
 
   /* STATE */
   const [questions, setQuestions] = useState(null);
@@ -272,8 +272,8 @@ const Summary = (props) => {
                       {qs.answeredBy !== ""
                         ? qs.answeredBy
                         : qs.rejectedBy !== ""
-                        ? qs.rejectedBy
-                        : ""}
+                          ? qs.rejectedBy
+                          : ""}
                     </Table.Cell>
                     <Table.Cell>{qs.text}</Table.Cell>
                     <Table.Cell>{qs.queue}</Table.Cell>
@@ -306,7 +306,7 @@ const Summary = (props) => {
           <div>
             {questions &&
               `${questions.length} question${
-                questions.length === 1 ? "" : "s"
+              questions.length === 1 ? "" : "s"
               }`}
           </div>
         </Segment>

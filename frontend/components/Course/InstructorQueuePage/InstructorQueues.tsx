@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Grid, Segment, Icon, Message } from 'semantic-ui-react';
-import Queue from './Queue.js';
+import Queue from './Queue';
 
 const InstructorQueues = (props) => {
   /* STATE */
@@ -30,12 +30,12 @@ const InstructorQueues = (props) => {
           !queue.archived &&
           <Grid.Column key={'column' + queue.id}>
             <Queue
-              key={ queue.id }
-              queue={ queue }
-              leader={ props.leader }
-              refetch={ props.refetch }
-              editFunc={ () => props.editFunc(queue.id) }
-              userId={ props.userId }/>
+              key={queue.id}
+              queue={queue}
+              leader={props.leader}
+              refetch={props.refetch}
+              editFunc={() => props.editFunc(queue.id)}
+              userId={props.userId} />
           </Grid.Column>
         ))
       }
@@ -44,10 +44,10 @@ const InstructorQueues = (props) => {
         <Grid.Column>
           <Segment basic>
             <Message info icon>
-              <Icon name="lightbulb outline"/>
+              <Icon name="lightbulb outline" />
               <Message.Content>
                 <Message.Header>Create a Queue</Message.Header>
-                <a onClick={ props.createFunc } style={{"cursor":"pointer"}}>Create</a>{' '}
+                <a onClick={props.createFunc} style={{ "cursor": "pointer" }}>Create</a>{' '}
                 {queues.length === 0 ? 'a queue to get started!' : 'a second queue to augment your OHQ experience!'}
               </Message.Content>
             </Message>
@@ -56,15 +56,15 @@ const InstructorQueues = (props) => {
       }
       {
         queues && numActive() === 0 && !leader &&
-          <Segment basic>
-            <Message info icon>
-              <Icon name="lightbulb outline"/>
-              <Message.Content>
-                <Message.Header>No Queues</Message.Header>
+        <Segment basic>
+          <Message info icon>
+            <Icon name="lightbulb outline" />
+            <Message.Content>
+              <Message.Header>No Queues</Message.Header>
                 This course currently has no queues! Ask the course's Head TA or Professor to create one.
               </Message.Content>
-            </Message>
-          </Segment>
+          </Message>
+        </Segment>
       }
     </Grid.Row>
   );

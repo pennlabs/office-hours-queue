@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Segment, Header, Input, Label, Icon } from 'semantic-ui-react';
-import { gql } from 'apollo-boost';
-import { useMutation } from '@apollo/react-hooks';
+// import { gql } from 'apollo-boost';
+// import { useMutation } from '@apollo/react-hooks';
 
 /* GRAPHQL QUERIES/MUTATIONS */
-const UPDATE_QUEUE = gql`
-  mutation UpdateQueue($input: UpdateQueueInput!) {
-    updateQueue(input: $input) {
-      queue {
-        id
-        tags
-      }
-    }
-  }
-`;
+// const UPDATE_QUEUE = gql`
+//   mutation UpdateQueue($input: UpdateQueueInput!) {
+//     updateQueue(input: $input) {
+//       queue {
+//         id
+//         tags
+//       }
+//     }
+//   }
+// `;
 
 const TagForm = (props) => {
   /* GRAPHQL QUERIES/MUTATIONS */
@@ -78,24 +78,24 @@ const TagForm = (props) => {
   return (
     <div>
       <Segment basic>
-      <Header content="Current Tags"/>
-      {
-        queue && queue.tags.length > 0 && queue.tags.map(tag => (
-          <Label>
-            { tag }
-            <Icon name="delete" disabled={ loading } onClick={() => onDelete(tag) }/>
-          </Label>
-        ))
-      }
-      {
-        queue && queue.tags.length === 0 && !newTag && <Label color="blue" content="No Tags"/>
-      }
-      {
-        !loading && newTag && <Label color="green" content={ newTag }/>
-      }
-    </Segment>
-    <Segment basic>
-      <Header content="Add New Tags"/>
+        <Header content="Current Tags" />
+        {
+          queue && queue.tags.length > 0 && queue.tags.map(tag => (
+            <Label>
+              {tag}
+              <Icon name="delete" disabled={loading} onClick={() => onDelete(tag)} />
+            </Label>
+          ))
+        }
+        {
+          queue && queue.tags.length === 0 && !newTag && <Label color="blue" content="No Tags" />
+        }
+        {
+          !loading && newTag && <Label color="green" content={newTag} />
+        }
+      </Segment>
+      <Segment basic>
+        <Header content="Add New Tags" />
         <Input
           icon="tag"
           iconPosition="left"
@@ -107,12 +107,12 @@ const TagForm = (props) => {
             onClick: onSubmit,
           }}
           name="newTag"
-          disabled={ loading }
-          loading={ loading }
-          value={ newTag }
-          onKeyDown={ handleKeyDown }
-          onChange={ handleInputChange }
-          ref={ tagInput }/>
+          disabled={loading}
+          loading={loading}
+          value={newTag}
+          onKeyDown={handleKeyDown}
+          onChange={handleInputChange}
+          ref={tagInput} />
       </Segment>
     </div>
   )
