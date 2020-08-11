@@ -1,15 +1,8 @@
 import useSWR from "swr";
 import { parsePhoneNumberFromString } from "libphonenumber-js/min";
 import getCsrf from "../../../csrf";
+import { User } from "../../../types";
 
-export interface User {
-    firstName: string;
-    lastName: string;
-    email: string;
-    smsNotificationsEnabled: boolean;
-    smsVerified: boolean;
-    phoneNumber?: string;
-}
 
 export function useAccountInfo(initialUser) {
     const { data, error, isValidating, mutate } = useSWR("/api/accounts/me/", {

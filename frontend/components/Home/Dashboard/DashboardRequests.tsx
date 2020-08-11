@@ -1,25 +1,6 @@
 import useSWR from "swr";
 import getCsrf from "../../../csrf";
-
-export interface Course {
-    id: number;
-    courseCode: string;
-    department: string;
-    courseTitle: string;
-    description: string;
-    semester: string;
-    archived: boolean;
-    inviteOnly: boolean;
-    videChatEnabled: boolean;
-    requireVideoChatUrlOnQuestions: boolean;
-    isMember: boolean;
-}
-
-export interface Membership {
-    id: number;
-    kind: string;
-    course: Course;
-}
+import { Course, Membership } from "../../../types";
 
 function getCourse(course): Course {
     return {
@@ -65,20 +46,20 @@ export async function joinCourse(courseId: string): Promise<void> {
 export function getMemberships(
     initialUser
 ): [
-    Membership[],
-    any,
-    boolean,
-    (data: any, shouldRevalidate: boolean) => Promise<any>
-] {
+        Membership[],
+        any,
+        boolean,
+        (data: any, shouldRevalidate: boolean) => Promise<any>
+    ] {
     const { data, error, isValidating, mutate } = useSWR("/api/accounts/me/", {
         initialData: initialUser,
     });
     const memberships: Membership[] = data
         ? data.membership_set.map((membership) => ({
-              id: membership.id,
-              kind: membership.kind,
-              course: getCourse(membership.course),
-          }))
+            id: membership.id,
+            kind: membership.kind,
+            course: getCourse(membership.course),
+        }))
         : [];
 
     return [memberships, error, isValidating, mutate];
