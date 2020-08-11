@@ -6,11 +6,7 @@ import AuthPrompt from "../components/Auth/AuthPrompt";
 const LandingPage = () => {
     const { user } = useContext(AuthUserContext);
 
-    return user ? (
-        <Home />
-    ) : (
-            <AuthPrompt />
-        );
+    return user ? <Home /> : <AuthPrompt />;
 };
 
 export default LandingPage;
