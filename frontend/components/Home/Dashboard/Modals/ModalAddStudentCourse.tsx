@@ -18,11 +18,11 @@ const ModalAddStudentCourse = (props) => {
         if (input.courseIds.length === 0) {
             return;
         }
-        setLoading(true)
+        setLoading(true);
         for (let index = 0; index < input.courseIds.length; index++) {
             await joinCourse(input.courseIds[index]);
         }
-        setLoading(false)
+        setLoading(false);
         props.refetch();
         props.closeFunc();
         props.successFunc(true); // trigger snackbar
@@ -32,9 +32,7 @@ const ModalAddStudentCourse = (props) => {
         <Modal open={props.open}>
             <Modal.Header>Join Courses</Modal.Header>
             <Modal.Content>
-                <AddStudentForm
-                    changeFunc={handleInputChange}
-                />
+                <AddStudentForm changeFunc={handleInputChange} />
             </Modal.Content>
             <Modal.Actions>
                 <Button

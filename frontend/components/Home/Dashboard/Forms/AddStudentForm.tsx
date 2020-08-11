@@ -5,7 +5,6 @@ import AsyncSelect from "react-select/async";
 import { getCourses, Course } from "../DashboardRequests";
 
 const AddStudentForm = (props) => {
-
     const promiseOptions = async (inputValue: string) => {
         if (inputValue.length === 0) {
             return [];
@@ -18,9 +17,9 @@ const AddStudentForm = (props) => {
                 label: `${course.department} ${course.courseCode} (${course.semester})${suffix}`,
                 value: course.id,
                 disabled: course.isMember,
-            }
+            };
         });
-    }
+    };
 
     return (
         <Form>
@@ -31,7 +30,7 @@ const AddStudentForm = (props) => {
                     defaultOptions
                     loadOptions={promiseOptions}
                     isMulti
-                    placeholder={"Search..."}
+                    placeholder="Search..."
                     isOptionDisabled={(option) => option.disabled}
                     onChange={(items) => {
                         props.changeFunc(undefined, {

@@ -1,26 +1,33 @@
 import React, { useState, useContext } from "react";
 import { Segment, Header, Grid, Placeholder } from "semantic-ui-react";
-import InstructorCourses from "./InstructorCourses";
-import StudentCourses from "./StudentCourses";
 import _ from "lodash";
-import NewUserModal from "./Modals/NewUserModal";
 import Alert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
+import InstructorCourses from "./InstructorCourses";
+import StudentCourses from "./StudentCourses";
+import NewUserModal from "./Modals/NewUserModal";
 import { AuthUserContext } from "../../../context/auth";
-import { getMemberships, Course, Membership } from "./DashboardRequests"
+import { getMemberships, Course, Membership } from "./DashboardRequests";
 
 const Dashboard = (props) => {
     const { user: initalUser } = useContext(AuthUserContext);
 
-    const [memberships, error, loading, mutate]: [Membership[], any, boolean, (data: any, shouldRevalidate: boolean) => Promise<any>] = getMemberships(initalUser);
+    const [memberships, error, loading, mutate]: [
+        Membership[],
+        any,
+        boolean,
+        (data: any, shouldRevalidate: boolean) => Promise<any>
+    ] = getMemberships(initalUser);
 
     const getCourses = (isStudent: boolean): Course[] => {
-        return memberships.filter((membership) => {
-            return (
-                (isStudent && membership.kind === "STUDENT") ||
-                (!isStudent && membership.kind !== "STUDENT")
-            );
-        }).map((membership) => membership.course);
+        return memberships
+            .filter((membership) => {
+                return (
+                    (isStudent && membership.kind === "STUDENT") ||
+                    (!isStudent && membership.kind !== "STUDENT")
+                );
+            })
+            .map((membership) => membership.course);
     };
 
     /* STATE */
@@ -86,11 +93,11 @@ const Dashboard = (props) => {
                             </Grid.Row>
                         </Grid>
                     ) : (
-                            <StudentCourses
-                                courses={getCourses(true)}
-                                refetch={mutate}
-                            />
-                        )}
+                        <StudentCourses
+                            courses={getCourses(true)}
+                            refetch={mutate}
+                        />
+                    )}
                     {!props.loading &&
                         hasInstructorCourses && [
                             <Grid.Row>

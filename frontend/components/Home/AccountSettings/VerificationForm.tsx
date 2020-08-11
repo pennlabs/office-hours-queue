@@ -5,9 +5,7 @@ import { Segment } from "semantic-ui-react";
 import ReactCodeInput from "react-code-input";
 import { validateSMS } from "./AccountRequests";
 
-
 const VerificationForm = (props) => {
-
     const codeInput = useRef();
 
     const clearInput = () => {
@@ -39,8 +37,8 @@ const VerificationForm = (props) => {
                 message: e.message.includes("Incorrect")
                     ? "Verification code incorrect"
                     : e.message.includes("expired")
-                        ? "Verification code expired, please resend"
-                        : "An error occurred when verifying",
+                    ? "Verification code expired, please resend"
+                    : "An error occurred when verifying",
             });
         }
     };

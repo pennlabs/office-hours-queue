@@ -16,7 +16,7 @@ const CreateCourseForm = (props) => {
             <Form.Field required>
                 <label>Department</label>
                 <Form.Input
-                    className={"department-input"}
+                    className="department-input"
                     name="department"
                     onChange={props.changeFunc}
                     placeholder="CIS"
@@ -59,7 +59,7 @@ const CreateCourseForm = (props) => {
                     name="semester"
                     onChange={props.changeFunc}
                     selection
-                    placeholder={"Semester"}
+                    placeholder="Semester"
                     options={semesterOptions}
                 />
             </Form.Field>

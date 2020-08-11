@@ -26,9 +26,7 @@ const AccountForm = () => {
 
     const [showNumber, setShowNumber] = useState(user.smsNotificationsEnabled);
 
-
     const [smsOpen, setSmsOpen] = useState(false);
-
 
     const [toast, setToast] = useState({ message: "", success: true });
     const [toastOpen, setToastOpen] = useState(false);
@@ -42,7 +40,7 @@ const AccountForm = () => {
             (input.firstName === user.firstName &&
                 input.lastName === user.lastName &&
                 input.smsNotificationsEnabled ===
-                user.smsNotificationsEnabled &&
+                    user.smsNotificationsEnabled &&
                 input.phoneNumber === user.phoneNumber)
         );
     };
@@ -81,9 +79,7 @@ const AccountForm = () => {
             setToastOpen(true);
             setDisabled(true);
 
-            if (
-                input.phoneNumber !== user.phoneNumber
-            ) {
+            if (input.phoneNumber !== user.phoneNumber) {
                 setSmsOpen(true);
             }
         } catch (e) {
@@ -158,7 +154,7 @@ const AccountForm = () => {
                         name="phoneNumber"
                         onChange={handleInputChange}
                         action={
-                            !user.smsVerified && (
+                            (!user.smsVerified && (
                                 <Button
                                     disabled={user.smsVerified}
                                     color="red"
@@ -167,15 +163,15 @@ const AccountForm = () => {
                                     onClick={() => {
                                         setSmsOpen(true);
                                     }}
-                                ></Button>
-                            ) ||
-                            user.smsVerified && (
+                                />
+                            )) ||
+                            (user.smsVerified && (
                                 <Button
                                     color="green"
                                     content="Verified"
                                     icon="shield alternate"
-                                ></Button>
-                            )
+                                />
+                            ))
                         }
                         disabled={loading}
                     />

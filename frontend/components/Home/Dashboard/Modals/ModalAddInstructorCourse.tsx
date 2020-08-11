@@ -72,7 +72,6 @@ const ModalAddInstructorCourse = (props) => {
                 break;
             }
             default:
-                return;
         }
     };
 
@@ -90,7 +89,7 @@ const ModalAddInstructorCourse = (props) => {
         try {
             await createCourse({
                 variables: {
-                    input: input,
+                    input,
                 },
             });
             await props.refetch();

@@ -4,7 +4,7 @@ import Dashboard from "./Dashboard/Dashboard";
 import AccountSettings from "./AccountSettings/AccountSettings";
 import HomeSidebar from "./HomeSidebar";
 
-const Home = ({ }) => {
+const Home = ({}) => {
     const [active, setActive] = useState("dashboard");
 
     return (
@@ -20,10 +20,8 @@ const Home = ({ }) => {
             ) : active === "account_settings" ? (
                 <AccountSettings />
             ) : (
-                        <Dashboard
-                            loading={true}
-                        />
-                    )}
+                <Dashboard loading={true} />
+            )}
         </Grid>
     );
 };
