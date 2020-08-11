@@ -1,28 +1,13 @@
 import useSWR from "swr";
 import getCsrf from "../../../csrf";
 import { Course, Membership } from "../../../types";
+import { parseCourse } from "../../Course/CourseRequests";
 
-function getCourse(course): Course {
-    return {
-        id: course.id,
-        courseCode: course.course_code,
-        department: course.department,
-        courseTitle: course.course_title,
-        description: course.description,
-        semester: course.semester_pretty,
-        archived: course.archived,
-        inviteOnly: course.invite_only,
-        videChatEnabled: course.video_chat_enabled,
-        requireVideoChatUrlOnQuestions:
-            course.require_video_chat_url_on_questions,
-        isMember: course.is_member,
-    };
-}
 
 export async function getCourses(inputValue: string): Promise<Course[]> {
     return await fetch(`/api/courses/?search=${inputValue}`)
         .then((res) => res.json())
-        .then((res) => res.map((course) => getCourse(course)))
+        .then((res) => res.map((course) => parseCourse(course)))
         .catch((_) => []);
 }
 
@@ -58,7 +43,7 @@ export function getMemberships(
         ? data.membership_set.map((membership) => ({
             id: membership.id,
             kind: membership.kind,
-            course: getCourse(membership.course),
+            course: parseCourse(membership.course),
         }))
         : [];
 
