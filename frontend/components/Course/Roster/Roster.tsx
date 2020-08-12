@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Segment, Header, Grid, Table } from 'semantic-ui-react';
 import RosterForm from './RosterForm';
 import RemoveButton from './RemoveButton';
@@ -8,64 +8,26 @@ import _ from 'lodash';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 
-// import { gql } from 'apollo-boost';
-// import { useQuery } from '@apollo/react-hooks';
 import { prettifyRole, isLeadershipRole } from "../../../utils/enums";
 import ChangeRoleDropdown from "./ChangeRoleDropdown";
+import { getInvitedMembers, getMembers } from '../CourseRequests';
 
-/* GRAPHQL QUERIES/MUTATIONS */
-// const GET_USERS = gql`
-// query GetUsers($id: ID!) {
-//   course(id: $id) {
-//     id
-//     leadership {
-//       id
-//     }
-//     courseUsers {
-//       edges {
-//         node {
-//           id
-//           kind
-//           user {
-//             id
-//             fullName
-//             preferredName
-//             email
-//           }
-//         }
-//       }
-//     }
-//     invitedCourseUsers {
-//       edges {
-//         node {
-//           id
-//           email
-//           kind
-//           invitedBy {
-//             fullName
-//           }
-//         }
-//       }
-//     }
-//   }
-// }
-// `;
 
 const Roster = (props) => {
-  const { data, refetch } = useQuery(GET_USERS, { variables: {
-    id: props.course.id
-  }});
+  // TODO: get initial props on this
+  const [memberships, error, loading, refetch] = getMembers(props.course.id);
 
   /* STATE */
-  const [users, setUsers] = useState(null);
-  const [filteredUsers, setFilteredUsers] = useState(null);
-  const [invitedUsers, setInvitedUsers] = useState(null);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [invitedMembers, invitedError, invitedLoading, invitedMutate] = getInvitedMembers(props.course.id);
+
   const [open, setOpen] = useState(false);
   const [invitedTableState, setInvitedTableState] = useState({ direction: 'ascending', column: 'email' });
   const [tableState, setTableState] = useState({ direction: 'ascending', column: 'fullName' });
   const [showInvited, setShowInvited] = useState(false);
   const [toast, setToast] = useState({ open: false, success: true, message: "" });
   const [leader, setLeader] = useState(props.leader);
+  // TODO: get if current user is a course leader
 
   /* MODAL FUNCTIONS */
   const triggerModal = () => {
@@ -101,38 +63,14 @@ const Roster = (props) => {
     }
   };
 
-  /* GET USERS FROM DATA */
-  const loadUsers = (data) => {
-    return data.course.courseUsers.edges.map((item) => {
-      return {
-        id: item.node.id,
-        fullName: item.node.user.fullName,
-        preferredName: item.node.user.preferredName,
-        email: item.node.user.email,
-        role: item.node.kind,
-      };
-    });
-  };
-
-  const loadInvitedUsers = (data) => {
-    return data.course.invitedCourseUsers.edges.map((item) => {
-      return {
-        id: item.node.id,
-        email: item.node.email,
-        role: item.node.kind,
-        invitedBy: item.node.invitedBy,
-      };
-    });
-  };
-
   /* FILTER USERS BASED ON INPUT */
   const filterUsers = (input) => {
-    const newFilteredUsers = users.filter((user) => {
-      const role = user.role.toLowerCase();
+    const newFilteredUsers = memberships.filter((membership) => {
+      const role = membership.kind.toLowerCase();
       return (
-        user.fullName.toLowerCase().includes(input.search) ||
-        user.preferredName.toLowerCase().includes(input.search) ||
-        user.email.toLowerCase().includes(input.search) ||
+        membership.user.firstName.toLowerCase().includes(input.search) ||
+        membership.user.lastName.toLowerCase().includes(input.search) ||
+        membership.user.email.toLowerCase().includes(input.search) ||
         role.includes(input.search)
       ) && (!input.role || role === input.role);
     });
@@ -147,23 +85,30 @@ const Roster = (props) => {
 
   /* LOAD DATA */
 
+  // TODO: fix this
   // Is there only a single user in the leadership category
-  let isOnlyOneLeadership;
-  if (data && data.course) {
-    const newUsers = loadUsers(data);
-    const newInvitedUsers = loadInvitedUsers(data);
-    if (JSON.stringify(newUsers) !== JSON.stringify(users)) {
-      setUsers(newUsers);
-      setFilteredUsers(newUsers);
-      setLeader(props.leader);
-    }
+  const isOnlyOneLeadership = false;
+  // let isOnlyOneLeadership;
+  // if (data && data.course) {
+  //   const newUsers = loadUsers(data);
+  //   const newInvitedUsers = loadInvitedUsers(data);
+  //   if (JSON.stringify(newUsers) !== JSON.stringify(users)) {
+  //     setUsers(newUsers);
+  //     setFilteredUsers(newUsers);
+  //     setLeader(props.leader);
+  //   }
 
-    if (JSON.stringify(newInvitedUsers) !== JSON.stringify(invitedUsers)) {
-      setInvitedUsers(newInvitedUsers);
-    }
+  //   if (JSON.stringify(newInvitedUsers) !== JSON.stringify(invitedUsers)) {
+  //     setInvitedUsers(newInvitedUsers);
+  //   }
 
-    isOnlyOneLeadership = data.course.courseUsers.edges.filter((item) => isLeadershipRole(item.node.kind)).length < 2;
-  }
+  //   isOnlyOneLeadership = data.course.courseUsers.edges.filter((item) => isLeadershipRole(item.node.kind)).length < 2;
+  // }
+
+  // TODO: this isn't a great way of doing this. Look into getServerSideProps or something else to get data
+  useEffect(() => {
+    setFilteredUsers(memberships);
+  }, [memberships.length]);
 
   /* TOAST */
   const setRosterUpdateToast = () => {
@@ -231,169 +176,158 @@ const Roster = (props) => {
 
   return (
     <div>
-      { users &&
-        <InviteModal open={ open }
-          closeFunc={ closeModal }
-          courseId={ props.course.id }
-          successFunc={ setRosterUpdateToast }
-          setToast={ setToast }
-          users={ users }/>
-      }
+      {/* {users &&
+        <InviteModal open={open}
+          closeFunc={closeModal}
+          courseId={props.course.id}
+          successFunc={setRosterUpdateToast}
+          setToast={setToast}
+          users={users} />
+      } */}
       <Grid.Row>
-      { users &&
-        <Segment basic>
-          <RosterForm
-            showShowInvitedButton={ invitedUsers.length > 0 }
-            showInviteButton={ leader }
-            invitedShown={ showInvited }
-            filterFunc={ filterUsers }
-            inviteFunc={ triggerModal }
-            showInvitedFunc={ () => { setShowInvited(!showInvited) } }/>
-        </Segment>
-      }
+        {memberships &&
+          <Segment basic>
+            <RosterForm
+              showShowInvitedButton={invitedMembers.length > 0}
+              showInviteButton={leader}
+              invitedShown={showInvited}
+              filterFunc={filterUsers}
+              inviteFunc={triggerModal}
+              showInvitedFunc={() => { setShowInvited(!showInvited) }} />
+          </Segment>
+        }
       </Grid.Row>
+      {/* TODO: sorting isn't working for either table */}
       <Grid.Row>
-      { (showInvited && invitedUsers.length > 0) &&
-        <Segment basic>
-          <Grid.Row>
-            <Header as="h3">
-              Invited Users
+        {(showInvited && invitedMembers.length > 0) &&
+          <Segment basic>
+            <Grid.Row>
+              <Header as="h3">
+                Invited Users
             </Header>
-          </Grid.Row>
-          <Table sortable celled padded selectable striped>
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell
-                  sorted={invitedTableState.column === 'email' ? invitedTableState.direction : null}
-                  onClick={() => handleInvitedSort('email')}
-                  width={3}>Email
-                </Table.HeaderCell>
-                <Table.HeaderCell
-                  sorted={invitedTableState.column === 'role' ? invitedTableState.direction : null}
-                  onClick={() => handleInvitedSort('role')}
-                  width={2}>Role
-                </Table.HeaderCell>
-                <Table.HeaderCell
-                  sorted={invitedTableState.column === 'invitedBy' ? invitedTableState.direction : null}
-                  onClick={() => handleInvitedSort('invitedBy')}
-                  width={3}>Invited By
-                </Table.HeaderCell>
-                {
-                  leader && [
-                    <Table.HeaderCell textAlign="center" width={1}>Resend</Table.HeaderCell>,
-                    <Table.HeaderCell textAlign="center" width={1}>Revoke</Table.HeaderCell>,
-                  ]
-                }
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-            {
-              _.orderBy(
-                invitedUsers,
-                invitedTableState.column !== "invitedBy" ? invitedTableState.column : (invited) => invited.invitedBy.fullName,
-                invitedTableState.direction === 'ascending' ? 'asc' : 'desc',
-              ).map((user) => (
+            </Grid.Row>
+            <Table sortable celled padded selectable striped>
+              <Table.Header>
                 <Table.Row>
-                  <Table.Cell>{ user.email }</Table.Cell>
-                  <Table.Cell>{ prettifyRole(user.role) }</Table.Cell>
-                  <Table.Cell>{ user.invitedBy ? user.invitedBy.fullName : '' }</Table.Cell>
+                  <Table.HeaderCell
+                    sorted={invitedTableState.column === 'email' ? invitedTableState.direction : null}
+                    onClick={() => handleInvitedSort('email')}
+                    width={3}>Email
+                </Table.HeaderCell>
+                  <Table.HeaderCell
+                    sorted={invitedTableState.column === 'role' ? invitedTableState.direction : null}
+                    onClick={() => handleInvitedSort('role')}
+                    width={2}>Role
+                </Table.HeaderCell>
                   {
                     leader && [
-                      <Table.Cell textAlign="center">
-                        <ResendButton id={user.id} successFunc={setInviteResendToast}/>
-                      </Table.Cell>,
-                      <Table.Cell textAlign="center">
-                        <RemoveButton id={user.id} isInvited={true} successFunc={onRevokeSuccess}/>
-                      </Table.Cell>,
+                      <Table.HeaderCell textAlign="center" width={1}>Resend</Table.HeaderCell>,
+                      <Table.HeaderCell textAlign="center" width={1}>Revoke</Table.HeaderCell>,
                     ]
                   }
                 </Table.Row>
-              ))
-            }
-            </Table.Body>
-          </Table>
-        </Segment>
-      }
+              </Table.Header>
+              <Table.Body>
+                {
+                  _.orderBy(
+                    invitedMembers,
+                    invitedTableState.direction === 'ascending' ? 'asc' : 'desc',
+                  ).map((invitedMember) => (
+                    <Table.Row>
+                      <Table.Cell>{invitedMember.email}</Table.Cell>
+                      <Table.Cell>{prettifyRole(invitedMember.kind)}</Table.Cell>
+                      {
+                        leader && [
+                          <Table.Cell textAlign="center">
+                            <ResendButton id={invitedMember.id} successFunc={setInviteResendToast} />
+                          </Table.Cell>,
+                          <Table.Cell textAlign="center">
+                            <RemoveButton id={invitedMember.id} isInvited={true} successFunc={onRevokeSuccess} />
+                          </Table.Cell>,
+                        ]
+                      }
+                    </Table.Row>
+                  ))
+                }
+              </Table.Body>
+            </Table>
+          </Segment>
+        }
       </Grid.Row>
       <Grid.Row>
-      { users &&
-        <Segment basic>
-          <Table sortable celled padded selectable striped>
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell
-                  sorted={tableState.column === 'fullName' ? tableState.direction : null}
-                  onClick={() => handleSort('fullName')}
-                  width={3}>Full Name
+        {memberships &&
+          <Segment basic>
+            <Table sortable celled padded selectable striped>
+              <Table.Header>
+                <Table.Row>
+                  <Table.HeaderCell
+                    sorted={tableState.column === 'fullName' ? tableState.direction : null}
+                    onClick={() => handleSort('fullName')}
+                    width={3}>Full Name
                 </Table.HeaderCell>
-                <Table.HeaderCell
-                  sorted={tableState.column === 'preferredName' ? tableState.direction : null}
-                  onClick={() => handleSort('preferredName')}
-                  width={3}>Preferred Name
+                  <Table.HeaderCell
+                    sorted={tableState.column === 'email' ? tableState.direction : null}
+                    onClick={() => handleSort('email')}
+                    width={4}>Email
                 </Table.HeaderCell>
-                <Table.HeaderCell
-                  sorted={tableState.column === 'email' ? tableState.direction : null}
-                  onClick={() => handleSort('email')}
-                  width={4}>Email
+                  <Table.HeaderCell
+                    sorted={tableState.column === 'role' ? tableState.direction : null}
+                    onClick={() => handleSort('role')}
+                    width={2}>Role
                 </Table.HeaderCell>
-                <Table.HeaderCell
-                  sorted={tableState.column === 'role' ? tableState.direction : null}
-                  onClick={() => handleSort('role')}
-                  width={2}>Role
-                </Table.HeaderCell>
+                  {
+                    leader &&
+                    <Table.HeaderCell width={1}>Remove</Table.HeaderCell>
+                  }
+                </Table.Row>
+              </Table.Header>
+              <Table.Body>
                 {
-                  leader &&
-                  <Table.HeaderCell width={1}>Remove</Table.HeaderCell>
-                }
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {
-                _.orderBy(
-                  filteredUsers,
-                  tableState.column,
-                  tableState.direction === 'ascending' ? 'asc' : 'desc',
-                ).map((user) => (
-                  <Table.Row key={ user.id }>
-                    <Table.Cell>{ user.fullName }</Table.Cell>
-                    <Table.Cell>{ user.preferredName }</Table.Cell>
-                    <Table.Cell>{ user.email }</Table.Cell>
-                    <Table.Cell>
-                      { !leader || user.role === "STUDENT" ?
-                        prettifyRole(user.role) :
-                        <ChangeRoleDropdown
-                          id={ user.id }
-                          role={ user.role }
-                          disabled={ isOnlyOneLeadership && isLeadershipRole(user.role) }
-                          successFunc={ onRoleChangeSuccess }
-                          refetch={ async () => { await refetch(); await props.courseRefetch()} }/>
-                      }
-                    </Table.Cell>
-                    {
-                      leader &&
-                      <Table.Cell textAlign="center">
-                        <RemoveButton
-                          disabled={ isOnlyOneLeadership && isLeadershipRole(user.role) }
-                          id={ user.id }
-                          userName={ user.fullName }
-                          isInvited={ false }
-                          successFunc={ onRemoveSuccess }/>
+                  _.orderBy(
+                    filteredUsers,
+                    tableState.column,
+                    tableState.direction === 'ascending' ? 'asc' : 'desc',
+                  ).map((membership) => (
+                    <Table.Row key={membership.id}>
+                      <Table.Cell>{membership.user.firstName} {membership.user.lastName}</Table.Cell>
+                      <Table.Cell>{membership.user.email}</Table.Cell>
+                      <Table.Cell>
+                        {!leader || membership.kind === "STUDENT" ?
+                          prettifyRole(membership.kind) :
+                          <ChangeRoleDropdown
+                            id={membership.id}
+                            role={membership.kind}
+                            disabled={isOnlyOneLeadership && isLeadershipRole(membership.kind)}
+                            successFunc={onRoleChangeSuccess}
+                            refetch={async () => { await refetch(); await props.courseRefetch() }} />
+                        }
                       </Table.Cell>
-                    }
-                  </Table.Row>
-                ))
-              }
-            </Table.Body>
-          </Table>
-          <div>
-            { `${filteredUsers.length} user${filteredUsers.length === 1 ? '' : 's'}` }
-          </div>
-        </Segment>
-      }
+                      {
+                        leader &&
+                        <Table.Cell textAlign="center">
+                          <RemoveButton
+                            disabled={isOnlyOneLeadership && isLeadershipRole(membership.kind)}
+                            id={membership.id}
+                            userName={membership.fullName}
+                            isInvited={false}
+                            successFunc={onRemoveSuccess} />
+                        </Table.Cell>
+                      }
+                    </Table.Row>
+                  )
+                  )
+                }
+              </Table.Body>
+            </Table>
+            <div>
+              {`${filteredUsers.length} user${filteredUsers.length === 1 ? '' : 's'}`}
+            </div>
+          </Segment>
+        }
       </Grid.Row>
-      <Snackbar open={ toast.open } autoHideDuration={6000} onClose={ closeToast }>
-        <Alert severity={ toast.success ? 'success' : 'error' } onClose={ closeToast }>
-          <span>{ toast.message }</span>
+      <Snackbar open={toast.open} autoHideDuration={6000} onClose={closeToast}>
+        <Alert severity={toast.success ? 'success' : 'error'} onClose={closeToast}>
+          <span>{toast.message}</span>
         </Alert>
       </Snackbar>
     </div>

@@ -127,7 +127,8 @@ const Course = (props) => {
           <CourseSettings course={course} refetch={mutate} />
         }
         {
-          active === 'queues' &&
+          // TODO: remove the false &&
+          false && active === 'queues' &&
           <InstructorQueuePage course={course}
             leader={props.leader}
             userId={0} />
