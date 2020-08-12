@@ -12,7 +12,7 @@ const CoursePage = (props) => {
 export async function getServerSideProps(context) {
     const { params, req } = context
     const data = {
-        headers: req ? { cookie: req.headers.cookie } : undefined,
+        headers: { cookie: req.headers.cookie },
     }
     // TODO: make a util function for the domain
     const resp = await fetch(`http://localhost:3000/api/courses/${params.course}/`, data);
