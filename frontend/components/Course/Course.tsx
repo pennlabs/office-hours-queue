@@ -61,7 +61,7 @@ const Course = (props) => {
   /* STATE */
   const [active, setActive] = useState('queues');
   // const [course, setCourse] = useState({});
-  const [course, error, loading, mutate] = getCourse(props.courseId);
+  const [course, error, loading, mutate] = getCourse(props.courseId, props.course);
   //   const [memberships, error, loading, mutate]: [
   //     Membership[],
   //     any,

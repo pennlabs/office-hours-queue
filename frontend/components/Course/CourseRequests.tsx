@@ -20,16 +20,13 @@ export function parseCourse(course): Course {
 }
 
 
-export function getCourse(
-    courseId: string
-): [
-        Course,
-        any,
-        boolean,
-        (data: any, shouldRevalidate: boolean) => Promise<any>
-    ] {
-    // TODO: figure out initial data
-    const { data, error, isValidating, mutate } = useSWR('/api/courses/' + courseId + '/', { initialData: {} });
+export function getCourse(courseId: string, initalCourse: any): [
+    Course,
+    any,
+    boolean,
+    (data: any, shouldRevalidate: boolean) => Promise<any>
+] {
+    const { data, error, isValidating, mutate } = useSWR('/api/courses/' + courseId + '/', { initialData: initalCourse });
     const course = parseCourse(data);
     return [course, error, isValidating, mutate];
 }
