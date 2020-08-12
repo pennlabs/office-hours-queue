@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Icon, Popup, Button } from 'semantic-ui-react';
+import React, { useState } from "react";
+import { Icon, Popup, Button } from "semantic-ui-react";
 // import { gql } from 'apollo-boost';
 // import { useMutation } from '@apollo/react-hooks';
 
@@ -11,36 +11,51 @@ import { Icon, Popup, Button } from 'semantic-ui-react';
 //   }
 // `;
 
-const ResendButton = (props) => {
-  const [resendInviteEmail, { loading }] = useMutation(RESEND_INVITE_EMAIL);
-  const [open, setOpen] = useState(false);
+const ResendButton = props => {
+    const [resendInviteEmail, { loading }] = useMutation(RESEND_INVITE_EMAIL);
+    const [open, setOpen] = useState(false);
 
-  const onSubmit = () => {
-    return resendInviteEmail({
-      variables: {
-        input: {
-          invitedCourseUserId: props.id
-        }
-      }
-    }).then(() => {
-      setOpen(false);
-      props.successFunc();
-    });
-  };
+    const onSubmit = () => {
+        return resendInviteEmail({
+            variables: {
+                input: {
+                    invitedCourseUserId: props.id,
+                },
+            },
+        }).then(() => {
+            setOpen(false);
+            props.successFunc();
+        });
+    };
 
-  return (
-    <Popup
-      trigger={
-        <Icon name="send" style={{ "cursor": "pointer" }} loading={loading} />
-      }
-      content={<Button color='blue' content='Resend' disabled={loading} onClick={onSubmit} />}
-      on='click'
-      onClose={() => { setOpen(false) }}
-      onOpen={() => { setOpen(true) }}
-      open={open}
-      position='top center'
-    />
-  );
+    return (
+        <Popup
+            trigger={
+                <Icon
+                    name="send"
+                    style={{ cursor: "pointer" }}
+                    loading={loading}
+                />
+            }
+            content={
+                <Button
+                    color="blue"
+                    content="Resend"
+                    disabled={loading}
+                    onClick={onSubmit}
+                />
+            }
+            on="click"
+            onClose={() => {
+                setOpen(false);
+            }}
+            onOpen={() => {
+                setOpen(true);
+            }}
+            open={open}
+            position="top center"
+        />
+    );
 };
 
 export default ResendButton;

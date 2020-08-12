@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Segment, Header, Grid, Message } from 'semantic-ui-react';
-import MyPieChart from './MyPieChart';
+import React, { useState } from "react";
+import { Segment, Header, Grid, Message } from "semantic-ui-react";
+import MyPieChart from "./MyPieChart";
 
 // import { useQuery } from '@apollo/react-hooks';
 // import { gql } from 'apollo-boost';
@@ -41,171 +41,189 @@ import MyPieChart from './MyPieChart';
 //   }
 // `;
 
-const Analytics = (props) => {
-  // const { data } = useQuery(GET_COURSE, {
-  //   variables: {
-  //     id: props.course.id
-  //   }
-  // });
-  const data = {};
-  const [pieChartData, setPieChartData] = useState(null);
-  const [lineChartData, setLineChartData] = useState(null);
+const Analytics = props => {
+    // const { data } = useQuery(GET_COURSE, {
+    //   variables: {
+    //     id: props.course.id
+    //   }
+    // });
+    const data = {};
+    const [pieChartData, setPieChartData] = useState(null);
+    const [lineChartData, setLineChartData] = useState(null);
 
-  const getRandomColor = () => {
-    var letters = '0123456789ABCDEF';
-    var color = '#';
-    for (var i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-  }
-
-  const getPieChartData = (node) => {
-    const counts = {};
-    let noTagCount = 0;
-
-    node.questions.edges.forEach(question => {
-      if (question.node.tags.length === 0) noTagCount += 1;
-      question.node.tags.forEach(tag => {
-        counts[tag] = counts[tag] ? counts[tag] + 1 : 1;
-      });
-    });
-
-    const labels = Object.keys(counts).sort();
-    const datapoints = labels.map(label => counts[label]);
-
-    if (noTagCount > 0) {
-      labels.push("N/A");
-      datapoints.push(noTagCount);
-    }
-
-    return {
-      data: {
-        labels: labels,
-        datasets: [{
-          data: datapoints,
-          backgroundColor: [...Array(datapoints.length)].map(item => {
-            return getRandomColor();
-          })
-        }]
-      },
-      type: 'pie',
-      options: {
-        title: {
-          display: true,
-          text: `Tag Categories: ${node.name}`
+    const getRandomColor = () => {
+        var letters = "0123456789ABCDEF";
+        var color = "#";
+        for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
         }
-      }
+        return color;
     };
-  }
 
-  const lineChartHelper = (node) => {
-    const counts = {}
-    node.questions.edges.forEach(question => {
-      const dateAsked = new Date(question.node.timeAsked);
-      counts[dateAsked.toDateString()] = counts[dateAsked.toDateString()] ?
-        counts[dateAsked.toDateString()] + 1 : 1;
-    });
+    const getPieChartData = node => {
+        const counts = {};
+        let noTagCount = 0;
 
-    return counts;
-  }
+        node.questions.edges.forEach(question => {
+            if (question.node.tags.length === 0) noTagCount += 1;
+            question.node.tags.forEach(tag => {
+                counts[tag] = counts[tag] ? counts[tag] + 1 : 1;
+            });
+        });
 
-  const getLineChartData = (edges) => {
-    const countMaps = edges.filter(item => !item.node.archived).map(item => lineChartHelper(item.node));
-    const allCounts = {};
+        const labels = Object.keys(counts).sort();
+        const datapoints = labels.map(label => counts[label]);
 
-    countMaps.forEach(map => {
-      Object.keys(map).forEach(key => allCounts[key] = map[key])
-    });
+        if (noTagCount > 0) {
+            labels.push("N/A");
+            datapoints.push(noTagCount);
+        }
 
-    const stringLabels = Object.keys(allCounts).sort();
-    const dateLabels = stringLabels.map(label => new Date(label));
-    const datasets = edges.filter(item => !item.node.archived).map((item, i) => {
-      const color = getRandomColor();
-      return {
-        fill: false,
-        label: item.node.name,
-        data: stringLabels.map(label => {
-          return countMaps[i][label] ? countMaps[i][label] : 0;
-        }),
-        borderColor: color,
-        backgroundColor: color,
-        lineTension: 0
-      }
-    });
-
-    return {
-      data: {
-        labels: dateLabels,
-        datasets: datasets
-      },
-      type: 'scatter',
-      options: {
-        fill: false,
-        responsive: true,
-        scales: {
-          xAxes: [{
-            type: 'time',
-            time: {
-              displayFormats: {
-                hour: 'MMM D hA'
-              }
+        return {
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        data: datapoints,
+                        backgroundColor: [...Array(datapoints.length)].map(
+                            item => {
+                                return getRandomColor();
+                            }
+                        ),
+                    },
+                ],
             },
-            scaleLabel: {
-              display: true,
-              labelString: "Date"
-            }
-          }],
-          yAxes: [{
-            ticks: {
-              beginAtZero: true,
+            type: "pie",
+            options: {
+                title: {
+                    display: true,
+                    text: `Tag Categories: ${node.name}`,
+                },
             },
-            display: true,
-            scaleLabel: {
-              display: true,
-              labelString: "Number of Students",
-            }
-          }]
-        }
-      }
-    }
-  }
+        };
+    };
 
-  if (data && data.course) {
-    if (!pieChartData) {
-      setPieChartData(data.course.queues.edges.filter(item => !item.node.archived).map(item => {
-        return getPieChartData(item.node)
-      }));
+    const lineChartHelper = node => {
+        const counts = {};
+        node.questions.edges.forEach(question => {
+            const dateAsked = new Date(question.node.timeAsked);
+            counts[dateAsked.toDateString()] = counts[dateAsked.toDateString()]
+                ? counts[dateAsked.toDateString()] + 1
+                : 1;
+        });
+
+        return counts;
+    };
+
+    const getLineChartData = edges => {
+        const countMaps = edges
+            .filter(item => !item.node.archived)
+            .map(item => lineChartHelper(item.node));
+        const allCounts = {};
+
+        countMaps.forEach(map => {
+            Object.keys(map).forEach(key => (allCounts[key] = map[key]));
+        });
+
+        const stringLabels = Object.keys(allCounts).sort();
+        const dateLabels = stringLabels.map(label => new Date(label));
+        const datasets = edges
+            .filter(item => !item.node.archived)
+            .map((item, i) => {
+                const color = getRandomColor();
+                return {
+                    fill: false,
+                    label: item.node.name,
+                    data: stringLabels.map(label => {
+                        return countMaps[i][label] ? countMaps[i][label] : 0;
+                    }),
+                    borderColor: color,
+                    backgroundColor: color,
+                    lineTension: 0,
+                };
+            });
+
+        return {
+            data: {
+                labels: dateLabels,
+                datasets: datasets,
+            },
+            type: "scatter",
+            options: {
+                fill: false,
+                responsive: true,
+                scales: {
+                    xAxes: [
+                        {
+                            type: "time",
+                            time: {
+                                displayFormats: {
+                                    hour: "MMM D hA",
+                                },
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: "Date",
+                            },
+                        },
+                    ],
+                    yAxes: [
+                        {
+                            ticks: {
+                                beginAtZero: true,
+                            },
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: "Number of Students",
+                            },
+                        },
+                    ],
+                },
+            },
+        };
+    };
+
+    if (data && data.course) {
+        if (!pieChartData) {
+            setPieChartData(
+                data.course.queues.edges
+                    .filter(item => !item.node.archived)
+                    .map(item => {
+                        return getPieChartData(item.node);
+                    })
+            );
+        }
+
+        if (!lineChartData) {
+            setLineChartData(getLineChartData(data.course.queues.edges));
+        }
     }
 
-    if (!lineChartData) {
-      setLineChartData(getLineChartData(data.course.queues.edges));
-    }
-  }
-
-  return (
-    <Grid.Row>
-      <Grid.Row style={{ "marginTop": "10px" }}>
-        <Message icon="exclamation triangle" header="Work in Progress"
-          content="We're working on adding new analytics tools - stay tuned!" warning />
-      </Grid.Row>
-      <Segment basic>
-        <Header as="h3">Questions by Type</Header>
-        {
-          pieChartData && pieChartData.map(dataset => {
-            return <MyPieChart dataset={dataset} />
-          })
-        }
-      </Segment>
-      <Segment basic>
-        <Header as="h3">Queue Traffic</Header>
-        {
-          lineChartData && <MyPieChart dataset={lineChartData} />
-        }
-      </Segment>
-    </Grid.Row>
-  );
-}
+    return (
+        <Grid.Row>
+            <Grid.Row style={{ marginTop: "10px" }}>
+                <Message
+                    icon="exclamation triangle"
+                    header="Work in Progress"
+                    content="We're working on adding new analytics tools - stay tuned!"
+                    warning
+                />
+            </Grid.Row>
+            <Segment basic>
+                <Header as="h3">Questions by Type</Header>
+                {pieChartData &&
+                    pieChartData.map(dataset => {
+                        return <MyPieChart dataset={dataset} />;
+                    })}
+            </Segment>
+            <Segment basic>
+                <Header as="h3">Queue Traffic</Header>
+                {lineChartData && <MyPieChart dataset={lineChartData} />}
+            </Segment>
+        </Grid.Row>
+    );
+};
 
 /*
 class Analytics extends React.Component {

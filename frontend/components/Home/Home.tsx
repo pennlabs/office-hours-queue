@@ -8,12 +8,7 @@ const Home = ({}) => {
     const [active, setActive] = useState("dashboard");
 
     return (
-        <Grid
-            columns={2}
-            divided="horizontally"
-            style={{ width: "100%" }}
-            stackable
-        >
+        <Grid columns={2} divided style={{ width: "100%" }} stackable>
             <HomeSidebar active={active} clickFunc={setActive} />
             {active === "dashboard" ? (
                 <Dashboard />
