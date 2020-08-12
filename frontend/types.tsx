@@ -12,10 +12,23 @@ export interface Course {
     isMember: boolean;
 }
 
+export interface CourseUser {
+    firstName: string;
+    lastName: string;
+    email: string;
+}
+
 export interface Membership {
     id: number;
     kind: string;
-    course: Course;
+    course?: Course;
+    user?: CourseUser;
+}
+
+export interface MembershipInvite {
+    id: number;
+    kind: string;
+    email: string;
 }
 
 export interface User {

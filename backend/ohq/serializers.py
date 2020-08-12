@@ -65,10 +65,18 @@ class CourseSerializer(serializers.ModelSerializer):
         return instance
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ("first_name", "last_name", "email")
+
+
 class MembershipSerializer(CourseRouteMixin):
+    user = UserSerializer(read_only=True)
+
     class Meta:
         model = Membership
-        fields = ("kind", "time_created", "last_active")
+        fields = ("id", "kind", "time_created", "last_active", "user")
 
     def create(self, validated_data):
         ModelClass = self.Meta.model
@@ -80,7 +88,7 @@ class MembershipSerializer(CourseRouteMixin):
 class MembershipInviteSerializer(CourseRouteMixin):
     class Meta:
         model = MembershipInvite
-        fields = ("email", "kind", "time_created")
+        fields = ("id", "email", "kind", "time_created")
 
 
 class QueueSerializer(CourseRouteMixin):
