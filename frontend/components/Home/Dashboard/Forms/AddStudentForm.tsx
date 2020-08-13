@@ -14,7 +14,7 @@ const AddStudentForm = (props) => {
         return courses.map((course) => {
             const suffix = course.isMember ? " - Already Enrolled" : "";
             return {
-                label: `${course.department} ${course.courseCode} (${course.semester})${suffix}`,
+                label: `${course.department} ${course.courseCode} (${course.semesterPretty})${suffix}`,
                 value: course.id,
                 disabled: course.isMember,
             };
