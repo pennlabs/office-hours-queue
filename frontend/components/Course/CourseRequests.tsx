@@ -22,25 +22,27 @@ export function useCourse(
 }
 
 export function useMembers(
-    courseId: string
+    courseId: string,
+    memberships: any
 ): [
     Membership[],
     any,
     boolean,
     (data?: any, shouldRevalidate?: boolean) => Promise<any>
 ] {
-    const {
-        data,
-        error,
-        isValidating,
-        mutate,
-    } = useSWR(`/api/courses/${courseId}/members/`, { initialData: [] });
+    const { data, error, isValidating, mutate } = useSWR(
+        `/api/courses/${courseId}/members/`,
+        {
+            initialData: memberships,
+        }
+    );
     const members: Membership[] = data || [];
     return [members, error, isValidating, mutate];
 }
 
 export function useInvitedMembers(
-    courseId: string
+    courseId: string,
+    invites: any
 ): [
     MembershipInvite[],
     any,
@@ -52,7 +54,7 @@ export function useInvitedMembers(
         error,
         isValidating,
         mutate,
-    } = useSWR(`/api/courses/${courseId}/invites/`, { initialData: [] });
+    } = useSWR(`/api/courses/${courseId}/invites/`, { initialData: invites });
     const invitedMembers: MembershipInvite[] = data || [];
     return [invitedMembers, error, isValidating, mutate];
 }

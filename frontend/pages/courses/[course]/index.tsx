@@ -5,20 +5,38 @@ import { withAuth } from "../../../context/auth";
 const CoursePage = (props) => {
     const router = useRouter();
     const { course } = router.query;
-    return <Course courseId={course} course={props.course} />;
+
+    return (
+        <Course
+            courseId={course}
+            course={props.course}
+            memberships={props.memberships}
+            invites={props.invites}
+        />
+    );
 };
 
-export async function getInitialProps(context) {
-    const { params, req } = context;
+CoursePage.getInitialProps = async (context) => {
+    const { query, req } = context;
     const data = {
         headers: { cookie: req.headers.cookie },
     };
+
     // TODO: make a util function for the domain
-    const resp = await fetch(
-        `http://localhost:3000/api/courses/${params.course}/`,
-        data
-    );
-    const course = await resp.json();
-    return { props: { course } };
-}
+    const [course, memberships, invites] = await Promise.all([
+        fetch(
+            `http://localhost:3000/api/courses/${query.course}/`,
+            data
+        ).then((res) => res.json()),
+        fetch(
+            `http://localhost:3000/api/courses/${query.course}/members/`,
+            data
+        ).then((res) => res.json()),
+        fetch(
+            `http://localhost:3000/api/courses/${query.course}/invites/`,
+            data
+        ).then((res) => res.json()),
+    ]);
+    return { course, memberships, invites };
+};
 export default withAuth(CoursePage);

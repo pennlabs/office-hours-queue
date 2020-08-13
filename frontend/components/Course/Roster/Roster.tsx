@@ -17,13 +17,12 @@ import {
 import { AuthUserContext } from "../../../context/auth";
 
 const Roster = (props) => {
-    // TODO: get initial props on this
     const [
         memberships,
         membershipsError,
         membershipsLoading,
         membershipsMutate,
-    ] = useMembers(props.courseId);
+    ] = useMembers(props.courseId, props.memberships);
 
     const { user: initialUser } = useContext(AuthUserContext);
     const [leader, leaderError, leaderLoading, leaderMutate] = useLeadership(
@@ -31,13 +30,13 @@ const Roster = (props) => {
         initialUser
     );
     /* STATE */
-    const [filteredUsers, setFilteredUsers] = useState([]);
+    const [filteredUsers, setFilteredUsers] = useState(memberships);
     const [
         invitedMembers,
         invitedError,
         invitedLoading,
         invitedMutate,
-    ] = useInvitedMembers(props.courseId);
+    ] = useInvitedMembers(props.courseId, props.invites);
 
     const [open, setOpen] = useState(false);
     const [invitedTableState, setInvitedTableState] = useState({
