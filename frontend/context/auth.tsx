@@ -1,46 +1,53 @@
-import React, { createContext, useEffect, useState } from "react";
-import { Dimmer, Loader } from "semantic-ui-react";
-import { useRouter } from "next/router";
+import React, { createContext } from "react";
+import Router from "next/router";
 
 export const AuthUserContext = createContext();
 
-export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const router = useRouter();
+export const withAuth = (WrappedComponent) => {
+    const AuthedComponent = ({ children, user, ...props }) => {
+        return (
+            <AuthUserContext.Provider value={{ user }}>
+                {/* eslint-disable-next-line */}
+                <WrappedComponent {...props}>{children}</WrappedComponent>
+            </AuthUserContext.Provider>
+        );
+    };
 
-    useEffect(() => {
-        fetch("/api/accounts/me/").then((res) => {
-            if (res.ok) {
-                res.json().then((res) => {
-                    setUser(res);
-                    setLoading(false);
-                });
-            } else if (router.pathname !== "/") {
-                router.push("/");
-            } else {
-                setLoading(false);
+    AuthedComponent.getInitialProps = async (ctx) => {
+        const headers = {
+            credentials: "include",
+            headers: { cookie: ctx.req.headers.cookie },
+        };
+
+        // TODO: Fix route for prod here
+        const res = await fetch(
+            "http://localhost:3000/api/accounts/me/",
+            headers
+        );
+        let user = null;
+        if (res.ok) {
+            user = await res.json();
+        } else {
+            // redirect if authentication fails
+            // checks for whether this was called client-side or server-side
+            if (typeof window === "undefined") {
+                if (ctx.req.originalUrl !== "/") {
+                    ctx.res.writeHead(301, { Location: "/" });
+                    ctx.res.end();
+                }
+            } else if (window.location.pathname !== "/") {
+                Router.replace("/");
             }
-        });
-    }, [router]);
 
-    return loading ? (
-        <div
-            style={{
-                height: "100%",
-                width: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-            }}
-        >
-            <Dimmer active inverted inline="centered">
-                <Loader size="big" inverted />
-            </Dimmer>
-        </div>
-    ) : (
-        <AuthUserContext.Provider value={{ user }}>
-            {children}
-        </AuthUserContext.Provider>
-    );
+            return { user: null };
+        }
+
+        const props =
+            WrappedComponent.getInitialProps &&
+            (await WrappedComponent.getInitialProps(ctx));
+
+        return { ...props, user };
+    };
+
+    return AuthedComponent;
 };

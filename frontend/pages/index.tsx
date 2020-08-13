@@ -1,5 +1,5 @@
-import React, { useContext, useState } from "react";
-import { AuthUserContext } from "../context/auth";
+import React, { useContext } from "react";
+import { AuthUserContext, withAuth } from "../context/auth";
 import Home from "../components/Home/Home";
 import AuthPrompt from "../components/Auth/AuthPrompt";
 
@@ -9,4 +9,4 @@ const LandingPage = () => {
     return user ? <Home /> : <AuthPrompt />;
 };
 
-export default LandingPage;
+export default withAuth(LandingPage);
