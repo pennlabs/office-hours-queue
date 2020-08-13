@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIClient
+from djangorestframework_camel_case.util import camelize
 
 from ohq.models import Course, Membership, MembershipInvite, Semester
 from ohq.serializers import UserPrivateSerializer
@@ -21,7 +22,7 @@ class UserViewTestCase(TestCase):
     def test_get_object(self):
         self.client.force_authenticate(user=self.user)
         response = self.client.get(reverse("ohq:me"))
-        self.assertEqual(json.loads(response.content), self.serializer.data)
+        self.assertEqual(json.loads(response.content), camelize(self.serializer.data))
 
 
 class MassInviteTestCase(TestCase):
@@ -61,8 +62,8 @@ class MassInviteTestCase(TestCase):
 
         # Correct number of invites and memberships created
         content = json.loads(response.content)
-        self.assertEqual(1, content["members_added"])
-        self.assertEqual(1, content["invites_sent"])
+        self.assertEqual(1, content["membersAdded"])
+        self.assertEqual(1, content["invitesSent"])
 
         # Membership is created for user2
         self.assertEqual(
