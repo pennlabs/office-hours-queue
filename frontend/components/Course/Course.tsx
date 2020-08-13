@@ -50,7 +50,7 @@ import { useCourse } from "./CourseRequests";
 //   }
 // `;
 
-const Course = props => {
+const Course = (props) => {
     /* GRAPHQL QUERIES/MUTATIONS */
     // const currentUserQuery = useQuery(CURRENT_USER);
     // const courseQuery = useQuery(GET_COURSE, { variables: {
@@ -124,25 +124,19 @@ const Course = props => {
                           </Segment>
                       </Grid.Row>
                   )}
-                  {active === "roster" && (
-                      <Roster
-                          course={course}
-                          leader={props.leader}
-                          courseUserId={props.courseUserId}
-                      />
-                  )}
                   {active === "settings" && (
                       <CourseSettings course={course} refetch={mutate} />
                   )}
-                  {// TODO: remove the false &&
-                  false && active === "queues" && (
-                      <InstructorQueuePage
-                          course={course}
-                          leader={props.leader}
-                          userId={0}
-                      />
-                  )
-                  // userId={currentUserQuery.data.currentUser.id} />
+                  {
+                      // TODO: remove the false &&
+                      false && active === "queues" && (
+                          <InstructorQueuePage
+                              course={course}
+                              leader={props.leader}
+                              userId={0}
+                          />
+                      )
+                      // userId={currentUserQuery.data.currentUser.id} />
                   }
                   {active === "analytics" && <Analytics course={course} />}
                   {active === "summary" && <Summary course={course} />}

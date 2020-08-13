@@ -23,11 +23,11 @@ const Roster = (props) => {
         membershipsError,
         membershipsLoading,
         membershipsMutate,
-    ] = useMembers(props.course.id);
+    ] = useMembers(props.courseId);
 
     const { user: initialUser } = useContext(AuthUserContext);
     const [leader, leaderError, leaderLoading, leaderMutate] = useLeadership(
-        props.course.id,
+        props.courseId,
         initialUser
     );
     /* STATE */
@@ -37,7 +37,7 @@ const Roster = (props) => {
         invitedError,
         invitedLoading,
         invitedMutate,
-    ] = useInvitedMembers(props.course.id);
+    ] = useInvitedMembers(props.courseId);
 
     const [open, setOpen] = useState(false);
     const [invitedTableState, setInvitedTableState] = useState({
@@ -208,7 +208,7 @@ const Roster = (props) => {
                 <InviteModal
                     open={open}
                     closeFunc={closeModal}
-                    courseId={props.course.id}
+                    courseId={props.courseId}
                     successFunc={onInviteSuccess}
                     setToast={setToast}
                     users={memberships}
@@ -293,7 +293,7 @@ const Roster = (props) => {
                                         {leader && (
                                             <Table.Cell textAlign="center">
                                                 <RemoveButton
-                                                    courseId={props.course.id}
+                                                    courseId={props.courseId}
                                                     id={invitedMember.id}
                                                     isInvited={true}
                                                     successFunc={
@@ -377,7 +377,7 @@ const Roster = (props) => {
                                                 prettifyRole(membership.kind)
                                             ) : (
                                                 <ChangeRoleDropdown
-                                                    courseId={props.course.id}
+                                                    courseId={props.courseId}
                                                     id={membership.id}
                                                     role={membership.kind}
                                                     disabled={
@@ -402,7 +402,7 @@ const Roster = (props) => {
                                                             membership.kind
                                                         )
                                                     }
-                                                    courseId={props.course.id}
+                                                    courseId={props.courseId}
                                                     id={membership.id}
                                                     userName={`${membership.user.firstName} ${membership.user.lastName}`}
                                                     isInvited={false}

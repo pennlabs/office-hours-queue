@@ -8,12 +8,11 @@ import {
     List,
     Icon,
 } from "semantic-ui-react";
-// import { Link } from 'react-router-dom';
 import { prettifyRole } from "../../utils/enums";
 
 import AboutModal from "../LandingPage/AboutModal";
 
-const CourseSidebar = props => {
+const CourseSidebar = (props) => {
     const [leadership, setLeadership] = useState(props.leadership);
     const [leader, setLeader] = useState(props.leader);
     const noWrapStyle = {
@@ -34,13 +33,12 @@ const CourseSidebar = props => {
     return (
         <Grid.Column width={3}>
             <Segment basic>
-                {/* <Link to='/'> */}
                 <Image
                     src="../../../ohq.png"
                     size="tiny"
+                    href="/"
                     style={{ marginTop: "10px" }}
                 />
-                {/* </Link> */}
                 <Menu vertical secondary fluid>
                     <Menu.Item
                         style={noWrapStyle}
@@ -54,7 +52,7 @@ const CourseSidebar = props => {
                         style={noWrapStyle}
                         name="Roster"
                         icon="users"
-                        onClick={() => props.clickFunc("roster")}
+                        href={`roster`}
                         active={props.active === "roster"}
                         color="blue"
                     />
@@ -90,7 +88,7 @@ const CourseSidebar = props => {
                 <Segment basic>
                     <Header as="h3">Instructors</Header>
                     <List>
-                        {leadership.map(courseUser => {
+                        {leadership.map((courseUser) => {
                             return (
                                 <List.Item
                                     key={courseUser.user.email}
