@@ -68,7 +68,7 @@ import firebase from "../../Firebase";
 //   }
 // `;
 
-const Queue = (props) => {
+const Queue = props => {
     const pollInterval = 3000 + Math.random() * 500;
     const { data, refetch, startPolling, stopPolling } = useQuery(
         GET_QUESTIONS,

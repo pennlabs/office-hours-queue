@@ -37,6 +37,16 @@ export interface User {
     lastName: string;
     email: string;
     profile?: Profile;
+    membershipSet?: Membership[];
+}
+
+export interface Queue {
+    id: number;
+    name: string;
+    description: string;
+    active: boolean;
+    archived: boolean;
+    estimatedWaitTime: number;
 }
 
 export interface Question {
@@ -54,3 +64,7 @@ export interface Semester {
     term: string;
     pretty: string;
 }
+export type mutateFunction = (
+    data?: any,
+    shouldRevalidate?: boolean
+) => Promise<any>;

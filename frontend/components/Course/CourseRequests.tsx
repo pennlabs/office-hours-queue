@@ -1,7 +1,17 @@
 import useSWR from "swr";
-import { Course, Membership, MembershipInvite, Semester } from "../../types";
 import { isLeadershipRole } from "../../utils/enums";
 import { doApiRequest } from "../../utils/fetch";
+import getCsrf from "../../csrf";
+import {
+    Course,
+    Membership,
+    MembershipInvite,
+    mutateFunction,
+    Question,
+    Queue,
+    User,
+    Semester,
+} from "../../types";
 
 export function useCourse(
     courseId: string,
@@ -23,45 +33,35 @@ export function useCourse(
 
 export function useMembers(
     courseId: string,
-    memberships: any
-): [
-    Membership[],
-    any,
-    boolean,
-    (data?: any, shouldRevalidate?: boolean) => Promise<any>
-] {
-    const { data, error, isValidating, mutate } = useSWR(
-        `/courses/${courseId}/members/`,
-        {
-            initialData: memberships,
-        }
-    );
+    initialData: Membership[] = []
+): [Membership[], any, boolean, mutateFunction] {
+    const {
+        data,
+        error,
+        isValidating,
+        mutate,
+    } = useSWR(`/courses/${courseId}/members/`, { initialData });
     const members: Membership[] = data || [];
     return [members, error, isValidating, mutate];
 }
 
 export function useInvitedMembers(
     courseId: string,
-    invites: any
-): [
-    MembershipInvite[],
-    any,
-    boolean,
-    (data?: any, shouldRevalidate?: boolean) => Promise<any>
-] {
+    initialData: MembershipInvite[] = []
+): [MembershipInvite[], any, boolean, mutateFunction] {
     const {
         data,
         error,
         isValidating,
         mutate,
-    } = useSWR(`/courses/${courseId}/invites/`, { initialData: invites });
+    } = useSWR(`/courses/${courseId}/invites/`, { initialData });
     const invitedMembers: MembershipInvite[] = data || [];
     return [invitedMembers, error, isValidating, mutate];
 }
 
 export function useLeader(
-    courseId: string,
-    initialUser: any
+    courseId: number,
+    initialUser: User
 ): [
     boolean,
     any,
@@ -102,9 +102,7 @@ export async function changeRole(
     membershipId: string,
     kind: string
 ) {
-    const payload = {
-        kind: kind,
-    };
+    const payload = { kind };
     const res = await doApiRequest(
         `/courses/${courseId}/members/${membershipId}/`,
         {
@@ -149,10 +147,7 @@ export async function sendMassInvites(
     emails: string,
     kind: string
 ) {
-    const payload = {
-        emails: emails,
-        kind: kind,
-    };
+    const payload = { emails, kind };
 
     const res = await doApiRequest(`/courses/${courseId}/mass-invite/`, {
         method: "POST",
@@ -176,7 +171,34 @@ export async function updateCourse(courseId: string, payload: any) {
 }
 
 export async function getSemesters(): Promise<Semester[]> {
-    return await doApiRequest("/semesters/")
+    return doApiRequest("/semesters/")
         .then((res) => res.json())
         .catch((_) => []);
+}
+
+export function useQueues(
+    courseId: string,
+    initialData: Queue[] = []
+): [Queue[], any, boolean, mutateFunction] {
+    const {
+        data,
+        error,
+        isValidating,
+        mutate,
+    } = useSWR(`/api/courses/${courseId}/queues/`, { initialData });
+    return [data, error, isValidating, mutate];
+}
+
+export function useQuestions(
+    courseId: string,
+    queueId: string,
+    initialData: Question[] = []
+): [Question[], any, boolean, mutateFunction] {
+    const { data, error, isValidating, mutate } = useSWR(
+        `/api/courses/${courseId}/queues/${queueId}/questions/`,
+        {
+            initialData,
+        }
+    );
+    return [data, error, isValidating, mutate];
 }
