@@ -124,6 +124,7 @@ const Course = (props) => {
                           </Segment>
                       </Grid.Row>
                   )}
+                  {active === "roster" && <Roster courseId={course.id} />}
                   {active === "settings" && (
                       <CourseSettings course={course} refetch={mutate} />
                   )}

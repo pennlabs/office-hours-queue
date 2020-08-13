@@ -52,7 +52,7 @@ const CourseSidebar = (props) => {
                         style={noWrapStyle}
                         name="Roster"
                         icon="users"
-                        href="roster"
+                        onClick={() => props.clickFunc("roster")}
                         active={props.active === "roster"}
                         color="blue"
                     />
