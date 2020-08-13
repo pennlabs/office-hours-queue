@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Segment, Header, Grid, Table } from "semantic-ui-react";
 import RosterForm from "./RosterForm";
 import RemoveButton from "./RemoveButton";
-import ResendButton from "./ResendButton";
 import InviteModal from "./Invites/InviteModal";
 import _ from "lodash";
 import Snackbar from "@material-ui/core/Snackbar";
@@ -10,12 +9,22 @@ import Alert from "@material-ui/lab/Alert";
 
 import { prettifyRole, isLeadershipRole } from "../../../utils/enums";
 import ChangeRoleDropdown from "./ChangeRoleDropdown";
-import { useInvitedMembers, useMembers } from "../CourseRequests";
+import {
+    useInvitedMembers,
+    useMembers,
+    useLeadership,
+} from "../CourseRequests";
+import { AuthUserContext } from "../../../context/auth";
 
-const Roster = props => {
+const Roster = (props) => {
     // TODO: get initial props on this
     const [memberships, error, loading, refetch] = useMembers(props.course.id);
 
+    const { user: initialUser } = useContext(AuthUserContext);
+    const [leader, leaderError, leaderLoading, leaderMutate] = useLeadership(
+        props.course.id,
+        initialUser
+    );
     /* STATE */
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [
@@ -40,8 +49,6 @@ const Roster = props => {
         success: true,
         message: "",
     });
-    const [leader, setLeader] = useState(props.leader);
-    // TODO: get if current user is a course leader
 
     /* MODAL FUNCTIONS */
     const triggerModal = () => {
@@ -49,7 +56,7 @@ const Roster = props => {
     };
 
     /* TABLE FUNCTIONS */
-    const handleSort = clickedColumn => {
+    const handleSort = (clickedColumn) => {
         if (tableState.column !== clickedColumn) {
             setTableState({
                 column: clickedColumn,
@@ -66,7 +73,7 @@ const Roster = props => {
         }
     };
 
-    const handleInvitedSort = clickedColumn => {
+    const handleInvitedSort = (clickedColumn) => {
         if (invitedTableState.column !== clickedColumn) {
             setInvitedTableState({
                 column: clickedColumn,
@@ -84,8 +91,8 @@ const Roster = props => {
     };
 
     /* FILTER USERS BASED ON INPUT */
-    const filterUsers = input => {
-        const newFilteredUsers = memberships.filter(membership => {
+    const filterUsers = (input) => {
+        const newFilteredUsers = memberships.filter((membership) => {
             const role = membership.kind.toLowerCase();
             return (
                 (membership.user.firstName
@@ -112,25 +119,9 @@ const Roster = props => {
 
     /* LOAD DATA */
 
-    // TODO: fix this
-    // Is there only a single user in the leadership category
-    const isOnlyOneLeadership = false;
-    // let isOnlyOneLeadership;
-    // if (data && data.course) {
-    //   const newUsers = loadUsers(data);
-    //   const newInvitedUsers = loadInvitedUsers(data);
-    //   if (JSON.stringify(newUsers) !== JSON.stringify(users)) {
-    //     setUsers(newUsers);
-    //     setFilteredUsers(newUsers);
-    //     setLeader(props.leader);
-    //   }
-
-    //   if (JSON.stringify(newInvitedUsers) !== JSON.stringify(invitedUsers)) {
-    //     setInvitedUsers(newInvitedUsers);
-    //   }
-
-    //   isOnlyOneLeadership = data.course.courseUsers.edges.filter((item) => isLeadershipRole(item.node.kind)).length < 2;
-    // }
+    const isOnlyOneLeadership =
+        memberships.filter((membership) => isLeadershipRole(membership.kind))
+            .length < 2;
 
     // TODO: this isn't a great way of doing this. Look into getServerSideProps or something else to get data
     useEffect(() => {
@@ -146,7 +137,7 @@ const Roster = props => {
         });
     };
 
-    const setUserRemovedToast = name => {
+    const setUserRemovedToast = (name) => {
         setToast({
             open: true,
             success: true,
@@ -186,14 +177,14 @@ const Roster = props => {
         });
     };
 
-    const onRemoveSuccess = async name => {
+    const onRemoveSuccess = async (name) => {
         setUserRemovedToast(name);
         await refetch();
     };
 
     const onRevokeSuccess = async () => {
         setInviteRevokedToast();
-        await refetch();
+        await invitedMutate();
     };
 
     const onRoleChangeSuccess = async () => {
@@ -201,16 +192,19 @@ const Roster = props => {
         await refetch();
     };
 
+    // TODO: mutate doesn't appear to immediately update the data
     return (
         <div>
-            {/* {users &&
-        <InviteModal open={open}
-          closeFunc={closeModal}
-          courseId={props.course.id}
-          successFunc={setRosterUpdateToast}
-          setToast={setToast}
-          users={users} />
-      } */}
+            {memberships && (
+                <InviteModal
+                    open={open}
+                    closeFunc={closeModal}
+                    courseId={props.course.id}
+                    successFunc={setRosterUpdateToast}
+                    setToast={setToast}
+                    users={memberships}
+                />
+            )}
             <Grid.Row>
                 {memberships && (
                     <Segment basic>
@@ -263,20 +257,14 @@ const Roster = props => {
                                     >
                                         Role
                                     </Table.HeaderCell>
-                                    {leader && [
-                                        <Table.HeaderCell
-                                            textAlign="center"
-                                            width={1}
-                                        >
-                                            Resend
-                                        </Table.HeaderCell>,
+                                    {leader && (
                                         <Table.HeaderCell
                                             textAlign="center"
                                             width={1}
                                         >
                                             Revoke
-                                        </Table.HeaderCell>,
-                                    ]}
+                                        </Table.HeaderCell>
+                                    )}
                                 </Table.Row>
                             </Table.Header>
                             <Table.Body>
@@ -285,7 +273,7 @@ const Roster = props => {
                                     invitedTableState.direction === "ascending"
                                         ? "asc"
                                         : "desc"
-                                ).map(invitedMember => (
+                                ).map((invitedMember) => (
                                     <Table.Row>
                                         <Table.Cell>
                                             {invitedMember.email}
@@ -293,25 +281,18 @@ const Roster = props => {
                                         <Table.Cell>
                                             {prettifyRole(invitedMember.kind)}
                                         </Table.Cell>
-                                        {leader && [
-                                            <Table.Cell textAlign="center">
-                                                <ResendButton
-                                                    id={invitedMember.id}
-                                                    successFunc={
-                                                        setInviteResendToast
-                                                    }
-                                                />
-                                            </Table.Cell>,
+                                        {leader && (
                                             <Table.Cell textAlign="center">
                                                 <RemoveButton
+                                                    courseId={props.course.id}
                                                     id={invitedMember.id}
                                                     isInvited={true}
                                                     successFunc={
                                                         onRevokeSuccess
                                                     }
                                                 />
-                                            </Table.Cell>,
-                                        ]}
+                                            </Table.Cell>
+                                        )}
                                     </Table.Row>
                                 ))}
                             </Table.Body>
@@ -372,7 +353,7 @@ const Roster = props => {
                                     tableState.direction === "ascending"
                                         ? "asc"
                                         : "desc"
-                                ).map(membership => (
+                                ).map((membership) => (
                                     <Table.Row key={membership.id}>
                                         <Table.Cell>
                                             {membership.user.firstName}{" "}
@@ -387,6 +368,7 @@ const Roster = props => {
                                                 prettifyRole(membership.kind)
                                             ) : (
                                                 <ChangeRoleDropdown
+                                                    courseId={props.course.id}
                                                     id={membership.id}
                                                     role={membership.kind}
                                                     disabled={
@@ -398,10 +380,7 @@ const Roster = props => {
                                                     successFunc={
                                                         onRoleChangeSuccess
                                                     }
-                                                    refetch={async () => {
-                                                        await refetch();
-                                                        await props.courseRefetch();
-                                                    }}
+                                                    refetch={refetch}
                                                 />
                                             )}
                                         </Table.Cell>
@@ -414,10 +393,9 @@ const Roster = props => {
                                                             membership.kind
                                                         )
                                                     }
+                                                    courseId={props.course.id}
                                                     id={membership.id}
-                                                    userName={
-                                                        membership.fullName
-                                                    }
+                                                    userName={`${membership.user.firstName} ${membership.user.lastName}`}
                                                     isInvited={false}
                                                     successFunc={
                                                         onRemoveSuccess

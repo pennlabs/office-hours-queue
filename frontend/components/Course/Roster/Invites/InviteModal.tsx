@@ -1,37 +1,11 @@
 import React, { useState } from "react";
 import { Modal, Button } from "semantic-ui-react";
 import AddForm from "./AddForm";
-// import {gql} from "apollo-boost";
-// import {useMutation} from "@apollo/react-hooks";
+import { sendMassInvites } from "../../CourseRequests";
 
-// const INVITE_OR_ADD_EMAILS = gql`
-//   mutation InviteOrAddEmails($input: InviteOrAddEmailsInput!) {
-//     inviteOrAddEmails(input: $input) {
-//       invitedCourseUsers {
-//         email
-//       }
-//       addedCourseUsers {
-//         user {
-//           fullName
-//           email
-//         }
-//       }
-//       existingInvitedCourseUsers {
-//         email
-//       }
-//       existingCourseUsers {
-//         user {
-//           fullName
-//           email
-//         }
-//       }
-//     }
-//   }
-// `;
-
-const InviteModal = props => {
-    const [inviteOrAddEmails, { loading }] = useMutation(INVITE_OR_ADD_EMAILS);
-    const [input, setInput] = useState({ emails: [], kind: null });
+const InviteModal = (props) => {
+    const [loading, setLoading] = useState(false);
+    const [input, setInput] = useState({ emails: null, kind: null });
     const [disabled, setDisabled] = useState(true);
 
     const handleInputChange = (e, { name, value }) => {
@@ -45,18 +19,13 @@ const InviteModal = props => {
             return;
         }
         try {
-            await inviteOrAddEmails({
-                variables: {
-                    input: {
-                        emails: input.emails,
-                        kind: input.kind,
-                        courseId: props.courseId,
-                    },
-                },
-            });
+            setLoading(true);
+            await sendMassInvites(props.courseId, input.emails, input.kind);
+            setLoading(false);
             props.closeFunc();
             props.successFunc();
         } catch (e) {
+            setLoading(false);
             props.setToast({
                 open: true,
                 success: false,

@@ -1,45 +1,21 @@
 import React, { useState } from "react";
 import { Icon, Popup, Button } from "semantic-ui-react";
-// import { gql } from 'apollo-boost';
-// import { useMutation } from '@apollo/react-hooks';
+import { deleteInvite, deleteMembership } from "../CourseRequests";
 
-// const REMOVE_USER = gql`
-//   mutation RemoveUser($input: RemoveUserFromCourseInput!) {
-//     removeUserFromCourse(input: $input) {
-//       success
-//     }
-//   }
-// `;
-
-// const REMOVE_INVITED_USER = gql`
-//   mutation RemoveInvitedUser($input: RemoveInvitedUserFromCourseInput!) {
-//     removeInvitedUserFromCourse(input: $input) {
-//       success
-//     }
-//   }
-// `;
-
-const RemoveButton = props => {
-    const [removeUser, { loading }] = useMutation(
-        props.isInvited ? REMOVE_INVITED_USER : REMOVE_USER
-    );
+const RemoveButton = (props) => {
+    const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
 
-    const onSubmit = () => {
-        return removeUser({
-            variables: {
-                input: props.isInvited
-                    ? {
-                          invitedCourseUserId: props.id,
-                      }
-                    : {
-                          courseUserId: props.id,
-                      },
-            },
-        }).then(() => {
-            setOpen(false);
-            props.successFunc(props.userName);
-        });
+    const onSubmit = async () => {
+        setLoading(true);
+        if (props.isInvited) {
+            await deleteInvite(props.courseId, props.id);
+        } else {
+            await deleteMembership(props.courseId, props.id);
+        }
+        setLoading(false);
+        setOpen(false);
+        props.successFunc(props.userName);
     };
 
     const removeContent = (
