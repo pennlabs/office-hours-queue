@@ -18,7 +18,12 @@ import { AuthUserContext } from "../../../context/auth";
 
 const Roster = (props) => {
     // TODO: get initial props on this
-    const [memberships, error, loading, refetch] = useMembers(props.course.id);
+    const [
+        memberships,
+        membershipsError,
+        membershipsLoading,
+        membershipsMutate,
+    ] = useMembers(props.course.id);
 
     const { user: initialUser } = useContext(AuthUserContext);
     const [leader, leaderError, leaderLoading, leaderMutate] = useLeadership(
@@ -113,7 +118,7 @@ const Roster = (props) => {
     };
 
     const closeModal = async () => {
-        await refetch();
+        await membershipsMutate();
         triggerModal();
     };
 
@@ -177,9 +182,14 @@ const Roster = (props) => {
         });
     };
 
+    const onInviteSuccess = async () => {
+        setRosterUpdateToast();
+        await invitedMutate();
+    };
+
     const onRemoveSuccess = async (name) => {
         setUserRemovedToast(name);
-        await refetch();
+        await membershipsMutate();
     };
 
     const onRevokeSuccess = async () => {
@@ -189,10 +199,9 @@ const Roster = (props) => {
 
     const onRoleChangeSuccess = async () => {
         setChangeRoleToast();
-        await refetch();
+        await membershipsMutate();
     };
 
-    // TODO: mutate doesn't appear to immediately update the data
     return (
         <div>
             {memberships && (
@@ -200,7 +209,7 @@ const Roster = (props) => {
                     open={open}
                     closeFunc={closeModal}
                     courseId={props.course.id}
-                    successFunc={setRosterUpdateToast}
+                    successFunc={onInviteSuccess}
                     setToast={setToast}
                     users={memberships}
                 />
@@ -380,7 +389,7 @@ const Roster = (props) => {
                                                     successFunc={
                                                         onRoleChangeSuccess
                                                     }
-                                                    refetch={refetch}
+                                                    refetch={membershipsMutate}
                                                 />
                                             )}
                                         </Table.Cell>
