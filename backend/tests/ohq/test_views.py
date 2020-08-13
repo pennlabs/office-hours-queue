@@ -3,8 +3,8 @@ import json
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
-from rest_framework.test import APIClient
 from djangorestframework_camel_case.util import camelize
+from rest_framework.test import APIClient
 
 from ohq.models import Course, Membership, MembershipInvite, Semester
 from ohq.serializers import UserPrivateSerializer
