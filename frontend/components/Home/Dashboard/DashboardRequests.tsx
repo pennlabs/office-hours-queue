@@ -1,13 +1,11 @@
 import useSWR from "swr";
 import getCsrf from "../../../csrf";
 import { Course, Membership } from "../../../types";
-import { parseCourse } from "../../Course/CourseRequests";
-
 
 export async function getCourses(inputValue: string): Promise<Course[]> {
     return await fetch(`/api/courses/?search=${inputValue}`)
         .then((res) => res.json())
-        .then((res) => res.map((course) => parseCourse(course)))
+        .then((res) => res.map((course) => course))
         .catch((_) => []);
 }
 
@@ -28,24 +26,18 @@ export async function joinCourse(courseId: string): Promise<void> {
     }
 }
 
-export function getMemberships(
+export function useMemberships(
     initialUser
 ): [
-        Membership[],
-        any,
-        boolean,
-        (data: any, shouldRevalidate: boolean) => Promise<any>
-    ] {
+    Membership[],
+    any,
+    boolean,
+    (data: any, shouldRevalidate: boolean) => Promise<any>
+] {
     const { data, error, isValidating, mutate } = useSWR("/api/accounts/me/", {
         initialData: initialUser,
     });
-    const memberships: Membership[] = data
-        ? data.membership_set.map((membership) => ({
-            id: membership.id,
-            kind: membership.kind,
-            course: parseCourse(membership.course),
-        }))
-        : [];
+    const memberships: Membership[] = data ? data.membershipSet : [];
 
     return [memberships, error, isValidating, mutate];
 }

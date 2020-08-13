@@ -10,11 +10,11 @@ import Alert from "@material-ui/lab/Alert";
 
 import { prettifyRole, isLeadershipRole } from "../../../utils/enums";
 import ChangeRoleDropdown from "./ChangeRoleDropdown";
-import { getInvitedMembers, getMembers } from "../CourseRequests";
+import { useInvitedMembers, useMembers } from "../CourseRequests";
 
 const Roster = props => {
     // TODO: get initial props on this
-    const [memberships, error, loading, refetch] = getMembers(props.course.id);
+    const [memberships, error, loading, refetch] = useMembers(props.course.id);
 
     /* STATE */
     const [filteredUsers, setFilteredUsers] = useState([]);
@@ -23,7 +23,7 @@ const Roster = props => {
         invitedError,
         invitedLoading,
         invitedMutate,
-    ] = getInvitedMembers(props.course.id);
+    ] = useInvitedMembers(props.course.id);
 
     const [open, setOpen] = useState(false);
     const [invitedTableState, setInvitedTableState] = useState({

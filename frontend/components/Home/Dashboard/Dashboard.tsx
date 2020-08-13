@@ -7,7 +7,7 @@ import InstructorCourses from "./InstructorCourses";
 import StudentCourses from "./StudentCourses";
 import NewUserModal from "./Modals/NewUserModal";
 import { AuthUserContext } from "../../../context/auth";
-import { getMemberships, Course, Membership } from "./DashboardRequests";
+import { useMemberships, Course, Membership } from "./DashboardRequests";
 
 const Dashboard = (props) => {
     const { user: initalUser } = useContext(AuthUserContext);
@@ -17,7 +17,7 @@ const Dashboard = (props) => {
         any,
         boolean,
         (data: any, shouldRevalidate: boolean) => Promise<any>
-    ] = getMemberships(initalUser);
+    ] = useMemberships(initalUser);
 
     const getCourses = (isStudent: boolean): Course[] => {
         return memberships

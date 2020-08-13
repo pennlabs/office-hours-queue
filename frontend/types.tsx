@@ -39,3 +39,13 @@ export interface User {
     smsVerified: boolean;
     phoneNumber?: string;
 }
+
+export interface Question {
+    text: string;
+    videoChatUrl: string;
+    timeAsked: Date;
+    askedBy: CourseUser;
+    answeredBy: CourseUser;
+    rejectedBy: CourseUser;
+    rejectedReason: string | null;
+}

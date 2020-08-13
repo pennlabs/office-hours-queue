@@ -3,7 +3,6 @@ import { parsePhoneNumberFromString } from "libphonenumber-js/min";
 import getCsrf from "../../../csrf";
 import { User } from "../../../types";
 
-
 export function useAccountInfo(initialUser) {
     const { data, error, isValidating, mutate } = useSWR("/api/accounts/me/", {
         initialData: initialUser,
@@ -11,12 +10,12 @@ export function useAccountInfo(initialUser) {
 
     const profile: User = data
         ? {
-              firstName: data.first_name,
-              lastName: data.last_name,
+              firstName: data.firstName,
+              lastName: data.lastName,
               email: data.email,
-              smsNotificationsEnabled: data.profile?.sms_notifications_enabled,
-              smsVerified: data.profile?.sms_verified,
-              phoneNumber: data.profile?.phone_number,
+              smsNotificationsEnabled: data.profile?.smsNotificationsEnabled,
+              smsVerified: data.profile?.smsVerified,
+              phoneNumber: data.profile?.phoneNumber,
           }
         : null;
 
@@ -25,11 +24,11 @@ export function useAccountInfo(initialUser) {
 
 export async function validateSMS(code) {
     const payload = {
-        "profile": {
-            "sms_verification_code": code,
+        profile: {
+            smsVerificationCode: code,
         },
     };
-    let res = await fetch("/api/accounts/me/", {
+    const res = await fetch("/api/accounts/me/", {
         method: "PATCH",
         credentials: "include",
         mode: "same-origin",
@@ -50,24 +49,24 @@ export async function validateSMS(code) {
 export async function updateUser(user) {
     const payload: any = {};
     if (user.firstName) {
-        payload.first_name = user.firstName;
+        payload.firstName = user.firstName;
     }
     if (user.lastName) {
-        payload.last_name = user.lastName;
+        payload.lastName = user.lastName;
     }
 
     payload.profile = {};
-    payload.profile.sms_notifications_enabled = user.smsNotificationsEnabled;
+    payload.profile.smsNotificationsEnabled = user.smsNotificationsEnabled;
 
     if (user.phoneNumber) {
         // TODO: Better error handling
-        payload.profile.phone_number = parsePhoneNumberFromString(
+        payload.profile.phoneNumber = parsePhoneNumberFromString(
             String(user.phoneNumber),
             "US"
         ).number;
     }
 
-    let res = await fetch("/api/accounts/me/", {
+    const res = await fetch("/api/accounts/me/", {
         method: "PATCH",
         credentials: "include",
         mode: "same-origin",

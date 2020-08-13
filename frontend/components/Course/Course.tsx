@@ -13,7 +13,7 @@ import { Grid, Segment, Header } from "semantic-ui-react";
 // import { gql } from 'apollo-boost';
 // import { useQuery } from '@apollo/react-hooks';
 import { leadershipSortFunc } from "../../utils";
-import { getCourse } from "./CourseRequests";
+import { useCourse } from "./CourseRequests";
 
 /* GRAPHQL QUERIES/MUTATIONS */
 // const GET_COURSE = gql`
@@ -61,7 +61,7 @@ const Course = props => {
     /* STATE */
     const [active, setActive] = useState("queues");
     // const [course, setCourse] = useState({});
-    const [course, error, loading, mutate] = getCourse(
+    const [course, error, loading, mutate] = useCourse(
         props.courseId,
         props.course
     );
@@ -70,7 +70,7 @@ const Course = props => {
     //     any,
     //     boolean,
     //     (data: any, shouldRevalidate: boolean) => Promise<any>
-    // ] = getMemberships(initalUser);
+    // ] = useMemberships(initalUser);
     /* LOAD DATA FUNCTIONS */
 
     // const loadCourse = (data) => {
