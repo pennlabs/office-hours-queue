@@ -8,7 +8,7 @@ export interface Course {
     semesterPretty: string;
     archived: boolean;
     inviteOnly: boolean;
-    videChatEnabled: boolean;
+    videoChatEnabled: boolean;
     requireVideoChatUrlOnQuestions: boolean;
     isMember: boolean;
 }
