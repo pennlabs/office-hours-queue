@@ -52,7 +52,7 @@ const CourseSidebar = (props) => {
                         style={noWrapStyle}
                         name="Roster"
                         icon="users"
-                        href={`roster`}
+                        href="roster"
                         active={props.active === "roster"}
                         color="blue"
                     />
