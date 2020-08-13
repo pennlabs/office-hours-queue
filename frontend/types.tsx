@@ -4,7 +4,8 @@ export interface Course {
     department: string;
     courseTitle: string;
     description: string;
-    semester: string;
+    semester: number;
+    semesterPretty: string;
     archived: boolean;
     inviteOnly: boolean;
     videChatEnabled: boolean;

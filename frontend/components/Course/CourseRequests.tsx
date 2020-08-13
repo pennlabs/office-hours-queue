@@ -18,7 +18,6 @@ export function useCourse(
         isValidating,
         mutate,
     } = useSWR(`/api/courses/${courseId}/`, { initialData: initalCourse });
-    // TODO: course mapping from semesterPretty to just semester
     return [data, error, isValidating, mutate];
 }
 

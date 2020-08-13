@@ -28,7 +28,7 @@ const StudentCourses = (props) => {
                                 department={course.department}
                                 courseCode={course.courseCode}
                                 courseTitle={course.courseTitle}
-                                semester={course.semester}
+                                semester={course.semesterPretty}
                                 id={course.id}
                                 kind={course.kind}
                                 archived={course.archived}
