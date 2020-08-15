@@ -1,8 +1,9 @@
 import React, { createContext } from "react";
 import Router from "next/router";
 import { doApiRequest } from "../utils/fetch";
+import { User } from "../types";
 
-export const AuthUserContext = createContext();
+export const AuthUserContext: React.Context<{ user: User }> = createContext();
 
 export const withAuth = (WrappedComponent) => {
     const AuthedComponent = ({ children, user, ...props }) => {
@@ -21,7 +22,7 @@ export const withAuth = (WrappedComponent) => {
         };
 
         const res = await doApiRequest("/accounts/me/", headers);
-        let user = null;
+        let user: User = null;
         if (res.ok) {
             user = await res.json();
         } else {
