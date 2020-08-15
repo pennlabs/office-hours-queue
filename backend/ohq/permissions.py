@@ -284,3 +284,21 @@ class MassInvitePermission(permissions.BasePermission):
             return False
 
         return membership.is_leadership
+
+
+class LeadershipPermission(permissions.BasePermission):
+    """
+    Students+ can see leadership for a course.
+    """
+
+    def has_permission(self, request, view):
+        # Anonymous users can't do anything
+        if not request.user.is_authenticated:
+            return False
+
+        membership = Membership.objects.filter(
+            course=view.kwargs["course_pk"], user=request.user
+        ).first()
+
+        # Non-Students can't do anything
+        return membership is not None

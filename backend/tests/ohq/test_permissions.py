@@ -587,3 +587,24 @@ class MassInviteTestCase(TestCase):
             reverse("ohq:mass-invite", args=[self.course.id]),
             {"emails": "test@example.com,test2@example.com", "kind": Membership.KIND_STUDENT},
         )
+
+
+class LeadershipTestCase(TestCase):
+    def setUp(self):
+        setUp(self)
+
+        # Expected results
+        self.expected = {
+            "list": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 200,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+        }
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_list(self, user):
+        test(self, user, "list", "get", reverse("ohq:leadership", args=[self.course.id]))

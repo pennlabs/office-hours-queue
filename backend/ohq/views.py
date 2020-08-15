@@ -12,6 +12,7 @@ from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Se
 from ohq.permissions import (
     CoursePermission,
     IsSuperuser,
+    LeadershipPermission,
     MassInvitePermission,
     MembershipInvitePermission,
     MembershipPermission,
@@ -183,11 +184,13 @@ class LeadershipListView(generics.ListAPIView):
     Return the leadership of a given course.
     """
 
+    permission_classes = [LeadershipPermission | IsSuperuser]
     serializer_class = MembershipSerializer
-    # TODO: modify the AutoSchema to use a different name than listMemberhips
-    # TODO: permissions
+    # TODO: modify the AutoSchema to use a different name than
+    # listMemberships once DRF releases next version
 
     def get_queryset(self):
+        # TODO: order this professor->head ta
         return Membership.objects.filter(
             Q(course=self.kwargs["course_pk"]),
             Q(kind=Membership.KIND_PROFESSOR) | Q(kind=Membership.KIND_HEAD_TA),
