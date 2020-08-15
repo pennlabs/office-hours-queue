@@ -16,7 +16,6 @@ export function getApiUrl(path: string): string {
 }
 
 export function doApiRequest(path: string, data?: any): Promise<Response> {
-    console.log(getApiUrl(path));
     if (!data) {
         data = {};
     }
