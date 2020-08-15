@@ -13,6 +13,12 @@ import { useInvitedMembers, useMembers, useLeader } from "../CourseRequests";
 import { AuthUserContext } from "../../../context/auth";
 
 const Roster = (props) => {
+    // Types
+    type tableStateType = {
+        direction: "ascending" | "descending";
+        column: string;
+    };
+
     const [
         memberships,
         membershipsError,
@@ -35,11 +41,17 @@ const Roster = (props) => {
     ] = useInvitedMembers(props.courseId, props.invites);
 
     const [open, setOpen] = useState(false);
-    const [invitedTableState, setInvitedTableState] = useState({
+    const [invitedTableState, setInvitedTableState]: [
+        tableStateType,
+        React.Dispatch<React.SetStateAction<tableStateType>>
+    ] = useState({
         direction: "ascending",
         column: "email",
     });
-    const [tableState, setTableState] = useState({
+    const [tableState, setTableState]: [
+        tableStateType,
+        React.Dispatch<React.SetStateAction<tableStateType>>
+    ] = useState({
         direction: "ascending",
         column: "fullName",
     });
@@ -239,7 +251,7 @@ const Roster = (props) => {
                                         sorted={
                                             invitedTableState.column === "email"
                                                 ? invitedTableState.direction
-                                                : null
+                                                : undefined
                                         }
                                         onClick={() =>
                                             handleInvitedSort("email")
@@ -252,7 +264,7 @@ const Roster = (props) => {
                                         sorted={
                                             invitedTableState.column === "role"
                                                 ? invitedTableState.direction
-                                                : null
+                                                : undefined
                                         }
                                         onClick={() =>
                                             handleInvitedSort("role")
@@ -314,7 +326,7 @@ const Roster = (props) => {
                                         sorted={
                                             tableState.column === "fullName"
                                                 ? tableState.direction
-                                                : null
+                                                : undefined
                                         }
                                         onClick={() => handleSort("fullName")}
                                         width={3}
@@ -325,7 +337,7 @@ const Roster = (props) => {
                                         sorted={
                                             tableState.column === "email"
                                                 ? tableState.direction
-                                                : null
+                                                : undefined
                                         }
                                         onClick={() => handleSort("email")}
                                         width={4}
@@ -336,7 +348,7 @@ const Roster = (props) => {
                                         sorted={
                                             tableState.column === "role"
                                                 ? tableState.direction
-                                                : null
+                                                : undefined
                                         }
                                         onClick={() => handleSort("role")}
                                         width={2}
