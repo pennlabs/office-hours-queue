@@ -50,3 +50,9 @@ export interface Question {
     rejectedBy: CourseUser;
     rejectedReason: string | null;
 }
+
+export interface Semester {
+    id: number;
+    term: string;
+    pretty: string;
+}

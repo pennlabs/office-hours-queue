@@ -20,7 +20,8 @@ const CoursePage = (props) => {
 CoursePage.getInitialProps = async (context) => {
     const { query, req } = context;
     const data = {
-        headers: { cookie: req.headers.cookie },
+        // TODO: after a router.replace this causes an error
+        headers: req ? { cookie: req.headers.cookie } : undefined,
     };
 
     // TODO: make a util function for the domain

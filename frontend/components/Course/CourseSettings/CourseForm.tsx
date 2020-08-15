@@ -1,39 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./CourseForm.module.css";
 
 import { Form, Button, Modal } from "semantic-ui-react";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
-import { semesterOptions } from "../../../utils/enums";
-import { gql } from "apollo-boost";
-import { useMutation } from "@apollo/react-hooks";
-import * as ROUTES from "../../../constants/routes";
+import AsyncSelect from "react-select/async";
+import { getSemesters, updateCourse } from "../CourseRequests";
+import { Semester } from "../../../types";
+import { useRouter } from "next/router";
 
-/* GRAPHQL QUERIES/MUTATIONS */
-// const UPDATE_COURSE = gql`
-//   mutation UpdateCourse($input: UpdateCourseInput!) {
-//     updateCourse(input: $input) {
-//       course {
-//         id
-//       }
-//     }
-//   }
-// `;
+const CourseForm = (props) => {
+    const router = useRouter();
+    const [loading, setLoading] = useState(false);
 
-const CourseForm = props => {
-    /* GRAPHQL QUERIES/MUTATIONS */
-    // const [updateCourse, { loading }] = useMutation(UPDATE_COURSE);
-
-    const videoChatNum = course => {
+    const videoChatNum = (course) => {
         if (course.requireVideoChatUrlOnQuestions) return 0;
         if (course.videoChatEnabled) return 1;
         return 2;
     };
 
-    /* STATE */
-    const [defCourse, setDefCourse] = useState(props.course);
     const [input, setInput] = useState({
-        courseId: props.course.id,
         inviteOnly: props.course.inviteOnly,
         requireVideoChatUrlOnQuestions:
             props.course.requireVideoChatUrlOnQuestions,
@@ -42,7 +28,6 @@ const CourseForm = props => {
         courseCode: props.course.courseCode,
         courseTitle: props.course.courseTitle,
         semester: props.course.semester,
-        year: props.course.year,
     });
     const [check, setCheck] = useState(videoChatNum(props.course));
     const [success, setSuccess] = useState(false);
@@ -60,14 +45,12 @@ const CourseForm = props => {
             !input.department ||
                 !input.courseCode ||
                 !input.courseTitle ||
-                !input.year ||
                 !input.semester ||
-                (input.department === defCourse.department &&
-                    input.courseCode === defCourse.courseCode &&
-                    input.courseTitle === defCourse.courseTitle &&
-                    input.year === defCourse.year &&
-                    input.inviteOnly === defCourse.inviteOnly &&
-                    input.semester === defCourse.semester)
+                (input.department === props.course.department &&
+                    input.courseCode === props.course.courseCode &&
+                    input.courseTitle === props.course.courseTitle &&
+                    input.inviteOnly === props.course.inviteOnly &&
+                    input.semester === props.course.semester)
         );
     };
 
@@ -102,40 +85,50 @@ const CourseForm = props => {
 
     const onSubmit = async () => {
         try {
-            await updateCourse({
-                variables: {
-                    input: input,
-                },
-            });
+            setLoading(true);
+            await updateCourse(props.course.id, input);
             await props.refetch();
+            setLoading(false);
             setSuccess(true);
             setDisabled(true);
         } catch (e) {
+            setLoading(false);
             setError(true);
         }
     };
 
     const onArchived = async () => {
         try {
-            await updateCourse({
-                variables: {
-                    input: {
-                        courseId: input.courseId,
-                        archived: true,
-                    },
-                },
-            });
+            setLoading(true);
+            await updateCourse(props.course.id, { archived: true });
             await props.refetch();
+            setLoading(false);
             setOpen(false);
-            window.location = ROUTES.LANDING;
+            router.replace("/");
         } catch (e) {
+            setLoading(false);
             setArchiveError(true);
         }
     };
 
-    useEffect(() => {
-        setDefCourse(props.course);
-    }, [props.course]);
+    const semesterOptions = async (inputValue: string) => {
+        const semesters: Semester[] = await getSemesters();
+        console.log(semesters);
+        return semesters
+            .filter(
+                (semester) =>
+                    semester.pretty
+                        .toLowerCase()
+                        .includes(inputValue.toLowerCase()) ||
+                    inputValue.length === 0
+            )
+            .map((semester) => {
+                return {
+                    label: semester.pretty,
+                    value: semester.id,
+                };
+            });
+    };
 
     return (
         <Form>
@@ -143,7 +136,7 @@ const CourseForm = props => {
                 <label>Department</label>
                 <Form.Input
                     className={"department-input"}
-                    defaultValue={defCourse.department}
+                    defaultValue={props.course.department}
                     name="department"
                     disabled={loading}
                     onChange={handleInputChange}
@@ -152,7 +145,7 @@ const CourseForm = props => {
             <Form.Field required>
                 <label>Course Code</label>
                 <Form.Input
-                    defaultValue={defCourse.courseCode}
+                    defaultValue={props.course.courseCode}
                     name="courseCode"
                     disabled={loading}
                     onChange={handleInputChange}
@@ -161,31 +154,28 @@ const CourseForm = props => {
             <Form.Field required>
                 <label>Course Title</label>
                 <Form.Input
-                    defaultValue={defCourse.courseTitle}
+                    defaultValue={props.course.courseTitle}
                     name="courseTitle"
                     disabled={loading}
                     onChange={handleInputChange}
                 />
             </Form.Field>
             <Form.Field required>
-                <label>Year</label>
-                <Form.Input
-                    type="number"
-                    defaultValue={defCourse.year}
-                    name="year"
-                    disabled={loading}
-                    onChange={handleInputChange}
-                />
-            </Form.Field>
-            <Form.Field required>
                 <label>Semester</label>
-                <Form.Dropdown
-                    defaultValue={defCourse.semester}
+                <AsyncSelect
                     name="semester"
                     disabled={loading}
-                    selection
-                    options={semesterOptions}
-                    onChange={handleInputChange}
+                    cacheOptions
+                    defaultOptions
+                    defaultInputValue={props.course.semesterPretty}
+                    loadOptions={semesterOptions}
+                    placeholder="Search..."
+                    onChange={(id) =>
+                        handleInputChange(undefined, {
+                            name: "semester",
+                            value: id.value,
+                        })
+                    }
                 />
             </Form.Field>
             <Form.Field required>
@@ -215,7 +205,7 @@ const CourseForm = props => {
             <Form.Field required>
                 <label>Invite Only?</label>
                 <Form.Radio
-                    defaultChecked={defCourse.inviteOnly}
+                    defaultChecked={props.course.inviteOnly}
                     name="inviteOnly"
                     disabled={loading}
                     toggle
@@ -243,7 +233,7 @@ const CourseForm = props => {
                 <Modal.Content>
                     You are about to archive{" "}
                     <b>
-                        {defCourse.department} {defCourse.courseCode}
+                        {props.course.department} {props.course.courseCode}
                     </b>
                     .
                 </Modal.Content>
@@ -269,7 +259,7 @@ const CourseForm = props => {
             >
                 <Alert severity="success" onClose={() => setSuccess(false)}>
                     <span>
-                        <b>{`${defCourse.department} ${defCourse.courseCode}`}</b>{" "}
+                        <b>{`${props.course.department} ${props.course.courseCode}`}</b>{" "}
                         successfully updated
                     </span>
                 </Alert>
@@ -282,7 +272,7 @@ const CourseForm = props => {
                 <Alert severity="error" onClose={() => setError(false)}>
                     <span>
                         There was an error updating{" "}
-                        <b>{`${defCourse.department} ${defCourse.courseCode}`}</b>
+                        <b>{`${props.course.department} ${props.course.courseCode}`}</b>
                     </span>
                 </Alert>
             </Snackbar>
@@ -294,7 +284,7 @@ const CourseForm = props => {
                 <Alert severity="error" onClose={() => setArchiveError(false)}>
                     <span>
                         There was an error archiving{" "}
-                        <b>{`${defCourse.department} ${defCourse.courseCode}`}</b>
+                        <b>{`${props.course.department} ${props.course.courseCode}`}</b>
                     </span>
                 </Alert>
             </Snackbar>

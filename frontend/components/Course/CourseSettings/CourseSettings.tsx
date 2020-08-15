@@ -1,14 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Segment, Header, Grid } from "semantic-ui-react";
 import CourseForm from "./CourseForm";
 
-const CourseSettings = props => {
-    const [course, setCourse] = useState(props.course);
-
-    useEffect(() => {
-        setCourse(props.course);
-    }, [props.course]);
-
+const CourseSettings = (props) => {
     return (
         <div>
             <Grid.Row>
@@ -18,7 +12,7 @@ const CourseSettings = props => {
             </Grid.Row>
             <Grid.Row>
                 <Segment basic>
-                    <CourseForm course={course} refetch={props.refetch} />
+                    <CourseForm course={props.course} refetch={props.refetch} />
                 </Segment>
             </Grid.Row>
         </div>

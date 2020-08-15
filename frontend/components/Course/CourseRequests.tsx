@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import getCsrf from "../../csrf";
-import { Course, Membership, MembershipInvite } from "../../types";
+import { Course, Membership, MembershipInvite, Semester } from "../../types";
 import { isLeadershipRole } from "../../utils/enums";
 
 export function useCourse(
@@ -187,4 +187,28 @@ export async function sendMassInvites(
     if (!res.ok) {
         throw new Error("Could not send invites");
     }
+}
+
+export async function updateCourse(courseId: string, payload: any) {
+    const res = await fetch(`/api/courses/${courseId}/`, {
+        method: "PATCH",
+        credentials: "include",
+        mode: "same-origin",
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCsrf(),
+        },
+        body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+        throw new Error("Could not send invites");
+    }
+}
+
+export async function getSemesters(): Promise<Semester[]> {
+    return await fetch("/api/semesters/")
+        .then((res) => res.json())
+        .catch((_) => []);
 }

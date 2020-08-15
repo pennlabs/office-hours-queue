@@ -33,9 +33,14 @@ class QueueRouteMixin(serializers.ModelSerializer):
 
 
 class SemesterSerializer(serializers.ModelSerializer):
+    pretty = serializers.SerializerMethodField()
+
     class Meta:
         model = Semester
-        fields = ("year", "term")
+        fields = ("id", "year", "term", "pretty")
+
+    def get_pretty(self, obj):
+        return str(obj)
 
 
 class CourseSerializer(serializers.ModelSerializer):
