@@ -2,7 +2,7 @@ import re
 
 from django.contrib.auth import get_user_model
 from django.core.validators import ValidationError, validate_email
-from django.db.models import Exists, OuterRef
+from django.db.models import Exists, OuterRef, Q
 from rest_framework import filters, generics, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -175,6 +175,23 @@ class MembershipViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Membership.objects.filter(course=self.kwargs["course_pk"])
+
+
+class LeadershipListView(generics.ListAPIView):
+    """
+    get:
+    Return the leadership of a given course.
+    """
+
+    serializer_class = MembershipSerializer
+    # TODO: modify the AutoSchema to use a different name than listMemberhips
+    # TODO: permissions
+
+    def get_queryset(self):
+        return Membership.objects.filter(
+            Q(course=self.kwargs["course_pk"]),
+            Q(kind=Membership.KIND_PROFESSOR) | Q(kind=Membership.KIND_HEAD_TA),
+        )
 
 
 class MembershipInviteViewSet(viewsets.ModelViewSet):

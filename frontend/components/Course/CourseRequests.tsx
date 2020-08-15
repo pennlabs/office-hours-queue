@@ -59,7 +59,7 @@ export function useInvitedMembers(
     return [invitedMembers, error, isValidating, mutate];
 }
 
-export function useLeadership(
+export function useLeader(
     courseId: string,
     initialUser: any
 ): [
@@ -76,6 +76,25 @@ export function useLeadership(
     );
     const leader = isLeadershipRole(course.kind);
     return [leader, error, isValidating, mutate];
+}
+
+export function useLeadership(
+    courseId: string,
+    memberships: any
+): [
+    Membership[],
+    any,
+    boolean,
+    (data?: any, shouldRevalidate?: boolean) => Promise<any>
+] {
+    const { data, error, isValidating, mutate } = useSWR(
+        `/api/courses/${courseId}/leadership/`,
+        {
+            initialData: memberships,
+        }
+    );
+    const leadership: Membership[] = data || [];
+    return [leadership, error, isValidating, mutate];
 }
 
 export async function changeRole(

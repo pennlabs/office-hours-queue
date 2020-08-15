@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
     Segment,
     Menu,
@@ -11,24 +11,29 @@ import {
 import { prettifyRole } from "../../utils/enums";
 
 import AboutModal from "../LandingPage/AboutModal";
+import { useLeader, useLeadership } from "./CourseRequests";
+import { AuthUserContext } from "../../context/auth";
 
 const CourseSidebar = (props) => {
-    const [leadership, setLeadership] = useState(props.leadership);
-    const [leader, setLeader] = useState(props.leader);
+    const [
+        leadership,
+        leadershipError,
+        leadershipLoading,
+        leadershipMutate,
+    ] = useLeadership(props.courseId, props.leadership);
+
+    const { user: initialUser } = useContext(AuthUserContext);
+    const [leader, leaderError, leaderLoading, leaderMutate] = useLeader(
+        props.courseId,
+        initialUser
+    );
+
     const noWrapStyle = {
         whiteSpace: "nowrap",
         textOverflow: "ellipsis",
         overflow: "hidden",
     };
     const [showAboutModal, setShowAboutModal] = useState(false);
-
-    useEffect(() => {
-        setLeadership(props.leadership);
-    }, [props.leadership]);
-
-    useEffect(() => {
-        setLeader(props.leader);
-    }, [props.leader]);
 
     return (
         <Grid.Column width={3}>
@@ -88,23 +93,19 @@ const CourseSidebar = (props) => {
                 <Segment basic>
                     <Header as="h3">Instructors</Header>
                     <List>
-                        {leadership.map((courseUser) => {
+                        {leadership.map((membership) => {
                             return (
                                 <List.Item
-                                    key={courseUser.user.email}
+                                    key={membership.id}
                                     style={{ marginBottom: "8px" }}
                                 >
                                     <Icon name="user" />
                                     <List.Content>
-                                        <List.Header
-                                            as="a"
-                                            target="_blank"
-                                            href={`mailto:${courseUser.user.email}`}
-                                        >
-                                            {courseUser.user.fullName}
+                                        <List.Header as="a" target="_blank">
+                                            {`${membership.user.firstName} ${membership.user.lastName}`}
                                         </List.Header>
                                         <List.Description>
-                                            {prettifyRole(courseUser.kind)}
+                                            {prettifyRole(membership.kind)}
                                         </List.Description>
                                     </List.Content>
                                 </List.Item>

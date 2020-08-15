@@ -12,6 +12,7 @@ const CoursePage = (props) => {
             course={props.course}
             memberships={props.memberships}
             invites={props.invites}
+            leadership={props.leadership}
         />
     );
 };
@@ -23,7 +24,7 @@ CoursePage.getInitialProps = async (context) => {
     };
 
     // TODO: make a util function for the domain
-    const [course, memberships, invites] = await Promise.all([
+    const [course, memberships, invites, leadership] = await Promise.all([
         fetch(
             `http://localhost:3000/api/courses/${query.course}/`,
             data
@@ -36,7 +37,11 @@ CoursePage.getInitialProps = async (context) => {
             `http://localhost:3000/api/courses/${query.course}/invites/`,
             data
         ).then((res) => res.json()),
+        fetch(
+            `http://localhost:3000/api/courses/${query.course}/leadership/`,
+            data
+        ).then((res) => res.json()),
     ]);
-    return { course, memberships, invites };
+    return { course, memberships, invites, leadership };
 };
 export default withAuth(CoursePage);

@@ -106,10 +106,10 @@ const Course = (props) => {
     return course
         ? [
               <CourseSidebar
+                  courseId={course.id}
                   active={active}
                   clickFunc={setActive}
-                  leader={props.leader}
-                  leadership={course.leadership}
+                  leadership={props.leadership}
               />,
               <Grid.Column width={13}>
                   {course.department && (
