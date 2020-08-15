@@ -64,9 +64,30 @@ class CourseSerializer(serializers.ModelSerializer):
             "is_member",
         )
 
+
+class CourseCreateSerializer(serializers.ModelSerializer):
+    created_role = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = Course
+        fields = (
+            "id",
+            "course_code",
+            "department",
+            "course_title",
+            "description",
+            "semester",
+            "archived",
+            "invite_only",
+            "video_chat_enabled",
+            "require_video_chat_url_on_questions",
+            "created_role",
+        )
+
     def create(self, validated_data):
+        kind = validated_data.pop("created_role")
         instance = super().create(validated_data)
-        Membership.objects.create(course=instance, user=self.context["request"].user)
+        Membership.objects.create(course=instance, user=self.context["request"].user, kind=kind)
         return instance
 
 

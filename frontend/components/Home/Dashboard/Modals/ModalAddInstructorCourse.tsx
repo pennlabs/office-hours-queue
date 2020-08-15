@@ -1,22 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Modal, Button } from "semantic-ui-react";
 import CreateCourseForm from "../Forms/CreateCourseForm";
-// import { gql } from 'apollo-boost';
-// import { useMutation } from '@apollo/react-hooks';
-//
-// const CREATE_COURSE = gql`
-//   mutation CreateCourse($input: CreateCourseInput!) {
-//     createCourse(input: $input) {
-//       course {
-//         id
-//       }
-//       courseUser {
-//         id
-//       }
-//     }
-//   }
-// `;
-//
+import { createCourse } from "../DashboardRequests";
+
 const ModalAddInstructorCourse = (props) => {
     const videoChatNum = (course) => {
         if (course.requireVideoChatUrlOnQuestions) return 0;
@@ -24,7 +10,6 @@ const ModalAddInstructorCourse = (props) => {
         return 2;
     };
 
-    const [open, setOpen] = useState(props.open);
     const [input, setInput] = useState({
         inviteOnly: false,
         requireVideoChatUrlOnQuestions: false,
@@ -33,7 +18,6 @@ const ModalAddInstructorCourse = (props) => {
     const [check, setCheck] = useState(2);
     const [disabled, setDisabled] = useState(true);
     const [loading, setLoading] = useState(false);
-    // const [createCourse, { loading }] = useMutation(CREATE_COURSE);
 
     const handleInputChange = (e, { name, value }) => {
         input[name] = name === "inviteOnly" ? !input[name] : value;
@@ -42,9 +26,8 @@ const ModalAddInstructorCourse = (props) => {
             !input.department ||
                 !input.courseCode ||
                 !input.courseTitle ||
-                !input.year ||
                 !input.semester ||
-                !input.courseUserKind
+                !input.createdRole
         );
     };
 
@@ -76,23 +59,11 @@ const ModalAddInstructorCourse = (props) => {
     };
 
     const onSubmit = async () => {
-        if (
-            !input.department ||
-            !input.courseCode ||
-            !input.courseTitle ||
-            !input.year ||
-            !input.semester ||
-            !input.courseUserKind
-        )
-            return;
-
         try {
-            await createCourse({
-                variables: {
-                    input,
-                },
-            });
+            setLoading(true);
+            await createCourse(input);
             await props.refetch();
+            setLoading(false);
             props.closeFunc();
             setInput({
                 inviteOnly: false,
@@ -102,6 +73,7 @@ const ModalAddInstructorCourse = (props) => {
             setCheck(2);
             props.toastFunc(`${input.department} ${input.courseCode}`, true);
         } catch (e) {
+            setLoading(false);
             props.toastFunc(null, false);
         }
     };
@@ -116,12 +88,8 @@ const ModalAddInstructorCourse = (props) => {
         setCheck(2);
     };
 
-    useEffect(() => {
-        setOpen(props.open);
-    }, [props.open]);
-
     return (
-        <Modal open={open}>
+        <Modal open={props.open}>
             <Modal.Header>Create New Course</Modal.Header>
             <Modal.Content>
                 <CreateCourseForm

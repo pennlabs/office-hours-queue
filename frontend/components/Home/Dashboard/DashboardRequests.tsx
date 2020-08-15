@@ -26,6 +26,23 @@ export async function joinCourse(courseId: string): Promise<void> {
     }
 }
 
+export async function createCourse(payload: any): Promise<void> {
+    const res = await fetch(`/api/courses/`, {
+        method: "POST",
+        credentials: "include",
+        mode: "same-origin",
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCsrf(),
+        },
+        body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+        throw new Error("Unable to create course");
+    }
+}
+
 export function useMemberships(
     initialUser
 ): [

@@ -134,6 +134,7 @@ class CourseTestCase(TestCase):
                 "department": "TEST",
                 "course_title": "Course",
                 "semester": self.semester.id,
+                "created_role": user.upper(),
             },
         )
 

@@ -7,7 +7,7 @@ from rest_framework import serializers
 
 from ohq.models import Course, Membership, Semester
 from ohq.serializers import (
-    CourseSerializer,
+    CourseCreateSerializer,
     MembershipSerializer,
     SemesterSerializer,
     UserPrivateSerializer,
@@ -62,23 +62,26 @@ class UserPrivateSerializerTestCase(TestCase):
             )
 
 
-class CourseSerializerTestCase(TestCase):
+class CourseCreateSerializerTestCase(TestCase):
     def test_create_membership(self):
         semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
-        user = User.objects.create(username="professor")
+        user = User.objects.create(username="user")
         data = {
             "course_code": "000",
             "department": "Penn Labs",
             "course_title": "Course",
             "semester": semester.id,
+            "created_role": Membership.KIND_HEAD_TA,
         }
 
         request = RequestFactory().get("/")
         request.user = user
-        serializer = CourseSerializer(data=data, context={"request": request})
+        serializer = CourseCreateSerializer(data=data, context={"request": request})
         serializer.is_valid()
         serializer.save()
         self.assertEqual(1, len(Membership.objects.all()))
+        membership = Membership.objects.get(user=user)
+        self.assertEqual(membership.kind, Membership.KIND_HEAD_TA)
 
 
 class MembershipSerializerTestCase(TestCase):

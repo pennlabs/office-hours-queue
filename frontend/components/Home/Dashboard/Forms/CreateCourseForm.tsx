@@ -2,15 +2,29 @@ import React, { useState, useEffect } from "react";
 import "../../../Course/CourseSettings/CourseForm.module.css";
 
 import { Form } from "semantic-ui-react";
-import { semesterOptions } from "../../../../utils/enums";
+import AsyncSelect from "react-select/async";
+import { Semester } from "../../../../types";
+import { getSemesters } from "../../../Course/CourseRequests";
+
+const semesterOptions = async (inputValue: string) => {
+    const semesters: Semester[] = await getSemesters();
+    return semesters
+        .filter(
+            (semester) =>
+                semester.pretty
+                    .toLowerCase()
+                    .includes(inputValue.toLowerCase()) ||
+                inputValue.length === 0
+        )
+        .map((semester) => {
+            return {
+                label: semester.pretty,
+                value: semester.id,
+            };
+        });
+};
 
 const CreateCourseForm = (props) => {
-    const [check, setCheck] = useState(props.check);
-
-    useEffect(() => {
-        setCheck(props.check);
-    }, [props.check]);
-
     return (
         <Form>
             <Form.Field required>
@@ -38,48 +52,39 @@ const CreateCourseForm = (props) => {
                     placeholder="Data Structures and Algorithms"
                 />
             </Form.Field>
-            {
-                // <Form.Field>
-                //   <label>Description</label>
-                //   <Form.TextArea name="description" onChange={props.changeFunc} placeholder="(Optional)"/>
-                // </Form.Field>
-            }
-            <Form.Field required>
-                <label>Year</label>
-                <Form.Input
-                    name="year"
-                    type="number"
-                    onChange={props.changeFunc}
-                    placeholder="2020"
-                />
-            </Form.Field>
             <Form.Field required>
                 <label>Semester</label>
-                <Form.Dropdown
+                <AsyncSelect
                     name="semester"
-                    onChange={props.changeFunc}
-                    selection
-                    placeholder="Semester"
-                    options={semesterOptions}
+                    cacheOptions
+                    defaultOptions
+                    loadOptions={semesterOptions}
+                    placeholder="Search..."
+                    onChange={(id) =>
+                        props.changeFunc(undefined, {
+                            name: "semester",
+                            value: id.value,
+                        })
+                    }
                 />
             </Form.Field>
             <Form.Field required>
                 <label>Video Chat</label>
                 <Form.Radio
                     label="Require Link"
-                    checked={check === 0}
+                    checked={props.check === 0}
                     name="requireVideoChatUrlOnQuestions"
                     onChange={props.vcChangeFunc}
                 />
                 <Form.Radio
                     label="Allow Link"
-                    checked={check === 1}
+                    checked={props.check === 1}
                     name="videoChatEnabled"
                     onChange={props.vcChangeFunc}
                 />
                 <Form.Radio
                     label="No Link"
-                    checked={check === 2}
+                    checked={props.check === 2}
                     name="disableVideoChat"
                     onChange={props.vcChangeFunc}
                 />
@@ -96,7 +101,7 @@ const CreateCourseForm = (props) => {
                 <label>Your Role</label>
                 <Form.Dropdown
                     selection
-                    name="courseUserKind"
+                    name="createdRole"
                     onChange={props.changeFunc}
                     options={[
                         {

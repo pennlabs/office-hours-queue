@@ -21,6 +21,7 @@ from ohq.permissions import (
 )
 from ohq.schemas import MassInviteSchema
 from ohq.serializers import (
+    CourseCreateSerializer,
     CourseSerializer,
     MembershipInviteSerializer,
     MembershipSerializer,
@@ -82,6 +83,11 @@ class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ["course_code", "department"]
+
+    def get_serializer_class(self):
+        if self.action == "create":
+            return CourseCreateSerializer
+        return self.serializer_class
 
     def get_queryset(self):
         is_member = Membership.objects.filter(course=OuterRef("pk"), user=self.request.user)
