@@ -3,24 +3,16 @@ import { parsePhoneNumberFromString } from "libphonenumber-js/min";
 import { User } from "../../../types";
 import { doApiRequest } from "../../../utils/fetch";
 
-export function useAccountInfo(initialUser) {
+export function useAccountInfo(initialUser): [
+    User,
+    any,
+    boolean,
+    (data?: any, shouldRevalidate?: boolean) => Promise<any>
+] {
     const { data, error, isValidating, mutate } = useSWR("/accounts/me/", {
         initialData: initialUser,
     });
-
-    // TODO: modify use of profile so that this mapping isn't needed
-    const profile: User = data
-        ? {
-              firstName: data.firstName,
-              lastName: data.lastName,
-              email: data.email,
-              smsNotificationsEnabled: data.profile?.smsNotificationsEnabled,
-              smsVerified: data.profile?.smsVerified,
-              phoneNumber: data.profile?.phoneNumber,
-          }
-        : null;
-
-    return [profile, error, isValidating, mutate];
+    return [data, error, isValidating, mutate];
 }
 
 export async function validateSMS(code) {
@@ -40,26 +32,14 @@ export async function validateSMS(code) {
     }
 }
 
-export async function updateUser(user) {
-    const payload: any = {};
-    if (user.firstName) {
-        payload.firstName = user.firstName;
-    }
-    if (user.lastName) {
-        payload.lastName = user.lastName;
-    }
-
-    payload.profile = {};
-    payload.profile.smsNotificationsEnabled = user.smsNotificationsEnabled;
-
-    if (user.phoneNumber) {
+export async function updateUser(payload) {
+    if (payload.profile.phoneNumber) {
         // TODO: Better error handling
         payload.profile.phoneNumber = parsePhoneNumberFromString(
-            String(user.phoneNumber),
+            String(payload.profile.phoneNumber),
             "US"
         ).number;
     }
-
     const res = await doApiRequest("/accounts/me/", {
         method: "PATCH",
         body: payload,

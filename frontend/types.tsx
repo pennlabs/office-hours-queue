@@ -13,17 +13,11 @@ export interface Course {
     isMember: boolean;
 }
 
-export interface CourseUser {
-    firstName: string;
-    lastName: string;
-    email: string;
-}
-
 export interface Membership {
     id: number;
     kind: string;
     course?: Course;
-    user?: CourseUser;
+    user?: User;
 }
 
 export interface MembershipInvite {
@@ -32,22 +26,26 @@ export interface MembershipInvite {
     email: string;
 }
 
+export interface Profile {
+    smsNotificationsEnabled: boolean;
+    smsVerified: boolean;
+    phoneNumber?: string;
+}
+
 export interface User {
     firstName: string;
     lastName: string;
     email: string;
-    smsNotificationsEnabled: boolean;
-    smsVerified: boolean;
-    phoneNumber?: string;
+    profile?: Profile;
 }
 
 export interface Question {
     text: string;
     videoChatUrl: string;
     timeAsked: Date;
-    askedBy: CourseUser;
-    answeredBy: CourseUser;
-    rejectedBy: CourseUser;
+    askedBy: User;
+    answeredBy: User;
+    rejectedBy: User;
     rejectedReason: string | null;
 }
 

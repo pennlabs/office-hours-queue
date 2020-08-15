@@ -17,15 +17,11 @@ const AccountForm = () => {
         any
     ] = useAccountInfo(initialUser);
 
-    const [input, setInput] = useState({
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        smsNotificationsEnabled: user.smsNotificationsEnabled,
-        phoneNumber: user.phoneNumber,
-    });
+    const [input, setInput] = useState(JSON.parse(JSON.stringify(user)));
 
-    const [showNumber, setShowNumber] = useState(user.smsNotificationsEnabled);
+    const [showNumber, setShowNumber] = useState(
+        user.profile.smsNotificationsEnabled
+    );
 
     const [smsOpen, setSmsOpen] = useState(false);
 
@@ -37,41 +33,30 @@ const AccountForm = () => {
         return (
             !input.firstName ||
             !input.lastName ||
-            (input.smsNotificationsEnabled && !input.phoneNumber) ||
+            !input.profile.phoneNumber ||
             (input.firstName === user.firstName &&
                 input.lastName === user.lastName &&
-                input.smsNotificationsEnabled ===
-                    user.smsNotificationsEnabled &&
-                input.phoneNumber === user.phoneNumber)
+                input.profile.smsNotificationsEnabled ===
+                    user.profile.smsNotificationsEnabled &&
+                input.profile.phoneNumber === user.profile.phoneNumber)
         );
     };
 
     const handleInputChange = (e, { name, value }) => {
-        input[name] = name === "smsNotificationsEnabled" ? !input[name] : value;
-        setInput(input);
-        setShowNumber(input.smsNotificationsEnabled);
+        if (name === "smsNotificationsEnabled") {
+            input.profile[name] = !input.profile[name];
+        } else if (name === "phoneNumber") {
+            input.profile[name] = value;
+        } else {
+            input[name] = value;
+        }
+        setShowNumber(input.profile.smsNotificationsEnabled);
         setDisabled(isDisabled());
     };
 
     const onSubmit = async () => {
-        const newInput = {};
-        if (input.firstName !== user.firstName) {
-            newInput.firstName = input.firstName;
-        }
-        if (input.lastName !== user.lastName) {
-            newInput.lastName = input.lastName;
-        }
-        if (input.smsNotificationsEnabled !== user.smsNotificationsEnabled) {
-            newInput.smsNotificationsEnabled = input.smsNotificationsEnabled;
-        }
-        if (
-            input.phoneNumber !== user.phoneNumber &&
-            input.smsNotificationsEnabled
-        ) {
-            newInput.phoneNumber = input.phoneNumber;
-        }
         try {
-            await updateUser(newInput);
+            await updateUser(input);
             mutate();
             setToast({
                 success: true,
@@ -80,7 +65,7 @@ const AccountForm = () => {
             setToastOpen(true);
             setDisabled(true);
 
-            if (input.phoneNumber !== user.phoneNumber) {
+            if (input.profile.phoneNumber !== user.profile.phoneNumber) {
                 setSmsOpen(true);
             }
         } catch (e) {
@@ -134,7 +119,7 @@ const AccountForm = () => {
             <Form.Field>
                 <Form.Checkbox
                     name="smsNotificationsEnabled"
-                    defaultChecked={input.smsNotificationsEnabled}
+                    defaultChecked={input.profile.smsNotificationsEnabled}
                     onChange={handleInputChange}
                     label={[
                         "Enable SMS Notifications ",
@@ -151,13 +136,13 @@ const AccountForm = () => {
                     <label>Cell Phone Number</label>
                     <Form.Input
                         placeholder="9876543210"
-                        defaultValue={input.phoneNumber}
+                        defaultValue={input.profile.phoneNumber}
                         name="phoneNumber"
                         onChange={handleInputChange}
                         action={
-                            (!user.smsVerified && (
+                            (!user.profile.smsVerified && (
                                 <Button
-                                    disabled={user.smsVerified}
+                                    disabled={user.profile.smsVerified}
                                     color="red"
                                     content="Not Verified"
                                     icon="shield alternate"
@@ -166,7 +151,7 @@ const AccountForm = () => {
                                     }}
                                 />
                             )) ||
-                            (user.smsVerified && (
+                            (user.profile.smsVerified && (
                                 <Button
                                     color="green"
                                     content="Verified"
