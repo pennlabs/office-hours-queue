@@ -47,7 +47,7 @@ class CoursePermission(permissions.BasePermission):
 
         # Course leadership can make changes
         if view.action in ["update", "partial_update"]:
-            return membership.is_leadership
+            return membership.is_leadership and not obj.archived
 
     def has_permission(self, request, view):
         # Anonymous users can't do anything

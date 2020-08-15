@@ -107,6 +107,14 @@ class CourseTestCase(TestCase):
                 "non_member": 403,
                 "anonymous": 403,
             },
+            "modify-archived": {
+                "professor": 403,
+                "head_ta": 403,
+                "ta": 403,
+                "student": 403,
+                "non_member": 403,
+                "anonymous": 403,
+            },
         }
 
     @parameterized.expand(users, name_func=get_test_name)
@@ -143,6 +151,19 @@ class CourseTestCase(TestCase):
             self,
             user,
             "modify",
+            "patch",
+            reverse("ohq:course-detail", args=[self.course.id]),
+            {"description": "new"},
+        )
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_modify(self, user):
+        self.course.archived = True
+        self.course.save()
+        test(
+            self,
+            user,
+            "modify-archived",
             "patch",
             reverse("ohq:course-detail", args=[self.course.id]),
             {"description": "new"},

@@ -6,7 +6,12 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from ohq.models import Course, Membership, Semester
-from ohq.serializers import CourseSerializer, MembershipSerializer, UserPrivateSerializer
+from ohq.serializers import (
+    CourseSerializer,
+    MembershipSerializer,
+    SemesterSerializer,
+    UserPrivateSerializer,
+)
 
 
 User = get_user_model()
@@ -97,3 +102,10 @@ class MembershipSerializerTestCase(TestCase):
         serializer.is_valid()
         serializer.save()
         self.assertEqual(1, len(Membership.objects.all()))
+
+
+class SemesterSerializerTestCase(TestCase):
+    def test_pretty(self):
+        semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
+        serializer = SemesterSerializer(instance=semester)
+        self.assertEqual(serializer.data["pretty"], str(semester))
