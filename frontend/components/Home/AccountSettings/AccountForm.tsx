@@ -71,7 +71,7 @@ const AccountForm = () => {
         }
         try {
             await updateUser(newInput);
-            mutate("/api/accounts/me/");
+            mutate();
             setToast({
                 success: true,
                 message: "Your account was successfully updated",

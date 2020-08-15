@@ -1,5 +1,6 @@
 import React, { createContext } from "react";
 import Router from "next/router";
+import { doApiRequest } from "../utils/fetch";
 
 export const AuthUserContext = createContext();
 
@@ -16,14 +17,10 @@ export const withAuth = (WrappedComponent) => {
     AuthedComponent.getInitialProps = async (ctx) => {
         const headers = {
             credentials: "include",
-            headers: { cookie: ctx.req.headers.cookie },
+            headers: ctx.req ? { cookie: ctx.req.headers.cookie } : undefined,
         };
 
-        // TODO: Fix route for prod here
-        const res = await fetch(
-            "http://localhost:3000/api/accounts/me/",
-            headers
-        );
+        const res = await doApiRequest("/accounts/me/", headers);
         let user = null;
         if (res.ok) {
             user = await res.json();

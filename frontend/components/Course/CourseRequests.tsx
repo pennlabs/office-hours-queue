@@ -1,7 +1,7 @@
 import useSWR from "swr";
-import getCsrf from "../../csrf";
 import { Course, Membership, MembershipInvite, Semester } from "../../types";
 import { isLeadershipRole } from "../../utils/enums";
+import { doApiRequest } from "../../utils/fetch";
 
 export function useCourse(
     courseId: string,
@@ -17,7 +17,7 @@ export function useCourse(
         error,
         isValidating,
         mutate,
-    } = useSWR(`/api/courses/${courseId}/`, { initialData: initalCourse });
+    } = useSWR(`/courses/${courseId}/`, { initialData: initalCourse });
     return [data, error, isValidating, mutate];
 }
 
@@ -31,7 +31,7 @@ export function useMembers(
     (data?: any, shouldRevalidate?: boolean) => Promise<any>
 ] {
     const { data, error, isValidating, mutate } = useSWR(
-        `/api/courses/${courseId}/members/`,
+        `/courses/${courseId}/members/`,
         {
             initialData: memberships,
         }
@@ -54,7 +54,7 @@ export function useInvitedMembers(
         error,
         isValidating,
         mutate,
-    } = useSWR(`/api/courses/${courseId}/invites/`, { initialData: invites });
+    } = useSWR(`/courses/${courseId}/invites/`, { initialData: invites });
     const invitedMembers: MembershipInvite[] = data || [];
     return [invitedMembers, error, isValidating, mutate];
 }
@@ -68,7 +68,7 @@ export function useLeader(
     boolean,
     (data?: any, shouldRevalidate?: boolean) => Promise<any>
 ] {
-    const { data, error, isValidating, mutate } = useSWR(`/api/accounts/me/`, {
+    const { data, error, isValidating, mutate } = useSWR(`/accounts/me/`, {
         initialData: initialUser,
     });
     const course = data.membershipSet.find(
@@ -88,7 +88,7 @@ export function useLeadership(
     (data?: any, shouldRevalidate?: boolean) => Promise<any>
 ] {
     const { data, error, isValidating, mutate } = useSWR(
-        `/api/courses/${courseId}/leadership/`,
+        `/courses/${courseId}/leadership/`,
         {
             initialData: memberships,
         }
@@ -105,18 +105,11 @@ export async function changeRole(
     const payload = {
         kind: kind,
     };
-    const res = await fetch(
-        `/api/courses/${courseId}/members/${membershipId}/`,
+    const res = await doApiRequest(
+        `/courses/${courseId}/members/${membershipId}/`,
         {
             method: "PATCH",
-            credentials: "include",
-            mode: "same-origin",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCsrf(),
-            },
-            body: JSON.stringify(payload),
+            body: payload,
         }
     );
 
@@ -126,17 +119,10 @@ export async function changeRole(
 }
 
 export async function deleteMembership(courseId: string, membershipId: string) {
-    const res = await fetch(
-        `/api/courses/${courseId}/members/${membershipId}/`,
+    const res = await doApiRequest(
+        `/courses/${courseId}/members/${membershipId}/`,
         {
             method: "DELETE",
-            credentials: "include",
-            mode: "same-origin",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCsrf(),
-            },
         }
     );
 
@@ -146,16 +132,12 @@ export async function deleteMembership(courseId: string, membershipId: string) {
 }
 
 export async function deleteInvite(courseId: string, inviteId: string) {
-    const res = await fetch(`/api/courses/${courseId}/invites/${inviteId}/`, {
-        method: "DELETE",
-        credentials: "include",
-        mode: "same-origin",
-        headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "X-CSRFToken": getCsrf(),
-        },
-    });
+    const res = await doApiRequest(
+        `/courses/${courseId}/invites/${inviteId}/`,
+        {
+            method: "DELETE",
+        }
+    );
 
     if (!res.ok) {
         throw new Error("Could not delete invite");
@@ -172,16 +154,9 @@ export async function sendMassInvites(
         kind: kind,
     };
 
-    const res = await fetch(`/api/courses/${courseId}/mass-invite/`, {
+    const res = await doApiRequest(`/courses/${courseId}/mass-invite/`, {
         method: "POST",
-        credentials: "include",
-        mode: "same-origin",
-        headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "X-CSRFToken": getCsrf(),
-        },
-        body: JSON.stringify(payload),
+        body: payload,
     });
 
     if (!res.ok) {
@@ -190,16 +165,9 @@ export async function sendMassInvites(
 }
 
 export async function updateCourse(courseId: string, payload: any) {
-    const res = await fetch(`/api/courses/${courseId}/`, {
+    const res = await doApiRequest(`/courses/${courseId}/`, {
         method: "PATCH",
-        credentials: "include",
-        mode: "same-origin",
-        headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "X-CSRFToken": getCsrf(),
-        },
-        body: JSON.stringify(payload),
+        body: payload,
     });
 
     if (!res.ok) {
@@ -208,7 +176,7 @@ export async function updateCourse(courseId: string, payload: any) {
 }
 
 export async function getSemesters(): Promise<Semester[]> {
-    return await fetch("/api/semesters/")
+    return await doApiRequest("/semesters/")
         .then((res) => res.json())
         .catch((_) => []);
 }

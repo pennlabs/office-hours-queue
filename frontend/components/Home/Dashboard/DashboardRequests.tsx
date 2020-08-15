@@ -1,43 +1,30 @@
 import useSWR from "swr";
-import getCsrf from "../../../csrf";
 import { Course, Membership } from "../../../types";
+import { doApiRequest } from "../../../utils/fetch";
 
 export async function getCourses(inputValue: string): Promise<Course[]> {
-    return await fetch(`/api/courses/?search=${inputValue}`)
+    return await doApiRequest(`/courses/?search=${inputValue}`)
         .then((res) => res.json())
         .then((res) => res.map((course) => course))
         .catch((_) => []);
 }
 
 export async function joinCourse(courseId: string): Promise<void> {
-    const res = await fetch(`/api/courses/${courseId}/members/`, {
+    const res = await doApiRequest(`/courses/${courseId}/members/`, {
         method: "POST",
-        credentials: "include",
-        mode: "same-origin",
-        headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "X-CSRFToken": getCsrf(),
-        },
-        body: "",
     });
+
     if (!res.ok) {
         throw new Error("Unable to join course");
     }
 }
 
 export async function createCourse(payload: any): Promise<void> {
-    const res = await fetch(`/api/courses/`, {
+    const res = await doApiRequest("/courses/", {
         method: "POST",
-        credentials: "include",
-        mode: "same-origin",
-        headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "X-CSRFToken": getCsrf(),
-        },
-        body: JSON.stringify(payload),
+        body: payload,
     });
+
     if (!res.ok) {
         throw new Error("Unable to create course");
     }
@@ -51,7 +38,7 @@ export function useMemberships(
     boolean,
     (data: any, shouldRevalidate: boolean) => Promise<any>
 ] {
-    const { data, error, isValidating, mutate } = useSWR("/api/accounts/me/", {
+    const { data, error, isValidating, mutate } = useSWR("/accounts/me/", {
         initialData: initialUser,
     });
     const memberships: Membership[] = data ? data.membershipSet : [];

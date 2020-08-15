@@ -1,13 +1,14 @@
 import useSWR from "swr";
 import { parsePhoneNumberFromString } from "libphonenumber-js/min";
-import getCsrf from "../../../csrf";
 import { User } from "../../../types";
+import { doApiRequest } from "../../../utils/fetch";
 
 export function useAccountInfo(initialUser) {
-    const { data, error, isValidating, mutate } = useSWR("/api/accounts/me/", {
+    const { data, error, isValidating, mutate } = useSWR("/accounts/me/", {
         initialData: initialUser,
     });
 
+    // TODO: modify use of profile so that this mapping isn't needed
     const profile: User = data
         ? {
               firstName: data.firstName,
@@ -28,16 +29,9 @@ export async function validateSMS(code) {
             smsVerificationCode: code,
         },
     };
-    const res = await fetch("/api/accounts/me/", {
+    const res = await doApiRequest("/accounts/me/", {
         method: "PATCH",
-        credentials: "include",
-        mode: "same-origin",
-        headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "X-CSRFToken": getCsrf(),
-        },
-        body: JSON.stringify(payload),
+        body: payload,
     });
 
     if (!res.ok) {
@@ -66,16 +60,9 @@ export async function updateUser(user) {
         ).number;
     }
 
-    const res = await fetch("/api/accounts/me/", {
+    const res = await doApiRequest("/accounts/me/", {
         method: "PATCH",
-        credentials: "include",
-        mode: "same-origin",
-        headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "X-CSRFToken": getCsrf(),
-        },
-        body: JSON.stringify(payload),
+        body: payload,
     });
 
     if (!res.ok) {

@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import Course from "../../../components/Course/Course";
 import { withAuth } from "../../../context/auth";
+import { doApiRequest } from "../../../utils/fetch";
 
 const CoursePage = (props) => {
     const router = useRouter();
@@ -20,28 +21,22 @@ const CoursePage = (props) => {
 CoursePage.getInitialProps = async (context) => {
     const { query, req } = context;
     const data = {
-        // TODO: after a router.replace this causes an error
         headers: req ? { cookie: req.headers.cookie } : undefined,
     };
 
-    // TODO: make a util function for the domain
     const [course, memberships, invites, leadership] = await Promise.all([
-        fetch(
-            `http://localhost:3000/api/courses/${query.course}/`,
-            data
-        ).then((res) => res.json()),
-        fetch(
-            `http://localhost:3000/api/courses/${query.course}/members/`,
-            data
-        ).then((res) => res.json()),
-        fetch(
-            `http://localhost:3000/api/courses/${query.course}/invites/`,
-            data
-        ).then((res) => res.json()),
-        fetch(
-            `http://localhost:3000/api/courses/${query.course}/leadership/`,
-            data
-        ).then((res) => res.json()),
+        doApiRequest(`/courses/${query.course}/`, data).then((res) =>
+            res.json()
+        ),
+        doApiRequest(`/courses/${query.course}/members/`, data).then((res) =>
+            res.json()
+        ),
+        doApiRequest(`/courses/${query.course}/invites/`, data).then((res) =>
+            res.json()
+        ),
+        doApiRequest(`/courses/${query.course}/leadership/`, data).then((res) =>
+            res.json()
+        ),
     ]);
     return { course, memberships, invites, leadership };
 };
