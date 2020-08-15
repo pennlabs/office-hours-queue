@@ -59,10 +59,11 @@ export function useInvitedMembers(
     return [invitedMembers, error, isValidating, mutate];
 }
 
-export function useLeader(
+export function useStaff(
     courseId: string,
     initialUser: any
 ): [
+    boolean,
     boolean,
     any,
     boolean,
@@ -75,7 +76,8 @@ export function useLeader(
         (membership) => membership.course.id === courseId
     );
     const leader = isLeadershipRole(course.kind);
-    return [leader, error, isValidating, mutate];
+    const staff = course.kind != "STUDENT";
+    return [leader, staff, error, isValidating, mutate];
 }
 
 export function useLeadership(

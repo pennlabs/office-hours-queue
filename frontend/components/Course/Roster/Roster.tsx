@@ -9,7 +9,7 @@ import Alert from "@material-ui/lab/Alert";
 
 import { prettifyRole, isLeadershipRole } from "../../../utils/enums";
 import ChangeRoleDropdown from "./ChangeRoleDropdown";
-import { useInvitedMembers, useMembers, useLeader } from "../CourseRequests";
+import { useInvitedMembers, useMembers, useStaff } from "../CourseRequests";
 import { AuthUserContext } from "../../../context/auth";
 
 const Roster = (props) => {
@@ -27,7 +27,7 @@ const Roster = (props) => {
     ] = useMembers(props.courseId, props.memberships);
 
     const { user: initialUser } = useContext(AuthUserContext);
-    const [leader, leaderError, leaderLoading, leaderMutate] = useLeader(
+    const [leader, staff, leaderError, staffLoading, staffMutate] = useStaff(
         props.courseId,
         initialUser
     );
