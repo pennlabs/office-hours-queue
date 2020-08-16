@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Segment, Header, Icon, Button, Popup, Grid } from "semantic-ui-react";
-import RejectQuestionModal from "./RejectQuestionModal";
-// import { gql } from 'apollo-boost';
-// import { useMutation } from '@apollo/react-hooks'
 import moment from "moment";
+import RejectQuestionModal from "./RejectQuestionModal";
 import firebase from "../../Firebase";
 import { globalIdEquals } from "../../../utils";
+import { AuthUserContext } from "../../../context/auth";
 
 // const START_QUESTION = gql`
 //   mutation StartQuestion($input: StartQuestionInput!) {
@@ -38,6 +37,8 @@ import { globalIdEquals } from "../../../utils";
 // `;
 
 const QuestionCard = props => {
+    const { user } = useContext(AuthUserContext);
+
     const [open, setOpen] = useState(false);
     const [render, setRender] = useState(false);
     const [startQuestion, startQuestionRes] = useMutation(START_QUESTION);
@@ -260,7 +261,7 @@ const QuestionCard = props => {
                                     {props.question.timeStarted &&
                                         globalIdEquals(
                                             props.question.answeredBy.id,
-                                            props.userId
+                                            user.id
                                         ) && (
                                             <Header.Content>
                                                 <Button

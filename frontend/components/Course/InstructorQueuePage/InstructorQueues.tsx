@@ -3,24 +3,12 @@ import { Grid, Segment, Icon, Message } from "semantic-ui-react";
 import Queue from "./Queue";
 
 const InstructorQueues = props => {
-    /* STATE */
-    const [queues, setQueues] = useState(props.queues);
-    const [leader, setLeader] = useState(props.leader);
-
+    const { queues, leader, createFunc, refetch, editFunc } = props;
     const numActive = () => {
         return queues.reduce((count, queue) => {
             return count + (queue.archived ? 0 : 1);
         }, 0);
     };
-
-    /* PROPS UPDATE */
-    useEffect(() => {
-        setQueues(props.queues);
-    }, [props.queues]);
-
-    useEffect(() => {
-        setLeader(props.leader);
-    }, [props.leader]);
 
     return (
         queues && (
@@ -29,16 +17,13 @@ const InstructorQueues = props => {
                     queues.map(
                         queue =>
                             !queue.archived && (
-                                <Grid.Column key={"column" + queue.id}>
+                                <Grid.Column key={`column${queue.id}`}>
                                     <Queue
                                         key={queue.id}
                                         queue={queue}
-                                        leader={props.leader}
-                                        refetch={props.refetch}
-                                        editFunc={() =>
-                                            props.editFunc(queue.id)
-                                        }
-                                        userId={props.userId}
+                                        leader={leader}
+                                        refetch={refetch}
+                                        editFunc={() => editFunc(queue.id)}
                                     />
                                 </Grid.Column>
                             )
@@ -53,7 +38,7 @@ const InstructorQueues = props => {
                                         Create a Queue
                                     </Message.Header>
                                     <a
-                                        onClick={props.createFunc}
+                                        onClick={createFunc}
                                         style={{ cursor: "pointer" }}
                                     >
                                         Create
@@ -73,7 +58,8 @@ const InstructorQueues = props => {
                             <Message.Content>
                                 <Message.Header>No Queues</Message.Header>
                                 This course currently has no queues! Ask the
-                                course's Head TA or Professor to create one.
+                                course&apos;s Head TA or Professor to create
+                                one.
                             </Message.Content>
                         </Message>
                     </Segment>

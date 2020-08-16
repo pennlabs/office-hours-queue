@@ -8,19 +8,11 @@ import {
     Dimmer,
     Loader,
 } from "semantic-ui-react";
-import { linkifyComponentDecorator } from "../../../../utils";
-// import Linkify from 'react-linkify';
 import QueueForm from "./QueueForm";
 import TagForm from "./TagForm";
 
 const QueueSettings = props => {
-    /* STATE */
-    const [queue, setQueue] = useState(props.queue);
-
-    /* PROPS UPDATE */
-    useEffect(() => {
-        setQueue(props.queue);
-    }, [props.queue]);
+    const { queue, refetch, backFunc } = props;
 
     return queue ? (
         <Grid.Column>
@@ -60,9 +52,9 @@ const QueueSettings = props => {
                                 render: () => {
                                     return (
                                         <QueueForm
-                                            refetch={props.refetch}
+                                            refetch={refetch}
                                             queue={queue}
-                                            backFunc={props.backFunc}
+                                            backFunc={backFunc}
                                         />
                                     );
                                 },
@@ -72,7 +64,7 @@ const QueueSettings = props => {
                                 render: () => {
                                     return (
                                         <TagForm
-                                            refetch={props.refetch}
+                                            refetch={refetch}
                                             queue={queue}
                                         />
                                     );

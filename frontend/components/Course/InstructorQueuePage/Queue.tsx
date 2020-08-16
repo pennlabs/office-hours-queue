@@ -1,16 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Header, Label, Grid, Segment, Button } from "semantic-ui-react";
-// import { gql } from 'apollo-boost';
-// import { useMutation, useQuery } from '@apollo/react-hooks';
-// import Linkify from 'react-linkify';
 import Questions from "./Questions";
 import QueueFilterForm from "./QueueFilterForm";
 import ClearQueueModal from "./ClearQueueModal";
-import { linkifyComponentDecorator } from "../../../utils";
+import { mutateFunction, Queue } from "../../../types";
 
 // import UIFx from 'uifx';
 // import notificationMp3 from './notification.mp3';
-import firebase from "../../Firebase";
 
 // const notification = new UIFx(notificationMp3);
 
@@ -68,70 +64,37 @@ import firebase from "../../Firebase";
 //   }
 // `;
 
-const Queue = props => {
+interface QueueProps {
+    queue: Queue;
+    refetch: mutateFunction;
+    leader: boolean;
+    editFunc: () => void;
+}
+const Queue = (props: QueueProps) => {
+    const { queue, refetch, leader, editFunc } = props;
+    const { id: queueId, active } = queue;
     const pollInterval = 3000 + Math.random() * 500;
-    const { data, refetch, startPolling, stopPolling } = useQuery(
-        GET_QUESTIONS,
-        {
-            variables: {
-                id: props.queue.id,
-            },
-            pollInterval: pollInterval,
-            skip: !props.queue.id,
-        }
-    );
-    const [activateQueue, activateQueueRes] = useMutation(ACTIVATE_QUEUE);
-    const [deactivateQueue, deactivateQueueRes] = useMutation(DEACTIVATE_QUEUE);
 
     /* STATE */
-    const [queue, setQueue] = useState(props.queue);
-    const [active, setActive] = useState(
-        props.queue.activeOverrideTime !== null
-    );
-    const [questions, setQuestions] = useState([]);
-    const [filteredQuestions, setFilteredQuestions] = useState([]);
+    const [questions, setQuestions] = useState([]); // TODO: useSWR()
+    const [filteredQuestions, setFilteredQuestions] = useState([]); // TODO: useMemo()
     const [tags, setTags] = useState([]);
     const [filters, setFilters] = useState({ tags: [], status: null });
     const [clearModalOpen, setClearModalOpen] = useState(false);
     const [isFirstLoad, setIsFirstLoad] = useState(true);
 
-    const getQuestions = data => {
-        if (!data) {
-            return [];
-        }
-        return data.queue.queueQuestions.edges.map(item => {
-            return {
-                id: item.node.id,
-                orderKey: item.node.orderKey,
-                text: item.node.text,
-                tags: item.node.tags,
-                state: item.node.state,
-                timeAsked: item.node.timeAsked,
-                askedBy: item.node.askedBy,
-                timeStarted: item.node.timeStarted,
-                timeAnswered: item.node.timeAnswered,
-                answeredBy: item.node.answeredBy,
-                videoChatUrl: item.node.videoChatUrl,
-            };
-        });
-    };
-
     const onOpen = async () => {
-        firebase.analytics.logEvent("queue_activate");
         await activateQueue({
             variables: {
-                input: {
-                    queueId: props.queue.id,
-                },
+                input: { queueId },
             },
         });
         // Update UI immediately
         setActive(true);
-        props.refetch();
+        await refetch();
     };
 
     const onClose = async () => {
-        firebase.analytics.logEvent("queue_deactivate");
         await deactivateQueue({
             variables: {
                 input: {
@@ -141,7 +104,7 @@ const Queue = props => {
         });
         // Update UI immediately
         setActive(false);
-        props.refetch();
+        await refetch();
     };
 
     const filter = (questions, filters) => {
@@ -156,7 +119,7 @@ const Queue = props => {
         return l1.filter(value => l2.includes(value)).length > 0;
     };
 
-    const handleFilterChange = input => {
+    const handleFilterChange = (input) => {
         setFilters(input);
         setFilteredQuestions(filter(questions, input));
     };
@@ -183,12 +146,6 @@ const Queue = props => {
             setIsFirstLoad(false);
         }
     }
-
-    useEffect(() => {
-        setQueue(props.queue);
-        setActive(props.queue.activeOverrideTime !== null);
-    }, [props.queue]);
-
     const queueQuestions = filter(questions, { tags: [] });
 
     return (
@@ -196,7 +153,7 @@ const Queue = props => {
             <ClearQueueModal
                 open={clearModalOpen}
                 queue={queue}
-                refetch={props.refetch}
+                refetch={refetch}
                 closeFunc={() => setClearModalOpen(false)}
             />
             <Header as="h3">
@@ -213,12 +170,9 @@ const Queue = props => {
                         {(queue.activeOverrideTime ||
                             queueQuestions.length !== 0) && (
                             <Label
-                                content={
-                                    queueQuestions.length +
-                                    ` user${
-                                        queueQuestions.length === 1 ? "" : "s"
-                                    }`
-                                }
+                                content={`${queueQuestions.length} user${
+                                    queueQuestions.length === 1 ? "" : "s"
+                                }`}
                                 color="blue"
                                 icon="user"
                             />
@@ -228,12 +182,12 @@ const Queue = props => {
               */}
                     </Grid.Column>
                     <Grid.Column textAlign="right" floated="right">
-                        {props.leader && (
+                        {leader && (
                             <Button
                                 size="mini"
                                 content="Edit"
                                 icon="cog"
-                                onClick={props.editFunc}
+                                onClick={editFunc}
                             />
                         )}
                         <Button
@@ -300,7 +254,6 @@ const Queue = props => {
                     filters={filters}
                     refetch={refetch}
                     active={active}
-                    userId={props.userId}
                 />
             </Grid.Row>
         </Segment>

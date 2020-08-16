@@ -1,75 +1,24 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import { Grid } from "semantic-ui-react";
+import Alert from "@material-ui/lab/Alert";
+import Snackbar from "@material-ui/core/Snackbar";
 import InstructorQueues from "./InstructorQueues";
 import QueueSettings from "./QueueSettings/QueueSettings";
 import CreateQueue from "./CreateQueue/CreateQueue";
-
-// import { gql } from 'apollo-boost';
-// import { useQuery } from '@apollo/react-hooks';
-import Alert from "@material-ui/lab/Alert";
-import Snackbar from "@material-ui/core/Snackbar";
-import { queueSortFunc } from "../../../utils";
-
-/* GRAPHQL QUERIES/MUTATIONS */
-// const GET_QUEUES = gql`
-// query GetQueues($id: ID!) {
-//   course(id: $id) {
-//     id
-//     queues(archived: false) {
-//       edges {
-//         node {
-//           id
-//           archived
-//           name
-//           description
-//           tags
-//           activeOverrideTime
-//           estimatedWaitTime
-//           numberActiveQuestions
-//         }
-//       }
-//     }
-//   }
-// }
-// `;
-
-// const defaultDocumentTitle = document.title;
+import { useQueues } from "../CourseRequests";
+import { AuthUserContext } from "../../../context/auth";
 
 const InstructorQueuePage = props => {
-    /* GRAPHQL QUERIES/MUTATIONS */
-    // const { data, refetch } = useQuery(GET_QUEUES, {
-    //   variables: {
-    //     id: props.course.id
-    //   },
-    //   pollInterval: 5000,
-    //   skip: !props.course.id
-    // });
-    const data = {};
+    const {
+        leader,
+        course: { id: courseId },
+    } = props;
 
     /* STATE */
+    const [queues, error, isValidating, mutate] = useQueues(courseId);
     const [success, setSuccess] = useState(false);
-    const [queues, setQueues] = useState([]);
     const [activeQueueId, setActiveQueueId] = useState(null);
     const [active, setActive] = useState("queues");
-    const [leader, setLeader] = useState(props.leader);
-
-    /* QUEUE FUNCTION */
-    const loadQueues = data => {
-        return data.course.queues.edges
-            .map(item => {
-                return {
-                    id: item.node.id,
-                    name: item.node.name,
-                    description: item.node.description,
-                    tags: item.node.tags,
-                    archived: item.node.archived,
-                    activeOverrideTime: item.node.activeOverrideTime,
-                    estimatedWaitTime: item.node.estimatedWaitTime,
-                    numberActiveQuestions: item.node.numberActiveQuestions,
-                };
-            })
-            .sort(queueSortFunc);
-    };
 
     /* HANDLER FUNCTIONS */
     const onQueueSettings = id => {
@@ -77,60 +26,35 @@ const InstructorQueuePage = props => {
         setActive("settings");
     };
 
-    const getQueue = id => {
-        for (const queue of queues) {
-            if (queue.id === id) {
-                return queue;
-            }
-        }
-    };
-
-    /* LOAD DATA */
-    if (data && data.course) {
-        const newQueues = loadQueues(data);
-
-        const numQuestions = newQueues
-            .map(q => q.numberActiveQuestions)
-            .reduce((a, b) => a + b, 0);
-        // document.title = numQuestions === 0 ? defaultDocumentTitle : `(${numQuestions}) ${defaultDocumentTitle}`;
-
-        if (JSON.stringify(newQueues) !== JSON.stringify(queues)) {
-            setQueues(newQueues);
-        }
-    }
-
-    useEffect(() => {
-        setLeader(props.leader);
-    }, [props.leader]);
+    const getQueue = id => queues.filter(q => q.id === id)[0];
 
     return (
         <Grid stackable>
-            {active === "queues" && data && (
+            {active === "queues" && (
                 <InstructorQueues
                     queues={queues}
                     editFunc={onQueueSettings}
                     createFunc={() => {
                         setActive("create");
                     }}
-                    refetch={refetch}
+                    refetch={mutate}
                     leader={leader}
-                    userId={props.userId}
                 />
             )}
             {active === "settings" && (
                 <Grid.Row>
                     <QueueSettings
                         queue={getQueue(activeQueueId)}
-                        refetch={refetch}
+                        refetch={mutate}
                         backFunc={() => setActive("queues")}
                     />
                 </Grid.Row>
             )}
-            {active === "create" && data && (
+            {active === "create" && (
                 <Grid.Row>
                     <CreateQueue
-                        courseId={props.course.id}
-                        refetch={refetch}
+                        courseId={courseId}
+                        refetch={mutate}
                         successFunc={() => setSuccess(true)}
                         backFunc={() => setActive("queues")}
                     />
