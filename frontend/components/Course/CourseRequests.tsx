@@ -59,7 +59,7 @@ export function useInvitedMembers(
     return [invitedMembers, error, isValidating, mutate];
 }
 
-export function useLeader(
+export function useStaff(
     courseId: number,
     initialUser: User
 ): [
@@ -187,7 +187,7 @@ export function useQueues(
         error,
         isValidating,
         mutate,
-    } = useSWR(`/api/courses/${courseId}/queues/`, { initialData });
+    } = useSWR(`/courses/${courseId}/queues/`, { initialData });
     return [data, error, isValidating, mutate];
 }
 
@@ -197,7 +197,7 @@ export function useQuestions(
     initialData: Question[] = []
 ): [Question[], any, boolean, mutateFunction] {
     const { data, error, isValidating, mutate } = useSWR(
-        `/api/courses/${courseId}/queues/${queueId}/questions/`,
+        `/courses/${courseId}/queues/${queueId}/questions/`,
         {
             initialData,
         }
