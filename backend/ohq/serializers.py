@@ -120,7 +120,7 @@ class MembershipInviteSerializer(CourseRouteMixin):
 class QueueSerializer(CourseRouteMixin):
     class Meta:
         model = Queue
-        fields = ("id", "name", "description", "archived", "estimated_wait_time", "active")
+        fields = ("id", "course", "name", "description", "archived", "estimated_wait_time", "active")
 
 
 class QuestionSerializer(QueueRouteMixin):

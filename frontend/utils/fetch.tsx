@@ -17,6 +17,7 @@ export function getApiUrl(path: string): string {
 
 export function doApiRequest(path: string, data?: any): Promise<Response> {
     if (!data) {
+        // eslint-disable-next-line no-param-reassign
         data = {};
     }
     data.credentials = "include";

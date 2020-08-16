@@ -7,10 +7,10 @@ import { mutateFunction, Question } from "../../../types";
 interface QuestionsProps {
     questions: Question[];
     active: boolean;
-    refetch: mutateFunction;
+    refetch: mutateFunction<Question[]>;
 }
 const Questions = (props: QuestionsProps) => {
-    const { questions, refetch } = props;
+    const { questions, refetch, active } = props;
     return (
         <>
             <Grid.Column>
@@ -26,7 +26,7 @@ const Questions = (props: QuestionsProps) => {
                         </Grid.Row>
                     ))}
             </Grid.Column>
-            {props.active && props.questions && props.questions.length === 0 && (
+            {active && questions && questions.length === 0 && (
                 <Grid>
                     <Grid.Row>
                         <Grid.Column>
@@ -39,7 +39,7 @@ const Questions = (props: QuestionsProps) => {
                     </Grid.Row>
                 </Grid>
             )}
-            {!props.active && props.questions.length === 0 && (
+            {!active && questions.length === 0 && (
                 <Grid>
                     <Grid.Row>
                         <Grid.Column>

@@ -42,6 +42,7 @@ export interface User {
 
 export interface Queue {
     id: number;
+    course: number;
     name: string;
     description: string;
     active: boolean;
@@ -64,7 +65,7 @@ export interface Semester {
     term: string;
     pretty: string;
 }
-export type mutateFunction = (
-    data?: any,
+export type mutateFunction<D> = (
+    data?: D,
     shouldRevalidate?: boolean
-) => Promise<any>;
+) => Promise<D>;

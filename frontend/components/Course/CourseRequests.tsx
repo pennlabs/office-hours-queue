@@ -34,7 +34,7 @@ export function useCourse(
 export function useMembers(
     courseId: string,
     initialData: Membership[] = []
-): [Membership[], any, boolean, mutateFunction] {
+): [Membership[], any, boolean, mutateFunction<Membership[]>] {
     const {
         data,
         error,
@@ -48,7 +48,7 @@ export function useMembers(
 export function useInvitedMembers(
     courseId: string,
     initialData: MembershipInvite[] = []
-): [MembershipInvite[], any, boolean, mutateFunction] {
+): [MembershipInvite[], any, boolean, mutateFunction<MembershipInvite[]>] {
     const {
         data,
         error,
@@ -62,46 +62,33 @@ export function useInvitedMembers(
 export function useStaff(
     courseId: number,
     initialUser: User
-): [
-    boolean,
-    boolean,
-    any,
-    boolean,
-    (data?: any, shouldRevalidate?: boolean) => Promise<any>
-] {
-    const { data, error, isValidating, mutate } = useSWR(`/accounts/me/`, {
+): [boolean, boolean, any, boolean, mutateFunction<User>] {
+    const { data, error, isValidating, mutate } = useSWR("/accounts/me/", {
         initialData: initialUser,
     });
     const course = data.membershipSet.find(
         (membership) => membership.course.id === courseId
     );
     const leader = isLeadershipRole(course.kind);
-    const staff = course.kind != "STUDENT";
+    const staff = course.kind !== "STUDENT";
     return [leader, staff, error, isValidating, mutate];
 }
 
 export function useLeadership(
-    courseId: string,
-    memberships: any
-): [
-    Membership[],
-    any,
-    boolean,
-    (data?: any, shouldRevalidate?: boolean) => Promise<any>
-] {
+    courseId: number,
+    initialData: Membership[] = []
+): [Membership[], any, boolean, mutateFunction<Membership[]>] {
     const { data, error, isValidating, mutate } = useSWR(
         `/courses/${courseId}/leadership/`,
-        {
-            initialData: memberships,
-        }
+        { initialData }
     );
     const leadership: Membership[] = data || [];
     return [leadership, error, isValidating, mutate];
 }
 
 export async function changeRole(
-    courseId: string,
-    membershipId: string,
+    courseId: number,
+    membershipId: number,
     kind: string
 ) {
     const payload = { kind };
@@ -118,7 +105,7 @@ export async function changeRole(
     }
 }
 
-export async function deleteMembership(courseId: string, membershipId: string) {
+export async function deleteMembership(courseId: number, membershipId: number) {
     const res = await doApiRequest(
         `/courses/${courseId}/members/${membershipId}/`,
         {
@@ -145,7 +132,7 @@ export async function deleteInvite(courseId: string, inviteId: string) {
 }
 
 export async function sendMassInvites(
-    courseId: string,
+    courseId: number,
     emails: string,
     kind: string
 ) {
@@ -161,7 +148,7 @@ export async function sendMassInvites(
     }
 }
 
-export async function updateCourse(courseId: string, payload: any) {
+export async function updateCourse(courseId: string, payload: Partial<Course>) {
     const res = await doApiRequest(`/courses/${courseId}/`, {
         method: "PATCH",
         body: payload,
@@ -179,9 +166,9 @@ export async function getSemesters(): Promise<Semester[]> {
 }
 
 export function useQueues(
-    courseId: string,
+    courseId: number,
     initialData: Queue[] = []
-): [Queue[], any, boolean, mutateFunction] {
+): [Queue[], any, boolean, mutateFunction<Queue[]>] {
     const {
         data,
         error,
@@ -192,15 +179,28 @@ export function useQueues(
 }
 
 export function useQuestions(
-    courseId: string,
-    queueId: string,
+    courseId: number,
+    queueId: number,
+    refreshInterval: number,
     initialData: Question[] = []
-): [Question[], any, boolean, mutateFunction] {
+): [Question[], any, boolean, mutateFunction<Question[]>] {
     const { data, error, isValidating, mutate } = useSWR(
         `/courses/${courseId}/queues/${queueId}/questions/`,
         {
             initialData,
+            refreshInterval,
         }
     );
     return [data, error, isValidating, mutate];
+}
+
+export async function updateQueue(
+    courseId: number,
+    queueId: number,
+    queue: Partial<Queue>
+) {
+    return doApiRequest(`/api/courses/${courseId}/queues/${queueId}`, {
+        method: "PATCH",
+        body: { ...queue },
+    });
 }
