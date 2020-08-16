@@ -64,6 +64,7 @@ export function useLeader(
     initialUser: User
 ): [
     boolean,
+    boolean,
     any,
     boolean,
     (data?: any, shouldRevalidate?: boolean) => Promise<any>
@@ -75,7 +76,8 @@ export function useLeader(
         (membership) => membership.course.id === courseId
     );
     const leader = isLeadershipRole(course.kind);
-    return [leader, error, isValidating, mutate];
+    const staff = course.kind != "STUDENT";
+    return [leader, staff, error, isValidating, mutate];
 }
 
 export function useLeadership(

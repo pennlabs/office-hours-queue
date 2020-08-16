@@ -6,8 +6,11 @@ import Link from "next/link";
 import SignOutButton from "../SignOut";
 import styles from "../../styles/landingpage.module.css";
 import AboutModal from "../LandingPage/AboutModal";
+import { useRouter } from "next/router";
 
 const Sidebar = (props) => {
+    const router = useRouter();
+    console.log(router.pathname);
     const [showAboutModal, setShowAboutModal] = useState(false);
 
     return (
@@ -29,9 +32,9 @@ const Sidebar = (props) => {
                         }}
                         name="Dashboard"
                         icon="dashboard"
-                        active={props.active === "dashboard"}
+                        active={router.pathname === "/"}
                         color="blue"
-                        onClick={() => props.clickFunc("dashboard")}
+                        href="/"
                     />
                     <Menu.Item
                         style={{
@@ -41,9 +44,9 @@ const Sidebar = (props) => {
                         }}
                         name="Account Settings"
                         icon="setting"
-                        active={props.active === "account_settings"}
+                        active={router.pathname === "/settings"}
                         color="blue"
-                        onClick={() => props.clickFunc("account_settings")}
+                        href="/settings"
                     />
                     <SignOutButton />
                 </Menu>

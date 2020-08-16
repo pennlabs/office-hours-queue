@@ -11,7 +11,7 @@ import {
 import { prettifyRole } from "../../utils/enums";
 
 import AboutModal from "../LandingPage/AboutModal";
-import { useLeader, useLeadership } from "./CourseRequests";
+import { useStaff, useLeadership } from "./CourseRequests";
 import { AuthUserContext } from "../../context/auth";
 
 const CourseSidebar = (props) => {
@@ -23,7 +23,7 @@ const CourseSidebar = (props) => {
     ] = useLeadership(props.courseId, props.leadership);
 
     const { user: initialUser } = useContext(AuthUserContext);
-    const [leader, leaderError, leaderLoading, leaderMutate] = useLeader(
+    const [leader, staff, leaderError, leaderLoading, leaderMutate] = useStaff(
         props.courseId,
         initialUser
     );
@@ -53,30 +53,36 @@ const CourseSidebar = (props) => {
                         active={props.active === "queues"}
                         color="blue"
                     />
-                    <Menu.Item
-                        style={noWrapStyle}
-                        name="Roster"
-                        icon="users"
-                        onClick={() => props.clickFunc("roster")}
-                        active={props.active === "roster"}
-                        color="blue"
-                    />
-                    <Menu.Item
-                        style={noWrapStyle}
-                        name="Analytics"
-                        icon="chart bar"
-                        onClick={() => props.clickFunc("analytics")}
-                        active={props.active === "analytics"}
-                        color="blue"
-                    />
-                    <Menu.Item
-                        style={noWrapStyle}
-                        name="Question Summary"
-                        icon="list ol"
-                        onClick={() => props.clickFunc("summary")}
-                        active={props.active === "summary"}
-                        color="blue"
-                    />
+                    {staff && (
+                        <Menu.Item
+                            style={noWrapStyle}
+                            name="Roster"
+                            icon="users"
+                            onClick={() => props.clickFunc("roster")}
+                            active={props.active === "roster"}
+                            color="blue"
+                        />
+                    )}
+                    {staff && (
+                        <Menu.Item
+                            style={noWrapStyle}
+                            name="Analytics"
+                            icon="chart bar"
+                            onClick={() => props.clickFunc("analytics")}
+                            active={props.active === "analytics"}
+                            color="blue"
+                        />
+                    )}
+                    {staff && (
+                        <Menu.Item
+                            style={noWrapStyle}
+                            name="Question Summary"
+                            icon="list ol"
+                            onClick={() => props.clickFunc("summary")}
+                            active={props.active === "summary"}
+                            color="blue"
+                        />
+                    )}
                     {leader && (
                         <Menu.Item
                             style={noWrapStyle}

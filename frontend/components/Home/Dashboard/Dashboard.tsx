@@ -7,7 +7,8 @@ import InstructorCourses from "./InstructorCourses";
 import StudentCourses from "./StudentCourses";
 import NewUserModal from "./Modals/NewUserModal";
 import { AuthUserContext } from "../../../context/auth";
-import { useMemberships, Course, Membership } from "./DashboardRequests";
+import { useMemberships } from "./DashboardRequests";
+import { Membership, Course } from "../../../types";
 
 const Dashboard = (props) => {
     const { user: initalUser } = useContext(AuthUserContext);
