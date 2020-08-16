@@ -165,6 +165,28 @@ class QuestionPermission(permissions.BasePermission):
         return True
 
 
+class QuestionSearchPermission(permissions.BasePermission):
+    """
+    TAs+ can list questions.
+    """
+
+    def has_permission(self, request, view):
+        # Anonymous users can't do anything
+        if not request.user.is_authenticated:
+            return False
+
+        membership = Membership.objects.filter(
+            course=view.kwargs["course_pk"], user=request.user
+        ).first()
+
+        # Non-Students can't do anything
+        if membership is None:
+            return False
+
+        # TAs+ can list questions
+        return membership.is_ta
+
+
 class MembershipPermission(permissions.BasePermission):
     """
     Students can get their own membership.

@@ -3,12 +3,15 @@ import re
 from django.contrib.auth import get_user_model
 from django.core.validators import ValidationError, validate_email
 from django.db.models import Exists, OuterRef, Q
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from ohq.filters import QuestionSearchFilter
 from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester
+from ohq.pagination import QuestionSearchPagination
 from ohq.permissions import (
     CoursePermission,
     IsSuperuser,
@@ -17,6 +20,7 @@ from ohq.permissions import (
     MembershipInvitePermission,
     MembershipPermission,
     QuestionPermission,
+    QuestionSearchPermission,
     QueuePermission,
 )
 from ohq.schemas import MassInviteSchema
@@ -126,6 +130,19 @@ class QuestionViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Question.objects.filter(queue=self.kwargs["queue_pk"])
+
+
+class QuestionSearchView(generics.ListAPIView):
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = QuestionSearchFilter
+    pagination_class = QuestionSearchPagination
+    permission_classes = [QuestionSearchPermission | IsSuperuser]
+    serializer_class = QuestionSerializer
+
+    def get_queryset(self):
+        return Question.objects.filter(
+            queue__in=Queue.objects.filter(course=self.kwargs["course_pk"])
+        ).order_by("time_asked")
 
 
 class QueueViewSet(viewsets.ModelViewSet):

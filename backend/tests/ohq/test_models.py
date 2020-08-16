@@ -108,7 +108,8 @@ class QuestionTestCase(TestCase):
             course_code="000", department="TEST", course_title="Title", semester=semester
         )
         queue = Queue.objects.create(name="Queue", course=course)
-        self.question = Question.objects.create(text="Question?", queue=queue)
+        user = User.objects.create(username="user", email="example@example.com")
+        self.question = Question.objects.create(text="Question?", queue=queue, asked_by=user)
 
     def test_str(self):
         # TODO: write this

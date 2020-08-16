@@ -208,55 +208,34 @@ class Question(models.Model):
     A question asked within a queue.
     """
 
-    # TODO: save status?
+    STATUS_ASKED = "ASKED"
+    STATUS_WITHDRAWN = "WITHDRAWN"
+    STATUS_ACTIVE = "ACTIVE"
+    STATUS_REJECTED = "REJECTED"
+    STATUS_ANSWERED = "ANSWERED"
+    STATUS_CHOICES = [
+        (STATUS_ASKED, "Asked"),
+        (STATUS_WITHDRAWN, "Withdrawn"),
+        (STATUS_ACTIVE, "Active"),
+        (STATUS_REJECTED, "Rejected"),
+        (STATUS_ANSWERED, "Answered"),
+    ]
     text = models.TextField()
     queue = models.ForeignKey(Queue, on_delete=models.CASCADE)
     video_chat_url = models.URLField(blank=True, null=True)
 
+    status = models.CharField(max_length=9, choices=STATUS_CHOICES, default=STATUS_ACTIVE)
+
     time_asked = models.DateTimeField(auto_now_add=True)
-    asked_by = models.ForeignKey(
-        User, related_name="asked_questions", on_delete=models.SET_NULL, blank=True, null=True
+    asked_by = models.ForeignKey(User, related_name="asked_questions", on_delete=models.CASCADE)
+
+    time_response_started = models.DateTimeField(blank=True, null=True)
+    time_responded_to = models.DateTimeField(blank=True, null=True)
+    responded_to_by = models.ForeignKey(
+        User, related_name="responded_questions", on_delete=models.SET_NULL, blank=True, null=True
     )
-
-    # TODO: clean this up
-    time_last_updated = models.DateTimeField(blank=True, null=True)
-    time_withdrawn = models.DateTimeField(blank=True, null=True)
-
-    time_rejected = models.DateTimeField(blank=True, null=True)
-    rejected_by = models.ForeignKey(
-        User, related_name="rejected_questions", on_delete=models.SET_NULL, blank=True, null=True
-    )
-    rejected_reason = models.CharField(max_length=20, blank=True, null=True)
-    rejected_reason_other = models.CharField(max_length=200, blank=True, null=True)
-
-    time_started = models.DateTimeField(blank=True, null=True)
-    time_answered = models.DateTimeField(blank=True, null=True)
-    answered_by = models.ForeignKey(
-        User, related_name="answered_questions", on_delete=models.SET_NULL, blank=True, null=True
-    )
-
-    # order_key = models.IntegerField(default=0, editable=False)
+    # This field should be a custom message or one of the following:
+    # OTHER, NOT_HERE, OH_ENDED, NOT_SPECIFIC, or WRONG_QUEUE
+    rejected_reason = models.CharField(max_length=255, blank=True, null=True)
 
     should_send_up_soon_notification = models.BooleanField(default=False)
-
-    # @property
-    # def state(self):
-    #     if (
-    #         self.time_started is None
-    #         and self.time_answered is None
-    #         and self.time_rejected is None
-    #         and self.time_withdrawn is None
-    #     ):
-    #         return QuestionState.ACTIVE
-    #     if self.time_answered is not None:
-    #         return QuestionState.ANSWERED
-    #     if self.time_started is not None:
-    #         return QuestionState.STARTED
-    #     if self.time_rejected is not None:
-    #         return QuestionState.REJECTED
-    #     if self.time_withdrawn is not None:
-    #         return QuestionState.WITHDRAWN
-    #     return None
-
-    # def __str__(self):
-    #     return f"{self.time_asked} - {self.queue.course} - {self.queue.name}"

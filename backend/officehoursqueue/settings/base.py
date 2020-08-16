@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "corsheaders",
     "rest_framework",
+    "django_filters",
     "phonenumber_field",
     "email_tools.apps.EmailToolsConfig",
     "accounts.apps.AccountsConfig",

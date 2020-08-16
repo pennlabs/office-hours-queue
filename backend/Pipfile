@@ -31,6 +31,7 @@ drf-nested-routers = "*"
 django-email-tools = "*"
 twilio = "*"
 djangorestframework-camel-case = "*"
+django-filter = "*"
 
 [requires]
 python_version = "3.7"

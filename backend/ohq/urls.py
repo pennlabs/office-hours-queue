@@ -7,6 +7,7 @@ from ohq.views import (
     MassInviteView,
     MembershipInviteViewSet,
     MembershipViewSet,
+    QuestionSearchView,
     QuestionViewSet,
     QueueViewSet,
     SemesterViewSet,
@@ -32,6 +33,9 @@ additional_urls = [
     path("accounts/me/", UserView.as_view(), name="me"),
     path("courses/<slug:course_pk>/leadership/", LeadershipListView.as_view(), name="leadership"),
     path("courses/<slug:course_pk>/mass-invite/", MassInviteView.as_view(), name="mass-invite"),
+    path(
+        "courses/<slug:course_pk>/questions/", QuestionSearchView.as_view(), name="questionsearch"
+    ),
 ]
 
 urlpatterns = router.urls + course_router.urls + queue_router.urls + additional_urls

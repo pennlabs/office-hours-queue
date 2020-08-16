@@ -158,7 +158,7 @@ class CourseTestCase(TestCase):
         )
 
     @parameterized.expand(users, name_func=get_test_name)
-    def test_modify(self, user):
+    def test_modify_archived(self, user):
         self.course.archived = True
         self.course.save()
         test(
@@ -335,7 +335,7 @@ class QuestionTestCase(TestCase):
             "create",
             "post",
             reverse("ohq:question-list", args=[self.course.id, self.queue.id]),
-            {"text": "question", "description": "description"},
+            {"text": "question", "description": "description", "asked_by": self.student.id},
         )
 
     @parameterized.expand(users, name_func=get_test_name)
@@ -367,6 +367,31 @@ class QuestionTestCase(TestCase):
             "patch",
             reverse("ohq:question-detail", args=[self.course.id, self.queue.id, self.question.id]),
             {"description": "new"},
+        )
+
+
+class QuestionSearchTestCase(TestCase):
+    def setUp(self):
+        setUp(self)
+        self.queue = Queue.objects.create(name="Queue", course=self.course)
+        self.question = Question.objects.create(queue=self.queue, asked_by=self.student)
+
+        # Expected results
+        self.expected = {
+            "list": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 403,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+        }
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_list(self, user):
+        test(
+            self, user, "list", "get", reverse("ohq:questionsearch", args=[self.course.id]),
         )
 
 
