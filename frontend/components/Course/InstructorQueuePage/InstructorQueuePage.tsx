@@ -36,6 +36,7 @@ const InstructorQueuePage = (props) => {
         <Grid stackable>
             {active === "queues" && (
                 <InstructorQueues
+                    courseId={courseId}
                     queues={queues}
                     editFunc={onQueueSettings}
                     createFunc={() => {

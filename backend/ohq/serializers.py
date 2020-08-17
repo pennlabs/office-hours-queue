@@ -122,7 +122,6 @@ class QueueSerializer(CourseRouteMixin):
         model = Queue
         fields = (
             "id",
-            "course",
             "name",
             "description",
             "archived",

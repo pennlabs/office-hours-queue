@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Grid, Segment, Icon, Message } from "semantic-ui-react";
 import Queue from "./Queue";
 
-const InstructorQueues = props => {
-    const { queues, leader, createFunc, refetch, editFunc } = props;
+const InstructorQueues = (props) => {
+    const { courseId, queues, leader, createFunc, refetch, editFunc } = props;
+
     const numActive = () => {
         return queues.reduce((count, queue) => {
             return count + (queue.archived ? 0 : 1);
@@ -15,10 +16,11 @@ const InstructorQueues = props => {
             <Grid.Row columns={2}>
                 {queues.length !== 0 &&
                     queues.map(
-                        queue =>
+                        (queue) =>
                             !queue.archived && (
                                 <Grid.Column key={`column${queue.id}`}>
                                     <Queue
+                                        courseId={courseId}
                                         key={queue.id}
                                         queue={queue}
                                         leader={leader}

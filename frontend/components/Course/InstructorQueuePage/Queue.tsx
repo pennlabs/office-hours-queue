@@ -9,18 +9,19 @@ import { updateQueue, useQuestions } from "../CourseRequests";
 // Returns true if l1 is a subset of l2
 const isSubset = (l1, l2) => {
     if (l2.length === 0) return true;
-    return l1.filter(value => l2.includes(value)).length > 0;
+    return l1.filter((value) => l2.includes(value)).length > 0;
 };
 
 interface QueueProps {
+    courseId: number;
     queue: QueueType;
     refetch: mutateFunction<QueueType>;
     leader: boolean;
     editFunc: () => void;
 }
 const Queue = (props: QueueProps) => {
-    const { queue, refetch, leader, editFunc } = props;
-    const { id: queueId, course: courseId, active, estimatedWaitTime } = queue;
+    const { courseId, queue, refetch, leader, editFunc } = props;
+    const { id: queueId, active, estimatedWaitTime } = queue;
 
     /* STATE */
     const [questions, error, isValidating, mutateQuestions] = useQuestions(
