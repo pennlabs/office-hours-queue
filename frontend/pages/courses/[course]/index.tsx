@@ -9,7 +9,7 @@ const CoursePage = (props) => {
 
     return (
         <Course
-            courseId={course}
+            courseId={parseInt(course)}
             course={props.course}
             memberships={props.memberships}
             invites={props.invites}
