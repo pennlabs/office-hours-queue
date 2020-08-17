@@ -142,7 +142,9 @@ const QuestionCard = (props: QuestionCardProps) => {
                                         )
                                     }
                                     content={timeString(
-                                        question.timeAsked,
+                                        question.timeResponseStarted
+                                            ? question.timeResponseStarted
+                                            : question.timeAsked,
                                         false
                                     )}
                                     basic
