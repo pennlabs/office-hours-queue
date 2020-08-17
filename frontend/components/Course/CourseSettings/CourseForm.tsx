@@ -6,10 +6,15 @@ import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 import AsyncSelect from "react-select/async";
 import { useRouter } from "next/router";
-import { getSemesters, updateCourse } from "../CourseRequests";
-import { Semester } from "../../../types";
+import { getSemesters } from "../CourseRequests";
+import { Course, mutateResourceFunction, Semester } from "../../../types";
 
-const CourseForm = (props) => {
+interface CourseFormProps {
+    course: Course;
+    refetch: mutateResourceFunction<Course>;
+}
+const CourseForm = (props: CourseFormProps) => {
+    const { course, refetch } = props;
     const router = useRouter();
     const [loading, setLoading] = useState(false);
 
@@ -20,16 +25,16 @@ const CourseForm = (props) => {
     };
 
     const [input, setInput] = useState({
-        inviteOnly: props.course.inviteOnly,
+        inviteOnly: course.inviteOnly,
         requireVideoChatUrlOnQuestions:
-            props.course.requireVideoChatUrlOnQuestions,
-        videoChatEnabled: props.course.videoChatEnabled,
-        department: props.course.department,
-        courseCode: props.course.courseCode,
-        courseTitle: props.course.courseTitle,
-        semester: props.course.semester,
+            course.requireVideoChatUrlOnQuestions,
+        videoChatEnabled: course.videoChatEnabled,
+        department: course.department,
+        courseCode: course.courseCode,
+        courseTitle: course.courseTitle,
+        semester: course.semester,
     });
-    const [check, setCheck] = useState(videoChatNum(props.course));
+    const [check, setCheck] = useState(videoChatNum(course));
     const [success, setSuccess] = useState(false);
     const [disabled, setDisabled] = useState(true);
     const [error, setError] = useState(false);
@@ -46,11 +51,11 @@ const CourseForm = (props) => {
                 !input.courseCode ||
                 !input.courseTitle ||
                 !input.semester ||
-                (input.department === props.course.department &&
-                    input.courseCode === props.course.courseCode &&
-                    input.courseTitle === props.course.courseTitle &&
-                    input.inviteOnly === props.course.inviteOnly &&
-                    input.semester === props.course.semester)
+                (input.department === course.department &&
+                    input.courseCode === course.courseCode &&
+                    input.courseTitle === course.courseTitle &&
+                    input.inviteOnly === course.inviteOnly &&
+                    input.semester === course.semester)
         );
     };
 
@@ -85,8 +90,9 @@ const CourseForm = (props) => {
     const onSubmit = async () => {
         try {
             setLoading(true);
-            await updateCourse(props.course.id, input);
-            await props.refetch();
+            await refetch(input);
+            // await updateCourse(course.id, input);
+            // await refetch();
             setLoading(false);
             setSuccess(true);
             setDisabled(true);
@@ -99,8 +105,9 @@ const CourseForm = (props) => {
     const onArchived = async () => {
         try {
             setLoading(true);
-            await updateCourse(props.course.id, { archived: true });
-            await props.refetch();
+            await refetch({ archived: true });
+            // await updateCourse(course.id, { archived: true });
+            // await refetch();
             setLoading(false);
             setOpen(false);
             router.replace("/");
@@ -134,7 +141,7 @@ const CourseForm = (props) => {
                 <label>Department</label>
                 <Form.Input
                     className="department-input"
-                    defaultValue={props.course.department}
+                    defaultValue={course.department}
                     name="department"
                     disabled={loading}
                     onChange={handleInputChange}
@@ -143,7 +150,7 @@ const CourseForm = (props) => {
             <Form.Field required>
                 <label>Course Code</label>
                 <Form.Input
-                    defaultValue={props.course.courseCode}
+                    defaultValue={course.courseCode}
                     name="courseCode"
                     disabled={loading}
                     onChange={handleInputChange}
@@ -152,7 +159,7 @@ const CourseForm = (props) => {
             <Form.Field required>
                 <label>Course Title</label>
                 <Form.Input
-                    defaultValue={props.course.courseTitle}
+                    defaultValue={course.courseTitle}
                     name="courseTitle"
                     disabled={loading}
                     onChange={handleInputChange}
@@ -165,7 +172,7 @@ const CourseForm = (props) => {
                     disabled={loading}
                     cacheOptions
                     defaultOptions
-                    defaultInputValue={props.course.semesterPretty}
+                    defaultInputValue={course.semesterPretty}
                     loadOptions={semesterOptions}
                     placeholder="Search..."
                     onChange={(id) =>
@@ -203,7 +210,7 @@ const CourseForm = (props) => {
             <Form.Field required>
                 <label>Invite Only?</label>
                 <Form.Radio
-                    defaultChecked={props.course.inviteOnly}
+                    defaultChecked={course.inviteOnly}
                     name="inviteOnly"
                     disabled={loading}
                     toggle
@@ -231,7 +238,7 @@ const CourseForm = (props) => {
                 <Modal.Content>
                     You are about to archive{" "}
                     <b>
-                        {props.course.department} {props.course.courseCode}
+                        {course.department} {course.courseCode}
                     </b>
                     .
                 </Modal.Content>
@@ -257,7 +264,7 @@ const CourseForm = (props) => {
             >
                 <Alert severity="success" onClose={() => setSuccess(false)}>
                     <span>
-                        <b>{`${props.course.department} ${props.course.courseCode}`}</b>{" "}
+                        <b>{`${course.department} ${course.courseCode}`}</b>{" "}
                         successfully updated
                     </span>
                 </Alert>
@@ -270,7 +277,7 @@ const CourseForm = (props) => {
                 <Alert severity="error" onClose={() => setError(false)}>
                     <span>
                         There was an error updating{" "}
-                        <b>{`${props.course.department} ${props.course.courseCode}`}</b>
+                        <b>{`${course.department} ${course.courseCode}`}</b>
                     </span>
                 </Alert>
             </Snackbar>
@@ -282,7 +289,7 @@ const CourseForm = (props) => {
                 <Alert severity="error" onClose={() => setArchiveError(false)}>
                     <span>
                         There was an error archiving{" "}
-                        <b>{`${props.course.department} ${props.course.courseCode}`}</b>
+                        <b>{`${course.department} ${course.courseCode}`}</b>
                     </span>
                 </Alert>
             </Snackbar>

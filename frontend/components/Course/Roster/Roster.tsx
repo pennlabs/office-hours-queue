@@ -193,17 +193,15 @@ const Roster = (props) => {
 
     const onInviteSuccess = async () => {
         setRosterUpdateToast();
-        await invitedMutate();
+        await invitedMutate(-1, {}, "GET"); // Re-validate.
     };
 
     const onRemoveSuccess = async (name) => {
         setUserRemovedToast(name);
-        await membershipsMutate();
     };
 
     const onRevokeSuccess = async () => {
         setInviteRevokedToast();
-        await invitedMutate();
     };
 
     const onRoleChangeSuccess = async () => {
@@ -301,7 +299,12 @@ const Roster = (props) => {
                                         {leader && (
                                             <Table.Cell textAlign="center">
                                                 <RemoveButton
-                                                    courseId={props.courseId}
+                                                    mutateInvites={
+                                                        invitedMutate
+                                                    }
+                                                    mutateMemberships={
+                                                        membershipsMutate
+                                                    }
                                                     id={invitedMember.id}
                                                     isInvited={true}
                                                     successFunc={
@@ -404,13 +407,18 @@ const Roster = (props) => {
                                         {leader && (
                                             <Table.Cell textAlign="center">
                                                 <RemoveButton
+                                                    mutateInvites={
+                                                        invitedMutate
+                                                    }
+                                                    mutateMemberships={
+                                                        membershipsMutate
+                                                    }
                                                     disabled={
                                                         isOnlyOneLeadership &&
                                                         isLeadershipRole(
                                                             membership.kind
                                                         )
                                                     }
-                                                    courseId={props.courseId}
                                                     id={membership.id}
                                                     userName={`${membership.user.firstName} ${membership.user.lastName}`}
                                                     isInvited={false}

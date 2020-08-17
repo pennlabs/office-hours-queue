@@ -1,17 +1,31 @@
 import React, { useState } from "react";
 import { Icon, Popup, Button } from "semantic-ui-react";
-import { deleteInvite, deleteMembership } from "../CourseRequests";
+import {
+    Membership,
+    MembershipInvite,
+    mutateResourceListFunction,
+} from "../../../types";
 
-const RemoveButton = (props) => {
+interface RemoveButtonProps {
+    disabled?: boolean;
+    id: number;
+    userName?: string;
+    isInvited: boolean;
+    successFunc: (userName?: string) => void;
+    mutateInvites: mutateResourceListFunction<MembershipInvite>;
+    mutateMemberships: mutateResourceListFunction<Membership>;
+}
+const RemoveButton = (props: RemoveButtonProps) => {
+    const { mutateInvites, mutateMemberships } = props;
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
 
     const onSubmit = async () => {
         setLoading(true);
         if (props.isInvited) {
-            await deleteInvite(props.courseId, props.id);
+            await mutateInvites(props.id, null, "DELETE");
         } else {
-            await deleteMembership(props.courseId, props.id);
+            await mutateMemberships(props.id, null, "DELETE");
         }
         setLoading(false);
         setOpen(false);

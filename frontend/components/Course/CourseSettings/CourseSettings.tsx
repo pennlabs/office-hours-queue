@@ -1,8 +1,15 @@
 import React from "react";
 import { Segment, Header, Grid } from "semantic-ui-react";
 import CourseForm from "./CourseForm";
+import { Course, mutateResourceFunction } from "../../../types";
 
-const CourseSettings = (props) => {
+interface CourseSettingsProps {
+    course: Course;
+    refetch: mutateResourceFunction<Course>;
+}
+
+const CourseSettings = (props: CourseSettingsProps) => {
+    const { course, refetch } = props;
     return (
         <div>
             <Grid.Row>
@@ -12,7 +19,7 @@ const CourseSettings = (props) => {
             </Grid.Row>
             <Grid.Row>
                 <Segment basic>
-                    <CourseForm course={props.course} refetch={props.refetch} />
+                    <CourseForm course={course} refetch={refetch} />
                 </Segment>
             </Grid.Row>
         </div>

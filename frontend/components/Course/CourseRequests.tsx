@@ -17,13 +17,15 @@ import {
 
 function useResource<R>(
     url: string,
-    initialData?: R,
-    method: string = "PATCH"
+    initialData?: R
 ): [R, any, boolean, mutateResourceFunction<R>] {
     const { data, error, isValidating, mutate } = useSWR(url, {
         initialData,
     });
-    const mutateWithAPI = async (newResource: Partial<R>) => {
+    const mutateWithAPI = async (
+        newResource: Partial<R>,
+        method: string = "PATCH"
+    ) => {
         mutate({ ...data, ...newResource }, false);
         await doApiRequest(url, {
             method,
@@ -38,28 +40,30 @@ function useResource<R>(
  * Patch in an updated element in a list.
  * @param list list of elements, where elements have an `id` property.
  * @param id identifier to update
- * @param patch updated properties.
+ * @param patch updated properties. If null, delete from list.
  */
 function patchInList<T extends Identifiable>(
     list: T[],
     id: number,
-    patch: Partial<T>
-): T[] {
+    patch: Partial<T> | null
+): [T[], boolean] {
     for (let i = 0; i < list.length; i += 1) {
         const obj = list[i];
         // If the ID of this element matches the desired ID
         if (obj.id === id) {
-            // Create a new object with updated properties.
+            if (patch === null) {
+                return [[...list.slice(0, i), ...list.slice(i + 1)], true];
+            }
             const newObj = { ...obj, ...patch };
-            return [...list.slice(0, i), newObj, ...list.slice(i + 1)];
+            return [[...list.slice(0, i), newObj, ...list.slice(i + 1)], true];
         }
     }
     // if no match exists, return the original list.
-    return list;
+    return [list, false];
 }
 
 function useResourceList<P, R extends Identifiable>(
-    listUrl: string,
+    listUrl: string | (() => string),
     getResourceUrl: (id: number) => string,
     initialData?: R[]
 ): [R[], any, boolean, mutateResourceListFunction<R>] {
@@ -68,14 +72,19 @@ function useResourceList<P, R extends Identifiable>(
     });
     const mutateWithAPI = async (
         id: number,
-        patchedResource: Partial<R>,
+        patchedResource: Partial<R> | null,
         method: string = "PATCH"
     ) => {
-        mutate(patchInList(data, id, patchedResource), false);
-        await doApiRequest(getResourceUrl(id), {
-            method,
-            body: patchedResource,
-        });
+        const [patchedList, didPatch] = patchInList(data, id, patchedResource);
+        if (didPatch) {
+            // Only perform an API request when the patch finds a matching entry.
+            mutate(patchedList, false);
+            await doApiRequest(getResourceUrl(id), {
+                method,
+                body: patchedResource,
+            });
+        }
+        // Always revalidate, even if mutate was a no-op.
         return mutate();
     };
     return [data, error, isValidating, mutateWithAPI];
@@ -130,51 +139,6 @@ export function useLeadership(
     return [leadership, error, isValidating, mutate];
 }
 
-export async function changeRole(
-    courseId: number,
-    membershipId: number,
-    kind: string
-) {
-    const payload = { kind };
-    const res = await doApiRequest(
-        `/courses/${courseId}/members/${membershipId}/`,
-        {
-            method: "PATCH",
-            body: payload,
-        }
-    );
-
-    if (!res.ok) {
-        throw new Error("Could not update membership");
-    }
-}
-
-export async function deleteMembership(courseId: number, membershipId: number) {
-    const res = await doApiRequest(
-        `/courses/${courseId}/members/${membershipId}/`,
-        {
-            method: "DELETE",
-        }
-    );
-
-    if (!res.ok) {
-        throw new Error("Could not delete membership");
-    }
-}
-
-export async function deleteInvite(courseId: string, inviteId: string) {
-    const res = await doApiRequest(
-        `/courses/${courseId}/invites/${inviteId}/`,
-        {
-            method: "DELETE",
-        }
-    );
-
-    if (!res.ok) {
-        throw new Error("Could not delete invite");
-    }
-}
-
 export async function sendMassInvites(
     courseId: number,
     emails: string,
@@ -184,17 +148,6 @@ export async function sendMassInvites(
 
     const res = await doApiRequest(`/courses/${courseId}/mass-invite/`, {
         method: "POST",
-        body: payload,
-    });
-
-    if (!res.ok) {
-        throw new Error("Could not send invites");
-    }
-}
-
-export async function updateCourse(courseId: string, payload: Partial<Course>) {
-    const res = await doApiRequest(`/courses/${courseId}/`, {
-        method: "PATCH",
         body: payload,
     });
 

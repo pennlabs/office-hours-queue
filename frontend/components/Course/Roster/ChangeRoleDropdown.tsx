@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { Dropdown, Popup } from "semantic-ui-react";
 import { staffRoleOptions } from "../../../utils/enums";
-import { changeRole } from "../CourseRequests";
 import { Membership, mutateResourceListFunction } from "../../../types";
 
 interface ChangeRoleDropdownProps {
@@ -17,7 +16,6 @@ const ChangeRoleDropdown = (props) => {
 
     const handleInputChange = async (e, { name, value }) => {
         await mutate(membershipId, { kind: value });
-        // await changeRole(courseId, membershipId, value);
         props.successFunc();
     };
 
