@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Modal, List, Button } from "semantic-ui-react";
+import { clearQueue as sendClearQueue } from "../CourseRequests";
 // import { gql } from "apollo-boost";
 // import { useMutation } from "@apollo/react-hooks";
 import firebase from "../../Firebase";
+import { mutateFunction, Queue } from "../../../types";
 
 // const CLEAR_QUEUE = gql`
 //   mutation ClearQueue($input: ClearQueueInput!) {
@@ -12,36 +14,40 @@ import firebase from "../../Firebase";
 //   }
 // `;
 
-const ClearQueueModal = props => {
-    const [clearQueue, { loading }] = useMutation(CLEAR_QUEUE);
+interface ClearQueueModalProps {
+    queue: Queue;
+    courseId: number;
+    queueId: number;
+    refetch: mutateFunction<Queue>;
+    closeFunc: () => void;
+    open: boolean;
+}
+const ClearQueueModal = (props: ClearQueueModalProps) => {
+    const { courseId, queueId, refetch, closeFunc, open, queue } = props;
+    const clearQueue = () => sendClearQueue(courseId, queueId);
     const [refetchLoading, setRefetchLoading] = useState(false);
+    const loading = false;
 
     const onSubmit = async () => {
         firebase.analytics.logEvent("queue_clear");
         try {
-            await clearQueue({
-                variables: {
-                    input: {
-                        queueId: props.queue.id,
-                    },
-                },
-            });
+            await clearQueue();
             await setRefetchLoading(true);
-            await props.refetch();
+            await refetch();
             await setRefetchLoading(false);
-            props.closeFunc();
+            closeFunc();
         } catch (e) {
             await setRefetchLoading(false);
         }
     };
 
     return (
-        <Modal open={props.open}>
+        <Modal open={open}>
             <Modal.Header content="Clear Queue" />
             <Modal.Content>
                 <div>
                     You are about to clear all remaining questions on{" "}
-                    <b>{props.queue.name}</b>.<br />
+                    <b>{queue.name}</b>.<br />
                     <br />
                     Doing so will:
                     <List ordered>

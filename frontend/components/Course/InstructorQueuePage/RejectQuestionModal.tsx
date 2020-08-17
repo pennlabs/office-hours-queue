@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { Form, Modal, Button, Segment } from "semantic-ui-react";
+import React, { useState } from "react";
+import { Button, Form, Modal, Segment } from "semantic-ui-react";
 // import { gql } from 'apollo-boost';
 // import { useMutation } from '@apollo/react-hooks';
 import firebase from "../../Firebase";
+import { mutateFunction, Question, QuestionStatus } from "../../../types";
+import { updateQuestion } from "../CourseRequests";
+import { fullName } from "./QuestionCard";
 
 /* GRAPHQL QUERIES/MUTATIONS */
 // const REJECT_QUESTION = gql`
@@ -15,23 +18,41 @@ import firebase from "../../Firebase";
 //   }
 // `;
 
-// const rejectOptions = [
-//   {key: 'NOT_HERE', value: 'NOT_HERE', text: 'Not Here'},
-//   {key: 'OH_ENDED', value: 'OH_ENDED', text: 'OH Ended'},
-//   {key: 'NOT_SPECIFIC', value: 'NOT_SPECIFIC', text: 'Not Specific'},
-//   {key: 'WRONG_QUEUE', value: 'WRONG_QUEUE', text: 'Wrong Queue'},
-//   {key: 'OTHER', value: 'OTHER', text: 'Other'}
-// ];
+const rejectOptions = [
+    { key: "NOT_HERE", value: "NOT_HERE", text: "Not Here" },
+    { key: "OH_ENDED", value: "OH_ENDED", text: "OH Ended" },
+    { key: "NOT_SPECIFIC", value: "NOT_SPECIFIC", text: "Not Specific" },
+    { key: "WRONG_QUEUE", value: "WRONG_QUEUE", text: "Wrong Queue" },
+    { key: "OTHER", value: "OTHER", text: "Other" },
+];
 
-const RejectQuestionModal = props => {
-    const [question, setQuestion] = useState(props.question);
-    const [input, setInput] = useState({
-        questionId: props.question.id,
+interface RejectQuestionModalProps {
+    question: Question;
+    courseId: number;
+    queueId: number;
+    closeFunc: () => void;
+    refetch: mutateFunction<Question[]>;
+    open: boolean;
+}
+interface ReasonProps {
+    rejectedReason: string | null;
+    rejectedReasonOther: string | null;
+}
+const RejectQuestionModal = (props: RejectQuestionModalProps) => {
+    const { question, courseId, queueId, closeFunc, open } = props;
+    const { id: questionId } = question;
+    const [input, setInput] = useState<ReasonProps>({
         rejectedReason: null,
+        rejectedReasonOther: null,
     });
+
     const [otherDisabled, setOtherDisabled] = useState(true);
     const [rejectDisabled, setRejectDisabled] = useState(true);
-    const [rejectQuestion, { loading }] = useMutation(REJECT_QUESTION);
+    const rejectQuestion = async () =>
+        updateQuestion(courseId, queueId, questionId, {
+            status: QuestionStatus.REJECTED,
+            rejectedReason: input.rejectedReason,
+        });
 
     const handleInputChange = (e, { name, value }) => {
         input[name] = value;
@@ -54,31 +75,22 @@ const RejectQuestionModal = props => {
     const onSubmit = async () => {
         if (!input.rejectedReason) return;
         try {
-            await rejectQuestion({
-                variables: {
-                    input: input,
-                },
-            });
-            firebase.analytics.logEvent("question_rejected");
-            props.closeFunc();
+            await rejectQuestion();
+            closeFunc();
             await props.refetch();
         } catch (e) {
             console.log(e);
         }
     };
 
-    useEffect(() => {
-        setQuestion(props.question);
-    }, [props.question]);
-
     return (
         question && (
-            <Modal open={props.open}>
+            <Modal open={open}>
                 <Modal.Header>Reject Question</Modal.Header>
                 <Modal.Content>
                     <Modal.Description>
                         You are about to reject the following question from
-                        <b>{" " + question.askedBy.preferredName}</b>:<br />
+                        <b>{` ${fullName(question.askedBy)}`}</b>:<br />
                         <Segment
                             inverted
                             color="blue"
@@ -99,9 +111,7 @@ const RejectQuestionModal = props => {
                                         disabled={otherDisabled}
                                         name="rejectedReasonOther"
                                         onChange={handleInputChange}
-                                        placeholder={
-                                            "Please add additional explanation"
-                                        }
+                                        placeholder="Please add additional explanation"
                                     />
                                 </Form.Field>
                             )}
@@ -111,13 +121,13 @@ const RejectQuestionModal = props => {
                 <Modal.Actions>
                     <Button
                         content="Cancel"
-                        disabled={loading}
-                        onClick={props.closeFunc}
+                        disabled={false}
+                        onClick={closeFunc}
                     />
                     <Button
                         content="Reject"
-                        disabled={loading || rejectDisabled}
-                        loading={loading}
+                        disabled={rejectDisabled}
+                        loading={false}
                         color="red"
                         onClick={onSubmit}
                     />

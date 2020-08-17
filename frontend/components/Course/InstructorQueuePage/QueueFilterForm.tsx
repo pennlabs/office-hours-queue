@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { Form } from "semantic-ui-react";
 
 const QueueFilterForm = props => {
+    const { tags } = props;
     const tagOptions =
-        props.tags &&
-        props.tags.map(tag => ({
+        tags &&
+        tags.map(tag => ({
             key: tag,
             value: tag,
             text: tag,
@@ -21,7 +22,7 @@ const QueueFilterForm = props => {
         <Form.Group>
             {tagOptions && (
                 <Form.Field>
-                    {/*<label>Tags</label>*/}
+                    {/* <label>Tags</label> */}
                     <Form.Dropdown
                         multiple
                         selection

@@ -5,6 +5,7 @@ from django.core.validators import ValidationError, validate_email
 from django.db.models import Exists, OuterRef, Q
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -173,6 +174,13 @@ class QueueViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Queue.objects.filter(course=self.kwargs["course_pk"])
+
+    @action(methods=["POST"], detail=True)
+    def clear(self, request, pk=None):
+        """
+        Clear the queue by rejecting all questions which are currently open (in the asked state).
+        """
+        Question.objects.filter(queue=pk, status=Question.STATUS_ASKED).update(status=Question.STATUS_REJECTED)
 
 
 class MembershipViewSet(viewsets.ModelViewSet):

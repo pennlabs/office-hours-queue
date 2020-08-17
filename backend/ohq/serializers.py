@@ -94,7 +94,7 @@ class CourseCreateSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ("first_name", "last_name", "email")
+        fields = ("first_name", "last_name", "email", "id")
 
 
 class MembershipSerializer(CourseRouteMixin):
@@ -124,32 +124,25 @@ class QueueSerializer(CourseRouteMixin):
 
 
 class QuestionSerializer(QueueRouteMixin):
-    asked_by_pretty = serializers.SerializerMethodField()
-    responded_to_by_pretty = serializers.SerializerMethodField()
+    asked_by = UserSerializer()
+    responded_to_by = UserSerializer()
 
     class Meta:
         model = Question
         fields = (
+            "id",
             "text",
             "video_chat_url",
             "status",
             "time_asked",
             "asked_by",
-            "asked_by_pretty",
             "time_response_started",
             "time_responded_to",
             "responded_to_by",
-            "responded_to_by_pretty",
             "rejected_reason",
             "should_send_up_soon_notification",
         )
         # TODO: restrict what fields students/TAs can modify
-
-    def get_responded_to_by_pretty(self, obj):
-        return obj.responded_to_by.get_full_name() if obj.responded_to_by else ""
-
-    def get_asked_by_pretty(self, obj):
-        return obj.asked_by.get_full_name() if obj.asked_by else ""
 
 
 class MembershipPrivateSerializer(CourseRouteMixin):

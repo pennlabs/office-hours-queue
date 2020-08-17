@@ -33,6 +33,7 @@ export interface Profile {
 }
 
 export interface User {
+    id: number;
     firstName: string;
     lastName: string;
     email: string;
@@ -50,14 +51,28 @@ export interface Queue {
     estimatedWaitTime: number;
 }
 
+// "ASKED" "WITHDRAWN" "ACTIVE" "REJECTED" "ANSWERED"
+export enum QuestionStatus {
+    ASKED = "ASKED",
+    WITHDRAWN = "WITHDRAWN",
+    ACTIVE = "ACTIVE",
+    REJECTED = "REJECTED",
+    ANSWERED = "ANSWERED",
+}
+
 export interface Question {
+    id: number;
     text: string;
     videoChatUrl: string;
+    status: QuestionStatus;
     timeAsked: Date;
     askedBy: User;
-    answeredBy: User;
-    rejectedBy: User;
+    respondedToBy: User;
     rejectedReason: string | null;
+    timeResponseStarted: Date;
+    timeRespondedTo: Date;
+    shouldSendUpSoonNotification: boolean;
+    tags?: string[];
 }
 
 export interface Semester {

@@ -2,26 +2,19 @@ import React, { useState, useEffect } from "react";
 import { Segment, Header, Label, Grid } from "semantic-ui-react";
 
 const Tags = props => {
-    /* STATE */
-    const [tags, setTags] = useState(props.tags);
+    const { tags } = props;
 
     /* HANDLER FUNCTIONS */
     const clearTags = () => {
         tags.forEach(tag => {
+            // eslint-disable-next-line no-param-reassign
             tag.isActive = false;
         });
-        setTags(tags);
     };
 
     const handleTagClick = index => {
         tags[index].isActive = !tags[index].isActive;
-        setTags(tags);
     };
-
-    /* PROPS UPDATE */
-    useEffect(() => {
-        setTags(props.tags);
-    }, [props.tags]);
 
     return (
         <Grid.Row>
@@ -32,7 +25,7 @@ const Tags = props => {
                         tags.map((tag, index) => (
                             <Label
                                 as="a"
-                                color={tag.isActive ? "blue" : ""}
+                                color={tag.isActive ? "blue" : "grey"}
                                 onClick={() => handleTagClick(index)}
                                 content={tag.name}
                             />

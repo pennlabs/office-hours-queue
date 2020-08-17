@@ -9,7 +9,7 @@ import { updateQueue, useQuestions } from "../CourseRequests";
 // Returns true if l1 is a subset of l2
 const isSubset = (l1, l2) => {
     if (l2.length === 0) return true;
-    return l1.filter((value) => l2.includes(value)).length > 0;
+    return l1.filter(value => l2.includes(value)).length > 0;
 };
 
 interface QueueProps {
@@ -139,6 +139,8 @@ const Queue = (props: QueueProps) => {
             </Grid>
             <Grid.Row columns={1}>
                 <Questions
+                    courseId={courseId}
+                    queueId={queueId}
                     questions={filteredQuestions}
                     refetch={mutateQuestions}
                     active={active}

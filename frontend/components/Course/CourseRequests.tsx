@@ -78,10 +78,12 @@ export function useLeadership(
     courseId: number,
     initialData: Membership[] = []
 ): [Membership[], any, boolean, mutateFunction<Membership[]>] {
-    const { data, error, isValidating, mutate } = useSWR(
-        `/courses/${courseId}/leadership/`,
-        { initialData }
-    );
+    const {
+        data,
+        error,
+        isValidating,
+        mutate,
+    } = useSWR(`/courses/${courseId}/leadership/`, { initialData });
     const leadership: Membership[] = data || [];
     return [leadership, error, isValidating, mutate];
 }
@@ -199,8 +201,29 @@ export async function updateQueue(
     queueId: number,
     queue: Partial<Queue>
 ) {
-    return doApiRequest(`/api/courses/${courseId}/queues/${queueId}`, {
+    return doApiRequest(`/courses/${courseId}/queues/${queueId}`, {
         method: "PATCH",
         body: { ...queue },
     });
+}
+
+export async function clearQueue(courseId: number, queueId: number) {
+    return doApiRequest(`/courses/${courseId}/queues/${queueId}/clear/`, {
+        method: "POST",
+    });
+}
+
+export async function updateQuestion(
+    courseId: number,
+    queueId: number,
+    questionId: number,
+    question: Partial<Question>
+) {
+    return doApiRequest(
+        `/courses/${courseId}/queues/${queueId}/questions/${questionId}/`,
+        {
+            method: "PATCH",
+            body: { ...question },
+        }
+    );
 }

@@ -6,21 +6,25 @@ import { mutateFunction, Question } from "../../../types";
 
 interface QuestionsProps {
     questions: Question[];
+    courseId: number;
+    queueId: number;
     active: boolean;
     refetch: mutateFunction<Question[]>;
 }
 const Questions = (props: QuestionsProps) => {
-    const { questions, refetch, active } = props;
+    const { questions, refetch, active, courseId, queueId } = props;
     return (
         <>
             <Grid.Column>
                 {questions &&
                     questions.length !== 0 &&
-                    _.sortBy(questions, "orderKey").map((question) => (
+                    _.sortBy(questions, "orderKey").map(question => (
                         <Grid.Row>
                             <QuestionCard
                                 key={question.id}
                                 question={question}
+                                courseId={courseId}
+                                queueId={queueId}
                                 refetch={refetch}
                             />
                         </Grid.Row>
