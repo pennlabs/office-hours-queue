@@ -67,7 +67,7 @@ export function useStaff(
         initialData: initialUser,
     });
     const course = data.membershipSet.find(
-        (membership) => membership.course.id === courseId
+        membership => membership.course.id === courseId
     );
     const leader = isLeadershipRole(course.kind);
     const staff = course.kind !== "STUDENT";
@@ -163,8 +163,8 @@ export async function updateCourse(courseId: string, payload: Partial<Course>) {
 
 export async function getSemesters(): Promise<Semester[]> {
     return doApiRequest("/semesters/")
-        .then((res) => res.json())
-        .catch((_) => []);
+        .then(res => res.json())
+        .catch(_ => []);
 }
 
 export function useQueues(

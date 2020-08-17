@@ -14,13 +14,14 @@ import AboutModal from "../LandingPage/AboutModal";
 import { useStaff, useLeadership } from "./CourseRequests";
 import { AuthUserContext } from "../../context/auth";
 
-const CourseSidebar = (props) => {
+const CourseSidebar = props => {
     const [
         leadership,
         leadershipError,
         leadershipLoading,
         leadershipMutate,
     ] = useLeadership(props.courseId, props.leadership);
+    console.log("rendering sidebar...", props)
 
     const { user: initialUser } = useContext(AuthUserContext);
     const [leader, staff, leaderError, leaderLoading, leaderMutate] = useStaff(
@@ -99,7 +100,7 @@ const CourseSidebar = (props) => {
                 <Segment basic>
                     <Header as="h3">Instructors</Header>
                     <List>
-                        {leadership.map((membership) => {
+                        {leadership.map(membership => {
                             return (
                                 <List.Item
                                     key={membership.id}

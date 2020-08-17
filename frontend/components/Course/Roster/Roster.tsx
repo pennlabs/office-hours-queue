@@ -12,7 +12,7 @@ import ChangeRoleDropdown from "./ChangeRoleDropdown";
 import { useInvitedMembers, useMembers, useStaff } from "../CourseRequests";
 import { AuthUserContext } from "../../../context/auth";
 
-const Roster = (props) => {
+const Roster = props => {
     // Types
     type tableStateType = {
         direction: "ascending" | "descending";
@@ -68,7 +68,7 @@ const Roster = (props) => {
     };
 
     /* TABLE FUNCTIONS */
-    const handleSort = (clickedColumn) => {
+    const handleSort = clickedColumn => {
         if (tableState.column !== clickedColumn) {
             setTableState({
                 column: clickedColumn,
@@ -85,7 +85,7 @@ const Roster = (props) => {
         }
     };
 
-    const handleInvitedSort = (clickedColumn) => {
+    const handleInvitedSort = clickedColumn => {
         if (invitedTableState.column !== clickedColumn) {
             setInvitedTableState({
                 column: clickedColumn,
@@ -103,8 +103,8 @@ const Roster = (props) => {
     };
 
     /* FILTER USERS BASED ON INPUT */
-    const filterUsers = (input) => {
-        const newFilteredUsers = memberships.filter((membership) => {
+    const filterUsers = input => {
+        const newFilteredUsers = memberships.filter(membership => {
             const role = membership.kind.toLowerCase();
             return (
                 (membership.user.firstName
@@ -132,7 +132,7 @@ const Roster = (props) => {
     /* LOAD DATA */
 
     const isOnlyOneLeadership =
-        memberships.filter((membership) => isLeadershipRole(membership.kind))
+        memberships.filter(membership => isLeadershipRole(membership.kind))
             .length < 2;
 
     // TODO: this isn't a great way of doing this. Look into getServerSideProps or something else to get data
@@ -149,7 +149,7 @@ const Roster = (props) => {
         });
     };
 
-    const setUserRemovedToast = (name) => {
+    const setUserRemovedToast = name => {
         setToast({
             open: true,
             success: true,
@@ -194,7 +194,7 @@ const Roster = (props) => {
         await invitedMutate();
     };
 
-    const onRemoveSuccess = async (name) => {
+    const onRemoveSuccess = async name => {
         setUserRemovedToast(name);
         await membershipsMutate();
     };
@@ -289,7 +289,7 @@ const Roster = (props) => {
                                     invitedTableState.direction === "ascending"
                                         ? "asc"
                                         : "desc"
-                                ).map((invitedMember) => (
+                                ).map(invitedMember => (
                                     <Table.Row>
                                         <Table.Cell>
                                             {invitedMember.email}
@@ -369,7 +369,7 @@ const Roster = (props) => {
                                     tableState.direction === "ascending"
                                         ? "asc"
                                         : "desc"
-                                ).map((membership) => (
+                                ).map(membership => (
                                     <Table.Row key={membership.id}>
                                         <Table.Cell>
                                             {membership.user.firstName}{" "}

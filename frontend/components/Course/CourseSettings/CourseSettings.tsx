@@ -2,7 +2,7 @@ import React from "react";
 import { Segment, Header, Grid } from "semantic-ui-react";
 import CourseForm from "./CourseForm";
 
-const CourseSettings = (props) => {
+const CourseSettings = props => {
     return (
         <div>
             <Grid.Row>

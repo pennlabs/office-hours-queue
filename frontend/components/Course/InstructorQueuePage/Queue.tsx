@@ -52,6 +52,8 @@ const Queue = (props: QueueProps) => {
     return (
         <Segment basic>
             <ClearQueueModal
+                courseId={courseId}
+                queueId={queueId}
                 open={clearModalOpen}
                 queue={queue}
                 refetch={refetch}
@@ -93,7 +95,7 @@ const Queue = (props: QueueProps) => {
                         <Button
                             size="mini"
                             content="Close"
-                            color={!active ? null : "red"}
+                            color={active ? "red" : null}
                             disabled={!active}
                             loading={false}
                             onClick={onClose}

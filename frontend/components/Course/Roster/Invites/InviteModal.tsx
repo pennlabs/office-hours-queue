@@ -3,7 +3,7 @@ import { Modal, Button } from "semantic-ui-react";
 import AddForm from "./AddForm";
 import { sendMassInvites } from "../../CourseRequests";
 
-const InviteModal = (props) => {
+const InviteModal = props => {
     const [loading, setLoading] = useState(false);
     const [input, setInput] = useState({ emails: null, kind: null });
     const [disabled, setDisabled] = useState(true);

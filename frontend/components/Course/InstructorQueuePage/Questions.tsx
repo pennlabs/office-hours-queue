@@ -18,7 +18,7 @@ const Questions = (props: QuestionsProps) => {
             <Grid.Column>
                 {questions &&
                     questions.length !== 0 &&
-                    _.sortBy(questions, "orderKey").map(question => (
+                    _.sortBy(questions, "orderKey").map((question) => (
                         <Grid.Row>
                             <QuestionCard
                                 key={question.id}

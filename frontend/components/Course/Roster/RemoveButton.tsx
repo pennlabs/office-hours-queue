@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Icon, Popup, Button } from "semantic-ui-react";
 import { deleteInvite, deleteMembership } from "../CourseRequests";
 
-const RemoveButton = (props) => {
+const RemoveButton = props => {
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
 

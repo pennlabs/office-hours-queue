@@ -3,7 +3,7 @@ import { Dropdown, Popup } from "semantic-ui-react";
 import { staffRoleOptions } from "../../../utils/enums";
 import { changeRole } from "../CourseRequests";
 
-const ChangeRoleDropdown = (props) => {
+const ChangeRoleDropdown = props => {
     const [input, setInput] = useState({ role: props.role });
 
     const handleInputChange = async (e, { name, value }) => {
