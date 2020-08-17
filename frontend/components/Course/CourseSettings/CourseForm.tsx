@@ -5,15 +5,15 @@ import { Form, Button, Modal } from "semantic-ui-react";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 import AsyncSelect from "react-select/async";
+import { useRouter } from "next/router";
 import { getSemesters, updateCourse } from "../CourseRequests";
 import { Semester } from "../../../types";
-import { useRouter } from "next/router";
 
-const CourseForm = props => {
+const CourseForm = (props) => {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
 
-    const videoChatNum = course => {
+    const videoChatNum = (course) => {
         if (course.requireVideoChatUrlOnQuestions) return 0;
         if (course.videoChatEnabled) return 1;
         return 2;
@@ -79,7 +79,6 @@ const CourseForm = props => {
                 break;
             }
             default:
-                return;
         }
     };
 
@@ -116,13 +115,13 @@ const CourseForm = props => {
         console.log(semesters);
         return semesters
             .filter(
-                semester =>
+                (semester) =>
                     semester.pretty
                         .toLowerCase()
                         .includes(inputValue.toLowerCase()) ||
                     inputValue.length === 0
             )
-            .map(semester => {
+            .map((semester) => {
                 return {
                     label: semester.pretty,
                     value: semester.id,
@@ -135,7 +134,7 @@ const CourseForm = props => {
             <Form.Field required>
                 <label>Department</label>
                 <Form.Input
-                    className={"department-input"}
+                    className="department-input"
                     defaultValue={props.course.department}
                     name="department"
                     disabled={loading}
@@ -170,7 +169,7 @@ const CourseForm = props => {
                     defaultInputValue={props.course.semesterPretty}
                     loadOptions={semesterOptions}
                     placeholder="Search..."
-                    onChange={id =>
+                    onChange={(id) =>
                         handleInputChange(undefined, {
                             name: "semester",
                             value: id.value,

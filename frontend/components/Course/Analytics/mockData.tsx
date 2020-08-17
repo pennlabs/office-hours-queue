@@ -1,7 +1,7 @@
 import React from "react";
 import { Bar } from "react-chartjs-2";
 
-//---Labels---//
+// ---Labels---//
 export const dateLabels = [
     new Date("December 10, 2019 10:12"),
     new Date("December 18, 2019 20:12"),
@@ -10,7 +10,7 @@ export const dateLabels = [
     new Date("December 25, 2019 14:21"),
 ];
 
-//---Data---//
+// ---Data---//
 export const DashboardBarChart = () => {
     const data = {
         labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
@@ -120,7 +120,7 @@ export const data = {
 
 export const options = {
     type: "line",
-    data: data,
+    data,
     options: {
         fill: false,
         responsive: true,

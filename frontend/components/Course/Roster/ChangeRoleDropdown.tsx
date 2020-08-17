@@ -3,7 +3,7 @@ import { Dropdown, Popup } from "semantic-ui-react";
 import { staffRoleOptions } from "../../../utils/enums";
 import { changeRole } from "../CourseRequests";
 
-const ChangeRoleDropdown = props => {
+const ChangeRoleDropdown = (props) => {
     const [input, setInput] = useState({ role: props.role });
 
     const handleInputChange = async (e, { name, value }) => {
@@ -29,9 +29,9 @@ const ChangeRoleDropdown = props => {
         <Popup
             trigger={<div>{dropdown}</div>}
             disabled={!props.disabled}
-            content={"Cannot change only user in leadership role"}
-            on={"hover"}
-            position={"left center"}
+            content="Cannot change only user in leadership role"
+            on="hover"
+            position="left center"
         />
     );
 };

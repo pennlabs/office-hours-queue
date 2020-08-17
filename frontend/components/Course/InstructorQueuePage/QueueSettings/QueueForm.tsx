@@ -11,7 +11,7 @@ const QueueForm = (props) => {
     const [success, setSuccess] = useState(false);
     const [disabled, setDisabled] = useState(true);
     const [error, setError] = useState(false);
-    const queue = props.queue;
+    const { queue } = props;
     const [open, setOpen] = useState(false);
     const [input, setInput] = useState({
         name: queue.name,
@@ -78,7 +78,7 @@ const QueueForm = (props) => {
                                 color: nameCharCount < 100 ? "" : "crimson",
                             }}
                         >
-                            {"Characters: " + nameCharCount + "/100"}
+                            {`Characters: ${nameCharCount}/100`}
                         </div>
                     </Form.Field>
                     <Form.Field>
@@ -96,7 +96,7 @@ const QueueForm = (props) => {
                                 color: descCharCount < 500 ? "" : "crimson",
                             }}
                         >
-                            {"Characters: " + descCharCount + "/500"}
+                            {`Characters: ${descCharCount}/500`}
                         </div>
                     </Form.Field>
                     <Button

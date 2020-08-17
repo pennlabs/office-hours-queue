@@ -83,7 +83,7 @@ import SummaryForm from "./SummaryForm";
 //   }
 // `;
 
-const Summary = props => {
+const Summary = (props) => {
     // const [getQuestions, { data, loading }] = useLazyQuery(GET_QUESTIONS);
 
     /* STATE */
@@ -95,7 +95,7 @@ const Summary = props => {
     const [search, setSearch] = useState("");
     const [input, setInput] = useState({});
 
-    const formatState = string => {
+    const formatState = (string) => {
         return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
     };
 
@@ -105,10 +105,10 @@ const Summary = props => {
             orderBy === "-time_asked" ? "time_asked" : "-time_asked";
         const filteredInput = {};
         Object.keys(input)
-            .filter(key => {
+            .filter((key) => {
                 return input[key] !== "";
             })
-            .forEach(key => (filteredInput[key] = input[key]));
+            .forEach((key) => (filteredInput[key] = input[key]));
 
         const variables = {
             ...filteredInput,
@@ -118,20 +118,20 @@ const Summary = props => {
             first: 20,
         };
         getQuestions({
-            variables: variables,
+            variables,
         });
         setOrderBy(newOrderBy);
         setFirst(20);
     };
 
-    const onFilterChange = input => {
+    const onFilterChange = (input) => {
         /* need to filter out empty fields when they clear */
         const filteredInput = {};
         Object.keys(input)
-            .filter(key => {
+            .filter((key) => {
                 return input[key] !== "";
             })
-            .forEach(key => (filteredInput[key] = input[key]));
+            .forEach((key) => (filteredInput[key] = input[key]));
 
         const variables = {
             ...filteredInput,
@@ -145,13 +145,13 @@ const Summary = props => {
         setFirst(20);
     };
 
-    const onSearchChange = text => {
+    const onSearchChange = (text) => {
         const filteredInput = {};
         Object.keys(input)
-            .filter(key => {
+            .filter((key) => {
                 return input[key] !== "";
             })
-            .forEach(key => (filteredInput[key] = input[key]));
+            .forEach((key) => (filteredInput[key] = input[key]));
 
         const variables = {
             ...filteredInput,
@@ -169,10 +169,10 @@ const Summary = props => {
     const nextPage = () => {
         const filteredInput = {};
         Object.keys(input)
-            .filter(key => {
+            .filter((key) => {
                 return input[key] !== "";
             })
-            .forEach(key => (filteredInput[key] = input[key]));
+            .forEach((key) => (filteredInput[key] = input[key]));
 
         const variables = {
             ...filteredInput,
@@ -186,9 +186,9 @@ const Summary = props => {
     };
 
     /* GET QUESTIONS FROM DATA */
-    const loadQueues = data => {
+    const loadQueues = (data) => {
         const queues = [];
-        data.course.queues.edges.forEach(item => {
+        data.course.queues.edges.forEach((item) => {
             queues.push({
                 name: item.node.name,
                 tags: item.node.tags,
@@ -197,9 +197,9 @@ const Summary = props => {
         return queues;
     };
 
-    const loadQuestions = data => {
+    const loadQuestions = (data) => {
         const questions = [];
-        data.course.questions.edges.forEach(item => {
+        data.course.questions.edges.forEach((item) => {
             questions.push({
                 text: item.node.text,
                 tags: item.node.tags,
@@ -282,7 +282,7 @@ const Summary = props => {
                         {loading && <Loader size="big" inverted />}
                         {questions && (
                             <Table.Body>
-                                {questions.map(qs => (
+                                {questions.map((qs) => (
                                     <Table.Row>
                                         <Table.Cell>{qs.askedBy}</Table.Cell>
                                         <Table.Cell>

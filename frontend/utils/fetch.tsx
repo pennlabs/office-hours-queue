@@ -25,7 +25,7 @@ export function doApiRequest(path: string, data?: any): Promise<Response> {
     if (typeof document !== "undefined") {
         data.headers = data.headers || {};
         if (!(data.body instanceof FormData)) {
-            data.headers["Accept"] = "application/json";
+            data.headers.Accept = "application/json";
             data.headers["Content-Type"] = "application/json";
         }
         data.headers["X-CSRFToken"] = getCsrf();

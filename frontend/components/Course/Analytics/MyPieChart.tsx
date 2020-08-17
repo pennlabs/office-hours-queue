@@ -11,11 +11,11 @@ export default class MyPieChart extends React.Component {
     }
 
     componentDidMount() {
-        const node = this.node;
+        const { node } = this;
         new Chart(node, this.state.dataset);
     }
 
     render() {
-        return <canvas ref={node => (this.node = node)} />;
+        return <canvas ref={(node) => (this.node = node)} />;
     }
 }

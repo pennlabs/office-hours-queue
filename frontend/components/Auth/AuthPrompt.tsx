@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import { Grid, Button } from "semantic-ui-react";
+import { useRouter, NextRouter } from "next/router";
 import AboutModal from "../LandingPage/AboutModal";
-import { useRouter } from "next/router";
 import styles from "../../styles/landingpage.module.css";
-import { NextRouter } from "next/router";
-
 
 const AuthPrompt = (): JSX.Element => {
     const [showAboutModal, setShowAboutModal] = useState(false);
@@ -42,7 +40,7 @@ const AuthPrompt = (): JSX.Element => {
                         href={`/api/accounts/login/?next=${router.pathname}`}
                     >
                         Log In
-                </Button>
+                    </Button>
                 </Grid.Row>
                 <div
                     className={`${styles.about} ${styles["about-landing"]}`}
@@ -56,6 +54,6 @@ const AuthPrompt = (): JSX.Element => {
                 />
             </Grid>
         </div>
-    )
-}
-export default AuthPrompt
+    );
+};
+export default AuthPrompt;

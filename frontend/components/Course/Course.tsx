@@ -1,11 +1,11 @@
 import React, { useState } from "react";
+import { Grid, Segment, Header } from "semantic-ui-react";
 import Roster from "./Roster/Roster";
 import CourseSettings from "./CourseSettings/CourseSettings";
 import InstructorQueuePage from "./InstructorQueuePage/InstructorQueuePage";
 import Analytics from "./Analytics/Analytics";
 import CourseSidebar from "./CourseSidebar";
 import Summary from "./Summary/Summary";
-import { Grid, Segment, Header } from "semantic-ui-react";
 
 // import { withAuthorization } from '../Session';
 // import { compose } from 'recompose';
@@ -116,7 +116,7 @@ const Course = (props) => {
                     <Grid.Row>
                         <Segment basic>
                             <Header as="h1">
-                                {course.department + " " + course.courseCode}
+                                {`${course.department} ${course.courseCode}`}
                                 <Header.Subheader>
                                     {course.courseTitle}
                                 </Header.Subheader>

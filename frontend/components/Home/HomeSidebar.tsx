@@ -3,10 +3,10 @@ import React, { useState } from "react";
 import { Segment, Menu, Grid, Image } from "semantic-ui-react";
 import Link from "next/link";
 
+import { useRouter } from "next/router";
 import SignOutButton from "../SignOut";
 import styles from "../../styles/landingpage.module.css";
 import AboutModal from "../LandingPage/AboutModal";
-import { useRouter } from "next/router";
 
 const Sidebar = (props) => {
     const router = useRouter();

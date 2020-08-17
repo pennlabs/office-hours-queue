@@ -3,8 +3,8 @@ import React from "react";
 import { Form } from "semantic-ui-react";
 import { roleOptions } from "../../../../utils/enums";
 
-const AddForm = props => {
-    const onChange = text => {
+const AddForm = (props) => {
+    const onChange = (text) => {
         props.changeFunc(undefined, {
             name: "emails",
             value: text.target.value,
@@ -22,10 +22,10 @@ const AddForm = props => {
             <Form.Field>
                 <label>Role</label>
                 <Form.Dropdown
-                    name={"kind"}
+                    name="kind"
                     selection
                     options={roleOptions}
-                    placeholder={"Role"}
+                    placeholder="Role"
                     onChange={props.changeFunc}
                 />
             </Form.Field>

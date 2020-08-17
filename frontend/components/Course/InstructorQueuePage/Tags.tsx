@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Segment, Header, Label, Grid } from "semantic-ui-react";
 
-const Tags = props => {
+const Tags = (props) => {
     const { tags } = props;
 
     /* HANDLER FUNCTIONS */
     const clearTags = () => {
-        tags.forEach(tag => {
+        tags.forEach((tag) => {
             // eslint-disable-next-line no-param-reassign
             tag.isActive = false;
         });
     };
 
-    const handleTagClick = index => {
+    const handleTagClick = (index) => {
         tags[index].isActive = !tags[index].isActive;
     };
 

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Form } from "semantic-ui-react";
 
-const QueueFilterForm = props => {
+const QueueFilterForm = (props) => {
     const { tags } = props;
     const tagOptions =
         tags &&
-        tags.map(tag => ({
+        tags.map((tag) => ({
             key: tag,
             value: tag,
             text: tag,

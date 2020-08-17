@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Form } from "semantic-ui-react";
 import TextField from "@material-ui/core/TextField";
 
-const SummaryForm = props => {
+const SummaryForm = (props) => {
     const [input, setInput] = useState({});
     const stateOptions = [
         {
@@ -44,10 +44,10 @@ const SummaryForm = props => {
                     <label>After</label>
                     <TextField
                         type="date"
-                        onChange={event => {
+                        onChange={(event) => {
                             const time = event.target.value;
                             input.timeAsked_Gt =
-                                time === "" ? "" : time + "T00:00:00";
+                                time === "" ? "" : `${time}T00:00:00`;
                             setInput(input);
                             props.filterFunc(input);
                         }}
@@ -58,10 +58,10 @@ const SummaryForm = props => {
                     <label>Before</label>
                     <TextField
                         type="date"
-                        onChange={event => {
+                        onChange={(event) => {
                             const time = event.target.value;
                             input.timeAsked_Lt =
-                                time === "" ? "" : time + "T22:59:59";
+                                time === "" ? "" : `${time}T22:59:59`;
                             setInput(input);
                             props.filterFunc(input);
                         }}
@@ -74,7 +74,7 @@ const SummaryForm = props => {
                         selection
                         name="state"
                         clearable
-                        placeholder={"State"}
+                        placeholder="State"
                         options={stateOptions}
                         onChange={handleInputChange}
                     />

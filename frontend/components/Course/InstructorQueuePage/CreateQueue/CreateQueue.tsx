@@ -17,7 +17,7 @@ import CreatableSelect from "react-select/creatable";
 //   }
 // `;
 
-const CreateQueue = props => {
+const CreateQueue = (props) => {
     /* GRAPHQL QUERIES/MUTATIONS */
     const [createQueue, { loading }] = useMutation(CREATE_QUEUE);
 
@@ -46,7 +46,7 @@ const CreateQueue = props => {
         try {
             await createQueue({
                 variables: {
-                    input: { ...input, tags: tags.map(i => i.value) },
+                    input: { ...input, tags: tags.map((i) => i.value) },
                 },
             });
             await setRefetchLoading(true);
@@ -59,15 +59,15 @@ const CreateQueue = props => {
         }
     };
 
-    const handleTagChange = items => {
+    const handleTagChange = (items) => {
         setTags(items || []);
     };
 
-    const handleTagsInputChange = inputValue => {
+    const handleTagsInputChange = (inputValue) => {
         setTagsInputValue(inputValue);
     };
 
-    const handleTagsKeyDown = event => {
+    const handleTagsKeyDown = (event) => {
         if (!tagsInputValue) return;
         switch (event.key) {
             case "Enter":
@@ -78,9 +78,8 @@ const CreateQueue = props => {
                     { label: tagsInputValue, value: tagsInputValue },
                 ]);
                 event.preventDefault();
-                return;
+
             default:
-                return;
         }
     };
 

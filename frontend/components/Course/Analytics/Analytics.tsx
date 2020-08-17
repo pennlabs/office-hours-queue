@@ -41,7 +41,7 @@ import MyPieChart from "./MyPieChart";
 //   }
 // `;
 
-const Analytics = props => {
+const Analytics = (props) => {
     // const { data } = useQuery(GET_COURSE, {
     //   variables: {
     //     id: props.course.id
@@ -52,27 +52,27 @@ const Analytics = props => {
     const [lineChartData, setLineChartData] = useState(null);
 
     const getRandomColor = () => {
-        var letters = "0123456789ABCDEF";
-        var color = "#";
-        for (var i = 0; i < 6; i++) {
+        const letters = "0123456789ABCDEF";
+        let color = "#";
+        for (let i = 0; i < 6; i++) {
             color += letters[Math.floor(Math.random() * 16)];
         }
         return color;
     };
 
-    const getPieChartData = node => {
+    const getPieChartData = (node) => {
         const counts = {};
         let noTagCount = 0;
 
-        node.questions.edges.forEach(question => {
+        node.questions.edges.forEach((question) => {
             if (question.node.tags.length === 0) noTagCount += 1;
-            question.node.tags.forEach(tag => {
+            question.node.tags.forEach((tag) => {
                 counts[tag] = counts[tag] ? counts[tag] + 1 : 1;
             });
         });
 
         const labels = Object.keys(counts).sort();
-        const datapoints = labels.map(label => counts[label]);
+        const datapoints = labels.map((label) => counts[label]);
 
         if (noTagCount > 0) {
             labels.push("N/A");
@@ -81,12 +81,12 @@ const Analytics = props => {
 
         return {
             data: {
-                labels: labels,
+                labels,
                 datasets: [
                     {
                         data: datapoints,
                         backgroundColor: [...Array(datapoints.length)].map(
-                            item => {
+                            (item) => {
                                 return getRandomColor();
                             }
                         ),
@@ -103,9 +103,9 @@ const Analytics = props => {
         };
     };
 
-    const lineChartHelper = node => {
+    const lineChartHelper = (node) => {
         const counts = {};
-        node.questions.edges.forEach(question => {
+        node.questions.edges.forEach((question) => {
             const dateAsked = new Date(question.node.timeAsked);
             counts[dateAsked.toDateString()] = counts[dateAsked.toDateString()]
                 ? counts[dateAsked.toDateString()] + 1
@@ -115,26 +115,26 @@ const Analytics = props => {
         return counts;
     };
 
-    const getLineChartData = edges => {
+    const getLineChartData = (edges) => {
         const countMaps = edges
-            .filter(item => !item.node.archived)
-            .map(item => lineChartHelper(item.node));
+            .filter((item) => !item.node.archived)
+            .map((item) => lineChartHelper(item.node));
         const allCounts = {};
 
-        countMaps.forEach(map => {
-            Object.keys(map).forEach(key => (allCounts[key] = map[key]));
+        countMaps.forEach((map) => {
+            Object.keys(map).forEach((key) => (allCounts[key] = map[key]));
         });
 
         const stringLabels = Object.keys(allCounts).sort();
-        const dateLabels = stringLabels.map(label => new Date(label));
+        const dateLabels = stringLabels.map((label) => new Date(label));
         const datasets = edges
-            .filter(item => !item.node.archived)
+            .filter((item) => !item.node.archived)
             .map((item, i) => {
                 const color = getRandomColor();
                 return {
                     fill: false,
                     label: item.node.name,
-                    data: stringLabels.map(label => {
+                    data: stringLabels.map((label) => {
                         return countMaps[i][label] ? countMaps[i][label] : 0;
                     }),
                     borderColor: color,
@@ -146,7 +146,7 @@ const Analytics = props => {
         return {
             data: {
                 labels: dateLabels,
-                datasets: datasets,
+                datasets,
             },
             type: "scatter",
             options: {
@@ -188,8 +188,8 @@ const Analytics = props => {
         if (!pieChartData) {
             setPieChartData(
                 data.course.queues.edges
-                    .filter(item => !item.node.archived)
-                    .map(item => {
+                    .filter((item) => !item.node.archived)
+                    .map((item) => {
                         return getPieChartData(item.node);
                     })
             );
@@ -213,7 +213,7 @@ const Analytics = props => {
             <Segment basic>
                 <Header as="h3">Questions by Type</Header>
                 {pieChartData &&
-                    pieChartData.map(dataset => {
+                    pieChartData.map((dataset) => {
                         return <MyPieChart dataset={dataset} />;
                     })}
             </Segment>
@@ -332,6 +332,6 @@ class Analytics extends React.Component {
       </Grid.Row>
     );
   }
-}*/
+} */
 
 export default Analytics;
