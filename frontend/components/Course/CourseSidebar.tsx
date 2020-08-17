@@ -14,7 +14,7 @@ import AboutModal from "../LandingPage/AboutModal";
 import { useStaff, useLeadership } from "./CourseRequests";
 import { AuthUserContext } from "../../context/auth";
 
-const CourseSidebar = props => {
+const CourseSidebar = (props) => {
     const [
         leadership,
         leadershipError,
@@ -99,7 +99,7 @@ const CourseSidebar = props => {
                 <Segment basic>
                     <Header as="h3">Instructors</Header>
                     <List>
-                        {leadership.map(membership => {
+                        {leadership.map((membership) => {
                             return (
                                 <List.Item
                                     key={membership.id}
@@ -107,7 +107,11 @@ const CourseSidebar = props => {
                                 >
                                     <Icon name="user" />
                                     <List.Content>
-                                        <List.Header as="a" target="_blank">
+                                        <List.Header
+                                            as="a"
+                                            target="_blank"
+                                            href={`mailto:${membership.user.email}`}
+                                        >
                                             {`${membership.user.firstName} ${membership.user.lastName}`}
                                         </List.Header>
                                         <List.Description>
