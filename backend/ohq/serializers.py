@@ -128,11 +128,30 @@ class QueueSerializer(CourseRouteMixin):
             "estimated_wait_time",
             "active",
         )
+        read_only_fields = ("estimated_wait_time",)
+
+    def update(self, instance, validated_data):
+        """
+        Head TAs+ can modify a queue
+        TAs can only modify if a queue is active.
+        """
+
+        user = self.context["request"].user
+        membership = Membership.objects.get(course=instance.course, user=user)
+
+        if membership.is_leadership:  # User is a Head TA+
+            return super().update(instance, validated_data)
+        else:  # User is a TA
+            if "active" in validated_data:
+                instance.active = validated_data["active"]
+
+        instance.save()
+        return instance
 
 
 class QuestionSerializer(QueueRouteMixin):
-    asked_by = UserSerializer()
-    responded_to_by = UserSerializer()
+    asked_by = UserSerializer(read_only=True)
+    responded_to_by = UserSerializer(read_only=True)
 
     class Meta:
         model = Question
@@ -202,6 +221,11 @@ class QuestionSerializer(QueueRouteMixin):
 
         instance.save()
         return instance
+
+    def create(self, validated_data):
+        validated_data["status"] = Question.STATUS_ASKED
+        validated_data["asked_by"] = self.context["request"].user
+        return super().create(validated_data)
 
 
 class MembershipPrivateSerializer(CourseRouteMixin):

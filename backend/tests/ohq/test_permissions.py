@@ -263,7 +263,7 @@ class QueueTestCase(TestCase):
             "modify",
             "patch",
             reverse("ohq:queue-detail", args=[self.course.id, self.queue.id]),
-            {"description": "new"},
+            {"active": True},
         )
 
 
@@ -335,7 +335,7 @@ class QuestionTestCase(TestCase):
             "create",
             "post",
             reverse("ohq:question-list", args=[self.course.id, self.queue.id]),
-            {"text": "question", "description": "description", "asked_by": self.student.id},
+            {"text": "question", "description": "description"},
         )
 
     @parameterized.expand(users, name_func=get_test_name)
