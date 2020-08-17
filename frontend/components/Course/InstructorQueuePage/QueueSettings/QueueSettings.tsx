@@ -1,18 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
     Grid,
     Segment,
     Header,
-    Tab,
     Button,
     Dimmer,
     Loader,
 } from "semantic-ui-react";
 import QueueForm from "./QueueForm";
-import TagForm from "./TagForm";
 
-const QueueSettings = props => {
-    const { queue, refetch, backFunc } = props;
+const QueueSettings = (props) => {
+    const { courseId, queue, refetch, backFunc } = props;
 
     return queue ? (
         <Grid.Column>
@@ -44,33 +42,11 @@ const QueueSettings = props => {
             </Grid.Row>
             <Grid.Row>
                 <Segment basic>
-                    <Tab
-                        menu={{ pointing: true, secondary: true }}
-                        panes={[
-                            {
-                                menuItem: "General",
-                                render: () => {
-                                    return (
-                                        <QueueForm
-                                            refetch={refetch}
-                                            queue={queue}
-                                            backFunc={backFunc}
-                                        />
-                                    );
-                                },
-                            },
-                            {
-                                menuItem: "Tags",
-                                render: () => {
-                                    return (
-                                        <TagForm
-                                            refetch={refetch}
-                                            queue={queue}
-                                        />
-                                    );
-                                },
-                            },
-                        ]}
+                    <QueueForm
+                        courseId={courseId}
+                        refetch={refetch}
+                        queue={queue}
+                        backFunc={backFunc}
                     />
                 </Segment>
             </Grid.Row>

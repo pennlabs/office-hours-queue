@@ -5,16 +5,20 @@ import Snackbar from "@material-ui/core/Snackbar";
 import InstructorQueues from "./InstructorQueues";
 import QueueSettings from "./QueueSettings/QueueSettings";
 import CreateQueue from "./CreateQueue/CreateQueue";
-import { useQueues } from "../CourseRequests";
+import { useQueues, useStaff } from "../CourseRequests";
 import { AuthUserContext } from "../../../context/auth";
 
 const InstructorQueuePage = (props) => {
     const {
-        leader,
         course: { id: courseId },
     } = props;
 
     /* STATE */
+    const { user: initialUser } = useContext(AuthUserContext);
+    const [leader, staff, staffError, staffLoading, staffMutate] = useStaff(
+        courseId,
+        initialUser
+    );
     const [queues, error, isValidating, mutate] = useQueues(courseId);
     const [success, setSuccess] = useState(false);
     const [activeQueueId, setActiveQueueId] = useState(null);
@@ -44,6 +48,7 @@ const InstructorQueuePage = (props) => {
             {active === "settings" && (
                 <Grid.Row>
                     <QueueSettings
+                        courseId={courseId}
                         queue={getQueue(activeQueueId)}
                         refetch={mutate}
                         backFunc={() => setActive("queues")}

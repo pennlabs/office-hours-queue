@@ -1,30 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Form, Button, Modal } from "semantic-ui-react";
-// import { gql } from 'apollo-boost';
-// import { useMutation } from '@apollo/react-hooks';
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
+import { updateQueue } from "../../CourseRequests";
 
-/* GRAPHQL QUERIES/MUTATIONS */
-// const UPDATE_QUEUE = gql`
-//   mutation UpdateQueue($input: UpdateQueueInput!) {
-//     updateQueue(input: $input) {
-//       queue {
-//         id
-//       }
-//     }
-//   }
-// `;
-
-const QueueForm = props => {
-    /* GRAPHQL QUERIES/MUTATIONS */
-    const [updateQueue, { loading }] = useMutation(UPDATE_QUEUE);
-
+// TODO: error check PATCH
+const QueueForm = (props) => {
+    const loading = false;
     /* STATE */
     const [success, setSuccess] = useState(false);
     const [disabled, setDisabled] = useState(true);
     const [error, setError] = useState(false);
-    const [queue, setQueue] = useState(props.queue);
+    const queue = props.queue;
     const [open, setOpen] = useState(false);
     const [input, setInput] = useState({
         name: queue.name,
@@ -54,11 +41,7 @@ const QueueForm = props => {
 
     const onSubmit = async () => {
         try {
-            await updateQueue({
-                variables: {
-                    input: input,
-                },
-            });
+            await updateQueue(props.courseId, queue.id, input);
             await props.refetch();
             setSuccess(true);
             props.backFunc();
@@ -68,23 +51,13 @@ const QueueForm = props => {
     };
 
     const onArchived = async () => {
-        await updateQueue({
-            variables: {
-                input: {
-                    queueId: queue.id,
-                    archived: true,
-                },
-            },
-        });
+        await updateQueue(props.courseId, queue.id, { archived: true });
         await props.refetch();
         setOpen(false);
         props.backFunc();
     };
 
     /* PROPS UPDATE */
-    useEffect(() => {
-        setQueue(props.queue);
-    }, [props.queue]);
 
     return (
         <Form>

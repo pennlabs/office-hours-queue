@@ -201,7 +201,7 @@ export async function updateQueue(
     queueId: number,
     queue: Partial<Queue>
 ) {
-    return doApiRequest(`/courses/${courseId}/queues/${queueId}`, {
+    return doApiRequest(`/courses/${courseId}/queues/${queueId}/`, {
         method: "PATCH",
         body: { ...queue },
     });
