@@ -8,7 +8,7 @@ import CreateQueue from "./CreateQueue/CreateQueue";
 import { useQueues } from "../CourseRequests";
 import { AuthUserContext } from "../../../context/auth";
 
-const InstructorQueuePage = props => {
+const InstructorQueuePage = (props) => {
     const {
         leader,
         course: { id: courseId },
@@ -21,12 +21,12 @@ const InstructorQueuePage = props => {
     const [active, setActive] = useState("queues");
 
     /* HANDLER FUNCTIONS */
-    const onQueueSettings = id => {
+    const onQueueSettings = (id) => {
         setActiveQueueId(id);
         setActive("settings");
     };
 
-    const getQueue = id => queues.filter(q => q.id === id)[0];
+    const getQueue = (id) => queues.find((q) => q.id === id);
 
     return (
         <Grid stackable>
