@@ -1,7 +1,6 @@
 import useSWR from "swr";
 import { isLeadershipRole } from "../../utils/enums";
 import { doApiRequest } from "../../utils/fetch";
-import getCsrf from "../../csrf";
 import {
     Course,
     Membership,
@@ -11,7 +10,89 @@ import {
     Queue,
     User,
     Semester,
+    mutateResourceFunction,
+    Identifiable,
+    mutateResourceListFunction,
 } from "../../types";
+
+function makeResourceHook<P, R>(
+    getUrl: (props: P) => string,
+    initialData: R,
+    method: string = "PATCH"
+): (props: P) => [R, any, boolean, mutateResourceFunction<R>] {
+    function useResource(
+        props: P
+    ): [R, any, boolean, mutateResourceFunction<R>] {
+        const { data, error, isValidating, mutate } = useSWR(getUrl(props), {
+            initialData,
+        });
+        const mutateWithAPI = async (newResource: Partial<R>) => {
+            mutate({ ...data, ...newResource }, false);
+            await doApiRequest(getUrl(props), {
+                method,
+                body: newResource,
+            });
+            return mutate();
+        };
+        return [data, error, isValidating, mutateWithAPI];
+    }
+    return useResource;
+}
+
+/**
+ * Patch in an updated element in a list.
+ * @param list list of elements, where elements have an `id` property.
+ * @param id identifier to update
+ * @param patch updated properties.
+ */
+function patchInList<T extends Identifiable>(
+    list: T[],
+    id: number,
+    patch: Partial<T>
+): T[] {
+    for (let i = 0; i < list.length; i += 1) {
+        const obj = list[i];
+        // If the ID of this element matches the desired ID
+        if (obj.id === id) {
+            // Create a new object with updated properties.
+            const newObj = { ...obj, ...patch };
+            return [...list.slice(0, i), newObj, ...list.slice(i + 1)];
+        }
+    }
+    // if no match exists, return the original list.
+    return list;
+}
+
+function makeResourceListHook<P, R extends Identifiable>(
+    getListUrl: (props: P) => string,
+    getResourceUrl: (props: P & Identifiable) => string, // All props for the list, plus one for the resource.
+    initialData: R[],
+    method: string = "PATCH"
+): (props: P) => [R[], any, boolean, mutateResourceListFunction<R>] {
+    function useResourceList(
+        props: P
+    ): [R[], any, boolean, mutateResourceListFunction<R>] {
+        const { data, error, isValidating, mutate } = useSWR(
+            getListUrl(props),
+            {
+                initialData,
+            }
+        );
+        const mutateWithAPI = async (
+            id?: number,
+            patchedResource?: Partial<R>
+        ) => {
+            mutate(patchInList(data, id, patchedResource), false);
+            await doApiRequest(getResourceUrl({ ...props, id }), {
+                method,
+                body: patchedResource,
+            });
+            return mutate();
+        };
+        return [data, error, isValidating, mutateWithAPI];
+    }
+    return useResourceList;
+}
 
 export function useCourse(
     courseId: string,
