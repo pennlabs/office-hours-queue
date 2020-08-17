@@ -1,70 +1,70 @@
 import React, { useState } from "react";
 import { Grid } from "semantic-ui-react";
-
-import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
 import StudentQueues from "./StudentQueues";
+
+// import { gql } from 'apollo-boost';
+// import { useQuery } from '@apollo/react-hooks';
 import { queueSortFunc } from "../../../utils";
 
 /* GRAPHQL QUERIES/MUTATIONS */
-const GET_QUEUES = gql`
-    query GetQueues($id: ID!) {
-        course(id: $id) {
-            id
-            videoChatEnabled
-            requireVideoChatUrlOnQuestions
-            activeStaff {
-                user {
-                    fullName
-                }
-            }
-            queues(archived: false) {
-                edges {
-                    node {
-                        id
-                        name
-                        description
-                        tags
-                        estimatedWaitTime
-                        activeOverrideTime
-                        archived
-                        numberActiveQuestions
-                        numberStartedQuestions
-                    }
-                }
-            }
-        }
-    }
-`;
+// const GET_QUEUES = gql`
+//   query GetQueues($id: ID!) {
+//     course(id: $id) {
+//       id
+//       videoChatEnabled
+//       requireVideoChatUrlOnQuestions
+//       activeStaff {
+//         user {
+//           fullName
+//         }
+//       }
+//       queues(archived: false) {
+//         edges {
+//           node {
+//             id
+//             name
+//             description
+//             tags
+//             estimatedWaitTime
+//             activeOverrideTime
+//             archived
+//             numberActiveQuestions
+//             numberStartedQuestions
+//           }
+//         }
+//       }
+//     }
+//   }
+// `;
 
-const CURRENT_QUESTION = gql`
-    query CurrentQuestion($courseId: ID!) {
-        currentQuestion(courseId: $courseId) {
-            id
-            text
-            tags
-            videoChatUrl
-            questionsAhead
-            state
-            timeAsked
-            timeAnswered
-            timeRejected
-            timeStarted
-            timeWithdrawn
-            rejectedReason
-            rejectedReasonOther
-            rejectedBy {
-                preferredName
-            }
-            answeredBy {
-                preferredName
-            }
-            queue {
-                id
-            }
-        }
-    }
-`;
+// const CURRENT_QUESTION = gql`
+//   query CurrentQuestion($courseId: ID!) {
+//     currentQuestion(courseId: $courseId) {
+//       id
+//       text
+//       tags
+//       videoChatUrl
+//       questionsAhead
+//       state
+//       timeAsked
+//       timeAnswered
+//       timeRejected
+//       timeStarted
+//       timeWithdrawn
+//       rejectedReason
+//       rejectedReasonOther
+//       rejectedBy {
+//         preferredName
+//       }
+//       answeredBy {
+//         preferredName
+//       }
+//       queue {
+//         id
+//       }
+//     }
+//   }
+// `;
 
 const StudentQueuePage = (props) => {
     const getQueuesRes = useQuery(GET_QUEUES, {
@@ -80,7 +80,7 @@ const StudentQueuePage = (props) => {
         variables: {
             courseId: props.course.id,
         },
-        pollInterval,
+        pollInterval: pollInterval,
         skip: !props.course.id,
     });
 

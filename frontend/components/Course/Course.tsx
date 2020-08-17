@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Grid, Segment, Header } from "semantic-ui-react";
 import Roster from "./Roster/Roster";
 import CourseSettings from "./CourseSettings/CourseSettings";
@@ -13,7 +13,9 @@ import Summary from "./Summary/Summary";
 // import { gql } from 'apollo-boost';
 // import { useQuery } from '@apollo/react-hooks';
 import { leadershipSortFunc } from "../../utils";
-import { useCourse } from "./CourseRequests";
+import { useCourse, useStaff } from "./CourseRequests";
+import { AuthUserContext } from "../../context/auth";
+import StudentQueuePage from "./StudentQueuePage/StudentQueuePage";
 
 /* GRAPHQL QUERIES/MUTATIONS */
 // const GET_COURSE = gql`
@@ -64,6 +66,11 @@ const Course = (props) => {
     const [course, error, loading, mutate] = useCourse(
         props.courseId,
         props.course
+    );
+    const { user: initialUser } = useContext(AuthUserContext);
+    const [leader, staff, leaderError, staffLoading, staffMutate] = useStaff(
+        props.courseId,
+        initialUser
     );
     //   const [memberships, error, loading, mutate]: [
     //     Membership[],
@@ -124,14 +131,14 @@ const Course = (props) => {
                         </Segment>
                     </Grid.Row>
                 )}
-                {active === "roster" && (
+                {staff && active === "roster" && (
                     <Roster
                         courseId={course.id}
                         memberships={props.memberships}
                         invites={props.invites}
                     />
                 )}
-                {active === "settings" && (
+                {staff && active === "settings" && (
                     <CourseSettings course={course} refetch={mutate} />
                 )}
                 {
@@ -140,8 +147,11 @@ const Course = (props) => {
                     )
                     // userId={currentUserQuery.data.currentUser.id} />
                 }
-                {active === "analytics" && <Analytics course={course} />}
-                {active === "summary" && <Summary course={course} />}
+                {staff && active === "analytics" && (
+                    <Analytics course={course} />
+                )}
+                {staff && active === "summary" && <Summary course={course} />}
+                {!staff && <StudentQueuePage course={course} />}
             </Grid.Column>
         </>
     ) : (

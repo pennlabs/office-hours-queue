@@ -8,12 +8,12 @@ import {
     Popup,
     Icon,
 } from "semantic-ui-react";
-import Snackbar from "@material-ui/core/Snackbar";
-import Alert from "@material-ui/lab/Alert";
-import Linkify from "react-linkify";
 import { linkifyComponentDecorator } from "../../../utils";
 import QuestionForm from "./QuestionForm";
 import QuestionCard from "./QuestionCard";
+import Snackbar from "@material-ui/core/Snackbar";
+import Alert from "@material-ui/lab/Alert";
+// import Linkify from 'react-linkify';
 
 const StudentQueue = (props) => {
     const [toast, setToast] = useState({ message: "", success: true });
@@ -21,7 +21,7 @@ const StudentQueue = (props) => {
 
     const updateToast = (success, error) => {
         toast.success = success !== null;
-        toast.message = success || errorMessage(error);
+        toast.message = success ? success : errorMessage(error);
         setToast(toast);
         setToastOpen(true);
     };
@@ -37,17 +37,20 @@ const StudentQueue = (props) => {
             <Header as="h3">
                 {props.queue.name}
                 <Header.Subheader>
-                    <Linkify componentDecorator={linkifyComponentDecorator}>
-                        {props.queue.description}
-                    </Linkify>
+                    {/* <Linkify componentDecorator={linkifyComponentDecorator}> */}
+                    {props.queue.description}
+                    {/* </Linkify> */}
                 </Header.Subheader>
             </Header>
             {(props.queue.activeOverrideTime ||
                 props.queue.numberActiveQuestions !== 0) && (
                 <Label
-                    content={`${props.queue.numberActiveQuestions} user${
-                        props.queue.numberActiveQuestions === 1 ? "" : "s"
-                    } in queue`}
+                    content={
+                        props.queue.numberActiveQuestions +
+                        ` user${
+                            props.queue.numberActiveQuestions === 1 ? "" : "s"
+                        } in queue`
+                    }
                     color="blue"
                     icon="users"
                 />
@@ -55,9 +58,12 @@ const StudentQueue = (props) => {
             {(props.queue.activeOverrideTime ||
                 props.queue.numberStartedQuestions) !== 0 && (
                 <Label
-                    content={`${props.queue.numberStartedQuestions} user${
-                        props.queue.numberStartedQuestions === 1 ? "" : "s"
-                    } currently being helped`}
+                    content={
+                        props.queue.numberStartedQuestions +
+                        ` user${
+                            props.queue.numberStartedQuestions === 1 ? "" : "s"
+                        } currently being helped`
+                    }
                     icon="user"
                 />
             )}
@@ -68,17 +74,19 @@ const StudentQueue = (props) => {
                 <Popup
                     trigger={
                         <Label
-                            content={`${props.queue.activeStaff.length} staff active`}
-                            icon={<Icon name="sync" loading={true} />}
+                            content={
+                                props.queue.activeStaff.length + ` staff active`
+                            }
+                            icon={<Icon name={"sync"} loading={true} />}
                         />
                     }
                     content={props.queue.activeStaff
                         .map((courseUser) => courseUser.user.fullName)
                         .sort()
                         .join(", ")}
-                    on="hover"
+                    on={"hover"}
                     disabled={props.queue.activeStaff.length === 0}
-                    position="top center"
+                    position={"top center"}
                 />
             )}
             <Grid.Row>

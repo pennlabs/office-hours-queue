@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Segment, Form, Header, Button } from "semantic-ui-react";
-import { gql } from "apollo-boost";
-import { useMutation } from "@apollo/react-hooks";
-import firebase from "../../Firebase";
+// import { gql } from 'apollo-boost';
+// import { useMutation } from '@apollo/react-hooks';
+// import firebase from '../../Firebase';
 import { isValidURL } from "../../../utils";
 
-const CREATE_QUESTION = gql`
-    mutation CreateQuestion($input: CreateQuestionInput!) {
-        createQuestion(input: $input) {
-            question {
-                id
-            }
-        }
-    }
-`;
+// const CREATE_QUESTION = gql`
+//   mutation CreateQuestion($input: CreateQuestionInput!) {
+//     createQuestion(input: $input) {
+//       question {
+//         id
+//       }
+//     }
+//   }
+// `;
 
 const QuestionForm = (props) => {
     const [createQuestion, { loading }] = useMutation(CREATE_QUESTION);
@@ -61,7 +61,7 @@ const QuestionForm = (props) => {
         try {
             await createQuestion({
                 variables: {
-                    input,
+                    input: input,
                 },
             });
             firebase.analytics.logEvent("question_created");
@@ -103,7 +103,7 @@ const QuestionForm = (props) => {
                                     color: charCount < 250 ? "" : "crimson",
                                 }}
                             >
-                                {`Characters: ${charCount}/250`}
+                                {"Characters: " + charCount + "/250"}
                             </div>
                         </Form.Field>
                         {(queue.requireVideoChatUrlOnQuestions ||
@@ -115,7 +115,9 @@ const QuestionForm = (props) => {
                                 <Form.Input
                                     name="videoChatUrl"
                                     disabled={loading}
-                                    placeholder="Sample URL: https://zoom.us/j/123456789?pwd=abcdefg"
+                                    placeholder={
+                                        "Sample URL: https://zoom.us/j/123456789?pwd=abcdefg"
+                                    }
                                     onChange={handleInputChange}
                                 />
                             </Form.Field>

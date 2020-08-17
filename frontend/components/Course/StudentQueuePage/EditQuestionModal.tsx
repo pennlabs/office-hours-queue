@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Form, Button } from "semantic-ui-react";
-import { useMutation } from "@apollo/react-hooks";
-import { gql } from "apollo-boost";
-import firebase from "../../Firebase";
+// import { useMutation } from '@apollo/react-hooks';
+// import { gql } from 'apollo-boost';
+// import firebase from "../../Firebase";
 
-const UPDATE_QUESTION = gql`
-    mutation UpdateQuestion($input: UpdateQuestionInput!) {
-        updateQuestion(input: $input) {
-            question {
-                id
-            }
-        }
-    }
-`;
+// const UPDATE_QUESTION = gql`
+//   mutation UpdateQuestion($input: UpdateQuestionInput!) {
+//     updateQuestion(input: $input) {
+//       question {
+//         id
+//       }
+//     }
+//   }
+// `;
 
 const EditQuestionModal = (props) => {
     const [queue, setQueue] = useState(props.queue);
@@ -61,7 +61,7 @@ const EditQuestionModal = (props) => {
         try {
             await updateQuestion({
                 variables: {
-                    input,
+                    input: input,
                 },
             });
             firebase.analytics.logEvent("question_edited");
@@ -112,7 +112,7 @@ const EditQuestionModal = (props) => {
                                 color: charCount < 250 ? "" : "crimson",
                             }}
                         >
-                            {`Characters: ${charCount}/250`}
+                            {"Characters: " + charCount + "/250"}
                         </div>
                     </Form.Field>
                     {(queue.requireVideoChatUrlOnQuestions ||
@@ -124,7 +124,9 @@ const EditQuestionModal = (props) => {
                             <Form.Input
                                 name="videoChatUrl"
                                 disabled={loading}
-                                placeholder="https://zoom.us/j/578603907?pwd=L2ZhNkhlRnJPeGVwckcvY3hNak83QT09"
+                                placeholder={
+                                    "https://zoom.us/j/578603907?pwd=L2ZhNkhlRnJPeGVwckcvY3hNak83QT09"
+                                }
                                 defaultValue={question.videoChatUrl}
                                 onChange={handleInputChange}
                             />

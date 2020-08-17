@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Segment, Button } from "semantic-ui-react";
-import { useMutation } from "@apollo/react-hooks";
-import { gql } from "apollo-boost";
-import firebase from "../../Firebase";
+// import { useMutation } from '@apollo/react-hooks';
+// import { gql } from 'apollo-boost';
+// import firebase from "../../Firebase";
 
-const WITHDRAW_QUESTION = gql`
-    mutation WithdrawQuestion($input: WithdrawQuestionInput!) {
-        withdrawQuestion(input: $input) {
-            question {
-                id
-            }
-        }
-    }
-`;
+// const WITHDRAW_QUESTION = gql`
+//   mutation WithdrawQuestion($input: WithdrawQuestionInput!) {
+//     withdrawQuestion(input: $input) {
+//       question {
+//         id
+//       }
+//     }
+//   }
+// `;
 
 const DeleteQuestionModal = (props) => {
     const [question, setQuestion] = useState(props.question);
