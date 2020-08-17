@@ -89,7 +89,7 @@ class QueuePermission(permissions.BasePermission):
 
         # TAs+ can make changes
         if view.action in ["update", "partial_update"]:
-            return membership.is_ta
+            return membership.is_ta and not obj.archived
 
         # Head TAs+ can create or delete a queue
         if view.action == "destroy":

@@ -177,7 +177,7 @@ class QueueViewSet(viewsets.ModelViewSet):
     serializer_class = QueueSerializer
 
     def get_queryset(self):
-        return Queue.objects.filter(course=self.kwargs["course_pk"])
+        return Queue.objects.filter(course=self.kwargs["course_pk"], archived=False)
 
     @action(methods=["POST"], detail=True)
     def clear(self, request, course_pk, pk=None):
