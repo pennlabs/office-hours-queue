@@ -2,15 +2,22 @@ import React, { useState } from "react";
 import { Dropdown, Popup } from "semantic-ui-react";
 import { staffRoleOptions } from "../../../utils/enums";
 import { changeRole } from "../CourseRequests";
+import { Membership, mutateResourceListFunction } from "../../../types";
 
+interface ChangeRoleDropdownProps {
+    courseId: number;
+    id: number;
+    role: string;
+    disabled: boolean;
+    successFunc: () => void;
+    mutate: mutateResourceListFunction<Membership>;
+}
 const ChangeRoleDropdown = (props) => {
-    const [input, setInput] = useState({ role: props.role });
+    const { role, disabled, courseId, id: membershipId, mutate } = props;
 
     const handleInputChange = async (e, { name, value }) => {
-        input[name] = value;
-        setInput(input);
-        await changeRole(props.courseId, props.id, value);
-        await props.refetch();
+        await mutate(membershipId, { kind: value });
+        // await changeRole(courseId, membershipId, value);
         props.successFunc();
     };
 
@@ -18,9 +25,9 @@ const ChangeRoleDropdown = (props) => {
         <Dropdown
             selection
             name="role"
-            disabled={props.disabled}
+            disabled={disabled}
             onChange={handleInputChange}
-            value={input.role}
+            value={role}
             options={staffRoleOptions}
         />
     );
@@ -28,7 +35,7 @@ const ChangeRoleDropdown = (props) => {
     return (
         <Popup
             trigger={<div>{dropdown}</div>}
-            disabled={!props.disabled}
+            disabled={!disabled}
             content="Cannot change only user in leadership role"
             on="hover"
             position="left center"

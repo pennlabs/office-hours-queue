@@ -15,28 +15,23 @@ import {
     mutateResourceListFunction,
 } from "../../types";
 
-function makeResourceHook<P, R>(
-    getUrl: (props: P) => string,
-    initialData: R,
+function useResource<R>(
+    url: string,
+    initialData?: R,
     method: string = "PATCH"
-): (props: P) => [R, any, boolean, mutateResourceFunction<R>] {
-    function useResource(
-        props: P
-    ): [R, any, boolean, mutateResourceFunction<R>] {
-        const { data, error, isValidating, mutate } = useSWR(getUrl(props), {
-            initialData,
+): [R, any, boolean, mutateResourceFunction<R>] {
+    const { data, error, isValidating, mutate } = useSWR(url, {
+        initialData,
+    });
+    const mutateWithAPI = async (newResource: Partial<R>) => {
+        mutate({ ...data, ...newResource }, false);
+        await doApiRequest(url, {
+            method,
+            body: newResource,
         });
-        const mutateWithAPI = async (newResource: Partial<R>) => {
-            mutate({ ...data, ...newResource }, false);
-            await doApiRequest(getUrl(props), {
-                method,
-                body: newResource,
-            });
-            return mutate();
-        };
-        return [data, error, isValidating, mutateWithAPI];
-    }
-    return useResource;
+        return mutate();
+    };
+    return [data, error, isValidating, mutateWithAPI];
 }
 
 /**
@@ -63,82 +58,48 @@ function patchInList<T extends Identifiable>(
     return list;
 }
 
-function makeResourceListHook<P, R extends Identifiable>(
-    getListUrl: (props: P) => string,
-    getResourceUrl: (props: P & Identifiable) => string, // All props for the list, plus one for the resource.
-    initialData: R[],
-    method: string = "PATCH"
-): (props: P) => [R[], any, boolean, mutateResourceListFunction<R>] {
-    function useResourceList(
-        props: P
-    ): [R[], any, boolean, mutateResourceListFunction<R>] {
-        const { data, error, isValidating, mutate } = useSWR(
-            getListUrl(props),
-            {
-                initialData,
-            }
-        );
-        const mutateWithAPI = async (
-            id?: number,
-            patchedResource?: Partial<R>
-        ) => {
-            mutate(patchInList(data, id, patchedResource), false);
-            await doApiRequest(getResourceUrl({ ...props, id }), {
-                method,
-                body: patchedResource,
-            });
-            return mutate();
-        };
-        return [data, error, isValidating, mutateWithAPI];
-    }
-    return useResourceList;
+function useResourceList<P, R extends Identifiable>(
+    listUrl: string,
+    getResourceUrl: (id: number) => string,
+    initialData?: R[]
+): [R[], any, boolean, mutateResourceListFunction<R>] {
+    const { data, error, isValidating, mutate } = useSWR(listUrl, {
+        initialData,
+    });
+    const mutateWithAPI = async (
+        id: number,
+        patchedResource: Partial<R>,
+        method: string = "PATCH"
+    ) => {
+        mutate(patchInList(data, id, patchedResource), false);
+        await doApiRequest(getResourceUrl(id), {
+            method,
+            body: patchedResource,
+        });
+        return mutate();
+    };
+    return [data, error, isValidating, mutateWithAPI];
 }
 
-export function useCourse(
-    courseId: string,
-    initalCourse: any
-): [
-    Course,
-    any,
-    boolean,
-    (data?: any, shouldRevalidate?: boolean) => Promise<any>
-] {
-    const {
-        data,
-        error,
-        isValidating,
-        mutate,
-    } = useSWR(`/courses/${courseId}/`, { initialData: initalCourse });
-    return [data, error, isValidating, mutate];
-}
+export const useCourse = (courseId: number, initialCourse: Course) =>
+    useResource(`/courses/${courseId}/`, initialCourse);
 
-export function useMembers(
-    courseId: string,
-    initialData: Membership[] = []
-): [Membership[], any, boolean, mutateFunction<Membership[]>] {
-    const {
-        data,
-        error,
-        isValidating,
-        mutate,
-    } = useSWR(`/courses/${courseId}/members/`, { initialData });
-    const members: Membership[] = data || [];
-    return [members, error, isValidating, mutate];
-}
+export const useMembers = (courseId: number, initialData: Membership[]) =>
+    useResourceList(
+        `/courses/${courseId}/members/`,
+        (id) => `/courses/${courseId}/members/${id}/`,
+        initialData
+    );
 
-export function useInvitedMembers(
-    courseId: string,
-    initialData: MembershipInvite[] = []
-): [MembershipInvite[], any, boolean, mutateFunction<MembershipInvite[]>] {
-    const {
-        data,
-        error,
-        isValidating,
-        mutate,
-    } = useSWR(`/courses/${courseId}/invites/`, { initialData });
-    const invitedMembers: MembershipInvite[] = data || [];
-    return [invitedMembers, error, isValidating, mutate];
-}
+export const useInvitedMembers = (
+    courseId: number,
+    initialData: MembershipInvite[]
+) =>
+    useResourceList(
+        `/courses/${courseId}/invites/`,
+        (id) => `/courses/${courseId}/members/${id}/`,
+        initialData
+    );
 
 export function useStaff(
     courseId: number,
@@ -157,7 +118,7 @@ export function useStaff(
 
 export function useLeadership(
     courseId: number,
-    initialData: Membership[] = []
+    initialData: Membership[]
 ): [Membership[], any, boolean, mutateFunction<Membership[]>] {
     const {
         data,

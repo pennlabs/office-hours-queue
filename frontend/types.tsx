@@ -93,5 +93,6 @@ export interface Identifiable {
 export type mutateResourceFunction<D> = (data?: Partial<D>) => Promise<D>;
 export type mutateResourceListFunction<D extends Identifiable> = (
     id: number,
-    data?: Partial<D>
+    data: Partial<D>,
+    method?: string
 ) => Promise<D[]>;

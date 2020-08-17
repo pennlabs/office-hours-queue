@@ -11,6 +11,7 @@ import { prettifyRole, isLeadershipRole } from "../../../utils/enums";
 import ChangeRoleDropdown from "./ChangeRoleDropdown";
 import { useInvitedMembers, useMembers, useStaff } from "../CourseRequests";
 import { AuthUserContext } from "../../../context/auth";
+import { Membership } from "../../../types";
 
 const Roster = (props) => {
     // Types
@@ -135,10 +136,11 @@ const Roster = (props) => {
         memberships.filter((membership) => isLeadershipRole(membership.kind))
             .length < 2;
 
-    // TODO: this isn't a great way of doing this. Look into getServerSideProps or something else to get data
+    // TODO: this isn't a great way of doing this. filtered users should be useMemo()
+    const memString = JSON.stringify(memberships);
     useEffect(() => {
         setFilteredUsers(memberships);
-    }, [memberships.length]);
+    }, [memString, memberships]);
 
     /* TOAST */
     const setRosterUpdateToast = () => {
@@ -206,7 +208,6 @@ const Roster = (props) => {
 
     const onRoleChangeSuccess = async () => {
         setChangeRoleToast();
-        await membershipsMutate();
     };
 
     return (
@@ -369,7 +370,7 @@ const Roster = (props) => {
                                     tableState.direction === "ascending"
                                         ? "asc"
                                         : "desc"
-                                ).map((membership) => (
+                                ).map((membership: Membership) => (
                                     <Table.Row key={membership.id}>
                                         <Table.Cell>
                                             {membership.user.firstName}{" "}
@@ -396,7 +397,7 @@ const Roster = (props) => {
                                                     successFunc={
                                                         onRoleChangeSuccess
                                                     }
-                                                    refetch={membershipsMutate}
+                                                    mutate={membershipsMutate}
                                                 />
                                             )}
                                         </Table.Cell>
