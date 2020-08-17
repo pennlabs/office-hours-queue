@@ -112,7 +112,6 @@ const CourseForm = (props) => {
 
     const semesterOptions = async (inputValue: string) => {
         const semesters: Semester[] = await getSemesters();
-        console.log(semesters);
         return semesters
             .filter(
                 (semester) =>
