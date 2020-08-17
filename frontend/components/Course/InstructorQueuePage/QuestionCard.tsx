@@ -196,7 +196,8 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     </Header.Content>
                                 )}
                                 {question.timeResponseStarted &&
-                                    question.respondedToBy.id === user.id && (
+                                    question.respondedToBy.username ===
+                                        user.username && (
                                         <Header.Content>
                                             <Button
                                                 compact
@@ -210,7 +211,8 @@ const QuestionCard = (props: QuestionCardProps) => {
                                         </Header.Content>
                                     )}
                                 {question.timeResponseStarted &&
-                                    question.respondedToBy.id === user.id && (
+                                    question.respondedToBy.username ===
+                                        user.username && (
                                         <Header.Content>
                                             <Button
                                                 compact
@@ -236,7 +238,8 @@ const QuestionCard = (props: QuestionCardProps) => {
                                                 color="blue"
                                                 content={
                                                     question.respondedToBy
-                                                        .id === user.id
+                                                        .username ===
+                                                    user.username
                                                         ? "Rejoin Call"
                                                         : `Join Call (with ${fullName(
                                                               question.respondedToBy

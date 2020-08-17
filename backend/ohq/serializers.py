@@ -94,7 +94,7 @@ class CourseCreateSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ("first_name", "last_name", "email", "id")
+        fields = ("first_name", "last_name", "email", "username")
 
 
 class MembershipSerializer(CourseRouteMixin):
@@ -240,7 +240,7 @@ class UserPrivateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ("id", "first_name", "last_name", "email", "profile", "membership_set")
+        fields = ("id", "first_name", "last_name", "email", "username", "profile", "membership_set")
 
     def update(self, instance, validated_data):
         if "profile" in validated_data:
