@@ -51,7 +51,10 @@ const RejectQuestionModal = (props: RejectQuestionModalProps) => {
     const rejectQuestion = async () =>
         updateQuestion(courseId, queueId, questionId, {
             status: QuestionStatus.REJECTED,
-            rejectedReason: input.rejectedReason,
+            rejectedReason:
+                input.rejectedReason === "OTHER"
+                    ? input.rejectedReasonOther
+                    : input.rejectedReason,
         });
 
     const handleInputChange = (e, { name, value }) => {

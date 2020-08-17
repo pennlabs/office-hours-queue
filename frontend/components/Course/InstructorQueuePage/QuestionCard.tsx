@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Button, Grid, Header, Icon, Popup, Segment } from "semantic-ui-react";
 import moment from "moment";
 import RejectQuestionModal from "./RejectQuestionModal";
-import { globalIdEquals } from "../../../utils";
+// import { globalIdEquals } from "../../../utils";
 import { AuthUserContext } from "../../../context/auth";
 import { mutateFunction, Question, QuestionStatus, User } from "../../../types";
 import { updateQuestion } from "../CourseRequests";
@@ -196,10 +196,7 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     </Header.Content>
                                 )}
                                 {question.timeResponseStarted &&
-                                    globalIdEquals(
-                                        question.respondedToBy.id,
-                                        user.id
-                                    ) && (
+                                    question.respondedToBy.id === user.id && (
                                         <Header.Content>
                                             <Button
                                                 compact
@@ -213,10 +210,7 @@ const QuestionCard = (props: QuestionCardProps) => {
                                         </Header.Content>
                                     )}
                                 {question.timeResponseStarted &&
-                                    globalIdEquals(
-                                        question.respondedToBy.id,
-                                        user.id
-                                    ) && (
+                                    question.respondedToBy.id === user.id && (
                                         <Header.Content>
                                             <Button
                                                 compact
@@ -241,11 +235,8 @@ const QuestionCard = (props: QuestionCardProps) => {
                                                 size="mini"
                                                 color="blue"
                                                 content={
-                                                    globalIdEquals(
-                                                        question.respondedToBy
-                                                            .id,
-                                                        user.id
-                                                    )
+                                                    question.respondedToBy
+                                                        .id === user.id
                                                         ? "Rejoin Call"
                                                         : `Join Call (with ${fullName(
                                                               question.respondedToBy
@@ -288,12 +279,12 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     trigger={
                                         <span>
                                             {question.tags
-                                                .map(tag => ` ${tag}`)
+                                                .map((tag) => ` ${tag}`)
                                                 .toString()}
                                         </span>
                                     }
                                     content={question.tags
-                                        .map(tag => ` ${tag}`)
+                                        .map((tag) => ` ${tag}`)
                                         .toString()}
                                     basic
                                     inverted

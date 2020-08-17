@@ -3,6 +3,7 @@ import re
 from django.contrib.auth import get_user_model
 from django.core.validators import ValidationError, validate_email
 from django.db.models import Exists, OuterRef, Q
+from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, viewsets
 from rest_framework.decorators import action
@@ -130,7 +131,10 @@ class QuestionViewSet(viewsets.ModelViewSet):
     serializer_class = QuestionSerializer
 
     def get_queryset(self):
-        return Question.objects.filter(queue=self.kwargs["queue_pk"])
+        return Question.objects.filter(
+            Q(queue=self.kwargs["queue_pk"])
+            & (Q(status=Question.STATUS_ASKED) | Q(status=Question.STATUS_ACTIVE))
+        ).order_by("time_asked")
 
 
 class QuestionSearchView(generics.ListAPIView):
@@ -176,11 +180,16 @@ class QueueViewSet(viewsets.ModelViewSet):
         return Queue.objects.filter(course=self.kwargs["course_pk"])
 
     @action(methods=["POST"], detail=True)
-    def clear(self, request, pk=None):
+    def clear(self, request, course_pk, pk=None):
         """
         Clear the queue by rejecting all questions which are currently open (in the asked state).
         """
-        Question.objects.filter(queue=pk, status=Question.STATUS_ASKED).update(status=Question.STATUS_REJECTED)
+        Question.objects.filter(queue=pk, status=Question.STATUS_ASKED).update(
+            status=Question.STATUS_REJECTED,
+            rejected_reason="OH_ENDED",
+            responded_to_by=self.request.user,
+        )
+        return HttpResponse('{"detail": "success"}')
 
 
 class MembershipViewSet(viewsets.ModelViewSet):

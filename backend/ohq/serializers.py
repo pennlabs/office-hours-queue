@@ -120,7 +120,15 @@ class MembershipInviteSerializer(CourseRouteMixin):
 class QueueSerializer(CourseRouteMixin):
     class Meta:
         model = Queue
-        fields = ("id", "course", "name", "description", "archived", "estimated_wait_time", "active")
+        fields = (
+            "id",
+            "course",
+            "name",
+            "description",
+            "archived",
+            "estimated_wait_time",
+            "active",
+        )
 
 
 class QuestionSerializer(QueueRouteMixin):
@@ -142,7 +150,59 @@ class QuestionSerializer(QueueRouteMixin):
             "rejected_reason",
             "should_send_up_soon_notification",
         )
-        # TODO: restrict what fields students/TAs can modify
+        read_only_fields = (
+            "time_asked",
+            "asked_by",
+            "time_response_started",
+            "time_responded_to",
+            "responded_to_by",
+            "should_send_up_soon_notification",
+        )
+
+    def update(self, instance, validated_data):
+        """
+        Students can update their question's text and video_chat_url or withdraw the question
+        TAs+ can only modify the status of a question.
+        """
+        user = self.context["request"].user
+        membership = Membership.objects.get(course=instance.queue.course, user=user)
+
+        if membership.is_ta:  # User is a TA+
+            if "status" in validated_data:
+                status = validated_data["status"]
+                if status == Question.STATUS_WITHDRAWN:
+                    raise serializers.ValidationError(
+                        detail={"detail": "TAs can't mark a question as withdrawn"}
+                    )
+                instance.status = status
+                if status == Question.STATUS_ACTIVE:
+                    instance.responded_to_by = user
+                    instance.time_response_started = timezone.now()
+                elif status == Question.STATUS_REJECTED:
+                    instance.responded_to_by = user
+                    instance.time_responded_to = timezone.now()
+                    instance.rejected_reason = validated_data["rejected_reason"]
+                elif status == Question.STATUS_ANSWERED:
+                    instance.time_responded_to = timezone.now()
+                elif status == Question.STATUS_ASKED:
+                    instance.responded_to_by = None
+                    instance.time_response_started = None
+        else:  # User is a student
+            if "status" in validated_data:
+                status = validated_data["status"]
+                if status == Question.STATUS_WITHDRAWN:
+                    instance.status = status
+                else:
+                    raise serializers.ValidationError(
+                        detail={"detail": "Students can only withdraw a question"}
+                    )
+            if "text" in validated_data:
+                instance.text = validated_data["text"]
+            if "video_chat_url" in validated_data:
+                instance.video_chat_url = validated_data["video_chat_url"]
+
+        instance.save()
+        return instance
 
 
 class MembershipPrivateSerializer(CourseRouteMixin):
@@ -181,7 +241,7 @@ class UserPrivateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ("first_name", "last_name", "email", "profile", "membership_set")
+        fields = ("id", "first_name", "last_name", "email", "profile", "membership_set")
 
     def update(self, instance, validated_data):
         if "profile" in validated_data:

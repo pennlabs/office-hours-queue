@@ -3,7 +3,7 @@ import { Modal, List, Button } from "semantic-ui-react";
 import { clearQueue as sendClearQueue } from "../CourseRequests";
 // import { gql } from "apollo-boost";
 // import { useMutation } from "@apollo/react-hooks";
-import firebase from "../../Firebase";
+// import firebase from "../../Firebase";
 import { mutateFunction, Queue } from "../../../types";
 
 // const CLEAR_QUEUE = gql`
@@ -29,7 +29,7 @@ const ClearQueueModal = (props: ClearQueueModalProps) => {
     const loading = false;
 
     const onSubmit = async () => {
-        firebase.analytics.logEvent("queue_clear");
+        // firebase.analytics.logEvent("queue_clear");
         try {
             await clearQueue();
             await setRefetchLoading(true);
