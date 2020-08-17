@@ -21,7 +21,6 @@ const CourseSidebar = props => {
         leadershipLoading,
         leadershipMutate,
     ] = useLeadership(props.courseId, props.leadership);
-    console.log("rendering sidebar...", props)
 
     const { user: initialUser } = useContext(AuthUserContext);
     const [leader, staff, leaderError, leaderLoading, leaderMutate] = useStaff(

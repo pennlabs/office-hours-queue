@@ -10,7 +10,6 @@ import { useRouter } from "next/router";
 
 const Sidebar = (props) => {
     const router = useRouter();
-    console.log(router.pathname);
     const [showAboutModal, setShowAboutModal] = useState(false);
 
     return (
