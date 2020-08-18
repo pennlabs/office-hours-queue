@@ -3,7 +3,6 @@ from rest_framework_nested import routers
 
 from ohq.views import (
     CourseViewSet,
-    LeadershipListView,
     MassInviteView,
     MembershipInviteViewSet,
     MembershipViewSet,
@@ -31,7 +30,6 @@ queue_router.register("questions", QuestionViewSet, basename="question")
 
 additional_urls = [
     path("accounts/me/", UserView.as_view(), name="me"),
-    path("courses/<slug:course_pk>/leadership/", LeadershipListView.as_view(), name="leadership"),
     path("courses/<slug:course_pk>/mass-invite/", MassInviteView.as_view(), name="mass-invite"),
     path(
         "courses/<slug:course_pk>/questions/", QuestionSearchView.as_view(), name="questionsearch"

@@ -34,7 +34,7 @@ const InstructorQueuePage = (props) => {
 
     return (
         <Grid stackable>
-            {active === "queues" && (
+            {active === "queues" && queues && (
                 <InstructorQueues
                     courseId={courseId}
                     queues={queues}

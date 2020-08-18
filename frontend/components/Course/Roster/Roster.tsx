@@ -11,7 +11,7 @@ import { prettifyRole, isLeadershipRole } from "../../../utils/enums";
 import ChangeRoleDropdown from "./ChangeRoleDropdown";
 import { useInvitedMembers, useMembers, useStaff } from "../CourseRequests";
 import { AuthUserContext } from "../../../context/auth";
-import { Membership } from "../../../types";
+import { Kind, Membership } from "../../../types";
 
 const Roster = (props) => {
     // Types
@@ -126,7 +126,7 @@ const Roster = (props) => {
     };
 
     const closeModal = async () => {
-        await membershipsMutate();
+        await membershipsMutate(-1, {});
         triggerModal();
     };
 
@@ -384,7 +384,7 @@ const Roster = (props) => {
                                         </Table.Cell>
                                         <Table.Cell>
                                             {!leader ||
-                                            membership.kind === "STUDENT" ? (
+                                            membership.kind === Kind.STUDENT ? (
                                                 prettifyRole(membership.kind)
                                             ) : (
                                                 <ChangeRoleDropdown

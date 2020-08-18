@@ -198,7 +198,8 @@ class MembershipViewSet(viewsets.ModelViewSet):
     Return a single membership.
 
     list:
-    Return a list of memberships specific to a course.
+    Return a list of memberships specific to a course. Students cannot see
+    if peers are members or not.
 
     create:
     Create a membership.
@@ -219,26 +220,17 @@ class MembershipViewSet(viewsets.ModelViewSet):
     serializer_class = MembershipSerializer
 
     def get_queryset(self):
-        return Membership.objects.filter(course=self.kwargs["course_pk"])
+        qs = Membership.objects.filter(course=self.kwargs["course_pk"])
 
+        membership = Membership.objects.filter(
+            course=self.kwargs["course_pk"], user=self.request.user
+        ).first()
 
-class LeadershipListView(generics.ListAPIView):
-    """
-    get:
-    Return the leadership of a given course.
-    """
-
-    permission_classes = [LeadershipPermission | IsSuperuser]
-    serializer_class = MembershipSerializer
-    # TODO: modify the AutoSchema to use a different name than
-    # listMemberships once DRF releases next version
-
-    def get_queryset(self):
-        # TODO: order this professor->head ta
-        return Membership.objects.filter(
-            Q(course=self.kwargs["course_pk"]),
-            Q(kind=Membership.KIND_PROFESSOR) | Q(kind=Membership.KIND_HEAD_TA),
-        )
+        if not membership.is_ta:
+            qs = qs.filter(
+                Q(kind=Membership.KIND_PROFESSOR) | Q(kind=Membership.KIND_HEAD_TA) | Q(user=self.request.user),
+            )
+        return qs
 
 
 class MembershipInviteViewSet(viewsets.ModelViewSet):

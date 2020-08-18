@@ -24,11 +24,12 @@ const Queue = (props: QueueProps) => {
     const { id: queueId, active, estimatedWaitTime } = queue;
 
     /* STATE */
-    const [questions, error, isValidating, mutateQuestions] = useQuestions(
+    let [questions, error, isValidating, mutateQuestions] = useQuestions(
         courseId,
         queueId,
         3000
     );
+    questions = questions || []; // TODO: loading component
     const [filters, setFilters] = useState({ tags: [], status: null });
     const [clearModalOpen, setClearModalOpen] = useState(false);
 

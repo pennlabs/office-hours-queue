@@ -13,9 +13,15 @@ export interface Course {
     isMember: boolean;
 }
 
+export enum Kind {
+    STUDENT = "STUDENT",
+    TA = "TA",
+    HEAD_TA = "HEAD_TA",
+    PROFESSOR = "PROFESSOR",
+}
 export interface Membership {
     id: number;
-    kind: string;
+    kind: Kind;
     course?: Course;
     user?: User;
 }

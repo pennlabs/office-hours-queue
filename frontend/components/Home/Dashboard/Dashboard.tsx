@@ -1,5 +1,5 @@
-import React, { useState, useContext } from "react";
-import { Segment, Header, Grid, Placeholder } from "semantic-ui-react";
+import React, { useContext, useState } from "react";
+import { Grid, Header, Placeholder, Segment } from "semantic-ui-react";
 import _ from "lodash";
 import Alert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
@@ -8,7 +8,7 @@ import StudentCourses from "./StudentCourses";
 import NewUserModal from "./Modals/NewUserModal";
 import { AuthUserContext } from "../../../context/auth";
 import { useMemberships } from "./DashboardRequests";
-import { Membership, Course } from "../../../types";
+import { Course, Kind, Membership } from "../../../types";
 
 const Dashboard = (props) => {
     const { user: initalUser } = useContext(AuthUserContext);
@@ -24,8 +24,8 @@ const Dashboard = (props) => {
         return memberships
             .filter((membership) => {
                 return (
-                    (isStudent && membership.kind === "STUDENT") ||
-                    (!isStudent && membership.kind !== "STUDENT")
+                    (isStudent && membership.kind === Kind.STUDENT) ||
+                    (!isStudent && membership.kind !== Kind.STUDENT)
                 );
             })
             .map((membership) => membership.course);

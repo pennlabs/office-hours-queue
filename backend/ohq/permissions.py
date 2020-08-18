@@ -235,11 +235,8 @@ class MembershipPermission(permissions.BasePermission):
         if membership is None:
             return False
 
-        # TAs+ can list membership
-        if view.action == "list":
-            return membership.is_ta
-
         # Students+ can get, modify, and delete memberships
+        # can list memberships of leaders.
         # With restrictions defined in has_object_permission
         return True
 

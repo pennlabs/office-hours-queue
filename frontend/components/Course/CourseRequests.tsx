@@ -13,6 +13,7 @@ import {
     mutateResourceFunction,
     Identifiable,
     mutateResourceListFunction,
+    Kind,
 } from "../../types";
 
 function useResource<R>(
@@ -123,7 +124,7 @@ export function useStaff(
         (membership) => membership.course.id === courseId
     );
     const leader = isLeadershipRole(course.kind);
-    const staff = course.kind !== "STUDENT";
+    const staff = course.kind !== Kind.STUDENT;
     return [leader, staff, error, isValidating, mutate];
 }
 
@@ -136,8 +137,10 @@ export function useLeadership(
         error,
         isValidating,
         mutate,
-    } = useSWR(`/courses/${courseId}/leadership/`, { initialData });
-    const leadership: Membership[] = data || [];
+    } = useSWR(`/courses/${courseId}/members/`, { initialData });
+    const leadership: Membership[] = (data || []).filter((mem) =>
+        isLeadershipRole(mem.kind)
+    );
     return [leadership, error, isValidating, mutate];
 }
 
