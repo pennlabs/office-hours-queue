@@ -1,22 +1,11 @@
 import React, { useState } from "react";
 import { Button, Form, Modal, Segment } from "semantic-ui-react";
-// import { gql } from 'apollo-boost';
-// import { useMutation } from '@apollo/react-hooks';
-import firebase from "../../Firebase";
-import { mutateFunction, Question, QuestionStatus } from "../../../types";
-import { updateQuestion } from "../CourseRequests";
+import {
+    mutateResourceListFunction,
+    Question,
+    QuestionStatus,
+} from "../../../types";
 import { fullName } from "./QuestionCard";
-
-/* GRAPHQL QUERIES/MUTATIONS */
-// const REJECT_QUESTION = gql`
-//   mutation RejectQuestion($input: RejectQuestionInput!) {
-//     rejectQuestion(input: $input) {
-//       question {
-//         id
-//       }
-//     }
-//   }
-// `;
 
 const rejectOptions = [
     { key: "NOT_HERE", value: "NOT_HERE", text: "Not Here" },
@@ -31,7 +20,7 @@ interface RejectQuestionModalProps {
     courseId: number;
     queueId: number;
     closeFunc: () => void;
-    refetch: mutateFunction<Question[]>;
+    mutate: mutateResourceListFunction<Question>;
     open: boolean;
 }
 interface ReasonProps {
@@ -39,7 +28,7 @@ interface ReasonProps {
     rejectedReasonOther: string | null;
 }
 const RejectQuestionModal = (props: RejectQuestionModalProps) => {
-    const { question, courseId, queueId, closeFunc, open } = props;
+    const { question, courseId, queueId, closeFunc, open, mutate } = props;
     const { id: questionId } = question;
     const [input, setInput] = useState<ReasonProps>({
         rejectedReason: null,
@@ -49,7 +38,7 @@ const RejectQuestionModal = (props: RejectQuestionModalProps) => {
     const [otherDisabled, setOtherDisabled] = useState(true);
     const [rejectDisabled, setRejectDisabled] = useState(true);
     const rejectQuestion = async () =>
-        updateQuestion(courseId, queueId, questionId, {
+        mutate(questionId, {
             status: QuestionStatus.REJECTED,
             rejectedReason:
                 input.rejectedReason === "OTHER"
@@ -80,7 +69,6 @@ const RejectQuestionModal = (props: RejectQuestionModalProps) => {
         try {
             await rejectQuestion();
             closeFunc();
-            await props.refetch();
         } catch (e) {
             console.log(e);
         }

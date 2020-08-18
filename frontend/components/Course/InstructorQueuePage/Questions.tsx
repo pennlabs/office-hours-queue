@@ -2,14 +2,14 @@ import React from "react";
 import { Grid, Message } from "semantic-ui-react";
 import _ from "lodash";
 import QuestionCard from "./QuestionCard";
-import { mutateFunction, Question } from "../../../types";
+import { mutateResourceListFunction, Question } from "../../../types";
 
 interface QuestionsProps {
     questions: Question[];
     courseId: number;
     queueId: number;
     active: boolean;
-    refetch: mutateFunction<Question[]>;
+    refetch: mutateResourceListFunction<Question>;
 }
 const Questions = (props: QuestionsProps) => {
     const { questions, refetch, active, courseId, queueId } = props;
@@ -25,7 +25,7 @@ const Questions = (props: QuestionsProps) => {
                                 question={question}
                                 courseId={courseId}
                                 queueId={queueId}
-                                refetch={refetch}
+                                mutate={refetch}
                             />
                         </Grid.Row>
                     ))}

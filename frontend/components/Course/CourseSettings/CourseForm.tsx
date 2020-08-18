@@ -92,7 +92,7 @@ const CourseForm = (props: CourseFormProps) => {
             setLoading(true);
             await refetch(input);
             // await updateCourse(course.id, input);
-            // await refetch();
+            // await mutate();
             setLoading(false);
             setSuccess(true);
             setDisabled(true);
@@ -107,7 +107,7 @@ const CourseForm = (props: CourseFormProps) => {
             setLoading(true);
             await refetch({ archived: true });
             // await updateCourse(course.id, { archived: true });
-            // await refetch();
+            // await mutate();
             setLoading(false);
             setOpen(false);
             router.replace("/");

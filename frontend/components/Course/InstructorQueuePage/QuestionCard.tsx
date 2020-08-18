@@ -2,10 +2,13 @@ import React, { useContext, useEffect, useState } from "react";
 import { Button, Grid, Header, Icon, Popup, Segment } from "semantic-ui-react";
 import moment from "moment";
 import RejectQuestionModal from "./RejectQuestionModal";
-// import { globalIdEquals } from "../../../utils";
 import { AuthUserContext } from "../../../context/auth";
-import { mutateFunction, Question, QuestionStatus, User } from "../../../types";
-import { updateQuestion } from "../CourseRequests";
+import {
+    mutateResourceListFunction,
+    Question,
+    QuestionStatus,
+    User,
+} from "../../../types";
 
 export const fullName = (user: User) => `${user.firstName} ${user.lastName}`;
 
@@ -13,27 +16,14 @@ interface QuestionCardProps {
     question: Question;
     courseId: number;
     queueId: number;
-    refetch: mutateFunction<Question[]>;
+    mutate: mutateResourceListFunction<Question>;
 }
 const QuestionCard = (props: QuestionCardProps) => {
-    const { question, courseId, queueId, refetch } = props;
+    const { question, courseId, queueId, mutate: mutateQuestion } = props;
     const { id: questionId, askedBy, respondedToBy } = question;
     const { user } = useContext(AuthUserContext);
 
     const [open, setOpen] = useState(false);
-    const startQuestion = () =>
-        updateQuestion(courseId, queueId, questionId, {
-            status: QuestionStatus.ACTIVE,
-        });
-    const finishQuestion = () =>
-        updateQuestion(courseId, queueId, questionId, {
-            status: QuestionStatus.ANSWERED,
-        });
-    const undoStartQuestion = () =>
-        updateQuestion(courseId, queueId, questionId, {
-            status: QuestionStatus.ASKED,
-        });
-
     const timeString = (date, isLong) => {
         return new Date(date).toLocaleString(
             "en-US",
@@ -46,18 +36,15 @@ const QuestionCard = (props: QuestionCardProps) => {
     };
 
     const onAnswer = async () => {
-        await startQuestion();
-        await refetch();
+        await mutateQuestion(questionId, { status: QuestionStatus.ACTIVE });
     };
 
     const onFinish = async () => {
-        await finishQuestion();
-        await refetch();
+        await mutateQuestion(questionId, { status: QuestionStatus.ANSWERED });
     };
 
     const onUndo = async () => {
-        await undoStartQuestion();
-        await refetch();
+        await mutateQuestion(questionId, { status: QuestionStatus.ASKED });
     };
 
     const isLoading = () => {
@@ -79,7 +66,7 @@ const QuestionCard = (props: QuestionCardProps) => {
                 open={open}
                 question={question}
                 closeFunc={triggerModal}
-                refetch={refetch}
+                mutate={mutateQuestion}
                 courseId={courseId}
                 queueId={queueId}
             />

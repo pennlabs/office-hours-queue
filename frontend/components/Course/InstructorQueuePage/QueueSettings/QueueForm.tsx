@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Form, Button, Modal } from "semantic-ui-react";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
-import { updateQueue } from "../../CourseRequests";
 
 // TODO: error check PATCH
 const QueueForm = (props) => {
@@ -41,8 +40,7 @@ const QueueForm = (props) => {
 
     const onSubmit = async () => {
         try {
-            await updateQueue(props.courseId, queue.id, input);
-            await props.refetch();
+            await props.refetch(queue.id, input);
             setSuccess(true);
             props.backFunc();
         } catch (e) {
@@ -51,8 +49,7 @@ const QueueForm = (props) => {
     };
 
     const onArchived = async () => {
-        await updateQueue(props.courseId, queue.id, { archived: true });
-        await props.refetch();
+        await props.refetch(queue.id, { archived: true });
         setOpen(false);
         props.backFunc();
     };

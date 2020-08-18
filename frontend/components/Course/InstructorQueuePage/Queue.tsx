@@ -3,8 +3,8 @@ import { Header, Label, Grid, Segment, Button } from "semantic-ui-react";
 import Questions from "./Questions";
 import QueueFilterForm from "./QueueFilterForm";
 import ClearQueueModal from "./ClearQueueModal";
-import { mutateFunction, Queue as QueueType } from "../../../types";
-import { updateQueue, useQuestions } from "../CourseRequests";
+import { mutateResourceListFunction, Queue as QueueType } from "../../../types";
+import { useQuestions } from "../CourseRequests";
 
 // Returns true if l1 is a subset of l2
 const isSubset = (l1, l2) => {
@@ -15,7 +15,7 @@ const isSubset = (l1, l2) => {
 interface QueueProps {
     courseId: number;
     queue: QueueType;
-    refetch: mutateFunction<QueueType>;
+    refetch: mutateResourceListFunction<QueueType>;
     leader: boolean;
     editFunc: () => void;
 }
@@ -41,13 +41,11 @@ const Queue = (props: QueueProps) => {
     // );
 
     const onOpen = async () => {
-        await updateQueue(courseId, queueId, { active: true });
-        await refetch();
+        await refetch(queueId, { active: true });
     };
 
     const onClose = async () => {
-        await updateQueue(courseId, queueId, { active: false });
-        await refetch();
+        await refetch(queueId, { active: false });
     };
 
     return (

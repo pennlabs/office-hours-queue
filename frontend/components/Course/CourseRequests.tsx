@@ -1,4 +1,4 @@
-import useSWR from "swr";
+import useSWR, { ConfigInterface, mutate as globalMutate } from "swr";
 import { isLeadershipRole } from "../../utils/enums";
 import { doApiRequest } from "../../utils/fetch";
 import {
@@ -62,13 +62,15 @@ function patchInList<T extends Identifiable>(
     return [list, false];
 }
 
-function useResourceList<P, R extends Identifiable>(
+function useResourceList<R extends Identifiable>(
     listUrl: string | (() => string),
     getResourceUrl: (id: number) => string,
-    initialData?: R[]
+    initialData?: R[],
+    config?: ConfigInterface<R[]>
 ): [R[], any, boolean, mutateResourceListFunction<R>] {
     const { data, error, isValidating, mutate } = useSWR(listUrl, {
         initialData,
+        ...config,
     });
     const mutateWithAPI = async (
         id: number,
@@ -106,7 +108,7 @@ export const useInvitedMembers = (
 ) =>
     useResourceList(
         `/courses/${courseId}/invites/`,
-        (id) => `/courses/${courseId}/members/${id}/`,
+        (id) => `/courses/${courseId}/invites/${id}/`,
         initialData
     );
 
@@ -162,63 +164,27 @@ export async function getSemesters(): Promise<Semester[]> {
         .catch((_) => []);
 }
 
-export function useQueues(
-    courseId: number,
-    initialData: Queue[] = []
-): [Queue[], any, boolean, mutateFunction<Queue[]>] {
-    const {
-        data,
-        error,
-        isValidating,
-        mutate,
-    } = useSWR(`/courses/${courseId}/queues/`, { initialData });
-    return [data, error, isValidating, mutate];
-}
-
-export function useQuestions(
-    courseId: number,
-    queueId: number,
-    refreshInterval: number,
-    initialData: Question[] = []
-): [Question[], any, boolean, mutateFunction<Question[]>] {
-    const { data, error, isValidating, mutate } = useSWR(
-        `/courses/${courseId}/queues/${queueId}/questions/`,
-        {
-            initialData,
-            refreshInterval,
-        }
+export const useQueues = (courseId: number) =>
+    useResourceList<Queue>(
+        `/courses/${courseId}/queues/`,
+        (id) => `/courses/${courseId}/queues/${id}/`
     );
-    return [data, error, isValidating, mutate];
-}
 
-export async function updateQueue(
+export const useQuestions = (
     courseId: number,
     queueId: number,
-    queue: Partial<Queue>
-) {
-    return doApiRequest(`/courses/${courseId}/queues/${queueId}/`, {
-        method: "PATCH",
-        body: { ...queue },
-    });
-}
+    refreshInterval: number
+) =>
+    useResourceList<Question>(
+        `/courses/${courseId}/queues/${queueId}/questions/`,
+        (id) => `/courses/${courseId}/queues/${queueId}/questions/${id}/`,
+        undefined,
+        { refreshInterval }
+    );
 
 export async function clearQueue(courseId: number, queueId: number) {
-    return doApiRequest(`/courses/${courseId}/queues/${queueId}/clear/`, {
+    await doApiRequest(`/courses/${courseId}/queues/${queueId}/clear/`, {
         method: "POST",
     });
-}
-
-export async function updateQuestion(
-    courseId: number,
-    queueId: number,
-    questionId: number,
-    question: Partial<Question>
-) {
-    return doApiRequest(
-        `/courses/${courseId}/queues/${queueId}/questions/${questionId}/`,
-        {
-            method: "PATCH",
-            body: { ...question },
-        }
-    );
+    return globalMutate(`/courses/${courseId}/queues/${queueId}/`);
 }

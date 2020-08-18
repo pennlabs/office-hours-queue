@@ -12,9 +12,9 @@ export function isValidURL(url) {
 }
 
 // export function useImperativeQuery(query) {
-//   const { refetch } = useQuery(query, { skip: true });
+//   const { mutate } = useQuery(query, { skip: true });
 //   return (variables) => {
-//     return refetch(variables);
+//     return mutate(variables);
 //   };
 // }
 //
