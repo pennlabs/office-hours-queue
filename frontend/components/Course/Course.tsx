@@ -141,12 +141,9 @@ const Course = (props) => {
                 {staff && active === "settings" && (
                     <CourseSettings course={course} refetch={mutate} />
                 )}
-                {
-                    active === "queues" && (
-                        <InstructorQueuePage course={course} />
-                    )
-                    // userId={currentUserQuery.data.currentUser.id} />
-                }
+                {staff && active === "queues" && (
+                    <InstructorQueuePage course={course} />
+                )}
                 {staff && active === "analytics" && (
                     <Analytics course={course} />
                 )}

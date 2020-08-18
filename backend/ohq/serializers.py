@@ -118,6 +118,10 @@ class MembershipInviteSerializer(CourseRouteMixin):
 
 
 class QueueSerializer(CourseRouteMixin):
+    questions_active = serializers.IntegerField(default=0, read_only=True)
+    questions_asked = serializers.IntegerField(default=0, read_only=True)
+    staff_active = serializers.IntegerField(default=0, read_only=True)
+
     class Meta:
         model = Queue
         fields = (
@@ -127,6 +131,9 @@ class QueueSerializer(CourseRouteMixin):
             "archived",
             "estimated_wait_time",
             "active",
+            "questions_active",
+            "questions_asked",
+            "staff_active",
         )
         read_only_fields = ("estimated_wait_time",)
 

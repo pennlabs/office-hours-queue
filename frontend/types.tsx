@@ -56,6 +56,9 @@ export interface Queue {
     active: boolean;
     archived: boolean;
     estimatedWaitTime: number;
+    questionsActive: number;
+    questionsAsked: number;
+    staffActive: number;
 }
 
 // "ASKED" "WITHDRAWN" "ACTIVE" "REJECTED" "ANSWERED"

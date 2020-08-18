@@ -13,9 +13,14 @@ import QuestionForm from "./QuestionForm";
 import QuestionCard from "./QuestionCard";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
+import { Queue } from "../../../types";
 // import Linkify from 'react-linkify';
 
-const StudentQueue = (props) => {
+interface StudentQueueProps {
+    queue: Queue;
+}
+
+const StudentQueue = (props: StudentQueueProps) => {
     const [toast, setToast] = useState({ message: "", success: true });
     const [toastOpen, setToastOpen] = useState(false);
 
@@ -42,26 +47,24 @@ const StudentQueue = (props) => {
                     {/* </Linkify> */}
                 </Header.Subheader>
             </Header>
-            {(props.queue.activeOverrideTime ||
-                props.queue.numberActiveQuestions !== 0) && (
+            {(props.queue.active || props.queue.questionsActive !== 0) && (
                 <Label
                     content={
-                        props.queue.numberActiveQuestions +
+                        props.queue.questionsActive +
                         ` user${
-                            props.queue.numberActiveQuestions === 1 ? "" : "s"
+                            props.queue.questionsActive === 1 ? "" : "s"
                         } in queue`
                     }
                     color="blue"
                     icon="users"
                 />
             )}
-            {(props.queue.activeOverrideTime ||
-                props.queue.numberStartedQuestions) !== 0 && (
+            {(props.queue.active || props.queue.questionsAsked) !== 0 && (
                 <Label
                     content={
-                        props.queue.numberStartedQuestions +
+                        props.queue.questionsAsked +
                         ` user${
-                            props.queue.numberStartedQuestions === 1 ? "" : "s"
+                            props.queue.questionsAsked === 1 ? "" : "s"
                         } currently being helped`
                     }
                     icon="user"
@@ -70,22 +73,23 @@ const StudentQueue = (props) => {
             {/*
           <Label content={ `${props.queue.estimatedWaitTime} mins`} color="blue" icon="clock"/>
         */}
-            {props.queue.activeOverrideTime && (
+            {props.queue.active && (
                 <Popup
                     trigger={
                         <Label
-                            content={
-                                props.queue.activeStaff.length + ` staff active`
-                            }
+                            content={props.queue.staffActive + ` staff active`}
                             icon={<Icon name={"sync"} loading={true} />}
                         />
                     }
-                    content={props.queue.activeStaff
-                        .map((courseUser) => courseUser.user.fullName)
-                        .sort()
-                        .join(", ")}
+                    content={
+                        "People"
+                        // props.queue.activeStaff
+                        // .map((courseUser) => courseUser.user.fullName)
+                        // .sort()
+                        // .join(", ")
+                    }
                     on={"hover"}
-                    disabled={props.queue.activeStaff.length === 0}
+                    disabled={props.queue.staffActive === 0}
                     position={"top center"}
                 />
             )}
@@ -98,7 +102,7 @@ const StudentQueue = (props) => {
                         toastFunc={updateToast}
                     />
                 )}
-                {!props.queue.activeOverrideTime && !props.question && (
+                {!props.queue.active && !props.question && (
                     <Message
                         style={{ marginTop: "10px" }}
                         header="Queue Closed"
@@ -107,24 +111,22 @@ const StudentQueue = (props) => {
                         content="This queue is currently closed. Contact course staff if you think this is an error."
                     />
                 )}
-                {props.queue.activeOverrideTime && !props.hasQuestion && (
+                {props.queue.active && !props.hasQuestion && (
                     <QuestionForm
                         queue={props.queue}
                         refetch={props.refetch}
                         toastFunc={updateToast}
                     />
                 )}
-                {props.queue.activeOverrideTime &&
-                    props.hasQuestion &&
-                    !props.question && (
-                        <Message
-                            style={{ marginTop: "10px" }}
-                            info
-                            header="Question already in queue"
-                            icon="comment alternate outline"
-                            content="You already have asked a question in another queue"
-                        />
-                    )}
+                {props.queue.active && props.hasQuestion && !props.question && (
+                    <Message
+                        style={{ marginTop: "10px" }}
+                        info
+                        header="Question already in queue"
+                        icon="comment alternate outline"
+                        content="You already have asked a question in another queue"
+                    />
+                )}
             </Grid.Row>
             <Snackbar
                 open={toastOpen}

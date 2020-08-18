@@ -1,9 +1,11 @@
 import re
+from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.core.validators import ValidationError, validate_email
-from django.db.models import Exists, OuterRef, Q
+from django.db.models import Count, Exists, OuterRef, Q, Subquery
 from django.http import HttpResponse
+from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, viewsets
 from rest_framework.decorators import action
@@ -135,6 +137,16 @@ class QuestionViewSet(viewsets.ModelViewSet):
             & (Q(status=Question.STATUS_ASKED) | Q(status=Question.STATUS_ACTIVE))
         ).order_by("time_asked")
 
+    def list(self, request, *args, **kwargs):
+        """
+        Update a staff member's last active time when they view questions
+        """
+
+        membership = Membership.objects.get(user=request.user, course=self.kwargs["course_pk"])
+        membership.last_active = timezone.now()
+        membership.save()
+        return super().list(request, *args, **kwargs)
+
 
 class QuestionSearchView(generics.ListAPIView):
     filter_backends = [DjangoFilterBackend]
@@ -176,7 +188,26 @@ class QueueViewSet(viewsets.ModelViewSet):
     serializer_class = QueueSerializer
 
     def get_queryset(self):
-        return Queue.objects.filter(course=self.kwargs["course_pk"], archived=False)
+        """
+        Annotate the number of questions asked, number of questioned currently being answered,
+        and the number of active staff members.
+        """
+
+        questions = Question.objects.filter(queue=OuterRef("pk"))
+        questions_active = questions.filter(status=Question.STATUS_ACTIVE).values("id")
+        questions_asked = questions.filter(status=Question.STATUS_ASKED).values("id")
+        time_threshold = timezone.now() - timedelta(minutes=1)
+
+        staff_active = Membership.objects.filter(
+            Q(course=OuterRef("course__pk"))
+            & ~Q(kind=Membership.KIND_STUDENT)
+            & Q(last_active__gt=time_threshold)
+        ).values("id")
+        return Queue.objects.filter(course=self.kwargs["course_pk"], archived=False).annotate(
+            questions_active=Count(Subquery(questions_active)),
+            questions_asked=Count(Subquery(questions_asked)),
+            staff_active=Count(Subquery(staff_active)),
+        )
 
     @action(methods=["POST"], detail=True)
     def clear(self, request, course_pk, pk=None):

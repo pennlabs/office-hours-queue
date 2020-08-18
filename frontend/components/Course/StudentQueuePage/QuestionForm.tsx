@@ -16,7 +16,8 @@ import { isValidURL } from "../../../utils";
 // `;
 
 const QuestionForm = (props) => {
-    const [createQuestion, { loading }] = useMutation(CREATE_QUESTION);
+    // const [createQuestion, { loading }] = useMutation(CREATE_QUESTION);
+    const loading = false;
     const [queue, setQueue] = useState(props.queue);
     const [input, setInput] = useState({
         queueId: props.queue.id,
@@ -85,7 +86,7 @@ const QuestionForm = (props) => {
                     attached="top"
                     color="blue"
                 >
-                    <Header content="Add a Question" />
+                    <Header content="Ask a Question" />
                 </Segment>
                 <Segment attached secondary>
                     <Form>
