@@ -11,8 +11,8 @@ import {
 import { prettifyRole } from "../../utils/enums";
 
 import AboutModal from "../LandingPage/AboutModal";
-import { useStaff, useLeadership } from "./CourseRequests";
 import { AuthUserContext } from "../../context/auth";
+import { useLeadership, useStaff } from "../../hooks/data-fetching/course";
 
 const CourseSidebar = (props) => {
     const [

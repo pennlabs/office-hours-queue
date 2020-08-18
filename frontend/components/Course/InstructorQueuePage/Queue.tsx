@@ -4,7 +4,7 @@ import Questions from "./Questions";
 import QueueFilterForm from "./QueueFilterForm";
 import ClearQueueModal from "./ClearQueueModal";
 import { mutateResourceListFunction, Queue as QueueType } from "../../../types";
-import { useQuestions } from "../CourseRequests";
+import { useQuestions } from "../../../hooks/data-fetching/course";
 
 // Returns true if l1 is a subset of l2
 const isSubset = (l1, l2) => {

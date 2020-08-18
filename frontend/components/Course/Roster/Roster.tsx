@@ -9,9 +9,9 @@ import InviteModal from "./Invites/InviteModal";
 
 import { prettifyRole, isLeadershipRole } from "../../../utils/enums";
 import ChangeRoleDropdown from "./ChangeRoleDropdown";
-import { useInvitedMembers, useMembers, useStaff } from "../CourseRequests";
 import { AuthUserContext } from "../../../context/auth";
 import { Kind, Membership } from "../../../types";
+import { useInvitedMembers, useMembers, useStaff } from "../../../hooks/data-fetching/course";
 
 const Roster = (props) => {
     // Types

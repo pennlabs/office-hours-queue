@@ -4,7 +4,7 @@ import "../../../Course/CourseSettings/CourseForm.module.css";
 import { Form } from "semantic-ui-react";
 import AsyncSelect from "react-select/async";
 import { Semester } from "../../../../types";
-import { getSemesters } from "../../../Course/CourseRequests";
+import { getSemesters } from "../../../../hooks/data-fetching/course";
 
 const semesterOptions = async (inputValue: string) => {
     const semesters: Semester[] = await getSemesters();

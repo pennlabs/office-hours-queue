@@ -1,7 +1,7 @@
 import useSWR from "swr";
-import { parsePhoneNumberFromString } from "libphonenumber-js/min";
-import { User } from "../../../types";
-import { doApiRequest } from "../../../utils/fetch";
+import { parsePhoneNumberFromString } from "libphonenumber-js/max";
+import { User } from "../../types";
+import { doApiRequest } from "../../utils/fetch";
 
 export function useAccountInfo(initialUser): [
     User,
@@ -37,7 +37,7 @@ export async function updateUser(payload) {
         // TODO: Better error handling
         payload.profile.phoneNumber = parsePhoneNumberFromString(
             String(payload.profile.phoneNumber),
-            "US"
+            "US",
         ).number;
     }
     const res = await doApiRequest("/accounts/me/", {

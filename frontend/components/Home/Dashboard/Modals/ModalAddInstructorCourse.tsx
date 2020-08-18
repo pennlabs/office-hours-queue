@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Modal, Button } from "semantic-ui-react";
 import CreateCourseForm from "../Forms/CreateCourseForm";
-import { createCourse } from "../DashboardRequests";
+import { createCourse } from "../../../../hooks/data-fetching/dashboard";
 
 const ModalAddInstructorCourse = (props) => {
     const videoChatNum = (course) => {

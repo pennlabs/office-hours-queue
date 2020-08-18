@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Modal, Button } from "semantic-ui-react";
 import AddForm from "./AddForm";
-import { sendMassInvites } from "../../CourseRequests";
+import { sendMassInvites } from "../../../../hooks/data-fetching/course";
 
 const InviteModal = (props) => {
     const [loading, setLoading] = useState(false);

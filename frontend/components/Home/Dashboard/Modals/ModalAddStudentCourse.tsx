@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Modal, Button } from "semantic-ui-react";
 import AddStudentForm from "../Forms/AddStudentForm";
-import { joinCourse } from "../DashboardRequests";
+import { joinCourse } from "../../../../hooks/data-fetching/dashboard";
 
 const ModalAddStudentCourse = (props) => {
     const [loading, setLoading] = useState(false);

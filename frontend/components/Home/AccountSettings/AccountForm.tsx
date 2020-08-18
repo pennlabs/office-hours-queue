@@ -2,10 +2,10 @@ import React, { useState, useContext } from "react";
 import { Form, Button, Icon, Popup } from "semantic-ui-react";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
-import { useAccountInfo, updateUser } from "./AccountRequests";
 import { AuthUserContext } from "../../../context/auth";
 import VerificationModal from "./VerificationModal";
 import { User } from "../../../types";
+import { updateUser, useAccountInfo } from "../../../hooks/data-fetching/account";
 
 const AccountForm = () => {
     const { user: initialUser } = useContext(AuthUserContext);

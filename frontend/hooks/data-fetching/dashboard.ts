@@ -1,6 +1,6 @@
 import useSWR from "swr";
-import { Course, Membership } from "../../../types";
-import { doApiRequest } from "../../../utils/fetch";
+import { Course, Membership } from "../../types";
+import { doApiRequest } from "../../utils/fetch";
 
 export async function getCourses(inputValue: string): Promise<Course[]> {
     return await doApiRequest(`/courses/?search=${inputValue}`)

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Modal, List, Button } from "semantic-ui-react";
-import { clearQueue } from "../CourseRequests";
 import { mutateResourceListFunction, Queue } from "../../../types";
+import { clearQueue } from "../../../hooks/data-fetching/course";
 
 interface ClearQueueModalProps {
     queue: Queue;

@@ -5,8 +5,8 @@ import Snackbar from "@material-ui/core/Snackbar";
 import InstructorQueues from "./InstructorQueues";
 import QueueSettings from "./QueueSettings/QueueSettings";
 import CreateQueue from "./CreateQueue/CreateQueue";
-import { useQueues, useStaff } from "../CourseRequests";
 import { AuthUserContext } from "../../../context/auth";
+import { useQueues, useStaff } from "../../../hooks/data-fetching/course";
 
 const InstructorQueuePage = (props) => {
     const {

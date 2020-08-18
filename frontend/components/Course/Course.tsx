@@ -13,9 +13,9 @@ import Summary from "./Summary/Summary";
 // import { gql } from 'apollo-boost';
 // import { useQuery } from '@apollo/react-hooks';
 import { leadershipSortFunc } from "../../utils";
-import { useCourse, useStaff } from "./CourseRequests";
 import { AuthUserContext } from "../../context/auth";
 import StudentQueuePage from "./StudentQueuePage/StudentQueuePage";
+import { useCourse, useStaff } from "../../hooks/data-fetching/course";
 
 /* GRAPHQL QUERIES/MUTATIONS */
 // const GET_COURSE = gql`

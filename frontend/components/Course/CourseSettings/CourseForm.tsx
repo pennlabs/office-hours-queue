@@ -6,8 +6,8 @@ import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 import AsyncSelect from "react-select/async";
 import { useRouter } from "next/router";
-import { getSemesters } from "../CourseRequests";
 import { Course, mutateResourceFunction, Semester } from "../../../types";
+import { getSemesters } from "../../../hooks/data-fetching/course";
 
 interface CourseFormProps {
     course: Course;

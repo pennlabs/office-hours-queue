@@ -2,7 +2,8 @@ import React from "react";
 import { Form } from "semantic-ui-react";
 
 import AsyncSelect from "react-select/async";
-import { getCourses, Course } from "../DashboardRequests";
+import { Course } from "../DashboardRequests";
+import { getCourses } from "../../../../hooks/data-fetching/dashboard";
 
 const AddStudentForm = (props) => {
     const promiseOptions = async (inputValue: string) => {

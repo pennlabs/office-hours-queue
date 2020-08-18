@@ -3,7 +3,7 @@ import "./VerificationModal.module.css";
 
 import { Segment } from "semantic-ui-react";
 import ReactCodeInput from "react-code-input";
-import { validateSMS } from "./AccountRequests";
+import { validateSMS } from "../../../hooks/data-fetching/account";
 
 const VerificationForm = (props) => {
     const codeInput = useRef();
