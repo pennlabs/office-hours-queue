@@ -17,7 +17,6 @@ from ohq.pagination import QuestionSearchPagination
 from ohq.permissions import (
     CoursePermission,
     IsSuperuser,
-    LeadershipPermission,
     MassInvitePermission,
     MembershipInvitePermission,
     MembershipPermission,
@@ -222,13 +221,13 @@ class MembershipViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         qs = Membership.objects.filter(course=self.kwargs["course_pk"])
 
-        membership = Membership.objects.filter(
-            course=self.kwargs["course_pk"], user=self.request.user
-        ).first()
+        membership = Membership.objects.get(course=self.kwargs["course_pk"], user=self.request.user)
 
         if not membership.is_ta:
             qs = qs.filter(
-                Q(kind=Membership.KIND_PROFESSOR) | Q(kind=Membership.KIND_HEAD_TA) | Q(user=self.request.user),
+                Q(kind=Membership.KIND_PROFESSOR)
+                | Q(kind=Membership.KIND_HEAD_TA)
+                | Q(user=self.request.user)
             )
         return qs
 
