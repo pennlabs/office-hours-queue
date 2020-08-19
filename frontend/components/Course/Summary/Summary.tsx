@@ -2,20 +2,14 @@
 // TODO: sort by time asked
 
 import React, { useState, useMemo } from "react";
-import {
-    Segment,
-    Grid,
-    Table,
-    Dimmer,
-    Loader,
-    Button,
-} from "semantic-ui-react";
-import _ from "lodash";
+import { Segment, Grid, Table, Loader, Pagination } from "semantic-ui-react";
 import {
     useQuestions,
     QuestionSummaryFilters,
 } from "../../../hooks/data-fetching/questionsummary";
 import SummaryForm from "./SummaryForm";
+
+const MAX_QUESTIONS_PER_PAGE = 20;
 
 const Summary = ({ course }) => {
     const [filterState, setFilterState] = useState<
@@ -54,7 +48,7 @@ const Summary = ({ course }) => {
                             </Table.Row>
                         </Table.Header>
                         {loading && <Loader size="big" inverted />}
-                        {data && (
+                        {data?.results && (
                             <Table.Body>
                                 {data.results.map((qs) => (
                                     <Table.Row>
@@ -73,28 +67,37 @@ const Summary = ({ course }) => {
                                                 timeStyle: "short",
                                             })}
                                         </Table.Cell>
-                                        <Table.Cell>{qs.state}</Table.Cell>
+                                        <Table.Cell>{qs.status}</Table.Cell>
                                     </Table.Row>
                                 ))}
                             </Table.Body>
                         )}
                         <Table.Footer>
-                            <Table.Row textAlign="right">
-                                <Table.HeaderCell colSpan="6">
-                                    {/* <Button
-                                        primary
-                                        loading={loading}
-                                        content="Show More"
-                                        icon="angle down"
-                                        disabled={!hasNextPage}
-                                        onClick={nextPage}
-                                    /> */}
-                                </Table.HeaderCell>
-                            </Table.Row>
+                            {data?.count && (
+                                <Table.Row textAlign="right">
+                                    <Table.HeaderCell colSpan="6">
+                                        <Pagination
+                                            totalPages={Math.ceil(
+                                                data.count /
+                                                    MAX_QUESTIONS_PER_PAGE
+                                            )}
+                                            onPageChange={(
+                                                e,
+                                                { activePage }
+                                            ) => {
+                                                setFilterState({
+                                                    ...filterState,
+                                                    page: activePage,
+                                                });
+                                            }}
+                                        />
+                                    </Table.HeaderCell>
+                                </Table.Row>
+                            )}
                         </Table.Footer>
                     </Table>
                     <div>
-                        {data &&
+                        {data?.count &&
                             `${data.count} question${
                                 data.count === 1 ? "" : "s"
                             }`}
