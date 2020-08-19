@@ -17,6 +17,7 @@ import { Queue } from "../../../types";
 // import Linkify from 'react-linkify';
 
 interface StudentQueueProps {
+    courseId: number;
     queue: Queue;
 }
 
@@ -36,7 +37,7 @@ const StudentQueue = (props: StudentQueueProps) => {
             return "There was an error!";
         return error.message.split(":")[1];
     };
-
+    console.log(props.queue);
     return (
         <Segment basic>
             <Header as="h3">
@@ -47,24 +48,24 @@ const StudentQueue = (props: StudentQueueProps) => {
                     {/* </Linkify> */}
                 </Header.Subheader>
             </Header>
-            {(props.queue.active || props.queue.questionsActive !== 0) && (
+            {(props.queue.active || props.queue.questionsAsked !== 0) && (
                 <Label
                     content={
-                        props.queue.questionsActive +
+                        props.queue.questionsAsked +
                         ` user${
-                            props.queue.questionsActive === 1 ? "" : "s"
+                            props.queue.questionsAsked === 1 ? "" : "s"
                         } in queue`
                     }
                     color="blue"
                     icon="users"
                 />
             )}
-            {(props.queue.active || props.queue.questionsAsked) !== 0 && (
+            {(props.queue.active || props.queue.questionsActive) !== 0 && (
                 <Label
                     content={
-                        props.queue.questionsAsked +
+                        props.queue.questionsActive +
                         ` user${
-                            props.queue.questionsAsked === 1 ? "" : "s"
+                            props.queue.questionsActive === 1 ? "" : "s"
                         } currently being helped`
                     }
                     icon="user"
@@ -113,6 +114,7 @@ const StudentQueue = (props: StudentQueueProps) => {
                 )}
                 {props.queue.active && !props.hasQuestion && (
                     <QuestionForm
+                        courseId={props.courseId}
                         queue={props.queue}
                         refetch={props.refetch}
                         toastFunc={updateToast}

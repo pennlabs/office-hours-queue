@@ -4,7 +4,7 @@ import StudentQueues from "./StudentQueues";
 
 // import { gql } from 'apollo-boost';
 // import { useQuery } from '@apollo/react-hooks';
-import { queueSortFunc } from "../../../utils";
+// import { queueSortFunc } from "../../../utils";
 import { useQueues } from "../../../hooks/data-fetching/course";
 // import { useQueues } from "../CourseRequests";
 
@@ -140,12 +140,14 @@ const StudentQueuePage = (props) => {
     return (
         <Grid stackable>
             <StudentQueues
+                courseId={courseId}
                 queues={queues}
                 question={currentQuestion}
-                refetch={() => {
+                refetch={
+                    mutate
                     // getQuestionRes.refetch();
                     // getQueuesRes.refetch();
-                }}
+                }
             />
         </Grid>
     );

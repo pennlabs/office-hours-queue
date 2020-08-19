@@ -3,7 +3,7 @@ from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.core.validators import ValidationError, validate_email
-from django.db.models import Count, Exists, OuterRef, Q, Subquery
+from django.db.models import Count, Exists, OuterRef, Q, Subquery, IntegerField, Value, FloatField
 from django.http import HttpResponse
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
@@ -191,22 +191,37 @@ class QueueViewSet(viewsets.ModelViewSet):
         """
         Annotate the number of questions asked, number of questioned currently being answered,
         and the number of active staff members.
+        Filter/annotation pattern taken from here:
+        https://stackoverflow.com/questions/42543978/django-1-11-annotating-a-subquery-aggregate
         """
 
-        questions = Question.objects.filter(queue=OuterRef("pk"))
-        questions_active = questions.filter(status=Question.STATUS_ACTIVE).values("id")
-        questions_asked = questions.filter(status=Question.STATUS_ASKED).values("id")
-        time_threshold = timezone.now() - timedelta(minutes=1)
+        questions = (
+            Question.objects.filter(queue=OuterRef("pk"))
+            .order_by()
+            .values("queue")
+            .annotate(count=Count("*"))
+            .values("count")
+        )
+        questions_active = questions.filter(status=Question.STATUS_ACTIVE)
+        questions_asked = questions.filter(status=Question.STATUS_ASKED)
 
-        staff_active = Membership.objects.filter(
-            Q(course=OuterRef("course__pk"))
-            & ~Q(kind=Membership.KIND_STUDENT)
-            & Q(last_active__gt=time_threshold)
-        ).values("id")
+        time_threshold = timezone.now() - timedelta(minutes=1)
+        staff_active = (
+            Membership.objects.filter(
+                Q(course=OuterRef("course__pk"))
+                & ~Q(kind=Membership.KIND_STUDENT)
+                & Q(last_active__gt=time_threshold)
+            )
+            .order_by()
+            .values("course")
+            .annotate(count=Count("*", output_field=FloatField()),)
+            .values("count")
+        )
+
         return Queue.objects.filter(course=self.kwargs["course_pk"], archived=False).annotate(
-            questions_active=Count(Subquery(questions_active)),
-            questions_asked=Count(Subquery(questions_asked)),
-            staff_active=Count(Subquery(staff_active)),
+            questions_active=Subquery(questions_active[:1], output_field=IntegerField()),
+            questions_asked=Subquery(questions_asked[:1]),
+            staff_active=Subquery(staff_active[:1]),
         )
 
     @action(methods=["POST"], detail=True)

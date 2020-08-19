@@ -4,6 +4,7 @@ import { Segment, Form, Header, Button } from "semantic-ui-react";
 // import { useMutation } from '@apollo/react-hooks';
 // import firebase from '../../Firebase';
 import { isValidURL } from "../../../utils";
+import { createQuestion } from "../../../hooks/data-fetching/course";
 
 // const CREATE_QUESTION = gql`
 //   mutation CreateQuestion($input: CreateQuestionInput!) {
@@ -60,12 +61,13 @@ const QuestionForm = (props) => {
 
     const onSubmit = async () => {
         try {
-            await createQuestion({
-                variables: {
-                    input: input,
-                },
-            });
-            firebase.analytics.logEvent("question_created");
+            await createQuestion(props.courseId, queue.id, input);
+            // await createQuestion({
+            //     variables: {
+            //         input: input,
+            //     },
+            // });
+            // firebase.analytics.logEvent("question_created");
             await props.refetch();
             props.toastFunc("Question successfully added to queue", null);
         } catch (e) {
