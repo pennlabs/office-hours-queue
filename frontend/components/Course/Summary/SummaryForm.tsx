@@ -1,40 +1,49 @@
-import React, { useState } from "react";
+import React from "react";
 import { Form } from "semantic-ui-react";
 import TextField from "@material-ui/core/TextField";
+import { QuestionStatus } from "../../../types";
 
-const SummaryForm = (props) => {
-    const [input, setInput] = useState({});
-    const stateOptions = [
-        {
-            key: "ACTIVE",
-            value: "ACTIVE",
-            text: "Active",
-        },
-        {
-            key: "WITHDRAWN",
-            value: "WITHDRAWN",
-            text: "Withdrawn",
-        },
-        {
-            key: "REJECTED",
-            value: "REJECTED",
-            text: "Rejected",
-        },
-        {
-            key: "ANSWERED",
-            value: "ANSWERED",
-            text: "Answered",
-        },
-    ];
+const formatState = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+};
 
-    const handleInputChange = (e, { name, value }) => {
-        input[name] = value;
-        setInput(input);
-        props.filterFunc(input);
-    };
+// https://www.petermorlion.com/iterating-a-typescript-enum/
+function enumKeys<O extends object, K extends keyof O = keyof O>(obj: O): K[] {
+    return Object.keys(obj).filter((k) => Number.isNaN(+k)) as K[];
+}
 
-    const onSearchChange = (e, { name, value }) => {
-        props.searchFunc(value);
+interface StateOption {
+    key: string;
+    value: QuestionStatus;
+    text: string;
+}
+
+const stateOptions: StateOption[] = [];
+for (const state of enumKeys(QuestionStatus)) {
+    stateOptions.push({
+        key: state,
+        value: QuestionStatus[state],
+        text: formatState(state),
+    });
+}
+
+const SummaryForm = ({ filterState, setFilterState }) => {
+    const handleChangeTime = (isAfter) => (e) => {
+        const time = e.target.value;
+        let value;
+        let fieldName;
+        if (isAfter) {
+            value = time === "" ? "" : `${time}T00:00:00`;
+            fieldName = "timeAskedGt";
+        } else {
+            value = time === "" ? "" : `${time}T22:59:59`;
+            fieldName = "timeAskedLt";
+        }
+
+        setFilterState({
+            ...filterState,
+            [fieldName]: value,
+        });
     };
 
     return (
@@ -44,13 +53,7 @@ const SummaryForm = (props) => {
                     <label>After</label>
                     <TextField
                         type="date"
-                        onChange={(event) => {
-                            const time = event.target.value;
-                            input.timeAsked_Gt =
-                                time === "" ? "" : `${time}T00:00:00`;
-                            setInput(input);
-                            props.filterFunc(input);
-                        }}
+                        onChange={handleChangeTime(true)}
                         InputLabelProps={{ shrink: true }}
                     />
                 </Form.Field>
@@ -58,13 +61,7 @@ const SummaryForm = (props) => {
                     <label>Before</label>
                     <TextField
                         type="date"
-                        onChange={(event) => {
-                            const time = event.target.value;
-                            input.timeAsked_Lt =
-                                time === "" ? "" : `${time}T22:59:59`;
-                            setInput(input);
-                            props.filterFunc(input);
-                        }}
+                        onChange={handleChangeTime(false)}
                         InputLabelProps={{ shrink: true }}
                     />
                 </Form.Field>
@@ -76,7 +73,12 @@ const SummaryForm = (props) => {
                         clearable
                         placeholder="State"
                         options={stateOptions}
-                        onChange={handleInputChange}
+                        onChange={(e, { value }) => {
+                            setFilterState({
+                                ...filterState,
+                                status: value,
+                            });
+                        }}
                     />
                 </Form.Field>
                 <Form.Field>
@@ -84,7 +86,13 @@ const SummaryForm = (props) => {
                     <Form.Input
                         icon="search"
                         placeholder="Search..."
-                        onChange={onSearchChange}
+                        onChange={(e, { value }) => {
+                            // TODO: DEBOUNCE THIS SHIT
+                            setFilterState({
+                                ...filterState,
+                                search: value,
+                            });
+                        }}
                     />
                 </Form.Field>
             </Form.Group>
