@@ -1,7 +1,6 @@
-// WIP
 // TODO: sort by time asked
 
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { Segment, Grid, Table, Loader, Pagination } from "semantic-ui-react";
 import {
     useQuestions,
@@ -17,8 +16,8 @@ const Summary = ({ course }) => {
     >({ page: 1 });
 
     // TODO: Add initial state
+    // TODO: Handle loaders
     const [data, error, loading] = useQuestions(course.id, filterState);
-
     return (
         <div>
             <Grid.Row>
@@ -77,6 +76,7 @@ const Summary = ({ course }) => {
                                 <Table.Row textAlign="right">
                                     <Table.HeaderCell colSpan="6">
                                         <Pagination
+                                            activePage={filterState.page}
                                             totalPages={Math.ceil(
                                                 data.count /
                                                     MAX_QUESTIONS_PER_PAGE

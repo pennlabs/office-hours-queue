@@ -43,6 +43,7 @@ const SummaryForm = ({ filterState, setFilterState }) => {
         setFilterState({
             ...filterState,
             [fieldName]: value,
+            page: 1,
         });
     };
 
@@ -79,6 +80,7 @@ const SummaryForm = ({ filterState, setFilterState }) => {
                             setFilterState({
                                 ...filterState,
                                 status: value,
+                                page: 1,
                             });
                         }}
                     />
@@ -97,6 +99,7 @@ const SummaryForm = ({ filterState, setFilterState }) => {
                                     setFilterState({
                                         ...filterState,
                                         search: value,
+                                        page: 1,
                                     });
                                 }, 1000)
                             );
