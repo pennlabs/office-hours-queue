@@ -48,7 +48,7 @@ const Summary = ({ course }) => {
                             </Table.Row>
                         </Table.Header>
                         {loading && <Loader size="big" inverted />}
-                        {data?.results && (
+                        {data && data.results && (
                             <Table.Body>
                                 {data.results.map((qs) => (
                                     <Table.Row>
@@ -73,7 +73,7 @@ const Summary = ({ course }) => {
                             </Table.Body>
                         )}
                         <Table.Footer>
-                            {data?.count && (
+                            {data && (
                                 <Table.Row textAlign="right">
                                     <Table.HeaderCell colSpan="6">
                                         <Pagination
@@ -97,7 +97,7 @@ const Summary = ({ course }) => {
                         </Table.Footer>
                     </Table>
                     <div>
-                        {data?.count &&
+                        {data &&
                             `${data.count} question${
                                 data.count === 1 ? "" : "s"
                             }`}

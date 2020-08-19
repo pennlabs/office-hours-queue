@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Form } from "semantic-ui-react";
 import TextField from "@material-ui/core/TextField";
 import { QuestionStatus } from "../../../types";
@@ -46,6 +46,8 @@ const SummaryForm = ({ filterState, setFilterState }) => {
         });
     };
 
+    const [debounce, setDebounce] = useState(null);
+
     return (
         <Form>
             <Form.Group>
@@ -87,11 +89,17 @@ const SummaryForm = ({ filterState, setFilterState }) => {
                         icon="search"
                         placeholder="Search..."
                         onChange={(e, { value }) => {
-                            // TODO: DEBOUNCE THIS SHIT
-                            setFilterState({
-                                ...filterState,
-                                search: value,
-                            });
+                            if (debounce) {
+                                clearTimeout(debounce);
+                            }
+                            setDebounce(
+                                setTimeout(() => {
+                                    setFilterState({
+                                        ...filterState,
+                                        search: value,
+                                    });
+                                }, 1000)
+                            );
                         }}
                     />
                 </Form.Field>
