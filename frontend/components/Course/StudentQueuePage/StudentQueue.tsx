@@ -48,10 +48,10 @@ const StudentQueue = (props: StudentQueueProps) => {
                     {/* </Linkify> */}
                 </Header.Subheader>
             </Header>
-            {(props.queue.active || props.queue.questionsAsked !== 0) && (
+            {(props.queue.active || props.queue.questionsAsked) && (
                 <Label
                     content={
-                        props.queue.questionsAsked +
+                        (props.queue.questionsAsked || 0) +
                         ` user${
                             props.queue.questionsAsked === 1 ? "" : "s"
                         } in queue`
@@ -60,10 +60,10 @@ const StudentQueue = (props: StudentQueueProps) => {
                     icon="users"
                 />
             )}
-            {(props.queue.active || props.queue.questionsActive) !== 0 && (
+            {(props.queue.active || props.queue.questionsActive) && (
                 <Label
                     content={
-                        props.queue.questionsActive +
+                        (props.queue.questionsActive || 0) +
                         ` user${
                             props.queue.questionsActive === 1 ? "" : "s"
                         } currently being helped`
@@ -78,7 +78,9 @@ const StudentQueue = (props: StudentQueueProps) => {
                 <Popup
                     trigger={
                         <Label
-                            content={props.queue.staffActive + ` staff active`}
+                            content={
+                                (props.queue.staffActive || 0) + ` staff active`
+                            }
                             icon={<Icon name={"sync"} loading={true} />}
                         />
                     }
