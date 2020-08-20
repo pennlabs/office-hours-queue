@@ -5,7 +5,10 @@ import Alert from "@material-ui/lab/Alert";
 import { AuthUserContext } from "../../../context/auth";
 import VerificationModal from "./VerificationModal";
 import { User } from "../../../types";
-import { updateUser, useAccountInfo } from "../../../hooks/data-fetching/account";
+import {
+    updateUser,
+    useAccountInfo,
+} from "../../../hooks/data-fetching/account";
 
 const AccountForm = () => {
     const { user: initialUser } = useContext(AuthUserContext);
@@ -102,7 +105,6 @@ const AccountForm = () => {
                     placeholder="First Name"
                     defaultValue={input.firstName}
                     name="firstName"
-                    disabled={loading}
                     onChange={handleInputChange}
                 />
             </Form.Field>
@@ -112,7 +114,6 @@ const AccountForm = () => {
                     placeholder="Last Name"
                     defaultValue={input.lastName}
                     name="lastName"
-                    disabled={loading}
                     onChange={handleInputChange}
                 />
             </Form.Field>
@@ -159,15 +160,13 @@ const AccountForm = () => {
                                 />
                             ))
                         }
-                        disabled={loading}
                     />
                 </Form.Field>
             )}
             <Button
                 color="blue"
                 type="submit"
-                disabled={disabled || loading}
-                loading={loading}
+                disabled={disabled}
                 onClick={onSubmit}
             >
                 Save
