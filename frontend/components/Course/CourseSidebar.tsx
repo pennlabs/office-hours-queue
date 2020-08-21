@@ -13,14 +13,16 @@ import { prettifyRole } from "../../utils/enums";
 import AboutModal from "../LandingPage/AboutModal";
 import { AuthUserContext } from "../../context/auth";
 import { useLeadership, useStaff } from "../../hooks/data-fetching/course";
+import { leadershipSortFunc } from "../../utils";
 
 const CourseSidebar = (props) => {
     const [
-        leadership,
+        leadershipRaw,
         leadershipError,
         leadershipLoading,
         leadershipMutate,
     ] = useLeadership(props.courseId, props.leadership);
+    const leadership = leadershipRaw.sort(leadershipSortFunc);
 
     const { user: initialUser } = useContext(AuthUserContext);
     const [leader, staff, leaderError, leaderLoading, leaderMutate] = useStaff(
