@@ -3,7 +3,7 @@ from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.core.validators import ValidationError, validate_email
-from django.db.models import Count, Exists, OuterRef, Q, Subquery, IntegerField, Value, FloatField
+from django.db.models import Count, Exists, FloatField, IntegerField, OuterRef, Q, Subquery
 from django.http import HttpResponse
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
