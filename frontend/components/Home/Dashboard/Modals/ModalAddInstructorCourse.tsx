@@ -20,6 +20,7 @@ interface CreateCourse extends Course {
     createdRole: Kind;
 }
 const ModalAddInstructorCourse = (props: ModalAddInstructorCourseProps) => {
+    const { open, closeFunc, mutate, toastFunc } = props;
     const videoChatNum = (course) => {
         if (course.requireVideoChatUrlOnQuestions) return 0;
         if (course.videoChatEnabled) return 1;
@@ -78,27 +79,27 @@ const ModalAddInstructorCourse = (props: ModalAddInstructorCourseProps) => {
         try {
             setLoading(true);
             await createCourse(input);
-            await props.mutate();
+            await mutate();
             setLoading(false);
-            props.closeFunc();
+            closeFunc();
             setInput({
                 inviteOnly: false,
                 requireVideoChatUrlOnQuestions: false,
                 videoChatEnabled: false,
             });
             setCheck(2);
-            props.toastFunc({
+            toastFunc({
                 message: `${input.department} ${input.courseCode}`,
                 success: true,
             });
         } catch (e) {
             setLoading(false);
-            props.toastFunc({ message: null, success: false });
+            toastFunc({ message: null, success: false });
         }
     };
 
     const onClose = () => {
-        props.closeFunc();
+        closeFunc();
         setInput({
             inviteOnly: false,
             requireVideoChatUrlOnQuestions: false,
@@ -108,7 +109,7 @@ const ModalAddInstructorCourse = (props: ModalAddInstructorCourseProps) => {
     };
 
     return (
-        <Modal open={props.open}>
+        <Modal open={open}>
             <Modal.Header>Create New Course</Modal.Header>
             <Modal.Content>
                 <CreateCourseForm

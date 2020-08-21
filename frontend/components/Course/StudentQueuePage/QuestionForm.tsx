@@ -43,15 +43,15 @@ const QuestionForm = (props: QuestionFormProps) => {
         }
     };
 
-    const getDropdownOptions = (tags) => {
-        return tags.map((tag) => {
-            return {
-                key: tag,
-                value: tag,
-                text: tag,
-            };
-        });
-    };
+    // const getDropdownOptions = (tags) => {
+    //     return tags.map((tag) => {
+    //         return {
+    //             key: tag,
+    //             value: tag,
+    //             text: tag,
+    //         };
+    //     });
+    // };
 
     const onSubmit = async () => {
         try {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Grid } from "semantic-ui-react";
 import StudentQueues from "./StudentQueues";
 
@@ -10,7 +10,7 @@ interface StudentQueuePageProps {
 }
 const StudentQueuePage = (props: StudentQueuePageProps) => {
     const { course } = props;
-    const [queues, error, isValidating, mutate] = useQueues(course.id);
+    const [queues, , ,] = useQueues(course.id);
 
     return (
         <Grid stackable>

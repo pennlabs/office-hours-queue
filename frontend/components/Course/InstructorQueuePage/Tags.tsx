@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Segment, Header, Label, Grid } from "semantic-ui-react";
 
 // TODO: eventually implement tags on questions

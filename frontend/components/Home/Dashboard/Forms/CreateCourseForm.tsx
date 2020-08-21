@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import "../../../Course/CourseSettings/CourseForm.module.css";
 
 import { Form } from "semantic-ui-react";
@@ -23,8 +23,13 @@ const semesterOptions = async (inputValue: string) => {
             };
         });
 };
-
-const CreateCourseForm = (props) => {
+interface CreateCourseFormProps {
+    changeFunc: (a: any, b: any) => void; // TODO: restrict this
+    check: number;
+    vcChangeFunc: (a: any, b: any) => void; // TODO: restrict this
+}
+const CreateCourseForm = (props: CreateCourseFormProps) => {
+    const { changeFunc, check, vcChangeFunc } = props;
     return (
         <Form>
             <Form.Field required>
@@ -32,7 +37,7 @@ const CreateCourseForm = (props) => {
                 <Form.Input
                     className="department-input"
                     name="department"
-                    onChange={props.changeFunc}
+                    onChange={changeFunc}
                     placeholder="CIS"
                 />
             </Form.Field>
@@ -40,7 +45,7 @@ const CreateCourseForm = (props) => {
                 <label>Course Code</label>
                 <Form.Input
                     name="courseCode"
-                    onChange={props.changeFunc}
+                    onChange={changeFunc}
                     placeholder="121"
                 />
             </Form.Field>
@@ -48,7 +53,7 @@ const CreateCourseForm = (props) => {
                 <label>Course Title</label>
                 <Form.Input
                     name="courseTitle"
-                    onChange={props.changeFunc}
+                    onChange={changeFunc}
                     placeholder="Data Structures and Algorithms"
                 />
             </Form.Field>
@@ -61,7 +66,7 @@ const CreateCourseForm = (props) => {
                     loadOptions={semesterOptions}
                     placeholder="Search..."
                     onChange={(id) =>
-                        props.changeFunc(undefined, {
+                        changeFunc(undefined, {
                             name: "semester",
                             value: id.value,
                         })
@@ -72,37 +77,33 @@ const CreateCourseForm = (props) => {
                 <label>Video Chat</label>
                 <Form.Radio
                     label="Require Link"
-                    checked={props.check === 0}
+                    checked={check === 0}
                     name="requireVideoChatUrlOnQuestions"
-                    onChange={props.vcChangeFunc}
+                    onChange={vcChangeFunc}
                 />
                 <Form.Radio
                     label="Allow Link"
-                    checked={props.check === 1}
+                    checked={check === 1}
                     name="videoChatEnabled"
-                    onChange={props.vcChangeFunc}
+                    onChange={vcChangeFunc}
                 />
                 <Form.Radio
                     label="No Link"
-                    checked={props.check === 2}
+                    checked={check === 2}
                     name="disableVideoChat"
-                    onChange={props.vcChangeFunc}
+                    onChange={vcChangeFunc}
                 />
             </Form.Field>
             <Form.Field required>
                 <label>Invite Only?</label>
-                <Form.Radio
-                    name="inviteOnly"
-                    onChange={props.changeFunc}
-                    toggle
-                />
+                <Form.Radio name="inviteOnly" onChange={changeFunc} toggle />
             </Form.Field>
             <Form.Field required>
                 <label>Your Role</label>
                 <Form.Dropdown
                     selection
                     name="createdRole"
-                    onChange={props.changeFunc}
+                    onChange={changeFunc}
                     options={[
                         {
                             key: "PROFESSOR",

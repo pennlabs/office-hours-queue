@@ -1,7 +1,7 @@
 import React from "react";
 import { Segment, Grid, Message } from "semantic-ui-react";
 import StudentQueue from "./StudentQueue";
-import LastQuestionCard from "./LastQuestionCard";
+// import LastQuestionCard from "./LastQuestionCard";
 import { Queue, Course } from "../../../types";
 
 interface StudentQueuesProps {
@@ -9,25 +9,26 @@ interface StudentQueuesProps {
     course: Course;
 }
 const StudentQueues = (props: StudentQueuesProps) => {
-    const showQuestion = (question) => {
-        return question.state === "ACTIVE" || question.state === "STARTED";
-    };
+    const { queues, course } = props;
+    // const showQuestion = (question) => {
+    //     return question.state === "ACTIVE" || question.state === "STARTED";
+    // };
 
     return (
         <>
-            {props.queues && (
+            {queues && (
                 <Grid.Row columns="equal" stackable>
-                    {props.queues.length !== 0 &&
-                        props.queues.map((queue) => (
+                    {queues.length !== 0 &&
+                        queues.map((queue) => (
                             <Grid.Column>
                                 <StudentQueue
                                     key={queue.id}
-                                    course={props.course}
+                                    course={course}
                                     queue={queue}
                                 />
                             </Grid.Column>
                         ))}
-                    {props.queues.length === 0 && (
+                    {queues.length === 0 && (
                         <Grid.Column>
                             <Segment basic>
                                 <Message info>
@@ -41,9 +42,9 @@ const StudentQueues = (props: StudentQueuesProps) => {
             )}
             {/* // TODO: replace this with a user-level canAskQuestions check */}
             {/* <Grid.Row columns={1}>
-                {props.question && !showQuestion(props.question) && (
+                {question && !showQuestion(question) && (
                     <Grid.Column>
-                        <LastQuestionCard question={props.question} />
+                        <LastQuestionCard question={question} />
                     </Grid.Column>
                 )}
             </Grid.Row> */}

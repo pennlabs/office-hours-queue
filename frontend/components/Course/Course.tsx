@@ -10,18 +10,31 @@ import Summary from "./Summary/Summary";
 import { AuthUserContext } from "../../context/auth";
 import StudentQueuePage from "./StudentQueuePage/StudentQueuePage";
 import { useCourse, useStaff } from "../../hooks/data-fetching/course";
+import {
+    Course as CourseType,
+    Membership,
+    MembershipInvite,
+} from "../../types";
 
-const Course = (props) => {
+interface CourseProps {
+    courseId: number;
+    course: CourseType;
+    leadership: Membership[];
+    memberships: Membership[];
+    invites: MembershipInvite[];
+}
+const Course = (props: CourseProps) => {
+    const {
+        courseId,
+        course: rawCourse,
+        leadership,
+        memberships,
+        invites,
+    } = props;
     const [active, setActive] = useState("queues");
-    const [course, error, loading, mutate] = useCourse(
-        props.courseId,
-        props.course
-    );
+    const [course, , , mutate] = useCourse(courseId, rawCourse);
     const { user: initialUser } = useContext(AuthUserContext);
-    const [leader, staff, leaderError, staffLoading, staffMutate] = useStaff(
-        props.courseId,
-        initialUser
-    );
+    const [, staff, , ,] = useStaff(courseId, initialUser);
 
     return course ? (
         <>
@@ -29,7 +42,7 @@ const Course = (props) => {
                 courseId={course.id}
                 active={active}
                 clickFunc={setActive}
-                leadership={props.leadership}
+                leadership={leadership}
             />
             <Grid.Column width={13}>
                 {course.department && (
@@ -47,8 +60,8 @@ const Course = (props) => {
                 {staff && active === "roster" && (
                     <Roster
                         courseId={course.id}
-                        memberships={props.memberships}
-                        invites={props.invites}
+                        memberships={memberships}
+                        invites={invites}
                     />
                 )}
                 {staff && active === "settings" && (

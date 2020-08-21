@@ -16,22 +16,22 @@ export function getApiUrl(path: string): string {
 }
 
 export function doApiRequest(path: string, data?: any): Promise<Response> {
-    if (!data) {
-        // eslint-disable-next-line no-param-reassign
-        data = {};
+    let formattedData = data;
+    if (!formattedData) {
+        formattedData = {};
     }
-    data.credentials = "include";
-    data.mode = "same-origin";
+    formattedData.credentials = "include";
+    formattedData.mode = "same-origin";
     if (typeof document !== "undefined") {
-        data.headers = data.headers || {};
-        if (!(data.body instanceof FormData)) {
-            data.headers.Accept = "application/json";
-            data.headers["Content-Type"] = "application/json";
+        formattedData.headers = formattedData.headers || {};
+        if (!(formattedData.body instanceof FormData)) {
+            formattedData.headers.Accept = "application/json";
+            formattedData.headers["Content-Type"] = "application/json";
         }
-        data.headers["X-CSRFToken"] = getCsrf();
+        formattedData.headers["X-CSRFToken"] = getCsrf();
     }
-    if (data.body && !(data.body instanceof FormData)) {
-        data.body = JSON.stringify(data.body);
+    if (formattedData.body && !(formattedData.body instanceof FormData)) {
+        formattedData.body = JSON.stringify(formattedData.body);
     }
-    return fetch(getApiUrl(path), data);
+    return fetch(getApiUrl(path), formattedData);
 }

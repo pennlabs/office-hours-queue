@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Segment, Header, Button, Popup, Icon, Grid } from "semantic-ui-react";
 import EditQuestionModal from "./EditQuestionModal";
 import DeleteQuestionModal from "./DeleteQuestionModal";
@@ -17,7 +17,7 @@ interface QuestionCardProps {
     toastFunc: (success: string, error: any) => void;
 }
 const QuestionCard = (props: QuestionCardProps) => {
-    const { question } = props;
+    const { question, course, queue, mutate, toastFunc } = props;
     const [openEdit, setOpenEdit] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
 
@@ -32,19 +32,19 @@ const QuestionCard = (props: QuestionCardProps) => {
         <div style={{ marginTop: "10px" }}>
             <EditQuestionModal
                 open={openEdit}
-                course={props.course}
+                course={course}
                 question={question}
                 setOpen={setOpenEdit}
-                toastFunc={props.toastFunc}
-                mutate={props.mutate}
+                toastFunc={toastFunc}
+                mutate={mutate}
             />
             <DeleteQuestionModal
                 open={openDelete}
-                queue={props.queue}
+                queue={queue}
                 question={question}
                 setOpen={setOpenDelete}
-                toastFunc={props.toastFunc}
-                mutate={props.mutate}
+                toastFunc={toastFunc}
+                mutate={mutate}
             />
             <Segment attached="top" color="blue">
                 <Grid>

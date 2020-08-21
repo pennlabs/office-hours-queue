@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Grid, Segment, Icon, Message } from "semantic-ui-react";
 import Queue from "./Queue";
 import { Queue as QueueType, mutateResourceListFunction } from "../../../types";

@@ -14,13 +14,11 @@ export const fullName = (user: User) => `${user.firstName} ${user.lastName}`;
 
 interface QuestionCardProps {
     question: Question;
-    courseId: number;
-    queueId: number;
     mutate: mutateResourceListFunction<Question>;
 }
 const QuestionCard = (props: QuestionCardProps) => {
-    const { question, courseId, queueId, mutate: mutateQuestion } = props;
-    const { id: questionId, askedBy, respondedToBy } = question;
+    const { question, mutate: mutateQuestion } = props;
+    const { id: questionId, askedBy } = question;
     const { user } = useContext(AuthUserContext);
 
     const [open, setOpen] = useState(false);
@@ -52,7 +50,7 @@ const QuestionCard = (props: QuestionCardProps) => {
     };
 
     // Re-render timestamp every 5 seconds
-    const [_, setTime] = useState(Date.now());
+    const [, setTime] = useState(Date.now());
     useEffect(() => {
         const interval = setInterval(() => {
             setTime(Date.now());
@@ -67,8 +65,6 @@ const QuestionCard = (props: QuestionCardProps) => {
                 question={question}
                 closeFunc={triggerModal}
                 mutate={mutateQuestion}
-                courseId={courseId}
-                queueId={queueId}
             />
             <Segment attached="top" color="blue" clearing>
                 <Grid columns="equal">

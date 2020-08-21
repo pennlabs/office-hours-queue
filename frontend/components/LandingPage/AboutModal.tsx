@@ -1,10 +1,15 @@
 import React from "react";
 import { Button, Modal } from "semantic-ui-react";
 
-const AboutModal = (props) => {
+interface AboutModalProps {
+    open: boolean;
+    closeFunc: () => void;
+}
+const AboutModal = (props: AboutModalProps) => {
+    const { open, closeFunc } = props;
     // TODO: replace this with Labs feedback button
     return (
-        <Modal open={props.open} style={{ width: "350px" }}>
+        <Modal open={open} style={{ width: "350px" }}>
             <Modal.Content>
                 OHQ was built by Steven Bursztyn, Chris Fischer, Monal Garg,
                 Karen Shen, and Marshall Vail.
@@ -33,7 +38,7 @@ const AboutModal = (props) => {
                 .
             </Modal.Content>
             <Modal.Actions>
-                <Button content="Close" onClick={() => props.closeFunc()} />
+                <Button content="Close" onClick={() => closeFunc()} />
             </Modal.Actions>
         </Modal>
     );

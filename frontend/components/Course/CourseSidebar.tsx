@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import {
     Segment,
     Menu,
@@ -23,19 +23,12 @@ interface CourseSidebarProps {
     clickFunc: React.Dispatch<React.SetStateAction<string>>;
 }
 const CourseSidebar = (props: CourseSidebarProps) => {
-    const [
-        leadershipRaw,
-        leadershipError,
-        leadershipLoading,
-        leadershipMutate,
-    ] = useLeadership(props.courseId, props.leadership);
-    const leadership = leadershipRaw.sort(leadershipSortFunc);
+    const { courseId, leadership: leadershipRaw, active, clickFunc } = props;
+    const [leadershipUnsorted, , , ,] = useLeadership(courseId, leadershipRaw);
+    const leadership = leadershipUnsorted.sort(leadershipSortFunc);
 
     const { user: initialUser } = useContext(AuthUserContext);
-    const [leader, staff, leaderError, leaderLoading, leaderMutate] = useStaff(
-        props.courseId,
-        initialUser
-    );
+    const [leader, staff, , ,] = useStaff(courseId, initialUser);
 
     const noWrapStyle = {
         whiteSpace: "nowrap",
@@ -58,8 +51,8 @@ const CourseSidebar = (props: CourseSidebarProps) => {
                         style={noWrapStyle}
                         name="Queues"
                         icon="hourglass one"
-                        onClick={() => props.clickFunc("queues")}
-                        active={props.active === "queues"}
+                        onClick={() => clickFunc("queues")}
+                        active={active === "queues"}
                         color="blue"
                     />
                     {staff && (
@@ -67,8 +60,8 @@ const CourseSidebar = (props: CourseSidebarProps) => {
                             style={noWrapStyle}
                             name="Roster"
                             icon="users"
-                            onClick={() => props.clickFunc("roster")}
-                            active={props.active === "roster"}
+                            onClick={() => clickFunc("roster")}
+                            active={active === "roster"}
                             color="blue"
                         />
                     )}
@@ -77,8 +70,8 @@ const CourseSidebar = (props: CourseSidebarProps) => {
                             style={noWrapStyle}
                             name="Analytics"
                             icon="chart bar"
-                            onClick={() => props.clickFunc("analytics")}
-                            active={props.active === "analytics"}
+                            onClick={() => clickFunc("analytics")}
+                            active={active === "analytics"}
                             color="blue"
                         />
                     )}
@@ -87,8 +80,8 @@ const CourseSidebar = (props: CourseSidebarProps) => {
                             style={noWrapStyle}
                             name="Question Summary"
                             icon="list ol"
-                            onClick={() => props.clickFunc("summary")}
-                            active={props.active === "summary"}
+                            onClick={() => clickFunc("summary")}
+                            active={active === "summary"}
                             color="blue"
                         />
                     )}
@@ -97,8 +90,8 @@ const CourseSidebar = (props: CourseSidebarProps) => {
                             style={noWrapStyle}
                             name="Course Settings"
                             icon="settings"
-                            onClick={() => props.clickFunc("settings")}
-                            active={props.active === "settings"}
+                            onClick={() => clickFunc("settings")}
+                            active={active === "settings"}
                             color="blue"
                         />
                     )}

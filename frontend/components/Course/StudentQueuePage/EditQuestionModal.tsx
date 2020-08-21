@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Modal, Form, Button } from "semantic-ui-react";
 import { Course, Question, mutateResourceListFunction } from "../../../types";
 
@@ -12,8 +12,8 @@ interface EditQuestionModalProps {
 }
 
 const EditQuestionModal = (props: EditQuestionModalProps) => {
-    const { course } = props;
-    const { question } = props;
+    const { question, course, open, setOpen, mutate, toastFunc } = props;
+
     const [disabled, setDisabled] = useState(true);
     const charLimit: number = 250;
     const [input, setInput] = useState({
@@ -43,26 +43,26 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
         setDisabled(!isValid());
     };
 
-    const getDropdownOptions = (tags) => {
-        return tags.map((tag) => {
-            return {
-                key: tag,
-                value: tag,
-                text: tag,
-            };
-        });
-    };
+    // const getDropdownOptions = (tags) => {
+    //     return tags.map((tag) => {
+    //         return {
+    //             key: tag,
+    //             value: tag,
+    //             text: tag,
+    //         };
+    //     });
+    // };
 
     const onSubmit = async () => {
         if (!course.requireVideoChatUrlOnQuestions && !course.videoChatEnabled)
             delete input.videoChatUrl;
         try {
-            await props.mutate(question.id, input);
-            props.setOpen(false);
-            props.toastFunc("Question successfully updated", null);
+            await mutate(question.id, input);
+            setOpen(false);
+            toastFunc("Question successfully updated", null);
         } catch (e) {
-            props.setOpen(false);
-            props.toastFunc(null, e);
+            setOpen(false);
+            toastFunc(null, e);
         }
     };
 
@@ -78,7 +78,7 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
     };
 
     return (
-        <Modal open={props.open}>
+        <Modal open={open}>
             <Modal.Header>Edit Question</Modal.Header>
             <Modal.Content>
                 <Form>
@@ -137,7 +137,7 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
                     disabled={loading}
                     onClick={() => {
                         resetInput();
-                        props.setOpen(false);
+                        setOpen(false);
                     }}
                 />
                 <Button

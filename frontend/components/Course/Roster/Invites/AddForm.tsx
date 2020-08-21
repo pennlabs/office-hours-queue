@@ -7,8 +7,9 @@ interface AddFormProps {
     changeFunc: any; // TODO: restrict this
 }
 const AddForm = (props: AddFormProps) => {
+    const { changeFunc } = props;
     const onChange = (text) => {
-        props.changeFunc(undefined, {
+        changeFunc(undefined, {
             name: "emails",
             value: text.target.value,
         });
@@ -29,7 +30,7 @@ const AddForm = (props: AddFormProps) => {
                     selection
                     options={roleOptions}
                     placeholder="Role"
-                    onChange={props.changeFunc}
+                    onChange={changeFunc}
                 />
             </Form.Field>
         </Form>

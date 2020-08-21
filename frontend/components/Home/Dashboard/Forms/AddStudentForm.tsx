@@ -5,7 +5,11 @@ import AsyncSelect from "react-select/async";
 import { Course } from "../../../../types";
 import { getCourses } from "../../../../hooks/data-fetching/dashboard";
 
-const AddStudentForm = (props) => {
+interface AddStudentFormProps {
+    changeFunc: (a: any, b: any) => void; //TODO: restrict this
+}
+const AddStudentForm = (props: AddStudentFormProps) => {
+    const { changeFunc } = props;
     const promiseOptions = async (inputValue: string) => {
         if (inputValue.length === 0) {
             return [];
@@ -34,7 +38,7 @@ const AddStudentForm = (props) => {
                     placeholder="Search..."
                     isOptionDisabled={(option) => option.disabled}
                     onChange={(items) => {
-                        props.changeFunc(undefined, {
+                        changeFunc(undefined, {
                             name: "courseIds",
                             value:
                                 items === null

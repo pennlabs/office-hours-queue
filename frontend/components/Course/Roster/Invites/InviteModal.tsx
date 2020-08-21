@@ -11,6 +11,7 @@ interface InviteModalProps {
     setToast: React.Dispatch<React.SetStateAction<any>>; // TODO: restrict this
 }
 const InviteModal = (props: InviteModalProps) => {
+    const { courseId, open, closeFunc, successFunc, setToast } = props;
     const [loading, setLoading] = useState(false);
     const [input, setInput] = useState({ emails: null, kind: null });
     const [disabled, setDisabled] = useState(true);
@@ -27,13 +28,13 @@ const InviteModal = (props: InviteModalProps) => {
         }
         try {
             setLoading(true);
-            await sendMassInvites(props.courseId, input.emails, input.kind);
+            await sendMassInvites(courseId, input.emails, input.kind);
             setLoading(false);
-            props.closeFunc();
-            props.successFunc();
+            closeFunc();
+            successFunc();
         } catch (e) {
             setLoading(false);
-            props.setToast({
+            setToast({
                 open: true,
                 success: false,
                 message: e.message.includes("Course cannot have more than")
@@ -44,7 +45,7 @@ const InviteModal = (props: InviteModalProps) => {
     };
 
     return (
-        <Modal open={props.open}>
+        <Modal open={open}>
             <Modal.Header>Invite User</Modal.Header>
             <Modal.Content>
                 <AddForm changeFunc={handleInputChange} />
@@ -53,7 +54,7 @@ const InviteModal = (props: InviteModalProps) => {
                 <Button
                     content="Cancel"
                     disabled={loading}
-                    onClick={props.closeFunc}
+                    onClick={closeFunc}
                 />
                 <Button
                     content="Invite"

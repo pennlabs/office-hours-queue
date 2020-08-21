@@ -1,3 +1,4 @@
+import React from "react";
 import { useRouter } from "next/router";
 import Course from "../../../components/Course/Course";
 import { withAuth } from "../../../context/auth";
@@ -6,17 +7,17 @@ import { isLeadershipRole } from "../../../utils/enums";
 
 const CoursePage = (props) => {
     const router = useRouter();
-    const { course } = router.query;
-
+    const { course: courseId } = router.query;
+    const { course, memberships, invites, leadership } = props;
     return (
         <Course
             // TODO: better fix
             // @ts-ignore
-            courseId={parseInt(course)}
-            course={props.course}
-            memberships={props.memberships}
-            invites={props.invites}
-            leadership={props.leadership}
+            courseId={parseInt(courseId)}
+            course={course}
+            memberships={memberships}
+            invites={invites}
+            leadership={leadership}
         />
     );
 };

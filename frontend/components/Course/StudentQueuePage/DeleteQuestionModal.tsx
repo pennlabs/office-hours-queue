@@ -17,24 +17,23 @@ interface DeleteQuestionModalProps {
 }
 
 const DeleteQuestionModal = (props: DeleteQuestionModalProps) => {
-    const { question } = props;
-    const { queue } = props;
+    const { question, queue, open, setOpen, mutate, toastFunc } = props;
 
     const onDelete = async () => {
         try {
-            await props.mutate(question.id, {
+            await mutate(question.id, {
                 status: QuestionStatus.WITHDRAWN,
             });
-            props.setOpen(false);
-            props.toastFunc("Question withdrawn!", null);
+            setOpen(false);
+            toastFunc("Question withdrawn!", null);
         } catch (e) {
-            props.setOpen(false);
-            props.toastFunc(null, e);
+            setOpen(false);
+            toastFunc(null, e);
         }
     };
 
     return (
-        <Modal open={props.open}>
+        <Modal open={open}>
             <Modal.Header>Withdraw Question</Modal.Header>
             <Modal.Content>
                 You are about to withdraw your question from <b>{queue.name}</b>
@@ -49,7 +48,7 @@ const DeleteQuestionModal = (props: DeleteQuestionModalProps) => {
                 <Button
                     content="Cancel"
                     onClick={() => {
-                        props.setOpen(false);
+                        setOpen(false);
                     }}
                 />
                 <Button content="Withdraw" color="red" onClick={onDelete} />

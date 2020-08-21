@@ -1,4 +1,4 @@
-// import React from "react";
+import React from "react";
 // import Chart from "chart.js";
 
 // export default class MyPieChart extends React.Component {

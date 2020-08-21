@@ -17,8 +17,6 @@ const rejectOptions = [
 
 interface RejectQuestionModalProps {
     question: Question;
-    courseId: number;
-    queueId: number;
     closeFunc: () => void;
     mutate: mutateResourceListFunction<Question>;
     open: boolean;
@@ -28,7 +26,7 @@ interface ReasonProps {
     rejectedReasonOther: string | null;
 }
 const RejectQuestionModal = (props: RejectQuestionModalProps) => {
-    const { question, courseId, queueId, closeFunc, open, mutate } = props;
+    const { question, closeFunc, open, mutate } = props;
     const { id: questionId } = question;
     const [input, setInput] = useState<ReasonProps>({
         rejectedReason: null,

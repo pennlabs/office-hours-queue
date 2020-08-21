@@ -13,12 +13,13 @@ interface StudentQueueProps {
 }
 
 const StudentQueue = (props: StudentQueueProps) => {
+    const { course, queue } = props;
     const [toast, setToast] = useState({ message: "", success: true });
     const [toastOpen, setToastOpen] = useState(false);
     // TODO: initial props for this
-    const [questions, error, isValidating, mutateQuestions] = useQuestions(
-        props.course.id,
-        props.queue.id,
+    const [questions, , , mutateQuestions] = useQuestions(
+        course.id,
+        queue.id,
         3000
     );
     const updateToast = (success: string, error) => {
@@ -37,22 +38,22 @@ const StudentQueue = (props: StudentQueueProps) => {
     return (
         <Segment basic>
             <Header as="h3">
-                {props.queue.name}
-                <Header.Subheader>{props.queue.description}</Header.Subheader>
+                {queue.name}
+                <Header.Subheader>{queue.description}</Header.Subheader>
             </Header>
-            {(props.queue.active || props.queue.questionsAsked) && (
+            {(queue.active || queue.questionsAsked) && (
                 <Label
-                    content={`${props.queue.questionsAsked || 0} user${
-                        props.queue.questionsAsked === 1 ? "" : "s"
+                    content={`${queue.questionsAsked || 0} user${
+                        queue.questionsAsked === 1 ? "" : "s"
                     } in queue`}
                     color="blue"
                     icon="users"
                 />
             )}
-            {(props.queue.active || props.queue.questionsActive) && (
+            {(queue.active || queue.questionsActive) && (
                 <Label
-                    content={`${props.queue.questionsActive || 0} user${
-                        props.queue.questionsActive === 1 ? "" : "s"
+                    content={`${queue.questionsActive || 0} user${
+                        queue.questionsActive === 1 ? "" : "s"
                     } currently being helped`}
                     icon="user"
                 />
@@ -60,14 +61,14 @@ const StudentQueue = (props: StudentQueueProps) => {
 
             {/* TODO: figure out estimated wait time */}
             <Label
-                content={`${props.queue.estimatedWaitTime} mins`}
+                content={`${queue.estimatedWaitTime} mins`}
                 color="blue"
                 icon="clock"
             />
 
-            {props.queue.active && (
+            {queue.active && (
                 <Label
-                    content={`${props.queue.staffActive || 0} staff active`}
+                    content={`${queue.staffActive || 0} staff active`}
                     icon={<Icon name="sync" loading={true} />}
                 />
             )}
@@ -76,13 +77,13 @@ const StudentQueue = (props: StudentQueueProps) => {
                     <QuestionCard
                         // TODO: this is probably safe but feels wrong
                         question={questions[0]}
-                        course={props.course}
-                        queue={props.queue}
+                        course={course}
+                        queue={queue}
                         mutate={mutateQuestions}
                         toastFunc={updateToast}
                     />
                 )}
-                {!props.queue.active && questions.length === 0 && (
+                {!queue.active && questions.length === 0 && (
                     <Message
                         style={{ marginTop: "10px" }}
                         header="Queue Closed"
@@ -91,17 +92,17 @@ const StudentQueue = (props: StudentQueueProps) => {
                         content="This queue is currently closed. Contact course staff if you think this is an error."
                     />
                 )}
-                {props.queue.active && questions.length === 0 && (
+                {queue.active && questions.length === 0 && (
                     <QuestionForm
-                        course={props.course}
-                        queueId={props.queue.id}
+                        course={course}
+                        queueId={queue.id}
                         mutate={mutateQuestions}
                         toastFunc={updateToast}
                     />
                 )}
                 {/* TODO: figure out this check */}
-                {/* {props.queue.active &&
-                    props.hasQuestion &&
+                {/* {queue.active &&
+                    hasQuestion &&
                     questions.length === 0 && (
                         <Message
                             style={{ marginTop: "10px" }}

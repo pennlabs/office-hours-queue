@@ -13,6 +13,7 @@ interface StudentCoursesProps {
 }
 
 const StudentCourses = (props: StudentCoursesProps) => {
+    const { mutate, courses } = props;
     /* STATE */
     const [open, setOpen] = useState(false);
     const [success, setSuccess] = useState(false); // opening snackbar
@@ -23,10 +24,10 @@ const StudentCourses = (props: StudentCoursesProps) => {
                 <ModalAddStudentCourse
                     open={open}
                     closeFunc={() => setOpen(false)}
-                    mutate={props.mutate}
+                    mutate={mutate}
                     successFunc={setSuccess}
                 />
-                {props.courses.map(
+                {courses.map(
                     (course) =>
                         !course.archived && (
                             <Grid.Column

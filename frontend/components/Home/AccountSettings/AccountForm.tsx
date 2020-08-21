@@ -13,14 +13,11 @@ import {
 const AccountForm = () => {
     const { user: initialUser } = useContext(AuthUserContext);
 
-    const [user, error, loading, mutate]: [
-        User,
-        any,
-        any,
-        any
-    ] = useAccountInfo(initialUser);
+    const [user, , , mutate]: [User, any, any, any] = useAccountInfo(
+        initialUser
+    );
 
-    const [input, setInput] = useState(JSON.parse(JSON.stringify(user)));
+    const [input] = useState(JSON.parse(JSON.stringify(user)));
 
     const [showNumber, setShowNumber] = useState(
         user.profile.smsNotificationsEnabled

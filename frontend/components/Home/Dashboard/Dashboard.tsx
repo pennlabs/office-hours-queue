@@ -1,20 +1,19 @@
 import React, { useContext, useState } from "react";
-import { Grid, Header, Placeholder, Segment } from "semantic-ui-react";
+import { Grid, Header, Segment } from "semantic-ui-react";
 import _ from "lodash";
 import Alert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
 import InstructorCourses from "./InstructorCourses";
 import StudentCourses from "./StudentCourses";
-import NewUserModal from "./Modals/NewUserModal";
 import { AuthUserContext } from "../../../context/auth";
 import { Course, Kind, Membership, mutateFunction } from "../../../types";
 import { useMemberships } from "../../../hooks/data-fetching/dashboard";
 
-// TODO: limit props
-const Dashboard = (props) => {
+// TODO: try to readd new user stuff, rip out loading stuff
+const Dashboard = () => {
     const { user: initalUser } = useContext(AuthUserContext);
 
-    const [memberships, error, loading, mutate]: [
+    const [memberships, , , mutate]: [
         Membership[],
         any,
         boolean,
@@ -33,16 +32,14 @@ const Dashboard = (props) => {
     };
 
     /* STATE */
-    const [newUserModalOpen, setNewUserModalOpen] = useState(props.newUser);
-    const [hasInstructorCourses, setHasInstructorCourses] = useState(
-        getCourses(false).length > 0
-    );
-    const [toast, setToast] = useState({ message: "", success: true });
+    // const [newUserModalOpen, setNewUserModalOpen] = useState(props.newUser);
+    const hasInstructorCourses = getCourses(false).length > 0;
+    const [toast] = useState({ message: "", success: true });
     const [toastOpen, setToastOpen] = useState(false);
 
     return (
         <Grid.Column width={13}>
-            {props.user && (
+            {/* {props.user && (
                 <NewUserModal
                     open={newUserModalOpen}
                     closeFunc={() => {
@@ -56,7 +53,7 @@ const Dashboard = (props) => {
                     }}
                     refetch={props.refetch}
                 />
-            )}
+            )} */}
             {memberships && (
                 <Grid padded stackable>
                     <Grid.Row>
@@ -66,7 +63,7 @@ const Dashboard = (props) => {
                             </Header>
                         </Segment>
                     </Grid.Row>
-                    {props.loading ? (
+                    {/* {props.loading ? (
                         <Grid style={{ width: "100%" }} stackable>
                             <Grid.Row padded="true" stackable>
                                 {_.times(3, () => (
@@ -94,28 +91,28 @@ const Dashboard = (props) => {
                                 ))}
                             </Grid.Row>
                         </Grid>
-                    ) : (
-                        <StudentCourses
-                            courses={getCourses(true)}
+                    ) : ( */}
+                    <StudentCourses
+                        courses={getCourses(true)}
+                        mutate={mutate}
+                    />
+                    {/* )} */}
+                    {/* {!props.loading && */}
+                    {hasInstructorCourses && [
+                        <Grid.Row>
+                            <Segment basic padded>
+                                <Header as="h2">
+                                    <Header.Content>
+                                        Instructor Courses
+                                    </Header.Content>
+                                </Header>
+                            </Segment>
+                        </Grid.Row>,
+                        <InstructorCourses
+                            courses={getCourses(false)}
                             mutate={mutate}
-                        />
-                    )}
-                    {!props.loading &&
-                        hasInstructorCourses && [
-                            <Grid.Row>
-                                <Segment basic padded>
-                                    <Header as="h2">
-                                        <Header.Content>
-                                            Instructor Courses
-                                        </Header.Content>
-                                    </Header>
-                                </Segment>
-                            </Grid.Row>,
-                            <InstructorCourses
-                                courses={getCourses(false)}
-                                mutate={mutate}
-                            />,
-                        ]}
+                        />,
+                    ]}
                 </Grid>
             )}
             <Snackbar

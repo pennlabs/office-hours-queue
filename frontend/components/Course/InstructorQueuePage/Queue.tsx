@@ -5,12 +5,6 @@ import ClearQueueModal from "./ClearQueueModal";
 import { mutateResourceListFunction, Queue as QueueType } from "../../../types";
 import { useQuestions } from "../../../hooks/data-fetching/course";
 
-// Returns true if l1 is a subset of l2
-const isSubset = (l1, l2) => {
-    if (l2.length === 0) return true;
-    return l1.filter((value) => l2.includes(value)).length > 0;
-};
-
 interface QueueProps {
     courseId: number;
     queue: QueueType;
@@ -23,22 +17,13 @@ const Queue = (props: QueueProps) => {
     const { id: queueId, active, estimatedWaitTime } = queue;
 
     /* STATE */
-    let [questions, error, isValidating, mutateQuestions] = useQuestions(
+    // TODO: proper inital props on this
+    const [questions, , , mutateQuestions] = useQuestions(
         courseId,
         queueId,
         3000
     );
-    questions = questions || []; // TODO: loading component
-    const [filters, setFilters] = useState({ tags: [], status: null });
     const [clearModalOpen, setClearModalOpen] = useState(false);
-
-    const tags = [];
-
-    const filteredQuestions = questions;
-    //     useMemo(
-    //     () => questions.filter((q) => isSubset(q.tags, filters.tags)),
-    //     [questions, filters]
-    // );
 
     const onOpen = async () => {
         await mutate(queueId, { active: true });
@@ -132,9 +117,7 @@ const Queue = (props: QueueProps) => {
             </Grid>
             <Grid.Row columns={1}>
                 <Questions
-                    courseId={courseId}
-                    queueId={queueId}
-                    questions={filteredQuestions}
+                    questions={questions}
                     refetch={mutateQuestions}
                     active={active}
                 />

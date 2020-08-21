@@ -11,6 +11,14 @@ interface RosterFormProps {
     filterFunc: (any) => void; // TODO: restrict this
 }
 const RosterForm = (props: RosterFormProps) => {
+    const {
+        showInviteButton,
+        showShowInvitedButton,
+        invitedShown,
+        inviteFunc,
+        showInvitedFunc,
+        filterFunc,
+    } = props;
     const [input, setInput] = useState({
         search: "",
         role: "",
@@ -19,7 +27,7 @@ const RosterForm = (props: RosterFormProps) => {
     const handleInputChange = (e, { name, value }) => {
         input[name] = value.toLowerCase();
         setInput(input);
-        props.filterFunc(input);
+        filterFunc(input);
     };
 
     return (
@@ -50,23 +58,21 @@ const RosterForm = (props: RosterFormProps) => {
                     </Form>
                 </Grid.Column>
                 <Grid.Column textAlign="right" floated="right">
-                    {props.showInviteButton && (
+                    {showInviteButton && (
                         <Button
                             content="Invite"
                             color="blue"
-                            onClick={props.inviteFunc}
+                            onClick={inviteFunc}
                             icon="add user"
                         />
                     )}
-                    {props.showShowInvitedButton && (
+                    {showShowInvitedButton && (
                         <Button
                             content={
-                                props.invitedShown
-                                    ? "Hide Invited"
-                                    : "Show Invited"
+                                invitedShown ? "Hide Invited" : "Show Invited"
                             }
                             color="grey"
-                            onClick={props.showInvitedFunc}
+                            onClick={showInvitedFunc}
                         />
                     )}
                 </Grid.Column>

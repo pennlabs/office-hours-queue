@@ -16,26 +16,34 @@ interface RemoveButtonProps {
     mutateMemberships: mutateResourceListFunction<Membership>;
 }
 const RemoveButton = (props: RemoveButtonProps) => {
-    const { mutateInvites, mutateMemberships } = props;
+    const {
+        disabled,
+        id,
+        userName,
+        isInvited,
+        successFunc,
+        mutateInvites,
+        mutateMemberships,
+    } = props;
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
 
     const onSubmit = async () => {
         setLoading(true);
-        if (props.isInvited) {
-            await mutateInvites(props.id, null, "DELETE");
+        if (isInvited) {
+            await mutateInvites(id, null, "DELETE");
         } else {
-            await mutateMemberships(props.id, null, "DELETE");
+            await mutateMemberships(id, null, "DELETE");
         }
         setLoading(false);
         setOpen(false);
-        props.successFunc(props.userName);
+        successFunc(userName);
     };
 
     const removeContent = (
         <Button
             color="red"
-            content={props.isInvited ? "Revoke" : "Remove"}
+            content={isInvited ? "Revoke" : "Remove"}
             disabled={loading}
             onClick={onSubmit}
         />
@@ -46,14 +54,14 @@ const RemoveButton = (props: RemoveButtonProps) => {
         <Popup
             trigger={
                 <Icon
-                    disabled={props.disabled || loading}
+                    disabled={disabled || loading}
                     name="remove circle"
                     style={{ cursor: "pointer" }}
                     loading={loading}
                 />
             }
-            content={props.disabled ? disabledContent : removeContent}
-            on={props.disabled ? "hover" : "click"}
+            content={disabled ? disabledContent : removeContent}
+            on={disabled ? "hover" : "click"}
             onClose={() => {
                 setOpen(false);
             }}
@@ -61,7 +69,7 @@ const RemoveButton = (props: RemoveButtonProps) => {
                 setOpen(true);
             }}
             open={open}
-            position={props.disabled ? "left center" : "top center"}
+            position={disabled ? "left center" : "top center"}
         />
     );
 };

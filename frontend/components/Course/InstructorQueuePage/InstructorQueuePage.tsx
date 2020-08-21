@@ -16,11 +16,8 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
 
     /* STATE */
     const { user: initialUser } = useContext(AuthUserContext);
-    const [leader, staff, staffError, staffLoading, staffMutate] = useStaff(
-        courseId,
-        initialUser
-    );
-    const [queues, error, isValidating, mutate] = useQueues(courseId);
+    const [leader, , , ,] = useStaff(courseId, initialUser);
+    const [queues, , , mutate] = useQueues(courseId);
     const [success, setSuccess] = useState(false);
     const [activeQueueId, setActiveQueueId] = useState(null);
     const [active, setActive] = useState("queues");

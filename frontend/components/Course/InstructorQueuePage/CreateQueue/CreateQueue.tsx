@@ -12,6 +12,7 @@ interface CreateQueueProps {
     mutate: mutateResourceListFunction<Queue>;
 }
 const CreateQueue = (props: CreateQueueProps) => {
+    const { courseId, backFunc, successFunc, mutate } = props;
     /* STATE */
     const [disabled, setDisabled] = useState(true);
     const [error, setError] = useState(false);
@@ -20,7 +21,7 @@ const CreateQueue = (props: CreateQueueProps) => {
         description: null,
         tags: [],
         startEndTimes: [],
-        courseId: props.courseId,
+        courseId: courseId,
     });
     const [refetchLoading, setRefetchLoading] = useState(false);
 
@@ -33,12 +34,12 @@ const CreateQueue = (props: CreateQueueProps) => {
 
     const onSubmit = async () => {
         try {
-            await createQueue(props.courseId, input);
+            await createQueue(courseId, input);
             await setRefetchLoading(true);
-            await props.mutate(-1, null);
+            await mutate(-1, null);
             await setRefetchLoading(false);
-            props.backFunc();
-            props.successFunc();
+            backFunc();
+            successFunc();
         } catch (e) {
             setError(true);
         }
@@ -98,7 +99,7 @@ const CreateQueue = (props: CreateQueueProps) => {
                             content="Cancel"
                             type="submit"
                             disabled={refetchLoading}
-                            onClick={props.backFunc}
+                            onClick={backFunc}
                         />
                     </Form>
                 </Segment>

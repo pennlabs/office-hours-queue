@@ -23,32 +23,26 @@ interface RosterProps {
     invites: MembershipInvite[];
 }
 const Roster = (props: RosterProps) => {
+    const { courseId, memberships: rawMemberships, invites } = props;
     // Types
     type tableStateType = {
         direction: "ascending" | "descending";
         column: string;
     };
 
-    const [
-        memberships,
-        membershipsError,
-        membershipsLoading,
-        membershipsMutate,
-    ] = useMembers(props.courseId, props.memberships);
+    const [memberships, , , membershipsMutate] = useMembers(
+        courseId,
+        rawMemberships
+    );
 
     const { user: initialUser } = useContext(AuthUserContext);
-    const [leader, staff, leaderError, staffLoading, staffMutate] = useStaff(
-        props.courseId,
-        initialUser
-    );
+    const [leader, , , ,] = useStaff(courseId, initialUser);
     /* STATE */
     const [filteredUsers, setFilteredUsers] = useState(memberships);
-    const [
-        invitedMembers,
-        invitedError,
-        invitedLoading,
-        invitedMutate,
-    ] = useInvitedMembers(props.courseId, props.invites);
+    const [invitedMembers, , , invitedMutate] = useInvitedMembers(
+        courseId,
+        invites
+    );
 
     const [open, setOpen] = useState(false);
     const [invitedTableState, setInvitedTableState]: [
@@ -223,7 +217,7 @@ const Roster = (props: RosterProps) => {
                 <InviteModal
                     open={open}
                     closeFunc={closeModal}
-                    courseId={props.courseId}
+                    courseId={courseId}
                     successFunc={onInviteSuccess}
                     setToast={setToast}
                 />
@@ -396,7 +390,7 @@ const Roster = (props: RosterProps) => {
                                                 prettifyRole(membership.kind)
                                             ) : (
                                                 <ChangeRoleDropdown
-                                                    courseId={props.courseId}
+                                                    courseId={courseId}
                                                     id={membership.id}
                                                     role={membership.kind}
                                                     disabled={

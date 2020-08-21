@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Grid, Segment, Button } from "semantic-ui-react";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
@@ -16,7 +16,7 @@ const InstructorCourses = (props: InstructorCoursesProps) => {
     /* STATE */
     const [open, setOpen] = useState(false);
     const [showArchived, setShowArchived] = useState(false);
-    const { courses } = props;
+    const { courses, mutate } = props;
     const [toast, setToast] = useState<Toast>({ success: true, message: "" });
     const [toastOpen, setToastOpen] = useState(false);
 
@@ -38,7 +38,7 @@ const InstructorCourses = (props: InstructorCoursesProps) => {
                     open={open}
                     closeFunc={() => setOpen(false)}
                     toastFunc={updateToast}
-                    mutate={props.mutate}
+                    mutate={mutate}
                 />
                 {courses.map(
                     (course) =>

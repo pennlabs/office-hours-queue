@@ -24,6 +24,7 @@ interface AddCardProps {
     clickFunc: () => void;
 }
 const AddCard = (props: AddCardProps) => {
+    const { isStudent, clickFunc } = props;
     const [hovered, setHovered] = useState(false);
 
     return (
@@ -32,7 +33,7 @@ const AddCard = (props: AddCardProps) => {
                 style={hovered ? hoverStyle : cardStyle}
                 onMouseEnter={() => setHovered(true)}
                 onMouseLeave={() => setHovered(false)}
-                onClick={props.clickFunc}
+                onClick={clickFunc}
             >
                 <Header
                     color="green"
@@ -41,7 +42,7 @@ const AddCard = (props: AddCardProps) => {
                         textOverflow: "ellipsis",
                         overflow: "hidden",
                     }}
-                    content={props.isStudent ? "Join Course" : "Create Course"}
+                    content={isStudent ? "Join Course" : "Create Course"}
                 />
             </Segment>
         </Segment>

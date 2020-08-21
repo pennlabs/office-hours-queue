@@ -11,6 +11,7 @@ interface ModalAddStudentCourseProps {
     successFunc: React.Dispatch<React.SetStateAction<boolean>>;
 }
 const ModalAddStudentCourse = (props: ModalAddStudentCourseProps) => {
+    const { open, closeFunc, mutate, successFunc } = props;
     const [loading, setLoading] = useState(false);
     const [input, setInput] = useState({ courseIds: [] });
     const [disabled, setDisabled] = useState(true);
@@ -26,17 +27,17 @@ const ModalAddStudentCourse = (props: ModalAddStudentCourseProps) => {
             return;
         }
         setLoading(true);
-        for (let index = 0; index < input.courseIds.length; index++) {
+        for (let index = 0; index < input.courseIds.length; index += 1) {
             await joinCourse(input.courseIds[index]);
         }
         setLoading(false);
-        props.mutate();
-        props.closeFunc();
-        props.successFunc(true); // trigger snackbar
+        mutate();
+        closeFunc();
+        successFunc(true); // trigger snackbar
     };
 
     return (
-        <Modal open={props.open}>
+        <Modal open={open}>
             <Modal.Header>Join Courses</Modal.Header>
             <Modal.Content>
                 <AddStudentForm changeFunc={handleInputChange} />
@@ -45,7 +46,7 @@ const ModalAddStudentCourse = (props: ModalAddStudentCourseProps) => {
                 <Button
                     content="Cancel"
                     disabled={loading}
-                    onClick={props.closeFunc}
+                    onClick={closeFunc}
                 />
                 <Button
                     content="Join"

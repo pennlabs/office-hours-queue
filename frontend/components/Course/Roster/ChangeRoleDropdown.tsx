@@ -4,15 +4,14 @@ import { staffRoleOptions } from "../../../utils/enums";
 import { Membership, mutateResourceListFunction } from "../../../types";
 
 interface ChangeRoleDropdownProps {
-    courseId: number;
     id: number;
     role: string;
     disabled: boolean;
     successFunc: () => void;
     mutate: mutateResourceListFunction<Membership>;
 }
-const ChangeRoleDropdown = (props) => {
-    const { role, disabled, courseId, id: membershipId, mutate } = props;
+const ChangeRoleDropdown = (props: ChangeRoleDropdownProps) => {
+    const { role, disabled, id: membershipId, mutate } = props;
 
     const handleInputChange = async (e, { name, value }) => {
         await mutate(membershipId, { kind: value });

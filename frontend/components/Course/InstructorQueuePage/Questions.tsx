@@ -6,13 +6,11 @@ import { mutateResourceListFunction, Question } from "../../../types";
 
 interface QuestionsProps {
     questions: Question[];
-    courseId: number;
-    queueId: number;
     active: boolean;
     refetch: mutateResourceListFunction<Question>;
 }
 const Questions = (props: QuestionsProps) => {
-    const { questions, refetch, active, courseId, queueId } = props;
+    const { questions, refetch, active } = props;
     return (
         <>
             <Grid.Column>
@@ -23,8 +21,6 @@ const Questions = (props: QuestionsProps) => {
                             <QuestionCard
                                 key={question.id}
                                 question={question}
-                                courseId={courseId}
-                                queueId={queueId}
                                 mutate={refetch}
                             />
                         </Grid.Row>
