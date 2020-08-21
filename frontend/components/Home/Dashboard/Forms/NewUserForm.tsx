@@ -147,6 +147,6 @@
 
 // export default NewUserForm;
 const NewUserForm = (props) => {
-    return <span></span>;
+    return <span />;
 };
 export default NewUserForm;

@@ -6,7 +6,7 @@ interface ArchivedCourseCardProps {
     course: Course;
 }
 const ArchivedCourseCard = (props: ArchivedCourseCardProps) => {
-    const course = props.course;
+    const { course } = props;
     return (
         <Segment basic>
             <Segment attached="top" color="blue" secondary>

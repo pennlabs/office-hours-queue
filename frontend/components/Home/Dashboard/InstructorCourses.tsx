@@ -16,7 +16,7 @@ const InstructorCourses = (props: InstructorCoursesProps) => {
     /* STATE */
     const [open, setOpen] = useState(false);
     const [showArchived, setShowArchived] = useState(false);
-    const courses = props.courses;
+    const { courses } = props;
     const [toast, setToast] = useState<Toast>({ success: true, message: "" });
     const [toastOpen, setToastOpen] = useState(false);
 

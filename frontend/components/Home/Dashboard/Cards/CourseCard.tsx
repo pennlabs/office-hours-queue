@@ -7,7 +7,7 @@ interface CourseCardProps {
     course: Course;
 }
 const CourseCard = (props: CourseCardProps) => {
-    const course = props.course;
+    const { course } = props;
     const [hover, setHover] = useState(false);
 
     const path = {
