@@ -62,6 +62,8 @@ const Summary = ({ course }) => {
                                             {new Date(
                                                 qs.timeAsked
                                             ).toLocaleString("en-US", {
+                                                // TODO: this isn't a good fix
+                                                // @ts-ignore
                                                 dateStyle: "short",
                                                 timeStyle: "short",
                                             })}
@@ -87,6 +89,8 @@ const Summary = ({ course }) => {
                                             ) => {
                                                 setFilterState({
                                                     ...filterState,
+                                                    // TODO: ts warning here
+                                                    // @ts-ignore
                                                     page: activePage,
                                                 });
                                             }}

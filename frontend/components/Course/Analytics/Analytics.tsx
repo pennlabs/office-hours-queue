@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Segment, Header, Grid, Message } from "semantic-ui-react";
-import MyPieChart from "./MyPieChart";
+// import MyPieChart from "./MyPieChart";
 
 const Analytics = () => {
     const data = {};

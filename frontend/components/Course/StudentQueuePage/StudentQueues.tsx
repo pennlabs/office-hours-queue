@@ -40,14 +40,13 @@ const StudentQueues = (props: StudentQueuesProps) => {
                 </Grid.Row>
             )}
             {/* // TODO: replace this with a user-level canAskQuestions check */}
-            <Grid.Row columns={1}>
+            {/* <Grid.Row columns={1}>
                 {props.question && !showQuestion(props.question) && (
                     <Grid.Column>
                         <LastQuestionCard question={props.question} />
                     </Grid.Column>
                 )}
-            </Grid.Row>
-            ,
+            </Grid.Row> */}
         </>
     );
 };

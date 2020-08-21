@@ -10,6 +10,8 @@ const CoursePage = (props) => {
 
     return (
         <Course
+            // TODO: better fix
+            // @ts-ignore
             courseId={parseInt(course)}
             course={props.course}
             memberships={props.memberships}

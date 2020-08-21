@@ -6,6 +6,8 @@ const LastQuestionCard = (props) => {
 
     const timeString = (date) => {
         return new Date(date).toLocaleString("en-US", {
+            // TODO: this isn't a good fix
+            // @ts-ignore
             dateStyle: "short",
             timeStyle: "short",
         });

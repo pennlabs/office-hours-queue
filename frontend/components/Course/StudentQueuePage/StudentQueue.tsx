@@ -100,7 +100,7 @@ const StudentQueue = (props: StudentQueueProps) => {
                     />
                 )}
                 {/* TODO: figure out this check */}
-                {props.queue.active &&
+                {/* {props.queue.active &&
                     props.hasQuestion &&
                     questions.length === 0 && (
                         <Message
@@ -110,7 +110,7 @@ const StudentQueue = (props: StudentQueueProps) => {
                             icon="comment alternate outline"
                             content="You already have asked a question in another queue"
                         />
-                    )}
+                    )} */}
             </Grid.Row>
             <Snackbar
                 open={toastOpen}

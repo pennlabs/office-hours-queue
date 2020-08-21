@@ -104,7 +104,7 @@ const QuestionForm = (props: QuestionFormProps) => {
                         </Form.Field>
                     )}
                     {/* TODO: tags */}
-                    {course.tags && course.tags.length > 0 && (
+                    {/* {course.tags && course.tags.length > 0 && (
                         <Form.Field>
                             <label>Tags</label>
                             <Form.Dropdown
@@ -117,7 +117,7 @@ const QuestionForm = (props: QuestionFormProps) => {
                                 options={getDropdownOptions(course.tags)}
                             />
                         </Form.Field>
-                    )}
+                    )} */}
                 </Form>
             </Segment>
             <Segment attached="bottom">

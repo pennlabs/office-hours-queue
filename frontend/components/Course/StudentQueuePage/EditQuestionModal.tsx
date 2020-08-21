@@ -115,7 +115,7 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
                         </Form.Field>
                     )}
                     {/* TODO: replace this with course level tags */}
-                    {course.tags && course.tags.length > 0 && (
+                    {/* {course.tags && course.tags.length > 0 && (
                         <Form.Field>
                             <label>Tags</label>
                             <Form.Dropdown
@@ -128,7 +128,7 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
                                 options={getDropdownOptions(course.tags)}
                             />
                         </Form.Field>
-                    )}
+                    )} */}
                 </Form>
             </Modal.Content>
             <Modal.Actions>
