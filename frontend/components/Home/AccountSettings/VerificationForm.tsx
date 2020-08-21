@@ -5,8 +5,13 @@ import { Segment } from "semantic-ui-react";
 import ReactCodeInput from "react-code-input";
 import { validateSMS } from "../../../hooks/data-fetching/account";
 
-const VerificationForm = (props) => {
-    const codeInput = useRef();
+interface VerificationFormProps {
+    openFunc: React.Dispatch<React.SetStateAction<boolean>>;
+    toastFunc: (Toast) => void;
+    mutate: any; // TODO: make this more strict
+}
+const VerificationForm = (props: VerificationFormProps) => {
+    const codeInput = useRef(null);
 
     const clearInput = () => {
         if (codeInput.current.textInput[0]) {
@@ -24,7 +29,7 @@ const VerificationForm = (props) => {
     const onVerify = async (code) => {
         try {
             await validateSMS(code);
-            props.refetch();
+            props.mutate();
             props.openFunc(false);
             props.toastFunc({
                 success: true,
@@ -49,29 +54,33 @@ const VerificationForm = (props) => {
         }
     };
 
-    return [
-        <Segment textAlign="center" basic>
-            <ReactCodeInput
-                type="number"
-                fields={6}
-                onChange={handleInputChange}
-                ref={codeInput}
-            />
-        </Segment>,
-        <div>
-            Missed your verification code?{" "}
-            <a
-                onClick={() => {
-                    /* if (!sendLoading || !verifyLoading) */
-                    /*     return sendVerification(); */
-                    // TODO: add resend verification code ability
-                }}
-                style={{ cursor: "pointer" }}
-            >
-                Resend
-            </a>
-        </div>,
-    ];
+    return (
+        <>
+            <Segment textAlign="center" basic>
+                <ReactCodeInput
+                    name="verification"
+                    type="number"
+                    fields={6}
+                    onChange={handleInputChange}
+                    ref={codeInput}
+                    inputMode="numeric"
+                />
+            </Segment>
+            <div>
+                Missed your verification code?{" "}
+                <a
+                    onClick={() => {
+                        /* if (!sendLoading || !verifyLoading) */
+                        /*     return sendVerification(); */
+                        // TODO: add resend verification code ability
+                    }}
+                    style={{ cursor: "pointer" }}
+                >
+                    Resend
+                </a>
+            </div>
+        </>
+    );
 };
 
 export default VerificationForm;

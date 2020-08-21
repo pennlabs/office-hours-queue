@@ -2,8 +2,15 @@ import React, { useState } from "react";
 import { Modal, Button } from "semantic-ui-react";
 import AddStudentForm from "../Forms/AddStudentForm";
 import { joinCourse } from "../../../../hooks/data-fetching/dashboard";
+import { mutateFunction, Membership } from "../../../../types";
 
-const ModalAddStudentCourse = (props) => {
+interface ModalAddStudentCourseProps {
+    open: boolean;
+    closeFunc: () => void;
+    mutate: mutateFunction<Membership[]>;
+    successFunc: React.Dispatch<React.SetStateAction<boolean>>;
+}
+const ModalAddStudentCourse = (props: ModalAddStudentCourseProps) => {
     const [loading, setLoading] = useState(false);
     const [input, setInput] = useState({ courseIds: [] });
     const [disabled, setDisabled] = useState(true);
@@ -23,7 +30,7 @@ const ModalAddStudentCourse = (props) => {
             await joinCourse(input.courseIds[index]);
         }
         setLoading(false);
-        props.refetch();
+        props.mutate();
         props.closeFunc();
         props.successFunc(true); // trigger snackbar
     };

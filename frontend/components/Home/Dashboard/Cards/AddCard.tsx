@@ -19,8 +19,11 @@ const hoverStyle = {
     border: "dashed #21ba45",
     backgroundColor: "#b5f4c4",
 };
-
-const AddCard = (props) => {
+interface AddCardProps {
+    isStudent: boolean;
+    clickFunc: () => void;
+}
+const AddCard = (props: AddCardProps) => {
     const [hovered, setHovered] = useState(false);
 
     return (

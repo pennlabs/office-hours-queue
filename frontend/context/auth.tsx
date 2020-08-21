@@ -3,7 +3,9 @@ import Router from "next/router";
 import { doApiRequest } from "../utils/fetch";
 import { User } from "../types";
 
-export const AuthUserContext: React.Context<{ user: User }> = createContext();
+export const AuthUserContext: React.Context<{ user: User }> = createContext({
+    user: null,
+});
 
 export const withAuth = (WrappedComponent) => {
     const AuthedComponent = ({ children, user, ...props }) => {

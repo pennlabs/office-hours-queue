@@ -6,108 +6,102 @@ import CourseCard from "./Cards/CourseCard";
 import ArchivedCourseCard from "./Cards/ArchivedCourseCard";
 import AddCard from "./Cards/AddCard";
 import ModalAddInstructorCourse from "./Modals/ModalAddInstructorCourse";
+import { Course, mutateFunction, Membership, Toast } from "../../../types";
 
-/* FUNCTIONAL COMPONENT */
-const InstructorCourses = (props) => {
+interface InstructorCoursesProps {
+    courses: Course[];
+    mutate: mutateFunction<Membership[]>;
+}
+const InstructorCourses = (props: InstructorCoursesProps) => {
     /* STATE */
     const [open, setOpen] = useState(false);
     const [showArchived, setShowArchived] = useState(false);
-    const [courses, setCourses] = useState(props.courses);
-    const [toast, setToast] = useState({ success: true, message: "" });
+    const courses = props.courses;
+    const [toast, setToast] = useState<Toast>({ success: true, message: "" });
     const [toastOpen, setToastOpen] = useState(false);
 
     const handleArchivedChange = () => {
         setShowArchived(!showArchived);
     };
 
-    const updateToast = (name, success) => {
+    const updateToast = ({ message, success }: Toast) => {
         toast.success = success;
-        toast.message = success ? `${name} created!` : "There was an error!";
+        toast.message = success ? `${message} created!` : "There was an error!";
         setToast(toast);
         setToastOpen(true);
     };
 
-    /* UPDATE ON PROPS CHANGE */
-    useEffect(() => {
-        setCourses(props.courses);
-    }, [props.courses]);
-
-    return [
-        <Grid.Row padded="true" stackable>
-            <ModalAddInstructorCourse
-                open={open}
-                closeFunc={() => setOpen(false)}
-                toastFunc={updateToast}
-                refetch={props.refetch}
-            />
-            {courses.map(
-                (course) =>
-                    !course.archived && (
-                        <Grid.Column key={course.id} style={{ width: "280px" }}>
-                            <CourseCard
-                                department={course.department}
-                                courseCode={course.courseCode}
-                                courseTitle={course.courseTitle}
-                                description={course.description}
-                                semester={course.semesterPretty}
-                                id={course.id}
-                                kind={course.kind}
-                                courseUserId={course.courseUserId}
-                            />
-                        </Grid.Column>
-                    )
-            )}
-            <Grid.Column style={{ width: "280px" }}>
-                <AddCard clickFunc={() => setOpen(true)} />
-            </Grid.Column>
-        </Grid.Row>,
-        courses.filter((course) => course.archived).length > 0 && (
-            <Grid.Row padded="true">
-                <Grid.Column padded="true">
-                    <Segment basic compact>
-                        <Button
-                            color="blue"
-                            content={
-                                showArchived ? "Hide Archived" : "Show Archived"
-                            }
-                            onClick={handleArchivedChange}
-                            icon={showArchived ? "angle up" : "angle down"}
-                        />
-                    </Segment>
+    return (
+        <>
+            <Grid.Row padded="true" stackable>
+                <ModalAddInstructorCourse
+                    open={open}
+                    closeFunc={() => setOpen(false)}
+                    toastFunc={updateToast}
+                    mutate={props.mutate}
+                />
+                {courses.map(
+                    (course) =>
+                        !course.archived && (
+                            <Grid.Column
+                                key={course.id}
+                                style={{ width: "280px" }}
+                            >
+                                <CourseCard course={course} />
+                            </Grid.Column>
+                        )
+                )}
+                <Grid.Column style={{ width: "280px" }}>
+                    <AddCard
+                        clickFunc={() => setOpen(true)}
+                        isStudent={false}
+                    />
                 </Grid.Column>
             </Grid.Row>
-        ),
-        <Grid.Row padded="true" style={{ width: "280px" }}>
-            {courses.map(
-                (course) =>
-                    course.archived &&
-                    showArchived && (
-                        <Grid.Column style={{ width: "280px" }}>
-                            <ArchivedCourseCard
-                                department={course.department}
-                                courseCode={course.courseCode}
-                                courseTitle={course.courseTitle}
-                                description={course.description}
-                                id={course.id}
-                                semester={course.semesterPretty}
+            {courses.filter((course) => course.archived).length > 0 && (
+                <Grid.Row padded="true">
+                    <Grid.Column padded="true">
+                        <Segment basic compact>
+                            <Button
+                                color="blue"
+                                content={
+                                    showArchived
+                                        ? "Hide Archived"
+                                        : "Show Archived"
+                                }
+                                onClick={handleArchivedChange}
+                                icon={showArchived ? "angle up" : "angle down"}
                             />
-                        </Grid.Column>
-                    )
+                        </Segment>
+                    </Grid.Column>
+                </Grid.Row>
             )}
-        </Grid.Row>,
-        <Snackbar
-            open={toastOpen}
-            autoHideDuration={6000}
-            onClose={() => setToastOpen(false)}
-        >
-            <Alert
-                severity={toast.success ? "success" : "error"}
+            <Grid.Row padded="true" style={{ width: "280px" }}>
+                {courses.map(
+                    (course) =>
+                        course.archived &&
+                        showArchived && (
+                            <Grid.Column style={{ width: "280px" }}>
+                                <ArchivedCourseCard course={course} />
+                            </Grid.Column>
+                        )
+                )}
+            </Grid.Row>
+
+            <Snackbar
+                open={toastOpen}
+                autoHideDuration={6000}
                 onClose={() => setToastOpen(false)}
             >
-                <span>{toast.message}</span>
-            </Alert>
-        </Snackbar>,
-    ];
+                <Alert
+                    severity={toast.success ? "success" : "error"}
+                    onClose={() => setToastOpen(false)}
+                >
+                    <span>{toast.message}</span>
+                </Alert>
+            </Snackbar>
+        </>
+    );
 };
 
 export default InstructorCourses;

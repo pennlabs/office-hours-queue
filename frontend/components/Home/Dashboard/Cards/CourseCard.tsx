@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import { Segment, Header } from "semantic-ui-react";
 import Link from "next/link";
-import * as ROUTES from "../../../../constants/routes";
+import { Course } from "../../../../types";
 
-const CourseCard = (props) => {
+interface CourseCardProps {
+    course: Course;
+}
+const CourseCard = (props: CourseCardProps) => {
+    const course = props.course;
     const [hover, setHover] = useState(false);
 
     const path = {
-        pathname: `${ROUTES.CLASS.split("/:")[0]}/${props.id}`,
+        pathname: `/courses/${course.id}`,
     };
 
     return (
@@ -30,7 +34,7 @@ const CourseCard = (props) => {
                                 overflow: "hidden",
                             }}
                         >
-                            {`${props.department} ${props.courseCode}`}
+                            {`${course.department} ${course.courseCode}`}
                             <Header.Subheader
                                 style={{
                                     whiteSpace: "nowrap",
@@ -38,7 +42,7 @@ const CourseCard = (props) => {
                                     overflow: "hidden",
                                 }}
                             >
-                                {props.courseTitle}
+                                {course.courseTitle}
                             </Header.Subheader>
                         </Header>
                     </Segment>
@@ -56,7 +60,7 @@ const CourseCard = (props) => {
                                 overflow: "hidden",
                             }}
                         >
-                            {props.semester}
+                            {course.semesterPretty}
                         </Header>
                     </Segment>
                 </Segment.Group>

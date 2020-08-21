@@ -8,7 +8,7 @@ import SignOutButton from "../SignOut";
 import styles from "../../styles/landingpage.module.css";
 import AboutModal from "../LandingPage/AboutModal";
 
-const Sidebar = (props) => {
+const Sidebar = () => {
     const router = useRouter();
     const [showAboutModal, setShowAboutModal] = useState(false);
 

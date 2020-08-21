@@ -9,8 +9,8 @@ const MyApp = ({ Component, pageProps }) => {
     return (
         <SWRConfig
             value={{
-                fetcher: (...args) =>
-                    doApiRequest(...args).then((res) => res.json()),
+                fetcher: (path, ...args) =>
+                    doApiRequest(path, ...args).then((res) => res.json()),
             }}
         >
             <Component {...pageProps} />

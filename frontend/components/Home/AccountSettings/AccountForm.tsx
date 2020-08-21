@@ -4,7 +4,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 import { AuthUserContext } from "../../../context/auth";
 import VerificationModal from "./VerificationModal";
-import { User } from "../../../types";
+import { User, Toast } from "../../../types";
 import {
     updateUser,
     useAccountInfo,
@@ -28,7 +28,7 @@ const AccountForm = () => {
 
     const [smsOpen, setSmsOpen] = useState(false);
 
-    const [toast, setToast] = useState({ message: "", success: true });
+    const [toast, setToast] = useState<Toast>({ message: "", success: true });
     const [toastOpen, setToastOpen] = useState(false);
     const [disabled, setDisabled] = useState(true);
 
@@ -80,111 +80,115 @@ const AccountForm = () => {
         }
     };
 
-    return [
-        <VerificationModal
-            open={smsOpen}
-            toastFunc={(toast) => {
-                setToast(toast);
-                setToastOpen(true);
-            }}
-            openFunc={setSmsOpen}
-            refetch={mutate}
-        />,
-        <Form>
-            <Form.Field required>
-                <label>Email Address</label>
-                <Form.Input
-                    defaultValue={input.email}
-                    disabled
-                    onChange={handleInputChange}
-                />
-            </Form.Field>
-            <Form.Field required>
-                <label>First Name</label>
-                <Form.Input
-                    placeholder="First Name"
-                    defaultValue={input.firstName}
-                    name="firstName"
-                    onChange={handleInputChange}
-                />
-            </Form.Field>
-            <Form.Field required>
-                <label>Last Name</label>
-                <Form.Input
-                    placeholder="Last Name"
-                    defaultValue={input.lastName}
-                    name="lastName"
-                    onChange={handleInputChange}
-                />
-            </Form.Field>
-            <Form.Field>
-                <Form.Checkbox
-                    name="smsNotificationsEnabled"
-                    defaultChecked={input.profile.smsNotificationsEnabled}
-                    onChange={handleInputChange}
-                    label={[
-                        "Enable SMS Notifications ",
-                        <Popup
-                            trigger={<Icon name="question circle outline" />}
-                            content="Get text message alerts when you're almost up next in line!"
-                            position="top center"
-                        />,
-                    ]}
-                />
-            </Form.Field>
-            {showNumber && (
-                <Form.Field>
-                    <label>Cell Phone Number</label>
+    return (
+        <>
+            <VerificationModal
+                open={smsOpen}
+                toastFunc={(toast: Toast) => {
+                    setToast(toast);
+                    setToastOpen(true);
+                }}
+                openFunc={setSmsOpen}
+                mutate={mutate}
+            />
+            <Form>
+                <Form.Field required>
+                    <label>Email Address</label>
                     <Form.Input
-                        placeholder="9876543210"
-                        defaultValue={input.profile.phoneNumber}
-                        name="phoneNumber"
+                        defaultValue={input.email}
+                        disabled
                         onChange={handleInputChange}
-                        action={
-                            (!user.profile.smsVerified && (
-                                <Button
-                                    disabled={user.profile.smsVerified}
-                                    color="red"
-                                    content="Not Verified"
-                                    icon="shield alternate"
-                                    onClick={() => {
-                                        setSmsOpen(true);
-                                    }}
-                                />
-                            )) ||
-                            (user.profile.smsVerified && (
-                                <Button
-                                    color="green"
-                                    content="Verified"
-                                    icon="shield alternate"
-                                />
-                            ))
-                        }
                     />
                 </Form.Field>
-            )}
-            <Button
-                color="blue"
-                type="submit"
-                disabled={disabled}
-                onClick={onSubmit}
-            >
-                Save
-            </Button>
-            <Snackbar
-                open={toastOpen}
-                autoHideDuration={6000}
-                onClose={() => setToastOpen(false)}
-            >
-                <Alert
-                    severity={toast.success ? "success" : "error"}
+                <Form.Field required>
+                    <label>First Name</label>
+                    <Form.Input
+                        placeholder="First Name"
+                        defaultValue={input.firstName}
+                        name="firstName"
+                        onChange={handleInputChange}
+                    />
+                </Form.Field>
+                <Form.Field required>
+                    <label>Last Name</label>
+                    <Form.Input
+                        placeholder="Last Name"
+                        defaultValue={input.lastName}
+                        name="lastName"
+                        onChange={handleInputChange}
+                    />
+                </Form.Field>
+                <Form.Field>
+                    <Form.Checkbox
+                        name="smsNotificationsEnabled"
+                        defaultChecked={input.profile.smsNotificationsEnabled}
+                        onChange={handleInputChange}
+                        label={[
+                            "Enable SMS Notifications ",
+                            <Popup
+                                trigger={
+                                    <Icon name="question circle outline" />
+                                }
+                                content="Get text message alerts when you're almost up next in line!"
+                                position="top center"
+                            />,
+                        ]}
+                    />
+                </Form.Field>
+                {showNumber && (
+                    <Form.Field>
+                        <label>Cell Phone Number</label>
+                        <Form.Input
+                            placeholder="9876543210"
+                            defaultValue={input.profile.phoneNumber}
+                            name="phoneNumber"
+                            onChange={handleInputChange}
+                            action={
+                                (!user.profile.smsVerified && (
+                                    <Button
+                                        disabled={user.profile.smsVerified}
+                                        color="red"
+                                        content="Not Verified"
+                                        icon="shield alternate"
+                                        onClick={() => {
+                                            setSmsOpen(true);
+                                        }}
+                                    />
+                                )) ||
+                                (user.profile.smsVerified && (
+                                    <Button
+                                        color="green"
+                                        content="Verified"
+                                        icon="shield alternate"
+                                    />
+                                ))
+                            }
+                        />
+                    </Form.Field>
+                )}
+                <Button
+                    color="blue"
+                    type="submit"
+                    disabled={disabled}
+                    onClick={onSubmit}
+                >
+                    Save
+                </Button>
+                <Snackbar
+                    open={toastOpen}
+                    autoHideDuration={6000}
                     onClose={() => setToastOpen(false)}
                 >
-                    {toast.message}
-                </Alert>
-            </Snackbar>
-        </Form>,
-    ];
+                    <Alert
+                        severity={toast.success ? "success" : "error"}
+                        onClose={() => setToastOpen(false)}
+                    >
+                        {toast.message}
+                    </Alert>
+                </Snackbar>
+            </Form>
+        </>
+    );
 };
 
 export default AccountForm;

@@ -22,7 +22,7 @@ const NewUserModal = (props) => {
                         // setModalView={setModalView}
                         toastFunc={props.setToast}
                         openFunc={props.closeFunc}
-                        refetch={props.refetch}
+                        mutate={props.muatate}
                     />
                 )}
             </Modal.Content>

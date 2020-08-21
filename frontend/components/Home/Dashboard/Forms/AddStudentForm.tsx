@@ -2,7 +2,7 @@ import React from "react";
 import { Form } from "semantic-ui-react";
 
 import AsyncSelect from "react-select/async";
-import { Course } from "../DashboardRequests";
+import { Course } from "../../../../types";
 import { getCourses } from "../../../../hooks/data-fetching/dashboard";
 
 const AddStudentForm = (props) => {

@@ -109,3 +109,8 @@ export type mutateResourceListFunction<D extends Identifiable> = (
     data: Partial<D> | null,
     method?: string
 ) => Promise<D[]>;
+
+export interface Toast {
+    message: string;
+    success: boolean;
+}

@@ -2,15 +2,31 @@ import React, { useState } from "react";
 import { Modal, Button } from "semantic-ui-react";
 import CreateCourseForm from "../Forms/CreateCourseForm";
 import { createCourse } from "../../../../hooks/data-fetching/dashboard";
+import {
+    Course,
+    mutateFunction,
+    Membership,
+    Toast,
+    Kind,
+} from "../../../../types";
 
-const ModalAddInstructorCourse = (props) => {
+interface ModalAddInstructorCourseProps {
+    open: boolean;
+    closeFunc: () => void;
+    mutate: mutateFunction<Membership[]>;
+    toastFunc: (toast: Toast) => void;
+}
+interface CreateCourse extends Course {
+    createdRole: Kind;
+}
+const ModalAddInstructorCourse = (props: ModalAddInstructorCourseProps) => {
     const videoChatNum = (course) => {
         if (course.requireVideoChatUrlOnQuestions) return 0;
         if (course.videoChatEnabled) return 1;
         return 2;
     };
 
-    const [input, setInput] = useState({
+    const [input, setInput] = useState<Partial<CreateCourse>>({
         inviteOnly: false,
         requireVideoChatUrlOnQuestions: false,
         videoChatEnabled: false,
@@ -62,7 +78,7 @@ const ModalAddInstructorCourse = (props) => {
         try {
             setLoading(true);
             await createCourse(input);
-            await props.refetch();
+            await props.mutate();
             setLoading(false);
             props.closeFunc();
             setInput({
@@ -71,10 +87,13 @@ const ModalAddInstructorCourse = (props) => {
                 videoChatEnabled: false,
             });
             setCheck(2);
-            props.toastFunc(`${input.department} ${input.courseCode}`, true);
+            props.toastFunc({
+                message: `${input.department} ${input.courseCode}`,
+                success: true,
+            });
         } catch (e) {
             setLoading(false);
-            props.toastFunc(null, false);
+            props.toastFunc({ message: null, success: false });
         }
     };
 

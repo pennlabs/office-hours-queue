@@ -7,9 +7,10 @@ import InstructorCourses from "./InstructorCourses";
 import StudentCourses from "./StudentCourses";
 import NewUserModal from "./Modals/NewUserModal";
 import { AuthUserContext } from "../../../context/auth";
-import { Course, Kind, Membership } from "../../../types";
+import { Course, Kind, Membership, mutateFunction } from "../../../types";
 import { useMemberships } from "../../../hooks/data-fetching/dashboard";
 
+// TODO: limit props
 const Dashboard = (props) => {
     const { user: initalUser } = useContext(AuthUserContext);
 
@@ -17,7 +18,7 @@ const Dashboard = (props) => {
         Membership[],
         any,
         boolean,
-        (data: any, shouldRevalidate: boolean) => Promise<any>
+        mutateFunction<Membership[]>
     ] = useMemberships(initalUser);
 
     const getCourses = (isStudent: boolean): Course[] => {
@@ -96,7 +97,7 @@ const Dashboard = (props) => {
                     ) : (
                         <StudentCourses
                             courses={getCourses(true)}
-                            refetch={mutate}
+                            mutate={mutate}
                         />
                     )}
                     {!props.loading &&
@@ -112,7 +113,7 @@ const Dashboard = (props) => {
                             </Grid.Row>,
                             <InstructorCourses
                                 courses={getCourses(false)}
-                                refetch={mutate}
+                                mutate={mutate}
                             />,
                         ]}
                 </Grid>
