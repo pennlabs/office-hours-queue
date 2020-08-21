@@ -7,6 +7,7 @@ from ohq.models import Question
 class QuestionSearchFilter(filters.FilterSet):
     # time_asked = filters.DateFilter(lookup_expr="icontains")
     search = filters.CharFilter(method="search_filter")
+    order_by = filters.OrderingFilter(fields=(("time_asked", "time_asked")))
 
     class Meta:
         model = Question
