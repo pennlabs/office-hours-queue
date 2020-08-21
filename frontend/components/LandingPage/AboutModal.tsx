@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Modal } from "semantic-ui-react";
 
 const AboutModal = (props) => {
+    // TODO: replace this with Labs feedback button
     return (
         <Modal open={props.open} style={{ width: "350px" }}>
             <Modal.Content>
