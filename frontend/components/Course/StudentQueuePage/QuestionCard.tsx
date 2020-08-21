@@ -59,7 +59,7 @@ const QuestionCard = (props: QuestionCardProps) => {
                                 }}
                             >
                                 {/* TODO: implement this */}
-                                {"Position: #" + (question.questionsAhead + 1)}
+                                {"Position in Queue: #" + question.position}
                             </Header>
                         </Grid.Column>
                         <Grid.Column width={6}>

@@ -81,6 +81,7 @@ export interface Question {
     rejectedReason: string | null;
     timeResponseStarted: Date;
     timeRespondedTo: Date;
+    position: number;
     shouldSendUpSoonNotification: boolean;
     tags?: string[];
 }
