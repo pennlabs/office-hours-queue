@@ -17,8 +17,8 @@ interface DeleteQuestionModalProps {
 }
 
 const DeleteQuestionModal = (props: DeleteQuestionModalProps) => {
-    const question = props.question;
-    const queue = props.queue;
+    const { question } = props;
+    const { queue } = props;
 
     const onDelete = async () => {
         try {

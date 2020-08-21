@@ -12,8 +12,8 @@ interface EditQuestionModalProps {
 }
 
 const EditQuestionModal = (props: EditQuestionModalProps) => {
-    const course = props.course;
-    const question = props.question;
+    const { course } = props;
+    const { question } = props;
     const [disabled, setDisabled] = useState(true);
     const charLimit: number = 250;
     const [input, setInput] = useState({
@@ -108,9 +108,7 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
                             <Form.Input
                                 name="videoChatUrl"
                                 disabled={loading}
-                                placeholder={
-                                    "https://zoom.us/j/578603907?pwd=L2ZhNkhlRnJPeGVwckcvY3hNak83QT09"
-                                }
+                                placeholder="https://zoom.us/j/578603907?pwd=L2ZhNkhlRnJPeGVwckcvY3hNak83QT09"
                                 defaultValue={question.videoChatUrl}
                                 onChange={handleInputChange}
                             />

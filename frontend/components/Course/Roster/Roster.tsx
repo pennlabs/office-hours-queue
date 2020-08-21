@@ -11,7 +11,11 @@ import { prettifyRole, isLeadershipRole } from "../../../utils/enums";
 import ChangeRoleDropdown from "./ChangeRoleDropdown";
 import { AuthUserContext } from "../../../context/auth";
 import { Kind, Membership } from "../../../types";
-import { useInvitedMembers, useMembers, useStaff } from "../../../hooks/data-fetching/course";
+import {
+    useInvitedMembers,
+    useMembers,
+    useStaff,
+} from "../../../hooks/data-fetching/course";
 
 const Roster = (props) => {
     // Types

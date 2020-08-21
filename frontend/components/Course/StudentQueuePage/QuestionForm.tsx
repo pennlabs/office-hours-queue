@@ -13,7 +13,7 @@ interface QuestionFormProps {
 }
 const QuestionForm = (props: QuestionFormProps) => {
     const loading = false;
-    const course = props.course;
+    const { course } = props;
     const [input, setInput] = useState<Partial<Question>>({
         text: "",
         tags: [],
@@ -98,9 +98,7 @@ const QuestionForm = (props: QuestionFormProps) => {
                             <Form.Input
                                 name="videoChatUrl"
                                 disabled={loading}
-                                placeholder={
-                                    "Sample URL: https://zoom.us/j/123456789?pwd=abcdefg"
-                                }
+                                placeholder="Sample URL: https://zoom.us/j/123456789?pwd=abcdefg"
                                 onChange={handleInputChange}
                             />
                         </Form.Field>

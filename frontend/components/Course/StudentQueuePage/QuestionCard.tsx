@@ -17,7 +17,7 @@ interface QuestionCardProps {
     toastFunc: (success: string, error: any) => void;
 }
 const QuestionCard = (props: QuestionCardProps) => {
-    const question = props.question;
+    const { question } = props;
     const [openEdit, setOpenEdit] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
 
@@ -59,7 +59,7 @@ const QuestionCard = (props: QuestionCardProps) => {
                                 }}
                             >
                                 {/* TODO: implement this */}
-                                {"Position in Queue: #" + question.position}
+                                {`Position in Queue: #${question.position}`}
                             </Header>
                         </Grid.Column>
                         <Grid.Column width={6}>
@@ -129,12 +129,12 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     trigger={
                                         <span>
                                             {question.tags
-                                                .map((tag) => " " + tag)
+                                                .map((tag) => ` ${tag}`)
                                                 .toString()}
                                         </span>
                                     }
                                     content={question.tags
-                                        .map((tag) => " " + tag)
+                                        .map((tag) => ` ${tag}`)
                                         .toString()}
                                     basic
                                     inverted

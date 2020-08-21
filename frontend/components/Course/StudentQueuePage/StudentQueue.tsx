@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Segment, Label, Header, Grid, Message, Icon } from "semantic-ui-react";
-import QuestionForm from "./QuestionForm";
-import QuestionCard from "./QuestionCard";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
+import QuestionForm from "./QuestionForm";
+import QuestionCard from "./QuestionCard";
 import { Queue, Course } from "../../../types";
 import { useQuestions } from "../../../hooks/data-fetching/course";
 
@@ -23,7 +23,7 @@ const StudentQueue = (props: StudentQueueProps) => {
     );
     const updateToast = (success: string, error) => {
         toast.success = success !== null;
-        toast.message = success ? success : errorMessage(error);
+        toast.message = success || errorMessage(error);
         setToast(toast);
         setToastOpen(true);
     };
@@ -42,24 +42,18 @@ const StudentQueue = (props: StudentQueueProps) => {
             </Header>
             {(props.queue.active || props.queue.questionsAsked) && (
                 <Label
-                    content={
-                        (props.queue.questionsAsked || 0) +
-                        ` user${
-                            props.queue.questionsAsked === 1 ? "" : "s"
-                        } in queue`
-                    }
+                    content={`${props.queue.questionsAsked || 0} user${
+                        props.queue.questionsAsked === 1 ? "" : "s"
+                    } in queue`}
                     color="blue"
                     icon="users"
                 />
             )}
             {(props.queue.active || props.queue.questionsActive) && (
                 <Label
-                    content={
-                        (props.queue.questionsActive || 0) +
-                        ` user${
-                            props.queue.questionsActive === 1 ? "" : "s"
-                        } currently being helped`
-                    }
+                    content={`${props.queue.questionsActive || 0} user${
+                        props.queue.questionsActive === 1 ? "" : "s"
+                    } currently being helped`}
                     icon="user"
                 />
             )}
@@ -73,8 +67,8 @@ const StudentQueue = (props: StudentQueueProps) => {
 
             {props.queue.active && (
                 <Label
-                    content={(props.queue.staffActive || 0) + ` staff active`}
-                    icon={<Icon name={"sync"} loading={true} />}
+                    content={`${props.queue.staffActive || 0} staff active`}
+                    icon={<Icon name="sync" loading={true} />}
                 />
             )}
             <Grid.Row>

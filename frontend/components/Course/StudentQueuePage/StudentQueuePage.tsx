@@ -9,7 +9,7 @@ interface StudentQueuePageProps {
     course: Course;
 }
 const StudentQueuePage = (props: StudentQueuePageProps) => {
-    const course = props.course;
+    const { course } = props;
     const [queues, error, isValidating, mutate] = useQueues(course.id);
 
     return (

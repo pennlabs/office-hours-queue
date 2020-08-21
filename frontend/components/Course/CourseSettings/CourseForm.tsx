@@ -26,8 +26,7 @@ const CourseForm = (props: CourseFormProps) => {
 
     const [input, setInput] = useState({
         inviteOnly: course.inviteOnly,
-        requireVideoChatUrlOnQuestions:
-            course.requireVideoChatUrlOnQuestions,
+        requireVideoChatUrlOnQuestions: course.requireVideoChatUrlOnQuestions,
         videoChatEnabled: course.videoChatEnabled,
         department: course.department,
         courseCode: course.courseCode,
