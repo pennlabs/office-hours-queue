@@ -69,7 +69,7 @@ export const useQuestions =
         useResourceList<Question>(
             `/courses/${courseId}/queues/${queueId}/questions/`,
             (id) => `/courses/${courseId}/queues/${queueId}/questions/${id}/`,
-            undefined, {refreshInterval});
+            [], {refreshInterval});
 
 export async function clearQueue(courseId: number, queueId: number) {
   await doApiRequest(`/courses/${courseId}/queues/${queueId}/clear/`, {

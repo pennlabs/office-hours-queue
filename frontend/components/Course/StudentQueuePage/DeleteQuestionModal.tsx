@@ -1,35 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Modal, Segment, Button } from "semantic-ui-react";
-// import { useMutation } from '@apollo/react-hooks';
-// import { gql } from 'apollo-boost';
-// import firebase from "../../Firebase";
+import {
+    Question,
+    Queue,
+    mutateResourceListFunction,
+    QuestionStatus,
+} from "../../../types";
 
-// const WITHDRAW_QUESTION = gql`
-//   mutation WithdrawQuestion($input: WithdrawQuestionInput!) {
-//     withdrawQuestion(input: $input) {
-//       question {
-//         id
-//       }
-//     }
-//   }
-// `;
+interface DeleteQuestionModalProps {
+    question: Question;
+    queue: Queue;
+    open: boolean;
+    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    mutate: mutateResourceListFunction<Question>;
+    toastFunc: (success: string, error: any) => void;
+}
 
-const DeleteQuestionModal = (props) => {
-    const [question, setQuestion] = useState(props.question);
-    const [queue, setQueue] = useState(props.queue);
-    const [withdrawQuestion, { loading }] = useMutation(WITHDRAW_QUESTION);
+const DeleteQuestionModal = (props: DeleteQuestionModalProps) => {
+    const question = props.question;
+    const queue = props.queue;
 
     const onDelete = async () => {
         try {
-            await withdrawQuestion({
-                variables: {
-                    input: {
-                        questionId: question.id,
-                    },
-                },
+            await props.mutate(question.id, {
+                status: QuestionStatus.WITHDRAWN,
             });
-            firebase.analytics.logEvent("question_withdrawn");
-            await props.refetch();
             props.setOpen(false);
             props.toastFunc("Question withdrawn!", null);
         } catch (e) {
@@ -37,14 +32,6 @@ const DeleteQuestionModal = (props) => {
             props.toastFunc(null, e);
         }
     };
-
-    useEffect(() => {
-        setQuestion(props.question);
-    }, [props.question]);
-
-    useEffect(() => {
-        setQueue(props.queue);
-    }, [props.queue]);
 
     return (
         <Modal open={props.open}>
@@ -61,18 +48,11 @@ const DeleteQuestionModal = (props) => {
             <Modal.Actions>
                 <Button
                     content="Cancel"
-                    disabled={loading}
                     onClick={() => {
                         props.setOpen(false);
                     }}
                 />
-                <Button
-                    content="Withdraw"
-                    disabled={loading}
-                    loading={loading}
-                    color="red"
-                    onClick={onDelete}
-                />
+                <Button content="Withdraw" color="red" onClick={onDelete} />
             </Modal.Actions>
         </Modal>
     );

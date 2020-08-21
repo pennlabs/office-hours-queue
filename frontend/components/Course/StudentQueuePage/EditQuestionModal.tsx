@@ -1,36 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Form, Button } from "semantic-ui-react";
-// import { useMutation } from '@apollo/react-hooks';
-// import { gql } from 'apollo-boost';
-// import firebase from "../../Firebase";
+import { Course, Question, mutateResourceListFunction } from "../../../types";
 
-// const UPDATE_QUESTION = gql`
-//   mutation UpdateQuestion($input: UpdateQuestionInput!) {
-//     updateQuestion(input: $input) {
-//       question {
-//         id
-//       }
-//     }
-//   }
-// `;
+interface EditQuestionModalProps {
+    course: Course;
+    question: Question;
+    open: boolean;
+    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    mutate: mutateResourceListFunction<Question>;
+    toastFunc: (success: string, error: any) => void;
+}
 
-const EditQuestionModal = (props) => {
-    const [queue, setQueue] = useState(props.queue);
-    const [question, setQuestion] = useState(props.question);
+const EditQuestionModal = (props: EditQuestionModalProps) => {
+    const course = props.course;
+    const question = props.question;
     const [disabled, setDisabled] = useState(true);
+    const charLimit: number = 250;
     const [input, setInput] = useState({
         questionId: question.id,
-        text: question.text,
+        text: question.text || "",
         tags: question.tags,
         videoChatUrl: question.videoChatUrl,
     });
     const [charCount, setCharCount] = useState(input.text.length);
-    const [updateQuestion, { loading }] = useMutation(UPDATE_QUESTION);
+    const loading: boolean = false;
 
     const isValid = () => {
         return (
             input.text &&
-            (!queue.requireVideoChatUrlOnQuestions || input.videoChatUrl) &&
+            (!course.requireVideoChatUrlOnQuestions || input.videoChatUrl) &&
             (question.text !== input.text ||
                 JSON.stringify(question.tags) !== JSON.stringify(input.tags) ||
                 question.videoChatUrl !== input.videoChatUrl)
@@ -38,7 +36,7 @@ const EditQuestionModal = (props) => {
     };
 
     const handleInputChange = (e, { name, value }) => {
-        if (name === "text" && value.length > 250) return;
+        if (name === "text" && value.length > charLimit) return;
         input[name] = value;
         setInput(input);
         setCharCount(input.text.length);
@@ -56,16 +54,10 @@ const EditQuestionModal = (props) => {
     };
 
     const onSubmit = async () => {
-        if (!queue.requireVideoChatUrlOnQuestions && !queue.videoChatEnabled)
+        if (!course.requireVideoChatUrlOnQuestions && !course.videoChatEnabled)
             delete input.videoChatUrl;
         try {
-            await updateQuestion({
-                variables: {
-                    input: input,
-                },
-            });
-            firebase.analytics.logEvent("question_edited");
-            props.refetch();
+            await props.mutate(question.id, input);
             props.setOpen(false);
             props.toastFunc("Question successfully updated", null);
         } catch (e) {
@@ -85,14 +77,6 @@ const EditQuestionModal = (props) => {
         setDisabled(true);
     };
 
-    useEffect(() => {
-        setQuestion(props.question);
-    }, [props.question]);
-
-    useEffect(() => {
-        setQueue(props.queue);
-    }, [props.queue]);
-
     return (
         <Modal open={props.open}>
             <Modal.Header>Edit Question</Modal.Header>
@@ -109,16 +93,16 @@ const EditQuestionModal = (props) => {
                         <div
                             style={{
                                 textAlign: "right",
-                                color: charCount < 250 ? "" : "crimson",
+                                color: charCount < charLimit ? "" : "crimson",
                             }}
                         >
-                            {"Characters: " + charCount + "/250"}
+                            {`Characters: ${charCount}/${charLimit}`}
                         </div>
                     </Form.Field>
-                    {(queue.requireVideoChatUrlOnQuestions ||
-                        queue.videoChatEnabled) && (
+                    {(course.requireVideoChatUrlOnQuestions ||
+                        course.videoChatEnabled) && (
                         <Form.Field
-                            required={queue.requireVideoChatUrlOnQuestions}
+                            required={course.requireVideoChatUrlOnQuestions}
                         >
                             <label>Video Chat URL</label>
                             <Form.Input
@@ -132,7 +116,8 @@ const EditQuestionModal = (props) => {
                             />
                         </Form.Field>
                     )}
-                    {queue.tags && queue.tags.length > 0 && (
+                    {/* TODO: replace this with course level tags */}
+                    {course.tags && course.tags.length > 0 && (
                         <Form.Field>
                             <label>Tags</label>
                             <Form.Dropdown
@@ -142,7 +127,7 @@ const EditQuestionModal = (props) => {
                                 disabled={loading}
                                 onChange={handleInputChange}
                                 defaultValue={question.tags}
-                                options={getDropdownOptions(queue.tags)}
+                                options={getDropdownOptions(course.tags)}
                             />
                         </Form.Field>
                     )}

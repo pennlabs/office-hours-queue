@@ -112,6 +112,7 @@ class QuestionViewSet(viewsets.ModelViewSet):
 
     list:
     Return a list of questions specific to a queue.
+    Students can only see questions they submitted.
 
     create:
     Create a question.
@@ -132,10 +133,16 @@ class QuestionViewSet(viewsets.ModelViewSet):
     serializer_class = QuestionSerializer
 
     def get_queryset(self):
-        return Question.objects.filter(
+        qs = Question.objects.filter(
             Q(queue=self.kwargs["queue_pk"])
             & (Q(status=Question.STATUS_ASKED) | Q(status=Question.STATUS_ACTIVE))
         ).order_by("time_asked")
+
+        membership = Membership.objects.get(course=self.kwargs["course_pk"], user=self.request.user)
+
+        if not membership.is_ta:
+            qs = qs.filter(asked_by=self.request.user)
+        return qs
 
     def list(self, request, *args, **kwargs):
         """

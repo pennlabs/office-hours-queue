@@ -122,7 +122,7 @@ class QueuePermission(permissions.BasePermission):
 class QuestionPermission(permissions.BasePermission):
     """
     Students can create questions
-    Students can get or modify their own questions.
+    Students can get, list, or modify their own questions.
     TAs+ can list questions and modify any question.
     No one can delete questions.
     """
@@ -156,11 +156,7 @@ class QuestionPermission(permissions.BasePermission):
         if view.action == "create":
             return membership.kind == Membership.KIND_STUDENT
 
-        # TAs+ can list questions
-        if view.action == "list":
-            return membership.is_ta
-
-        # Students+ can get or modify questions
+        # Students+ can get, list, or modify questions
         # With restrictions defined in has_object_permission
         return True
 
