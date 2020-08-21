@@ -3,7 +3,10 @@ import React from "react";
 import { Form } from "semantic-ui-react";
 import { roleOptions } from "../../../../utils/enums";
 
-const AddForm = (props) => {
+interface AddFormProps {
+    changeFunc: any; // TODO: restrict this
+}
+const AddForm = (props: AddFormProps) => {
     const onChange = (text) => {
         props.changeFunc(undefined, {
             name: "emails",
