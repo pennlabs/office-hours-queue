@@ -2,7 +2,15 @@ import React, { useState } from "react";
 import { Form, Button, Grid } from "semantic-ui-react";
 import { roleOptions } from "../../../utils/enums";
 
-const RosterForm = (props) => {
+interface RosterFormProps {
+    showInviteButton: boolean;
+    showShowInvitedButton: boolean;
+    invitedShown: boolean;
+    inviteFunc: () => void;
+    showInvitedFunc: () => void;
+    filterFunc: (any) => void; // TODO: restrict this
+}
+const RosterForm = (props: RosterFormProps) => {
     const [input, setInput] = useState({
         search: "",
         role: "",

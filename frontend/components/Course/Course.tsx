@@ -55,11 +55,9 @@ const Course = (props) => {
                     <CourseSettings course={course} refetch={mutate} />
                 )}
                 {staff && active === "queues" && (
-                    <InstructorQueuePage course={course} />
+                    <InstructorQueuePage courseId={course.id} />
                 )}
-                {staff && active === "analytics" && (
-                    <Analytics course={course} />
-                )}
+                {staff && active === "analytics" && <Analytics />}
                 {staff && active === "summary" && <Summary course={course} />}
                 {!staff && <StudentQueuePage course={course} />}
             </Grid.Column>

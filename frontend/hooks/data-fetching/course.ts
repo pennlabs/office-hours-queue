@@ -91,3 +91,15 @@ export async function createQuestion(
     throw new Error('Unable to create question');
   }
 }
+
+export async function createQueue(
+    courseId: number, payload: Partial<Queue>): Promise<void> {
+  const res = await doApiRequest(`/courses/${courseId}/queues/`, {
+    method: 'POST',
+    body: payload,
+  });
+
+  if (!res.ok) {
+    throw new Error('Unable to create queue');
+  }
+}

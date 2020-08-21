@@ -14,8 +14,15 @@ import AboutModal from "../LandingPage/AboutModal";
 import { AuthUserContext } from "../../context/auth";
 import { useLeadership, useStaff } from "../../hooks/data-fetching/course";
 import { leadershipSortFunc } from "../../utils";
+import { Membership } from "../../types";
 
-const CourseSidebar = (props) => {
+interface CourseSidebarProps {
+    courseId: number;
+    leadership: Membership[];
+    active: string;
+    clickFunc: React.Dispatch<React.SetStateAction<string>>;
+}
+const CourseSidebar = (props: CourseSidebarProps) => {
     const [
         leadershipRaw,
         leadershipError,

@@ -8,9 +8,15 @@ import {
     Loader,
 } from "semantic-ui-react";
 import QueueForm from "./QueueForm";
+import { Queue, mutateResourceListFunction } from "../../../../types";
 
-const QueueSettings = (props) => {
-    const { courseId, queue, refetch, backFunc } = props;
+interface QueueSettingsProps {
+    queue: Queue;
+    mutate: mutateResourceListFunction<Queue>;
+    backFunc: () => void;
+}
+const QueueSettings = (props: QueueSettingsProps) => {
+    const { queue, mutate, backFunc } = props;
 
     return queue ? (
         <Grid.Column>
@@ -43,8 +49,7 @@ const QueueSettings = (props) => {
             <Grid.Row>
                 <Segment basic>
                     <QueueForm
-                        courseId={courseId}
-                        refetch={refetch}
+                        mutate={mutate}
                         queue={queue}
                         backFunc={backFunc}
                     />

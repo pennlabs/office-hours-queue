@@ -2,9 +2,15 @@ import React, { useState } from "react";
 import { Form, Button, Modal } from "semantic-ui-react";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
+import { Queue, mutateResourceListFunction } from "../../../../types";
 
 // TODO: error check PATCH
-const QueueForm = (props) => {
+interface QueueFormProps {
+    queue: Queue;
+    mutate: mutateResourceListFunction<Queue>;
+    backFunc: () => void;
+}
+const QueueForm = (props: QueueFormProps) => {
     const loading = false;
     /* STATE */
     const [success, setSuccess] = useState(false);
@@ -40,7 +46,7 @@ const QueueForm = (props) => {
 
     const onSubmit = async () => {
         try {
-            await props.refetch(queue.id, input);
+            await props.mutate(queue.id, input);
             setSuccess(true);
             props.backFunc();
         } catch (e) {
@@ -49,7 +55,7 @@ const QueueForm = (props) => {
     };
 
     const onArchived = async () => {
-        await props.refetch(queue.id, { archived: true });
+        await props.mutate(queue.id, { archived: true });
         setOpen(false);
         props.backFunc();
     };

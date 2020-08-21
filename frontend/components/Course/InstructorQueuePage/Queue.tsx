@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Header, Label, Grid, Segment, Button } from "semantic-ui-react";
 import Questions from "./Questions";
-import QueueFilterForm from "./QueueFilterForm";
 import ClearQueueModal from "./ClearQueueModal";
 import { mutateResourceListFunction, Queue as QueueType } from "../../../types";
 import { useQuestions } from "../../../hooks/data-fetching/course";
@@ -15,12 +14,12 @@ const isSubset = (l1, l2) => {
 interface QueueProps {
     courseId: number;
     queue: QueueType;
-    refetch: mutateResourceListFunction<QueueType>;
+    mutate: mutateResourceListFunction<QueueType>;
     leader: boolean;
     editFunc: () => void;
 }
 const Queue = (props: QueueProps) => {
-    const { courseId, queue, refetch, leader, editFunc } = props;
+    const { courseId, queue, mutate, leader, editFunc } = props;
     const { id: queueId, active, estimatedWaitTime } = queue;
 
     /* STATE */
@@ -42,11 +41,11 @@ const Queue = (props: QueueProps) => {
     // );
 
     const onOpen = async () => {
-        await refetch(queueId, { active: true });
+        await mutate(queueId, { active: true });
     };
 
     const onClose = async () => {
-        await refetch(queueId, { active: false });
+        await mutate(queueId, { active: false });
     };
 
     return (
@@ -56,7 +55,7 @@ const Queue = (props: QueueProps) => {
                 queueId={queueId}
                 open={clearModalOpen}
                 queue={queue}
-                refetch={refetch}
+                refetch={mutate}
                 closeFunc={() => setClearModalOpen(false)}
             />
             <Header as="h3">
@@ -113,14 +112,6 @@ const Queue = (props: QueueProps) => {
             </Grid>
             <Grid style={{ marginTop: "-5px" }}>
                 <Grid.Row columns="equal">
-                    {tags.length > 0 && (
-                        <Grid.Column>
-                            <QueueFilterForm
-                                tags={tags}
-                                changeFunc={setFilters}
-                            />
-                        </Grid.Column>
-                    )}
                     {!active && questions.length > 0 && (
                         <Grid.Column
                             textAlign="right"

@@ -10,14 +10,19 @@ import InviteModal from "./Invites/InviteModal";
 import { prettifyRole, isLeadershipRole } from "../../../utils/enums";
 import ChangeRoleDropdown from "./ChangeRoleDropdown";
 import { AuthUserContext } from "../../../context/auth";
-import { Kind, Membership } from "../../../types";
+import { Kind, Membership, MembershipInvite } from "../../../types";
 import {
     useInvitedMembers,
     useMembers,
     useStaff,
 } from "../../../hooks/data-fetching/course";
 
-const Roster = (props) => {
+interface RosterProps {
+    courseId: number;
+    memberships: Membership[];
+    invites: MembershipInvite[];
+}
+const Roster = (props: RosterProps) => {
     // Types
     type tableStateType = {
         direction: "ascending" | "descending";
@@ -221,7 +226,6 @@ const Roster = (props) => {
                     courseId={props.courseId}
                     successFunc={onInviteSuccess}
                     setToast={setToast}
-                    users={memberships}
                 />
             )}
             <Grid.Row>

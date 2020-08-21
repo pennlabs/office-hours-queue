@@ -8,10 +8,11 @@ import CreateQueue from "./CreateQueue/CreateQueue";
 import { AuthUserContext } from "../../../context/auth";
 import { useQueues, useStaff } from "../../../hooks/data-fetching/course";
 
-const InstructorQueuePage = (props) => {
-    const {
-        course: { id: courseId },
-    } = props;
+interface InstructorQueuePageProps {
+    courseId: number;
+}
+const InstructorQueuePage = (props: InstructorQueuePageProps) => {
+    const { courseId } = props;
 
     /* STATE */
     const { user: initialUser } = useContext(AuthUserContext);
@@ -25,7 +26,7 @@ const InstructorQueuePage = (props) => {
     const [active, setActive] = useState("queues");
 
     /* HANDLER FUNCTIONS */
-    const onQueueSettings = (id) => {
+    const onQueueSettings = (id: number) => {
         setActiveQueueId(id);
         setActive("settings");
     };
@@ -42,16 +43,15 @@ const InstructorQueuePage = (props) => {
                     createFunc={() => {
                         setActive("create");
                     }}
-                    refetch={mutate}
+                    mutate={mutate}
                     leader={leader}
                 />
             )}
             {active === "settings" && (
                 <Grid.Row>
                     <QueueSettings
-                        courseId={courseId}
                         queue={getQueue(activeQueueId)}
-                        refetch={mutate}
+                        mutate={mutate}
                         backFunc={() => setActive("queues")}
                     />
                 </Grid.Row>
@@ -60,7 +60,7 @@ const InstructorQueuePage = (props) => {
                 <Grid.Row>
                     <CreateQueue
                         courseId={courseId}
-                        refetch={mutate}
+                        mutate={mutate}
                         successFunc={() => setSuccess(true)}
                         backFunc={() => setActive("queues")}
                     />

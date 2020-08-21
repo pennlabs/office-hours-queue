@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Grid, Segment, Icon, Message } from "semantic-ui-react";
 import Queue from "./Queue";
+import { Queue as QueueType, mutateResourceListFunction } from "../../../types";
 
-const InstructorQueues = (props) => {
-    const { courseId, queues, leader, createFunc, refetch, editFunc } = props;
+interface InstructorQueuesProps {
+    courseId: number;
+    queues: QueueType[];
+    leader: boolean;
+    mutate: mutateResourceListFunction<QueueType>;
+    editFunc: (number) => void;
+    createFunc: () => void;
+}
+const InstructorQueues = (props: InstructorQueuesProps) => {
+    const { courseId, queues, leader, createFunc, mutate, editFunc } = props;
 
     const numActive = () => {
         return queues.reduce((count, queue) => {
@@ -24,7 +33,7 @@ const InstructorQueues = (props) => {
                                         key={queue.id}
                                         queue={queue}
                                         leader={leader}
-                                        refetch={refetch}
+                                        mutate={mutate}
                                         editFunc={() => editFunc(queue.id)}
                                     />
                                 </Grid.Column>

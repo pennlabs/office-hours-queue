@@ -1,26 +1,17 @@
 import React, { useState } from "react";
 import { Grid, Segment, Header, Form, Button } from "semantic-ui-react";
-// import { gql } from 'apollo-boost';
-// import { useMutation } from '@apollo/react-hooks';
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
-import CreatableSelect from "react-select/creatable";
+import { createQueue } from "../../../../hooks/data-fetching/course";
+import { mutateResourceListFunction, Queue } from "../../../../types";
 
-/* GRAPHQL QUERIES/MUTATIONS */
-// const CREATE_QUEUE = gql`
-//   mutation CreateQueue($input: CreateQueueInput!) {
-//     createQueue(input: $input) {
-//       queue {
-//         id
-//       }
-//     }
-//   }
-// `;
-
-const CreateQueue = (props) => {
-    /* GRAPHQL QUERIES/MUTATIONS */
-    const [createQueue, { loading }] = useMutation(CREATE_QUEUE);
-
+interface CreateQueueProps {
+    courseId: number;
+    backFunc: () => void;
+    successFunc: () => void;
+    mutate: mutateResourceListFunction<Queue>;
+}
+const CreateQueue = (props: CreateQueueProps) => {
     /* STATE */
     const [disabled, setDisabled] = useState(true);
     const [error, setError] = useState(false);
@@ -31,8 +22,6 @@ const CreateQueue = (props) => {
         startEndTimes: [],
         courseId: props.courseId,
     });
-    const [tags, setTags] = useState([]);
-    const [tagsInputValue, setTagsInputValue] = useState("");
     const [refetchLoading, setRefetchLoading] = useState(false);
 
     /* HANDLER FUNCTIONS */
@@ -44,42 +33,14 @@ const CreateQueue = (props) => {
 
     const onSubmit = async () => {
         try {
-            await createQueue({
-                variables: {
-                    input: { ...input, tags: tags.map((i) => i.value) },
-                },
-            });
+            await createQueue(props.courseId, input);
             await setRefetchLoading(true);
-            await props.refetch();
+            await props.mutate(-1, null);
             await setRefetchLoading(false);
-            props.backFunc("queues");
+            props.backFunc();
             props.successFunc();
         } catch (e) {
             setError(true);
-        }
-    };
-
-    const handleTagChange = (items) => {
-        setTags(items || []);
-    };
-
-    const handleTagsInputChange = (inputValue) => {
-        setTagsInputValue(inputValue);
-    };
-
-    const handleTagsKeyDown = (event) => {
-        if (!tagsInputValue) return;
-        switch (event.key) {
-            case "Enter":
-            case "Tab":
-                setTagsInputValue("");
-                setTags([
-                    ...tags,
-                    { label: tagsInputValue, value: tagsInputValue },
-                ]);
-                event.preventDefault();
-
-            default:
         }
     };
 
@@ -98,7 +59,7 @@ const CreateQueue = (props) => {
                             <Form.Input
                                 placeholder="Name"
                                 name="name"
-                                disabled={loading || refetchLoading}
+                                disabled={refetchLoading}
                                 onChange={handleInputChange}
                             />
                         </Form.Field>
@@ -107,11 +68,11 @@ const CreateQueue = (props) => {
                             <Form.Input
                                 placeholder="Description"
                                 name="description"
-                                disabled={loading || refetchLoading}
+                                disabled={refetchLoading}
                                 onChange={handleInputChange}
                             />
                         </Form.Field>
-                        <Form.Field>
+                        {/* <Form.Field>
                             <label>Tags</label>
                             <CreatableSelect
                                 components={{ DropdownIndicator: null }}
@@ -125,19 +86,18 @@ const CreateQueue = (props) => {
                                 placeholder="Type a tag and press enter..."
                                 value={tags}
                             />
-                        </Form.Field>
+                        </Form.Field> */}
                         <Button
                             content="Create"
                             color="blue"
                             type="submit"
-                            disabled={disabled || loading || refetchLoading}
-                            loading={loading}
+                            disabled={disabled || refetchLoading}
                             onClick={onSubmit}
                         />
                         <Button
                             content="Cancel"
                             type="submit"
-                            disabled={loading || refetchLoading}
+                            disabled={refetchLoading}
                             onClick={props.backFunc}
                         />
                     </Form>

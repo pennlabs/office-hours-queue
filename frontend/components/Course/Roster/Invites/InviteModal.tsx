@@ -3,7 +3,14 @@ import { Modal, Button } from "semantic-ui-react";
 import AddForm from "./AddForm";
 import { sendMassInvites } from "../../../../hooks/data-fetching/course";
 
-const InviteModal = (props) => {
+interface InviteModalProps {
+    courseId: number;
+    open: boolean;
+    closeFunc: () => void;
+    successFunc: () => void;
+    setToast: React.Dispatch<React.SetStateAction<any>>; // TODO: restrict this
+}
+const InviteModal = (props: InviteModalProps) => {
     const [loading, setLoading] = useState(false);
     const [input, setInput] = useState({ emails: null, kind: null });
     const [disabled, setDisabled] = useState(true);
@@ -40,11 +47,7 @@ const InviteModal = (props) => {
         <Modal open={props.open}>
             <Modal.Header>Invite User</Modal.Header>
             <Modal.Content>
-                <AddForm
-                    users={props.users}
-                    changeFunc={handleInputChange}
-                    setToast={props.setToast}
-                />
+                <AddForm changeFunc={handleInputChange} />
             </Modal.Content>
             <Modal.Actions>
                 <Button

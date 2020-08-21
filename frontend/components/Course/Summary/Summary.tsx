@@ -17,7 +17,7 @@ const Summary = ({ course }) => {
 
     // TODO: Add initial state
     // TODO: Handle loaders
-    const [data, error, loading] = useQuestions(course.id, filterState);
+    const [data, error, loading] = useQuestions(course.id, filterState, null);
     return (
         <div>
             <Grid.Row>
