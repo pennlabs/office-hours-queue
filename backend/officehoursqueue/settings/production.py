@@ -23,7 +23,7 @@ SENTRY_URL = os.environ.get("SENTRY_URL", "")
 sentry_sdk.init(dsn=SENTRY_URL, integrations=[DjangoIntegration()])
 
 # DLA settings
-PLATFORM_ACCOUNTS = {"ADMIN_PERMISSION": "example_admin"}
+PLATFORM_ACCOUNTS = {"ADMIN_PERMISSION": "ohq_admin"}
 
 # Email client settings
 EMAIL_HOST = os.getenv("SMTP_HOST")
