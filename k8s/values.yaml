@@ -16,7 +16,6 @@ applications:
         value: officehoursqueue.settings.production
   - name: react
     image: pennlabs/office-hours-queue-frontend
-    secret: office-hours-queue
     ingress:
       hosts:
         - host: ohq.pennlabs.org # TODO: change this to ohq.io
