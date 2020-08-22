@@ -152,10 +152,15 @@ class QuestionViewSet(viewsets.ModelViewSet):
         """
 
         question = Question.objects.get(pk=pk)
-        position = Question.objects.filter(
-            queue=queue_pk, status=Question.STATUS_ASKED, time_asked__lt=question.time_asked
-        ).count()
-        response = {"position": position + 1}
+        position = -1
+        if question.status == Question.STATUS_ASKED:
+            position = (
+                Question.objects.filter(
+                    queue=queue_pk, status=Question.STATUS_ASKED, time_asked__lt=question.time_asked
+                ).count()
+                + 1
+            )
+        response = {"position": position}
         return HttpResponse(json.dumps(response))
 
     def list(self, request, *args, **kwargs):
