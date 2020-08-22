@@ -13,7 +13,7 @@ applications:
       - name: DOMAIN
         value: ohq.pennlabs.org # TODO: change this to ohq.io
       - name: DJANGO_SETTINGS_MODULE
-        value: officehoursequeue.settings.production
+        value: officehoursqueue.settings.production
   - name: react
     image: pennlabs/office-hours-queue-frontend
     secret: office-hours-queue
