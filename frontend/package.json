@@ -1,60 +1,53 @@
 {
-  "name": "ohq",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@apollo/react-hooks": "^3.1.3",
-    "@material-ui/core": "^4.9.5",
-    "@material-ui/icons": "^4.5.1",
-    "@material-ui/lab": "^4.0.0-alpha.45",
-    "apollo-boost": "^0.4.7",
-    "apollo-cache-inmemory": "^1.6.5",
-    "apollo-link-context": "^1.0.19",
-    "apollo-link-http": "^1.5.16",
-    "chart.js": "^2.9.3",
-    "csv-parse": "^4.8.8",
-    "firebase": "^7.4.0",
-    "graphql": "^14.6.0",
-    "moment": "^2.24.0",
-    "react": "^16.11.0",
-    "react-chartjs-2": "^2.8.0",
-    "react-code-input": "^3.9.0",
-    "react-dom": "^16.11.0",
-    "react-dropzone": "^10.2.1",
-    "react-google-button": "^0.5.3",
-    "react-linkify": "^1.0.0-alpha",
-    "react-router-dom": "^5.1.2",
-    "react-scripts": "^3.3.0",
-    "react-select": "^3.0.8",
-    "recompose": "^0.30.0",
-    "semantic-ui-css": "^2.4.1",
-    "semantic-ui-react": "^0.88.1",
-    "typeface-roboto": "0.0.75",
-    "uifx": "^2.0.7"
-  },
-  "scripts": {
-    "start": "REACT_APP_GCLOUD_PROJECT=office-hour-q react-scripts start",
-    "start-stg": "REACT_APP_GCLOUD_PROJECT=office-hour-q-stg react-scripts start",
-    "build-prod": "REACT_APP_GCLOUD_PROJECT=office-hour-q react-scripts build",
-    "build-stg": "REACT_APP_GCLOUD_PROJECT=office-hour-q-stg react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "build-deploy-prod": "npm run build-prod && firebase deploy --only hosting -P prod",
-    "build-deploy-stg": "npm run build-stg && firebase deploy --only hosting -P stg"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+    "name": "office-hours-queue",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "NODE_ENV=development node server.js",
+        "build": "next build",
+        "start": "NODE_ENV=production node server.js",
+        "test": "echo no tests yet",
+        "codecov": "echo no codecov",
+        "lint": "eslint . --ext .tsx --ext .ts",
+        "lint-fix": "eslint . --ext .tsx --ext .ts --fix"
+    },
+    "dependencies": {
+        "@material-ui/core": "^4.11.0",
+        "@material-ui/lab": "^4.0.0-alpha.56",
+        "chart.js": "^2.9.3",
+        "express": "^4.17.1",
+        "http-proxy-middleware": "^1.0.5",
+        "libphonenumber-js": "^1.7.56",
+        "lodash": "^4.17.20",
+        "next": "9.4.4",
+        "react": "16.13.1",
+        "react-code-input": "^3.10.0",
+        "react-dom": "16.13.1",
+        "react-dropzone": "^11.0.2",
+        "react-select": "^3.1.0",
+        "semantic-ui-css": "^2.4.1",
+        "semantic-ui-react": "^1.1.0",
+        "swr": "^0.3.0",
+        "typescript": "^3.9.7",
+        "moment": "^2.27.0"
+    },
+    "devDependencies": {
+        "@types/node": "^14.0.23",
+        "@types/react": "^16.9.43",
+        "@typescript-eslint/eslint-plugin": "^3.7.1",
+        "@typescript-eslint/parser": "^3.7.1",
+        "babel-eslint": "^10.1.0",
+        "babel-plugin-styled-components": "^1.10.7",
+        "eslint": "^5.16.0",
+        "eslint-config-airbnb": "^18.2.0",
+        "eslint-config-prettier": "^6.11.0",
+        "eslint-config-react-app": "^5.2.1",
+        "eslint-plugin-flowtype": "^4.7.0",
+        "eslint-plugin-import": "^2.18.2",
+        "eslint-plugin-jsx-a11y": "^6.2.3",
+        "eslint-plugin-prettier": "^3.1.3",
+        "eslint-plugin-react": "^7.16.0",
+        "eslint-plugin-react-hooks": "^4.0.8",
+        "prettier": "^2.0.5"
+    }
 }

@@ -1,28 +1,39 @@
-"""ohq URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/2.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
-from django.contrib import admin
 from django.urls import path
-# from graphene_django.views import GraphQLView
+from rest_framework_nested import routers
 
-from ohq.schema import schema
-from ohq.apps.api.views import PrivateGraphQLView
+from ohq.views import (
+    CourseViewSet,
+    MassInviteView,
+    MembershipInviteViewSet,
+    MembershipViewSet,
+    QuestionSearchView,
+    QuestionViewSet,
+    QueueViewSet,
+    SemesterViewSet,
+    UserView,
+)
 
 
-urlpatterns = [
-    path('admin/', admin.site.urls),
+app_name = "ohq"
 
-    path("graphql", PrivateGraphQLView.as_view(graphiql=True, schema=schema)),
+router = routers.SimpleRouter()
+router.register("semesters", SemesterViewSet, basename="semester")
+router.register("courses", CourseViewSet, basename="course")
+
+course_router = routers.NestedSimpleRouter(router, "courses", lookup="course")
+course_router.register("queues", QueueViewSet, basename="queue")
+course_router.register("members", MembershipViewSet, basename="member")
+course_router.register("invites", MembershipInviteViewSet, basename="invite")
+
+queue_router = routers.NestedSimpleRouter(course_router, "queues", lookup="queue")
+queue_router.register("questions", QuestionViewSet, basename="question")
+
+additional_urls = [
+    path("accounts/me/", UserView.as_view(), name="me"),
+    path("courses/<slug:course_pk>/mass-invite/", MassInviteView.as_view(), name="mass-invite"),
+    path(
+        "courses/<slug:course_pk>/questions/", QuestionSearchView.as_view(), name="questionsearch"
+    ),
 ]
+
+urlpatterns = router.urls + course_router.urls + queue_router.urls + additional_urls

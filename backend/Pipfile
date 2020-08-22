@@ -1,0 +1,37 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+codecov = "*"
+black = "==19.10b0"
+unittest-xml-reporting = "*"
+flake8 = "*"
+flake8-absolute-import = "*"
+flake8-isort = "*"
+flake8-quotes = "*"
+django-debug-toolbar = "*"
+django-extensions = "*"
+parameterized = "*"
+
+[packages]
+dj-database-url = "*"
+djangorestframework = "*"
+psycopg2 = "*"
+sentry-sdk = "*"
+django = "*"
+django-cors-headers = "*"
+pyyaml = "*"
+uritemplate = "*"
+uwsgi = "*"
+django-labs-accounts = "*"
+django-phonenumber-field = {extras = ["phonenumbers"],version = "*"}
+drf-nested-routers = "*"
+django-email-tools = "*"
+twilio = "*"
+djangorestframework-camel-case = "*"
+django-filter = "*"
+
+[requires]
+python_version = "3.7"

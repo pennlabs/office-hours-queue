@@ -1,7 +1,0 @@
-{
-  "projects": {
-    "default": "office-hour-q",
-    "prod": "office-hour-q",
-    "stg": "office-hour-q-stg"
-  }
-}
