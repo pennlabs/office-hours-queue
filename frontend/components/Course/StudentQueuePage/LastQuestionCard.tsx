@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Segment, Message } from "semantic-ui-react";
 
 const LastQuestionCard = ({ question }) => {
-    const [question, setQuestion] = useState(question);
-
     const timeString = (date) => {
         return new Date(date).toLocaleString("en-US", {
             // TODO: this isn't a good fix
@@ -40,10 +38,6 @@ const LastQuestionCard = ({ question }) => {
                 return "blue";
         }
     };
-
-    useEffect(() => {
-        setQuestion(props.question);
-    }, [question]);
 
     return (
         <Segment basic>

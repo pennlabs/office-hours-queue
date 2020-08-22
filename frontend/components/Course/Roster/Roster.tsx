@@ -390,7 +390,6 @@ const Roster = (props: RosterProps) => {
                                                 prettifyRole(membership.kind)
                                             ) : (
                                                 <ChangeRoleDropdown
-                                                    courseId={courseId}
                                                     id={membership.id}
                                                     role={membership.kind}
                                                     disabled={

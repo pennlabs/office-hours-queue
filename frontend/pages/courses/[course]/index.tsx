@@ -1,5 +1,6 @@
 import React from "react";
 import { useRouter } from "next/router";
+import { Grid } from "semantic-ui-react";
 import Course from "../../../components/Course/Course";
 import { withAuth } from "../../../context/auth";
 import { doApiRequest } from "../../../utils/fetch";
@@ -10,15 +11,17 @@ const CoursePage = (props) => {
     const { course: courseId } = router.query;
     const { course, memberships, invites, leadership } = props;
     return (
-        <Course
-            // TODO: better fix
-            // @ts-ignore
-            courseId={parseInt(courseId, 10)}
-            course={course}
-            memberships={memberships}
-            invites={invites}
-            leadership={leadership}
-        />
+        <Grid columns="equal" divided style={{ width: "100%" }} stackable>
+            <Course
+                // TODO: better fix
+                // @ts-ignore
+                courseId={parseInt(courseId, 10)}
+                course={course}
+                memberships={memberships}
+                invites={invites}
+                leadership={leadership}
+            />
+        </Grid>
     );
 };
 

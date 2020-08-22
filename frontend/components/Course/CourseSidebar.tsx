@@ -13,6 +13,7 @@ import { prettifyRole } from "../../utils/enums";
 import AboutModal from "../LandingPage/AboutModal";
 import { AuthUserContext } from "../../context/auth";
 import { useLeadership, useStaff } from "../../hooks/data-fetching/course";
+import styles from "../../styles/landingpage.module.css";
 import { leadershipSortFunc } from "../../utils";
 import { Membership } from "../../types";
 
@@ -128,7 +129,7 @@ const CourseSidebar = (props: CourseSidebarProps) => {
             )}
             <div
                 role="button"
-                className="about about-dashboard"
+                className={`${styles.about} ${styles["about-dashboard"]}`}
                 onClick={() => setShowAboutModal(true)}
             >
                 <p>Feedback</p>

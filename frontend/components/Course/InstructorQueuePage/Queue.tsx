@@ -53,7 +53,7 @@ const Queue = (props: QueueProps) => {
             </Header>
             <Grid>
                 <Grid.Row columns="equal">
-                    <Grid.Column width={5} only="computer mobile">
+                    <Grid.Column only="computer mobile">
                         <Label
                             content={`${questions.length} user${
                                 questions.length === 1 ? "" : "s"
