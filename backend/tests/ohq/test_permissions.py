@@ -279,7 +279,7 @@ class QuestionTestCase(TestCase):
                 "professor": 200,
                 "head_ta": 200,
                 "ta": 200,
-                "student": 403,
+                "student": 200,
                 "non_member": 403,
                 "anonymous": 403,
             },
