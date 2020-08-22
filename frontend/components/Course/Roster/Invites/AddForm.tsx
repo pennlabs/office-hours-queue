@@ -18,14 +18,15 @@ const AddForm = (props: AddFormProps) => {
     return (
         <Form>
             <Form.Field>
-                <label>Email(s)</label>
+                <label htmlFor="form-email">Email(s)</label>
 
                 {/* TODO: add a validation step here */}
-                <Form.TextArea onChange={onChange} />
+                <Form.TextArea id="form-email" onChange={onChange} />
             </Form.Field>
             <Form.Field>
-                <label>Role</label>
+                <label htmlFor="form-role">Role</label>
                 <Form.Dropdown
+                    id="form-role"
                     name="kind"
                     selection
                     options={roleOptions}

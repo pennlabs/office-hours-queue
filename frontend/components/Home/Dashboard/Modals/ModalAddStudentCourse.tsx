@@ -27,9 +27,10 @@ const ModalAddStudentCourse = (props: ModalAddStudentCourseProps) => {
             return;
         }
         setLoading(true);
-        for (let index = 0; index < input.courseIds.length; index += 1) {
-            await joinCourse(input.courseIds[index]);
-        }
+        const joinCoursesPromise = input.courseIds.map((id) => {
+            return joinCourse(id);
+        });
+        await Promise.all(joinCoursesPromise);
         setLoading(false);
         mutate();
         closeFunc();

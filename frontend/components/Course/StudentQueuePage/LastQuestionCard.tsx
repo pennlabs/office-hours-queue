@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Segment, Message } from "semantic-ui-react";
 
-const LastQuestionCard = (props) => {
-    const [question, setQuestion] = useState(props.question);
+const LastQuestionCard = ({ question }) => {
+    const [question, setQuestion] = useState(question);
 
     const timeString = (date) => {
         return new Date(date).toLocaleString("en-US", {
@@ -43,7 +43,7 @@ const LastQuestionCard = (props) => {
 
     useEffect(() => {
         setQuestion(props.question);
-    }, [props.question]);
+    }, [question]);
 
     return (
         <Segment basic>

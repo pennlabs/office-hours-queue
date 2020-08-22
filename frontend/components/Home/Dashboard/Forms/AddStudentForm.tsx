@@ -6,7 +6,7 @@ import { Course } from "../../../../types";
 import { getCourses } from "../../../../hooks/data-fetching/dashboard";
 
 interface AddStudentFormProps {
-    changeFunc: (a: any, b: any) => void; //TODO: restrict this
+    changeFunc: (a: any, b: any) => void; // TODO: restrict this
 }
 const AddStudentForm = (props: AddStudentFormProps) => {
     const { changeFunc } = props;
@@ -29,8 +29,11 @@ const AddStudentForm = (props: AddStudentFormProps) => {
     return (
         <Form>
             <Form.Field>
-                <label>Course Name or Course Code</label>
+                <label htmlFor="search-select">
+                    Course Name or Course Code
+                </label>
                 <AsyncSelect
+                    id="search-select"
                     cacheOptions
                     defaultOptions
                     loadOptions={promiseOptions}

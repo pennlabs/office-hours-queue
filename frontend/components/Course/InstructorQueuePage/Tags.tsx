@@ -35,6 +35,7 @@ const Tags = (props) => {
                         <Label color="blue" content="No Tags" />
                     )}
                     <a
+                        role="button"
                         style={{
                             marginLeft: "12px",
                             textDecoration: "underline",

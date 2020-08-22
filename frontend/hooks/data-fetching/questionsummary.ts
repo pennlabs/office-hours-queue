@@ -17,16 +17,16 @@ export interface QuestionListResult {
 }
 
 export const useQuestions = (
-    course_id: number,
+    courseId: number,
     filters: Partial<QuestionSummaryFilters>,
     initialQuestions: QuestionListResult
 ): [QuestionListResult, any, boolean] => {
     const query = Object.keys(filters)
         .map((key) => {
             let renamedKey: string;
-            if (key == "timeAskedGt") {
+            if (key === "timeAskedGt") {
                 renamedKey = "time_asked__gt";
-            } else if (key == "timeAskedLt") {
+            } else if (key === "timeAskedLt") {
                 renamedKey = "time_asked__lt";
             } else {
                 renamedKey = key;
@@ -37,7 +37,7 @@ export const useQuestions = (
         })
         .join("&");
 
-    const queryUrl = `/courses/${course_id}/questions/?${query}`;
+    const queryUrl = `/courses/${courseId}/questions/?${query}`;
     const { data, error, isValidating } = useSWR(queryUrl, {
         initialData: initialQuestions,
     });

@@ -12,6 +12,8 @@ const MyApp = ({ Component, pageProps }) => {
                     doApiRequest(path, ...args).then((res) => res.json()),
             }}
         >
+            {/* This is necessary for generic HOC */}
+            {/* eslint-disable-next-line */}
             <Component {...pageProps} />
         </SWRConfig>
     );

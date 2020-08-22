@@ -81,8 +81,8 @@ const AccountForm = () => {
         <>
             <VerificationModal
                 open={smsOpen}
-                toastFunc={(toast: Toast) => {
-                    setToast(toast);
+                toastFunc={(newToast: Toast) => {
+                    setToast(newToast);
                     setToastOpen(true);
                 }}
                 openFunc={setSmsOpen}
@@ -90,16 +90,18 @@ const AccountForm = () => {
             />
             <Form>
                 <Form.Field required>
-                    <label>Email Address</label>
+                    <label htmlFor="form-email">Email Address</label>
                     <Form.Input
+                        id="form-email"
                         defaultValue={input.email}
                         disabled
                         onChange={handleInputChange}
                     />
                 </Form.Field>
                 <Form.Field required>
-                    <label>First Name</label>
+                    <label htmlFor="form-first-name">First Name</label>
                     <Form.Input
+                        id="form-first-name"
                         placeholder="First Name"
                         defaultValue={input.firstName}
                         name="firstName"
@@ -107,8 +109,9 @@ const AccountForm = () => {
                     />
                 </Form.Field>
                 <Form.Field required>
-                    <label>Last Name</label>
+                    <label htmlFor="form-last-name">Last Name</label>
                     <Form.Input
+                        id="form-last-name"
                         placeholder="Last Name"
                         defaultValue={input.lastName}
                         name="lastName"
@@ -134,8 +137,9 @@ const AccountForm = () => {
                 </Form.Field>
                 {showNumber && (
                     <Form.Field>
-                        <label>Cell Phone Number</label>
+                        <label htmlFor="form-cell-no">Cell Phone Number</label>
                         <Form.Input
+                            id="form-cell-no"
                             placeholder="9876543210"
                             defaultValue={input.profile.phoneNumber}
                             name="phoneNumber"

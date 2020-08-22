@@ -33,8 +33,9 @@ const CreateCourseForm = (props: CreateCourseFormProps) => {
     return (
         <Form>
             <Form.Field required>
-                <label>Department</label>
+                <label htmlFor="dept-input">Department</label>
                 <Form.Input
+                    id="dept-input"
                     className="department-input"
                     name="department"
                     onChange={changeFunc}
@@ -42,24 +43,27 @@ const CreateCourseForm = (props: CreateCourseFormProps) => {
                 />
             </Form.Field>
             <Form.Field required>
-                <label>Course Code</label>
+                <label htmlFor="course-code">Course Code</label>
                 <Form.Input
+                    id="course-code"
                     name="courseCode"
                     onChange={changeFunc}
                     placeholder="121"
                 />
             </Form.Field>
             <Form.Field required>
-                <label>Course Title</label>
+                <label htmlFor="course-title">Course Title</label>
                 <Form.Input
+                    id="course-title"
                     name="courseTitle"
                     onChange={changeFunc}
                     placeholder="Data Structures and Algorithms"
                 />
             </Form.Field>
             <Form.Field required>
-                <label>Semester</label>
+                <label htmlFor="select-sem">Semester</label>
                 <AsyncSelect
+                    id="select-sem"
                     name="semester"
                     cacheOptions
                     defaultOptions
@@ -74,33 +78,41 @@ const CreateCourseForm = (props: CreateCourseFormProps) => {
                 />
             </Form.Field>
             <Form.Field required>
-                <label>Video Chat</label>
+                <label htmlFor="video-radio">Video Chat</label>
+                <Form.Group id="video-radio">
+                    <Form.Radio
+                        label="Require Link"
+                        checked={check === 0}
+                        name="requireVideoChatUrlOnQuestions"
+                        onChange={vcChangeFunc}
+                    />
+                    <Form.Radio
+                        label="Allow Link"
+                        checked={check === 1}
+                        name="videoChatEnabled"
+                        onChange={vcChangeFunc}
+                    />
+                    <Form.Radio
+                        label="No Link"
+                        checked={check === 2}
+                        name="disableVideoChat"
+                        onChange={vcChangeFunc}
+                    />
+                </Form.Group>
+            </Form.Field>
+            <Form.Field required>
+                <label htmlFor="invite-only">Invite Only?</label>
                 <Form.Radio
-                    label="Require Link"
-                    checked={check === 0}
-                    name="requireVideoChatUrlOnQuestions"
-                    onChange={vcChangeFunc}
-                />
-                <Form.Radio
-                    label="Allow Link"
-                    checked={check === 1}
-                    name="videoChatEnabled"
-                    onChange={vcChangeFunc}
-                />
-                <Form.Radio
-                    label="No Link"
-                    checked={check === 2}
-                    name="disableVideoChat"
-                    onChange={vcChangeFunc}
+                    id="invite-only"
+                    name="inviteOnly"
+                    onChange={changeFunc}
+                    toggle
                 />
             </Form.Field>
             <Form.Field required>
-                <label>Invite Only?</label>
-                <Form.Radio name="inviteOnly" onChange={changeFunc} toggle />
-            </Form.Field>
-            <Form.Field required>
-                <label>Your Role</label>
+                <label htmlFor="form-role">Your Role</label>
                 <Form.Dropdown
+                    id="form-role"
                     selection
                     name="createdRole"
                     onChange={changeFunc}

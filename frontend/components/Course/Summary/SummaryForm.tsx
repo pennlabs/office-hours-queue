@@ -53,24 +53,27 @@ const SummaryForm = ({ filterState, setFilterState }) => {
         <Form>
             <Form.Group>
                 <Form.Field>
-                    <label>After</label>
+                    <label htmlFor="form-after">After</label>
                     <TextField
+                        id="form-after"
                         type="date"
                         onChange={handleChangeTime(true)}
                         InputLabelProps={{ shrink: true }}
                     />
                 </Form.Field>
                 <Form.Field>
-                    <label>Before</label>
+                    <label htmlFor="form-before">Before</label>
                     <TextField
+                        id="form-before"
                         type="date"
                         onChange={handleChangeTime(false)}
                         InputLabelProps={{ shrink: true }}
                     />
                 </Form.Field>
                 <Form.Field>
-                    <label>State</label>
+                    <label htmlFor="form-state">State</label>
                     <Form.Dropdown
+                        id="form-state"
                         selection
                         name="state"
                         clearable
@@ -86,8 +89,9 @@ const SummaryForm = ({ filterState, setFilterState }) => {
                     />
                 </Form.Field>
                 <Form.Field>
-                    <label>Search</label>
+                    <label htmlFor="form-search">Search</label>
                     <Form.Input
+                        id="form-search"
                         icon="search"
                         placeholder="Search..."
                         onChange={(e, { value }) => {

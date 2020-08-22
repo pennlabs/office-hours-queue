@@ -21,7 +21,7 @@ const CreateQueue = (props: CreateQueueProps) => {
         description: null,
         tags: [],
         startEndTimes: [],
-        courseId: courseId,
+        courseId,
     });
     const [refetchLoading, setRefetchLoading] = useState(false);
 
@@ -56,8 +56,9 @@ const CreateQueue = (props: CreateQueueProps) => {
                 <Segment basic>
                     <Form>
                         <Form.Field required>
-                            <label>Name</label>
+                            <label htmlFor="form-name">Name</label>
                             <Form.Input
+                                id="form-name"
                                 placeholder="Name"
                                 name="name"
                                 disabled={refetchLoading}
@@ -65,8 +66,9 @@ const CreateQueue = (props: CreateQueueProps) => {
                             />
                         </Form.Field>
                         <Form.Field required>
-                            <label>Description</label>
+                            <label htmlFor="form-desc">Description</label>
                             <Form.Input
+                                id="form-desc"
                                 placeholder="Description"
                                 name="description"
                                 disabled={refetchLoading}

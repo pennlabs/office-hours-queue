@@ -3,7 +3,6 @@ import { Modal, Button } from "semantic-ui-react";
 
 import "./VerificationModal.module.css";
 import VerificationForm from "./VerificationForm";
-import { Toast } from "../../../types";
 
 interface VerificationModalProps {
     open: boolean;
@@ -17,6 +16,8 @@ const VerificationModal = (props: VerificationModalProps) => {
         <Modal open={open}>
             <Modal.Header>Phone Number Verification</Modal.Header>
             <Modal.Content>
+                {/* TODO: Is there a way to make this more strict */}
+                {/* eslint-disable-next-line */}
                 <VerificationForm {...props} />
             </Modal.Content>
             <Modal.Actions>

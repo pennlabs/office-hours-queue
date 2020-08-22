@@ -67,8 +67,9 @@ const QueueForm = (props: QueueFormProps) => {
             {queue && (
                 <div>
                     <Form.Field>
-                        <label>Name</label>
+                        <label htmlFor="form-name">Name</label>
                         <Form.Input
+                            id="form-name"
                             defaultValue={input.name}
                             name="name"
                             value={input.name}
@@ -85,8 +86,9 @@ const QueueForm = (props: QueueFormProps) => {
                         </div>
                     </Form.Field>
                     <Form.Field>
-                        <label>Description</label>
+                        <label htmlFor="form-desc">Description</label>
                         <Form.Input
+                            id="form-desc"
                             defaultValue={input.description}
                             name="description"
                             value={input.description}

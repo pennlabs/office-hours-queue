@@ -8,8 +8,8 @@
         "start": "NODE_ENV=production node server.js",
         "test": "echo no tests yet",
         "codecov": "echo no codecov",
-        "lint": "eslint . --ext .tsx",
-        "lint-fix": "eslint . --ext .tsx --fix"
+        "lint": "eslint . --ext .tsx --ext .ts",
+        "lint-fix": "eslint . --ext .tsx --ext .ts --fix"
     },
     "dependencies": {
         "@material-ui/core": "^4.11.0",

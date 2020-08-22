@@ -1,6 +1,5 @@
 import React, { useContext, useState } from "react";
 import { Grid, Header, Segment } from "semantic-ui-react";
-import _ from "lodash";
 import Alert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
 import InstructorCourses from "./InstructorCourses";

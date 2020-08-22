@@ -3,7 +3,9 @@ import { parsePhoneNumberFromString } from "libphonenumber-js/max";
 import { User } from "../../types";
 import { doApiRequest } from "../../utils/fetch";
 
-export function useAccountInfo(initialUser): [
+export function useAccountInfo(
+    initialUser
+): [
     User,
     any,
     boolean,
@@ -33,16 +35,17 @@ export async function validateSMS(code) {
 }
 
 export async function updateUser(payload) {
+    const processedPayload = payload;
     if (payload.profile.phoneNumber) {
         // TODO: Better error handling
-        payload.profile.phoneNumber = parsePhoneNumberFromString(
+        processedPayload.profile.phoneNumber = parsePhoneNumberFromString(
             String(payload.profile.phoneNumber),
-            "US",
+            "US"
         ).number;
     }
     const res = await doApiRequest("/accounts/me/", {
         method: "PATCH",
-        body: payload,
+        body: processedPayload,
     });
 
     if (!res.ok) {

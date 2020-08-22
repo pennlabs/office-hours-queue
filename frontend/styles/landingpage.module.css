@@ -21,7 +21,7 @@
     }
 }
 
-.about label {
+.about p {
     cursor: pointer;
     color: #4285f5;
     text-decoration: underline;

@@ -49,6 +49,7 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
                                         Create a Queue
                                     </Message.Header>
                                     <a
+                                        role="button"
                                         onClick={createFunc}
                                         style={{ cursor: "pointer" }}
                                     >

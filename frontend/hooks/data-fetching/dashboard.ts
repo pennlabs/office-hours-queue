@@ -3,7 +3,7 @@ import { Course, Membership, mutateFunction } from "../../types";
 import { doApiRequest } from "../../utils/fetch";
 
 export async function getCourses(inputValue: string): Promise<Course[]> {
-    return await doApiRequest(`/courses/?search=${inputValue}`)
+    return doApiRequest(`/courses/?search=${inputValue}`)
         .then((res) => res.json())
         .then((res) => res.map((course) => course))
         .catch((_) => []);
@@ -32,12 +32,7 @@ export async function createCourse(payload: any): Promise<void> {
 
 export function useMemberships(
     initialUser
-): [
-    Membership[],
-    any,
-    boolean,
-    mutateFunction<Membership[]>
-] {
+): [Membership[], any, boolean, mutateFunction<Membership[]>] {
     const { data, error, isValidating, mutate } = useSWR("/accounts/me/", {
         initialData: initialUser,
     });

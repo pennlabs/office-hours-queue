@@ -53,8 +53,9 @@ const Sidebar = () => {
             <div
                 className={`${styles.about} ${styles["about-dashboard"]}`}
                 onClick={() => setShowAboutModal(true)}
+                role="button"
             >
-                <label>Feedback</label>
+                <p>Feedback</p>
             </div>
             <AboutModal
                 open={showAboutModal}

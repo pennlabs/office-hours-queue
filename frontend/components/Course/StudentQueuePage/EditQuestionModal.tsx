@@ -83,8 +83,9 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
             <Modal.Content>
                 <Form>
                     <Form.Field>
-                        <label>Question</label>
+                        <label htmlFor="form-question">Question</label>
                         <Form.TextArea
+                            id="form-question"
                             name="text"
                             value={input.text}
                             disabled={loading}
@@ -104,8 +105,9 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
                         <Form.Field
                             required={course.requireVideoChatUrlOnQuestions}
                         >
-                            <label>Video Chat URL</label>
+                            <label htmlFor="form-vid-url">Video Chat URL</label>
                             <Form.Input
+                                id="form-vid-url"
                                 name="videoChatUrl"
                                 disabled={loading}
                                 placeholder="https://zoom.us/j/578603907?pwd=L2ZhNkhlRnJPeGVwckcvY3hNak83QT09"

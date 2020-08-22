@@ -27,8 +27,9 @@ const QuestionForm = (props: QuestionFormProps) => {
 
     const handleInputChange = (e, { name, value }) => {
         if (name === "text" && value.length > charLimit) return;
-        if (name === "videoChatUrl") value = value.trim();
-        input[name] = value;
+        let nextValue;
+        if (name === "videoChatUrl") nextValue = value.trim();
+        input[name] = nextValue;
         setInput(input);
         setCharCount(input.text.length);
         setDisabled(
@@ -73,8 +74,9 @@ const QuestionForm = (props: QuestionFormProps) => {
             <Segment attached secondary>
                 <Form>
                     <Form.Field required>
-                        <label>Question</label>
+                        <label htmlFor="form-question">Question</label>
                         <Form.TextArea
+                            id="form-question"
                             name="text"
                             disabled={loading}
                             value={input.text}
@@ -94,8 +96,9 @@ const QuestionForm = (props: QuestionFormProps) => {
                         <Form.Field
                             required={course.requireVideoChatUrlOnQuestions}
                         >
-                            <label>Video Chat URL</label>
+                            <label htmlFor="form-vid-url">Video Chat URL</label>
                             <Form.Input
+                                id="form-vid-url"
                                 name="videoChatUrl"
                                 disabled={loading}
                                 placeholder="Sample URL: https://zoom.us/j/123456789?pwd=abcdefg"

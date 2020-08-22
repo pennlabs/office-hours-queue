@@ -3,26 +3,26 @@ import { Modal } from "semantic-ui-react";
 import NewUserForm from "../Forms/NewUserForm";
 import VerificationForm from "../../AccountSettings/VerificationForm";
 
-const NewUserModal = (props) => {
+const NewUserModal = ({ open, user, closeFunc, refetch, setToast, mutate }) => {
     const [modalView, setModalView] = useState("info");
 
     return (
-        <Modal open={props.open}>
+        <Modal open={open}>
             <Modal.Content>
                 {modalView === "info" ? (
                     <NewUserForm
-                        user={props.user}
+                        user={user}
                         setModalView={setModalView}
-                        closeFunc={props.closeFunc}
-                        refetch={props.refetch}
-                        setToast={props.setToast}
+                        closeFunc={closeFunc}
+                        refetch={refetch}
+                        setToast={setToast}
                     />
                 ) : (
                     <VerificationForm
                         // setModalView={setModalView}
-                        toastFunc={props.setToast}
-                        openFunc={props.closeFunc}
-                        mutate={props.muatate}
+                        toastFunc={setToast}
+                        openFunc={closeFunc}
+                        mutate={mutate}
                     />
                 )}
             </Modal.Content>

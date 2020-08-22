@@ -1,4 +1,5 @@
-// TODO: figure out how to show this on first login?
+import React from "react";
+// TODO: figure out how to show this on first login? (use localStorage probably)
 // import React, { useState } from "react";
 // import { Form, Button, Icon, Popup } from "semantic-ui-react";
 // import { Header } from "semantic-ui-react";

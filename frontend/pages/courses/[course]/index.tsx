@@ -13,7 +13,7 @@ const CoursePage = (props) => {
         <Course
             // TODO: better fix
             // @ts-ignore
-            courseId={parseInt(courseId)}
+            courseId={parseInt(courseId, 10)}
             course={course}
             memberships={memberships}
             invites={invites}

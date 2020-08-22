@@ -44,9 +44,11 @@ const AuthPrompt = (): JSX.Element => {
                 </Grid.Row>
                 <div
                     className={`${styles.about} ${styles["about-landing"]}`}
+                    role="button"
+                    id="about-button"
                     onClick={() => setShowAboutModal(true)}
                 >
-                    <label>About</label>
+                    <p>About</p>
                 </div>
                 <AboutModal
                     open={showAboutModal}

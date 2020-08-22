@@ -127,10 +127,11 @@ const CourseSidebar = (props: CourseSidebarProps) => {
                 </Segment>
             )}
             <div
+                role="button"
                 className="about about-dashboard"
                 onClick={() => setShowAboutModal(true)}
             >
-                <label>Feedback</label>
+                <p>Feedback</p>
             </div>
             <AboutModal
                 open={showAboutModal}

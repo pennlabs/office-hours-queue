@@ -37,13 +37,17 @@ const VerificationForm = (props: VerificationFormProps) => {
             });
         } catch (e) {
             clearInput();
+            let message;
+            if (e.message.includes("Incorrect")) {
+                message = "Verification code incorrect";
+            } else if (e.message.includes("expired")) {
+                message = "Verification code expired, please resend";
+            } else {
+                message = "An error occurred when verifying";
+            }
             props.toastFunc({
                 success: false,
-                message: e.message.includes("Incorrect")
-                    ? "Verification code incorrect"
-                    : e.message.includes("expired")
-                    ? "Verification code expired, please resend"
-                    : "An error occurred when verifying",
+                message,
             });
         }
     };
@@ -69,6 +73,7 @@ const VerificationForm = (props: VerificationFormProps) => {
             <div>
                 Missed your verification code?{" "}
                 <a
+                    role="button"
                     onClick={() => {
                         /* if (!sendLoading || !verifyLoading) */
                         /*     return sendVerification(); */

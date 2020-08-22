@@ -1,25 +1,14 @@
 {
     "parser": "@typescript-eslint/parser",
-    "plugins": [
-        "prettier"
-    ],
-    "extends": [
-        "airbnb",
-        "react-app",
-        "prettier",
-        "prettier/react"
-    ],
+    "plugins": ["prettier"],
+    "extends": ["airbnb", "react-app", "prettier", "prettier/react"],
     "env": {
         "browser": true
     },
     "rules": {
         "prettier/prettier": "error",
         "import/extensions": [".js", ".jsx", ".ts", ".tsx"],
-        "quotes": [
-            "error",
-            "double",
-            "avoid-escape"
-        ],
+        "quotes": ["error", "double", "avoid-escape"],
         "no-unused-vars": [
             "error",
             {
@@ -35,7 +24,24 @@
         "react/jsx-boolean-value": 0,
         "no-bitwise": "off",
         "no-await-in-loop": "warn",
-        "no-else-return": 0
+        "no-else-return": 0,
+        "jsx-a11y/label-has-associated-control": [
+            "error",
+            {
+                "labelComponents": [],
+                "labelAttributes": [],
+                "controlComponents": [
+                    "AsyncSelect",
+                    "Form.Group",
+                    "Form.Radio",
+                    "Form.Input",
+                    "Form.Dropdown",
+                    "TextField",
+                    "Form.TextArea"
+                ],
+                "assert": "either"
+            }
+        ]
     },
     "settings": {
         "import/resolver": {
