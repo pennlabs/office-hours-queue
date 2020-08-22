@@ -8,7 +8,7 @@ applications:
     ingress:
       hosts:
         - host: ohq.pennlabs.org # TODO: change this to ohq.io
-          paths: ["/api"]
+          paths: ["/api", "/admin"]
     extraEnv:
       - name: DOMAIN
         value: ohq.pennlabs.org # TODO: change this to ohq.io
