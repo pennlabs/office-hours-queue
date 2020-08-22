@@ -292,7 +292,7 @@ class UserPrivateSerializer(serializers.ModelSerializer):
                     length=6, allowed_chars="1234567890"
                 )
                 profile.sms_verification_timestamp = timezone.now()
-                sendSMSVerification(profile.phone_number, profile.sms_verification_code)
+                sendSMSVerification(str(profile.phone_number), profile.sms_verification_code)
 
             # Handle SMS verification
             if "sms_verification_code" in profile_fields:

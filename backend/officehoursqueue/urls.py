@@ -10,7 +10,6 @@ admin.site.site_header = "Office Hours Queue Admin"
 
 urlpatterns = [
     path("", include("ohq.urls")),
-    path("admin/", admin.site.urls),
     path("accounts/", include("accounts.urls", namespace="accounts")),
     path(
         "openapi/",
@@ -30,7 +29,10 @@ urlpatterns = [
     ),
 ]
 
-urlpatterns = [path("api/", include(urlpatterns))]
+urlpatterns = [
+    path("api/", include(urlpatterns)),
+    path("admin/", admin.site.urls),
+]
 
 if settings.DEBUG:  # pragma: no cover
     import debug_toolbar
