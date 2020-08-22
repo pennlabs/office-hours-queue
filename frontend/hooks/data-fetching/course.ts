@@ -112,7 +112,11 @@ export const useQuestionPosition = (
     id: number,
     refreshInterval: number
 ) =>
-useResource(`/courses/${courseId}/queues/${queueId}/questions/${id}/position/`, {position:-1}, {refreshInterval});
+    useResource(
+        `/courses/${courseId}/queues/${queueId}/questions/${id}/position/`,
+        { position: -1 },
+        { refreshInterval }
+    );
 
 export async function clearQueue(courseId: number, queueId: number) {
     await doApiRequest(`/courses/${courseId}/queues/${queueId}/clear/`, {
