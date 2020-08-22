@@ -8,6 +8,7 @@ import {
     Queue,
     mutateResourceListFunction,
 } from "../../../types";
+import { useQuestionPosition } from "../../../hooks/data-fetching/course";
 
 interface QuestionCardProps {
     question: Question;
@@ -18,6 +19,12 @@ interface QuestionCardProps {
 }
 const QuestionCard = (props: QuestionCardProps) => {
     const { question, course, queue, mutate, toastFunc } = props;
+    const [{ position }, , ,] = useQuestionPosition(
+        course.id,
+        queue.id,
+        question.id,
+        3000
+    );
     const [openEdit, setOpenEdit] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
 
@@ -58,8 +65,8 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     overflow: "hidden",
                                 }}
                             >
-                                {/* TODO: implement this */}
-                                {`Position in Queue: #${question.position}`}
+                                {position !== -1 &&
+                                    `Position in Queue: #${position}`}
                             </Header>
                         </Grid.Column>
                         <Grid.Column width={6}>
