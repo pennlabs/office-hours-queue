@@ -6,10 +6,9 @@ import { withAuth } from "../../../context/auth";
 import { doApiRequest } from "../../../utils/fetch";
 import { isLeadershipRole } from "../../../utils/enums";
 import { CoursePageProps } from "../../../types";
-import InstructorQueuePage from "../../../components/Course/InstructorQueuePage/InstructorQueuePage";
-import StudentQueuePage from "../../../components/Course/StudentQueuePage/StudentQueuePage";
+import Analytics from "../../../components/Course/Analytics/Analytics";
 
-const CoursePage = (props: CoursePageProps) => {
+const AnalyticsPage = (props: CoursePageProps) => {
     const { course, leadership } = props;
     return (
         <Grid columns="equal" divided style={{ width: "100%" }} stackable>
@@ -17,21 +16,14 @@ const CoursePage = (props: CoursePageProps) => {
                 course={course}
                 leadership={leadership}
                 render={(staff: boolean) => {
-                    return (
-                        <>
-                            {staff && (
-                                <InstructorQueuePage courseId={course.id} />
-                            )}
-                            {!staff && <StudentQueuePage course={course} />}
-                        </>
-                    );
+                    return staff && <Analytics />;
                 }}
             />
         </Grid>
     );
 };
 
-CoursePage.getInitialProps = async (
+AnalyticsPage.getInitialProps = async (
     context: NextPageContext
 ): Promise<CoursePageProps> => {
     const { query, req } = context;
@@ -51,4 +43,4 @@ CoursePage.getInitialProps = async (
         leadership: leadership.filter((m) => isLeadershipRole(m.kind)),
     };
 };
-export default withAuth(CoursePage);
+export default withAuth(AnalyticsPage);

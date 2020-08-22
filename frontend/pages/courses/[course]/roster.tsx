@@ -5,12 +5,16 @@ import CourseWrapper from "../../../components/Course/CourseWrapper";
 import { withAuth } from "../../../context/auth";
 import { doApiRequest } from "../../../utils/fetch";
 import { isLeadershipRole } from "../../../utils/enums";
-import { CoursePageProps } from "../../../types";
-import InstructorQueuePage from "../../../components/Course/InstructorQueuePage/InstructorQueuePage";
-import StudentQueuePage from "../../../components/Course/StudentQueuePage/StudentQueuePage";
+import { CoursePageProps, Membership, MembershipInvite } from "../../../types";
+import Roster from "../../../components/Course/Roster/Roster";
 
-const CoursePage = (props: CoursePageProps) => {
-    const { course, leadership } = props;
+interface RosterPageProps extends CoursePageProps {
+    memberships: Membership[];
+    invites: MembershipInvite[];
+}
+
+const RosterPage = (props: RosterPageProps) => {
+    const { course, leadership, memberships, invites } = props;
     return (
         <Grid columns="equal" divided style={{ width: "100%" }} stackable>
             <CourseWrapper
@@ -18,12 +22,13 @@ const CoursePage = (props: CoursePageProps) => {
                 leadership={leadership}
                 render={(staff: boolean) => {
                     return (
-                        <>
-                            {staff && (
-                                <InstructorQueuePage courseId={course.id} />
-                            )}
-                            {!staff && <StudentQueuePage course={course} />}
-                        </>
+                        staff && (
+                            <Roster
+                                courseId={course.id}
+                                memberships={memberships}
+                                invites={invites}
+                            />
+                        )
                     );
                 }}
             />
@@ -31,15 +36,21 @@ const CoursePage = (props: CoursePageProps) => {
     );
 };
 
-CoursePage.getInitialProps = async (
+RosterPage.getInitialProps = async (
     context: NextPageContext
-): Promise<CoursePageProps> => {
+): Promise<RosterPageProps> => {
     const { query, req } = context;
     const data = {
         headers: req ? { cookie: req.headers.cookie } : undefined,
     };
-    const [course, leadership] = await Promise.all([
+    const [course, memberships, invites, leadership] = await Promise.all([
         doApiRequest(`/courses/${query.course}/`, data).then((res) =>
+            res.json()
+        ),
+        doApiRequest(`/courses/${query.course}/members/`, data).then((res) =>
+            res.json()
+        ),
+        doApiRequest(`/courses/${query.course}/invites/`, data).then((res) =>
             res.json()
         ),
         doApiRequest(`/courses/${query.course}/members/`, data).then((res) =>
@@ -48,7 +59,9 @@ CoursePage.getInitialProps = async (
     ]);
     return {
         course,
+        memberships,
+        invites,
         leadership: leadership.filter((m) => isLeadershipRole(m.kind)),
     };
 };
-export default withAuth(CoursePage);
+export default withAuth(RosterPage);

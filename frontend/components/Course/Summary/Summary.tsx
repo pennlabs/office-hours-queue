@@ -7,10 +7,18 @@ import {
     QuestionSummaryFilters,
 } from "../../../hooks/data-fetching/questionsummary";
 import SummaryForm from "./SummaryForm";
+import { useCourse } from "../../../hooks/data-fetching/course";
+import { Course } from "../../../types";
 
 const MAX_QUESTIONS_PER_PAGE = 20;
+interface SummaryProps {
+    course: Course;
+}
 
-const Summary = ({ course }) => {
+const Summary = (props: SummaryProps) => {
+    const { course: rawCourse } = props;
+    const [course, , ,] = useCourse(rawCourse.id, rawCourse);
+
     const [filterState, setFilterState] = useState<
         Partial<QuestionSummaryFilters>
     >({ page: 1 });

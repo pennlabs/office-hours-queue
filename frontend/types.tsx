@@ -114,3 +114,8 @@ export interface Toast {
     message: string;
     success: boolean;
 }
+
+export interface CoursePageProps {
+    course: Course;
+    leadership: Membership[];
+}
