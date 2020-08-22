@@ -1,11 +1,10 @@
-import json
 import re
 from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.core.validators import ValidationError, validate_email
 from django.db.models import Count, Exists, FloatField, IntegerField, OuterRef, Q, Subquery
-from django.http import HttpResponse
+from django.http import JsonResponse
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, viewsets
@@ -160,8 +159,7 @@ class QuestionViewSet(viewsets.ModelViewSet):
                 ).count()
                 + 1
             )
-        response = {"position": position}
-        return HttpResponse(json.dumps(response))
+        return JsonResponse({"position": position})
 
     def list(self, request, *args, **kwargs):
         """
@@ -260,7 +258,7 @@ class QueueViewSet(viewsets.ModelViewSet):
             rejected_reason="OH_ENDED",
             responded_to_by=self.request.user,
         )
-        return HttpResponse('{"detail": "success"}')
+        return JsonResponse({"detail": "success"})
 
 
 class MembershipViewSet(viewsets.ModelViewSet):
