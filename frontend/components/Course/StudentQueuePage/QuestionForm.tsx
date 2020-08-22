@@ -27,8 +27,7 @@ const QuestionForm = (props: QuestionFormProps) => {
 
     const handleInputChange = (e, { name, value }) => {
         if (name === "text" && value.length > charLimit) return;
-        let nextValue;
-        if (name === "videoChatUrl") nextValue = value.trim();
+        const nextValue = name === "videoChatUrl" ? value.trim() : value;
         input[name] = nextValue;
         setInput(input);
         setCharCount(input.text.length);

@@ -20,7 +20,7 @@ const StudentQueue = (props: StudentQueueProps) => {
     const [questions, , , mutateQuestions] = useQuestions(
         course.id,
         queue.id,
-        3000
+        queue.active ? 3000 : 0
     );
     const updateToast = (success: string, error) => {
         toast.success = success !== null;

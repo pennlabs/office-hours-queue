@@ -1,3 +1,4 @@
+import json
 import re
 from datetime import timedelta
 
@@ -143,6 +144,24 @@ class QuestionViewSet(viewsets.ModelViewSet):
         if not membership.is_ta:
             qs = qs.filter(asked_by=self.request.user)
         return qs
+
+    @action(methods=["GET"], detail=True)
+    def position(self, request, course_pk, queue_pk, pk=None):
+        """
+        Get the position of a question within its queue.
+        """
+
+        question = Question.objects.get(pk=pk)
+        position = -1
+        if question.status == Question.STATUS_ASKED:
+            position = (
+                Question.objects.filter(
+                    queue=queue_pk, status=Question.STATUS_ASKED, time_asked__lt=question.time_asked
+                ).count()
+                + 1
+            )
+        response = {"position": position}
+        return HttpResponse(json.dumps(response))
 
     def list(self, request, *args, **kwargs):
         """

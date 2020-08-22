@@ -8,10 +8,12 @@ import { doApiRequest } from "../../utils/fetch";
 
 export function useResource<R>(
     url: string,
-    initialData?: R
+    initialData?: R,
+    config?: ConfigInterface<R>
 ): [R, any, boolean, mutateResourceFunction<R>] {
     const { data, error, isValidating, mutate } = useSWR(url, {
         initialData,
+        ...config,
     });
     const mutateWithAPI = async (
         newResource: Partial<R>,
