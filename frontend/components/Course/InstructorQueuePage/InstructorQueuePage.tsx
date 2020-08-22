@@ -7,17 +7,19 @@ import QueueSettings from "./QueueSettings/QueueSettings";
 import CreateQueue from "./CreateQueue/CreateQueue";
 import { AuthUserContext } from "../../../context/auth";
 import { useQueues, useStaff } from "../../../hooks/data-fetching/course";
+import { Queue } from "../../../types";
 
 interface InstructorQueuePageProps {
     courseId: number;
+    queues: Queue[];
 }
 const InstructorQueuePage = (props: InstructorQueuePageProps) => {
-    const { courseId } = props;
+    const { courseId, queues: rawQueues } = props;
 
     /* STATE */
     const { user: initialUser } = useContext(AuthUserContext);
     const [leader, , , ,] = useStaff(courseId, initialUser);
-    const [queues, , , mutate] = useQueues(courseId);
+    const [queues, , , mutate] = useQueues(courseId, rawQueues);
     const [success, setSuccess] = useState(false);
     const [activeQueueId, setActiveQueueId] = useState(null);
     const [active, setActive] = useState("queues");
