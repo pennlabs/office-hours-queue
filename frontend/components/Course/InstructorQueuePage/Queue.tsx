@@ -45,7 +45,7 @@ const Queue = (props: QueueProps) => {
         await mutate(queueId, { active: false });
     };
 
-    return (
+    return queue && questions ? (
         <Segment basic>
             <ClearQueueModal
                 courseId={courseId}
@@ -135,7 +135,7 @@ const Queue = (props: QueueProps) => {
                 />
             </Grid.Row>
         </Segment>
-    );
+    ) : null;
 };
 
 export default Queue;
