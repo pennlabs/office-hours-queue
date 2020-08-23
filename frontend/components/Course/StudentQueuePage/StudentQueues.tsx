@@ -2,15 +2,21 @@ import React from "react";
 import { Segment, Grid, Message } from "semantic-ui-react";
 import StudentQueue from "./StudentQueue";
 // import LastQuestionCard from "./LastQuestionCard";
-import { Queue, Course, mutateResourceListFunction } from "../../../types";
+import {
+    Queue,
+    Course,
+    mutateResourceListFunction,
+    QuestionMap,
+} from "../../../types";
 
 interface StudentQueuesProps {
     queues: Queue[];
     course: Course;
     queueMutate: mutateResourceListFunction<Queue>;
+    questionmap: QuestionMap;
 }
 const StudentQueues = (props: StudentQueuesProps) => {
-    const { queues, course, queueMutate } = props;
+    const { queues, course, queueMutate, questionmap } = props;
     // const showQuestion = (question) => {
     //     return question.state === "ACTIVE" || question.state === "STARTED";
     // };
@@ -27,6 +33,7 @@ const StudentQueues = (props: StudentQueuesProps) => {
                                     course={course}
                                     queue={queue}
                                     queueMutate={queueMutate}
+                                    questions={questionmap[queue.id]}
                                 />
                             </Grid.Column>
                         ))}

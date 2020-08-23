@@ -2,25 +2,37 @@ import React, { useState } from "react";
 import { Header, Label, Grid, Segment, Button } from "semantic-ui-react";
 import Questions from "./Questions";
 import ClearQueueModal from "./ClearQueueModal";
-import { mutateResourceListFunction, Queue as QueueType } from "../../../types";
+import {
+    mutateResourceListFunction,
+    Queue as QueueType,
+    Question,
+} from "../../../types";
 import { useQuestions } from "../../../hooks/data-fetching/course";
 
 interface QueueProps {
     courseId: number;
     queue: QueueType;
+    questions: Question[];
     mutate: mutateResourceListFunction<QueueType>;
     leader: boolean;
     editFunc: () => void;
 }
 const Queue = (props: QueueProps) => {
-    const { courseId, queue, mutate, leader, editFunc } = props;
+    const {
+        courseId,
+        queue,
+        questions: rawQuestions,
+        mutate,
+        leader,
+        editFunc,
+    } = props;
     const { id: queueId, active, estimatedWaitTime } = queue;
 
     /* STATE */
-    // TODO: proper inital props on this
     const [questions, , , mutateQuestions] = useQuestions(
         courseId,
         queueId,
+        rawQuestions,
         3000
     );
     const [clearModalOpen, setClearModalOpen] = useState(false);

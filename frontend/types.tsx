@@ -91,6 +91,11 @@ export interface Semester {
     term: string;
     pretty: string;
 }
+
+export interface QuestionMap {
+    [queueId: number]: Question[];
+}
+
 export type mutateFunction<D> = (
     data?: D,
     shouldRevalidate?: boolean

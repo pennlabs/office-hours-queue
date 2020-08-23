@@ -7,14 +7,15 @@ import QueueSettings from "./QueueSettings/QueueSettings";
 import CreateQueue from "./CreateQueue/CreateQueue";
 import { AuthUserContext } from "../../../context/auth";
 import { useQueues, useStaff } from "../../../hooks/data-fetching/course";
-import { Queue } from "../../../types";
+import { Queue, QuestionMap } from "../../../types";
 
 interface InstructorQueuePageProps {
     courseId: number;
     queues: Queue[];
+    questionmap: QuestionMap;
 }
 const InstructorQueuePage = (props: InstructorQueuePageProps) => {
-    const { courseId, queues: rawQueues } = props;
+    const { courseId, queues: rawQueues, questionmap } = props;
 
     /* STATE */
     const { user: initialUser } = useContext(AuthUserContext);
@@ -38,6 +39,7 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
                 <InstructorQueues
                     courseId={courseId}
                     queues={queues}
+                    questionmap={questionmap}
                     editFunc={onQueueSettings}
                     createFunc={() => {
                         setActive("create");

@@ -98,12 +98,13 @@ export const useQueues = (courseId: number, initialData: Queue[]) =>
 export const useQuestions = (
     courseId: number,
     queueId: number,
+    initialData: Question[],
     refreshInterval: number
 ) =>
     useResourceList<Question>(
         `/courses/${courseId}/queues/${queueId}/questions/`,
         (id) => `/courses/${courseId}/queues/${queueId}/questions/${id}/`,
-        [],
+        initialData,
         { refreshInterval }
     );
 

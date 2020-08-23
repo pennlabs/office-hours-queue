@@ -4,23 +4,30 @@ import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 import QuestionForm from "./QuestionForm";
 import QuestionCard from "./QuestionCard";
-import { Queue, Course, mutateResourceListFunction } from "../../../types";
+import {
+    Queue,
+    Course,
+    mutateResourceListFunction,
+    Question,
+} from "../../../types";
 import { useQuestions } from "../../../hooks/data-fetching/course";
 
 interface StudentQueueProps {
     course: Course;
     queue: Queue;
     queueMutate: mutateResourceListFunction<Queue>;
+    questions: Question[];
 }
 
 const StudentQueue = (props: StudentQueueProps) => {
-    const { course, queue, queueMutate } = props;
+    const { course, queue, queueMutate, questions: rawQuestions } = props;
     const [toast, setToast] = useState({ message: "", success: true });
     const [toastOpen, setToastOpen] = useState(false);
-    // TODO: initial props for this
+
     const [questions, , , mutateQuestions] = useQuestions(
         course.id,
         queue.id,
+        rawQuestions,
         queue.active ? 3000 : 0
     );
     const updateToast = (success: string, error) => {
