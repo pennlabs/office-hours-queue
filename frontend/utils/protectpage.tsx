@@ -8,9 +8,9 @@ export function withProtectPage<T extends AuthProps>(
     WrappedComponent: NextPage<T>,
     condition: (user: User, ctx: NextPageContext) => boolean
 ) {
-    const ProtectedComponent = ({ ...props }) => {
+    const ProtectedComponent = ({ ...props }: T) => {
         // eslint-disable-next-line
-        return <WrappedComponent {...(props as T)} />;
+        return <WrappedComponent {...props} />;
     };
 
     ProtectedComponent.getInitialProps = async (ctx: NextPageContext) => {
