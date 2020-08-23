@@ -8,7 +8,7 @@ import {
 } from "../../../hooks/data-fetching/questionsummary";
 import SummaryForm from "./SummaryForm";
 import { useCourse } from "../../../hooks/data-fetching/course";
-import { Course } from "../../../types";
+import { Course, User } from "../../../types";
 import { prettifyQuestionState } from "../../../utils/enums";
 
 const MAX_QUESTIONS_PER_PAGE = 20;
@@ -23,6 +23,8 @@ const Summary = (props: SummaryProps) => {
     const [filterState, setFilterState] = useState<
         Partial<QuestionSummaryFilters>
     >({ page: 1 });
+
+    const getFullName = (user: User) => `${user.firstName} ${user.lastName}`;
 
     // TODO: Add initial state
     // TODO: Handle loaders
@@ -61,10 +63,11 @@ const Summary = (props: SummaryProps) => {
                                 {data.results.map((qs) => (
                                     <Table.Row>
                                         <Table.Cell>
-                                            {qs.askedBy?.firstName}
+                                            {getFullName(qs.askedBy)}
                                         </Table.Cell>
                                         <Table.Cell>
-                                            {qs.respondedToBy?.firstName}
+                                            {qs.respondedToBy &&
+                                                getFullName(qs.respondedToBy)}
                                         </Table.Cell>
                                         <Table.Cell>{qs.text}</Table.Cell>
                                         <Table.Cell>
