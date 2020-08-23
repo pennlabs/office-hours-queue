@@ -3,6 +3,8 @@ import { Grid } from "semantic-ui-react";
 import { NextPageContext } from "next";
 import CourseWrapper from "../../../components/Course/CourseWrapper";
 import { withAuth } from "../../../context/auth";
+import staffCheck from "../../../utils/staffcheck";
+import { withProtectPage } from "../../../utils/protectpage";
 import { doApiRequest } from "../../../utils/fetch";
 import { isLeadershipRole } from "../../../utils/enums";
 import CourseSettings from "../../../components/Course/CourseSettings/CourseSettings";
@@ -43,4 +45,7 @@ SettingsPage.getInitialProps = async (
         leadership: leadership.filter((m) => isLeadershipRole(m.kind)),
     };
 };
-export default withAuth(SettingsPage);
+
+export default withProtectPage(withAuth(SettingsPage), (user, ctx) => {
+    return staffCheck(user, ctx);
+});

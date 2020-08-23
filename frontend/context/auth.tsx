@@ -1,5 +1,6 @@
 import React, { createContext } from "react";
-import Router from "next/router";
+import { NextPageContext } from "next";
+import nextRedirect from "../utils/redirect";
 import { doApiRequest } from "../utils/fetch";
 import { User } from "../types";
 
@@ -17,7 +18,7 @@ export const withAuth = (WrappedComponent) => {
         );
     };
 
-    AuthedComponent.getInitialProps = async (ctx) => {
+    AuthedComponent.getInitialProps = async (ctx: NextPageContext) => {
         const headers = {
             credentials: "include",
             headers: ctx.req ? { cookie: ctx.req.headers.cookie } : undefined,
@@ -28,18 +29,7 @@ export const withAuth = (WrappedComponent) => {
         if (res.ok) {
             user = await res.json();
         } else {
-            // redirect if authentication fails
-            // checks for whether this was called client-side or server-side
-            if (typeof window === "undefined") {
-                if (ctx.req.originalUrl !== "/") {
-                    ctx.res.writeHead(301, { Location: "/" });
-                    ctx.res.end();
-                }
-            } else if (window.location.pathname !== "/") {
-                Router.replace("/");
-            }
-
-            return { user: null };
+            return nextRedirect(ctx, (url) => url !== "/", "/");
         }
 
         const props =
