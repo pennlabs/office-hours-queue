@@ -1,20 +1,19 @@
 import React from "react";
-import { NextPageContext } from "next";
+import { NextPageContext, NextPage } from "next";
+import { AuthProps } from "../context/auth";
 import { User } from "../types";
 import nextRedirect from "./redirect";
 
-export const withProtectPage = (
-    WrappedComponent,
+export function withProtectPage<T extends AuthProps>(
+    WrappedComponent: NextPage<T>,
     condition: (user: User, ctx: NextPageContext) => boolean
-) => {
-    const ProtectedComponent = ({ children, ...props }) => {
-        return <WrappedComponent {...props}>{children}</WrappedComponent>;
+) {
+    const ProtectedComponent = ({ ...props }) => {
+        // eslint-disable-next-line
+        return <WrappedComponent {...(props as T)} />;
     };
 
     ProtectedComponent.getInitialProps = async (ctx: NextPageContext) => {
-        // TODO: add types to enforce that the wrapped component
-        // implements getInitialProps that returns an object with
-        // a user object
         const wrappedProps = await WrappedComponent.getInitialProps(ctx);
         const { user } = wrappedProps;
         if (user && !condition(user, ctx)) {
@@ -25,4 +24,4 @@ export const withProtectPage = (
     };
 
     return ProtectedComponent;
-};
+}

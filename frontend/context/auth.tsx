@@ -1,5 +1,5 @@
 import React, { createContext } from "react";
-import { NextPageContext } from "next";
+import { NextPageContext, NextPage } from "next";
 import nextRedirect from "../utils/redirect";
 import { doApiRequest } from "../utils/fetch";
 import { User } from "../types";
@@ -8,12 +8,18 @@ export const AuthUserContext: React.Context<{ user: User }> = createContext({
     user: null,
 });
 
-export const withAuth = (WrappedComponent) => {
-    const AuthedComponent = ({ children, user, ...props }) => {
+export interface AuthProps {
+    user?: User;
+}
+
+export function withAuth<T>(
+    WrappedComponent: NextPage<T>
+): NextPage<T & AuthProps> {
+    const AuthedComponent = ({ user, ...props }: T & AuthProps) => {
         return (
             <AuthUserContext.Provider value={{ user }}>
                 {/* eslint-disable-next-line */}
-                <WrappedComponent {...props}>{children}</WrappedComponent>
+                <WrappedComponent {...(props as T)} />
             </AuthUserContext.Provider>
         );
     };
@@ -40,4 +46,4 @@ export const withAuth = (WrappedComponent) => {
     };
 
     return AuthedComponent;
-};
+}
