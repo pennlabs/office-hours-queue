@@ -5,6 +5,7 @@ import { Segment, Grid, Table, Loader, Pagination } from "semantic-ui-react";
 import {
     useQuestions,
     QuestionSummaryFilters,
+    QuestionListResult,
 } from "../../../hooks/data-fetching/questionsummary";
 import SummaryForm from "./SummaryForm";
 import { useCourse } from "../../../hooks/data-fetching/course";
@@ -14,10 +15,11 @@ import { prettifyQuestionState } from "../../../utils/enums";
 const MAX_QUESTIONS_PER_PAGE = 20;
 interface SummaryProps {
     course: Course;
+    questionListResult: QuestionListResult;
 }
 
 const Summary = (props: SummaryProps) => {
-    const { course: rawCourse } = props;
+    const { course: rawCourse, questionListResult } = props;
     const [course, , ,] = useCourse(rawCourse.id, rawCourse);
 
     const [filterState, setFilterState] = useState<
@@ -26,9 +28,12 @@ const Summary = (props: SummaryProps) => {
 
     const getFullName = (user: User) => `${user.firstName} ${user.lastName}`;
 
-    // TODO: Add initial state
     // TODO: Handle loaders
-    const [data, , loading] = useQuestions(course.id, filterState, null);
+    const [data, , loading] = useQuestions(
+        course.id,
+        filterState,
+        questionListResult
+    );
     return (
         <div>
             <Grid.Row>
