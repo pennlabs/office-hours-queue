@@ -8,7 +8,7 @@ export default function nextRedirect(
 ) {
     if (typeof window === "undefined") {
         if (condition(req.url)) {
-            res.writeHead(301, { Location: redirectUrl });
+            res.writeHead(302, { Location: redirectUrl });
             res.end();
         }
     } else if (condition(window.location.pathname)) {
