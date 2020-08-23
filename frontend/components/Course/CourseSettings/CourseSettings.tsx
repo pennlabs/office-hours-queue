@@ -20,7 +20,7 @@ const CourseSettings = (props: CourseSettingsProps) => {
             </Grid.Row>
             <Grid.Row>
                 <Segment basic>
-                    <CourseForm course={course} refetch={mutate} />
+                    <CourseForm course={course} mutate={mutate} />
                 </Segment>
             </Grid.Row>
         </div>

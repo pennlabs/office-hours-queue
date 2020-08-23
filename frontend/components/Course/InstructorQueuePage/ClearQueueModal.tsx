@@ -7,13 +7,13 @@ interface ClearQueueModalProps {
     queue: Queue;
     courseId: number;
     queueId: number;
-    refetch: mutateResourceListFunction<Queue>;
+    mutate: mutateResourceListFunction<Queue>;
     closeFunc: () => void;
     open: boolean;
 }
 const ClearQueueModal = (props: ClearQueueModalProps) => {
-    const { courseId, queueId, refetch, closeFunc, open, queue } = props;
-    const [refetchLoading, setRefetchLoading] = useState(false);
+    const { courseId, queueId, mutate, closeFunc, open, queue } = props;
+    const [mutateLoading, setRefetchLoading] = useState(false);
     const loading = false;
 
     const onSubmit = async () => {
@@ -48,14 +48,14 @@ const ClearQueueModal = (props: ClearQueueModalProps) => {
             <Modal.Actions>
                 <Button
                     content="Cancel"
-                    disabled={loading || refetchLoading}
+                    disabled={loading || mutateLoading}
                     onClick={() => props.closeFunc()}
                 />
                 <Button
                     color="red"
                     content="Clear"
-                    disabled={loading || refetchLoading}
-                    loading={loading || refetchLoading}
+                    disabled={loading || mutateLoading}
+                    loading={loading || mutateLoading}
                     onClick={onSubmit}
                 />
             </Modal.Actions>

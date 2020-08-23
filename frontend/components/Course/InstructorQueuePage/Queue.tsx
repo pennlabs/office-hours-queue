@@ -52,7 +52,7 @@ const Queue = (props: QueueProps) => {
                 queueId={queueId}
                 open={clearModalOpen}
                 queue={queue}
-                refetch={mutate}
+                mutate={mutate}
                 closeFunc={() => setClearModalOpen(false)}
             />
             <Header as="h3">
@@ -130,7 +130,7 @@ const Queue = (props: QueueProps) => {
             <Grid.Row columns={1}>
                 <Questions
                     questions={questions}
-                    refetch={mutateQuestions}
+                    mutate={mutateQuestions}
                     active={active}
                 />
             </Grid.Row>

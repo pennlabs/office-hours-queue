@@ -23,7 +23,7 @@ const CreateQueue = (props: CreateQueueProps) => {
         startEndTimes: [],
         courseId,
     });
-    const [refetchLoading, setRefetchLoading] = useState(false);
+    const [mutateLoading, setRefetchLoading] = useState(false);
 
     /* HANDLER FUNCTIONS */
     const handleInputChange = (e, { name, value }) => {
@@ -61,7 +61,7 @@ const CreateQueue = (props: CreateQueueProps) => {
                                 id="form-name"
                                 placeholder="Name"
                                 name="name"
-                                disabled={refetchLoading}
+                                disabled={mutateLoading}
                                 onChange={handleInputChange}
                             />
                         </Form.Field>
@@ -71,7 +71,7 @@ const CreateQueue = (props: CreateQueueProps) => {
                                 id="form-desc"
                                 placeholder="Description"
                                 name="description"
-                                disabled={refetchLoading}
+                                disabled={mutateLoading}
                                 onChange={handleInputChange}
                             />
                         </Form.Field>
@@ -94,13 +94,13 @@ const CreateQueue = (props: CreateQueueProps) => {
                             content="Create"
                             color="blue"
                             type="submit"
-                            disabled={disabled || refetchLoading}
+                            disabled={disabled || mutateLoading}
                             onClick={onSubmit}
                         />
                         <Button
                             content="Cancel"
                             type="submit"
-                            disabled={refetchLoading}
+                            disabled={mutateLoading}
                             onClick={backFunc}
                         />
                     </Form>

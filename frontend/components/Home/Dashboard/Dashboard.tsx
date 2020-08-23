@@ -50,7 +50,7 @@ const Dashboard = () => {
                         setToast(d);
                         setToastOpen(true);
                     }}
-                    refetch={props.refetch}
+                    mutate={props.mutate}
                 />
             )} */}
             {memberships && (

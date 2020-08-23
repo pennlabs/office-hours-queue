@@ -11,7 +11,7 @@ import { getSemesters } from "../../../hooks/data-fetching/course";
 
 interface CourseFormProps {
     course: Course;
-    refetch: mutateResourceFunction<Course>;
+    mutate: mutateResourceFunction<Course>;
 }
 
 const videoChatNum = (course) => {
@@ -21,7 +21,7 @@ const videoChatNum = (course) => {
 };
 
 const CourseForm = (props: CourseFormProps) => {
-    const { course, refetch } = props;
+    const { course, mutate } = props;
     const router = useRouter();
     const [loading, setLoading] = useState(false);
 
@@ -90,7 +90,7 @@ const CourseForm = (props: CourseFormProps) => {
     const onSubmit = async () => {
         try {
             setLoading(true);
-            await refetch(input);
+            await mutate(input);
             // await updateCourse(course.id, input);
             // await mutate();
             setLoading(false);
@@ -105,7 +105,7 @@ const CourseForm = (props: CourseFormProps) => {
     const onArchived = async () => {
         try {
             setLoading(true);
-            await refetch({ archived: true });
+            await mutate({ archived: true });
             // await updateCourse(course.id, { archived: true });
             // await mutate();
             setLoading(false);

@@ -60,7 +60,7 @@ import React from "react";
 //                 },
 //             });
 
-//             await props.refetch();
+//             await props.mutate();
 
 //             props.setToast({
 //                 success: true,
