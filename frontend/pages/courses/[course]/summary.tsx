@@ -21,14 +21,12 @@ const SummaryPage = (props: SummaryPageProps) => {
             <CourseWrapper
                 course={course}
                 leadership={leadership}
-                render={(staff: boolean) => {
+                render={() => {
                     return (
-                        staff && (
-                            <Summary
-                                course={course}
-                                questionListResult={questionListResult}
-                            />
-                        )
+                        <Summary
+                            course={course}
+                            questionListResult={questionListResult}
+                        />
                     );
                 }}
             />

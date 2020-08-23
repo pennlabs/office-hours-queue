@@ -17,8 +17,8 @@ const SettingsPage = (props: CoursePageProps) => {
             <CourseWrapper
                 course={course}
                 leadership={leadership}
-                render={(staff: boolean) => {
-                    return staff && <CourseSettings course={course} />;
+                render={() => {
+                    return <CourseSettings course={course} />;
                 }}
             />
         </Grid>

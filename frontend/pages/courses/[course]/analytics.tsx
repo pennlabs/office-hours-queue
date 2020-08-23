@@ -17,8 +17,8 @@ const AnalyticsPage = (props: CoursePageProps) => {
             <CourseWrapper
                 course={course}
                 leadership={leadership}
-                render={(staff: boolean) => {
-                    return staff && <Analytics />;
+                render={() => {
+                    return <Analytics />;
                 }}
             />
         </Grid>

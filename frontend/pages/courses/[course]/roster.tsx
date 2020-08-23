@@ -22,15 +22,13 @@ const RosterPage = (props: RosterPageProps) => {
             <CourseWrapper
                 course={course}
                 leadership={leadership}
-                render={(staff: boolean) => {
+                render={() => {
                     return (
-                        staff && (
-                            <Roster
-                                courseId={course.id}
-                                memberships={memberships}
-                                invites={invites}
-                            />
-                        )
+                        <Roster
+                            courseId={course.id}
+                            memberships={memberships}
+                            invites={invites}
+                        />
                     );
                 }}
             />
