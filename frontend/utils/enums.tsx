@@ -46,3 +46,35 @@ export function prettifyRole(role) {
 export function isLeadershipRole(role) {
     return ["PROFESSOR", "HEAD_TA"].indexOf(role) >= 0;
 }
+
+export const questionStateOptions = [
+    {
+        key: 0,
+        value: "ASKED",
+        text: "Asked",
+    },
+    {
+        key: 1,
+        value: "WITHDRAWN",
+        text: "Withdrawn",
+    },
+    {
+        key: 2,
+        value: "ACTIVE",
+        text: "Active",
+    },
+    {
+        key: 3,
+        value: "REJECTED",
+        text: "Rejected",
+    },
+    {
+        key: 4,
+        value: "ANSWERED",
+        text: "Answered",
+    },
+];
+
+export function prettifyQuestionState(state) {
+    return questionStateOptions.find((o) => o.value === state).text;
+}

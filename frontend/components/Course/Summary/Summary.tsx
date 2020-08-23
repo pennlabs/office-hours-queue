@@ -9,6 +9,7 @@ import {
 import SummaryForm from "./SummaryForm";
 import { useCourse } from "../../../hooks/data-fetching/course";
 import { Course } from "../../../types";
+import { prettifyQuestionState } from "../../../utils/enums";
 
 const MAX_QUESTIONS_PER_PAGE = 20;
 interface SummaryProps {
@@ -76,7 +77,9 @@ const Summary = (props: SummaryProps) => {
                                                 timeStyle: "short",
                                             })}
                                         </Table.Cell>
-                                        <Table.Cell>{qs.status}</Table.Cell>
+                                        <Table.Cell>
+                                            {prettifyQuestionState(qs.status)}
+                                        </Table.Cell>
                                     </Table.Row>
                                 ))}
                             </Table.Body>
