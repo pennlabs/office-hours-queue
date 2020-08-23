@@ -33,7 +33,7 @@ const Queue = (props: QueueProps) => {
         courseId,
         queueId,
         rawQuestions,
-        3000
+        queue.active ? 3000 : 0
     );
     const [clearModalOpen, setClearModalOpen] = useState(false);
 
