@@ -86,12 +86,14 @@ QueuePage.getInitialProps = async (
             ).then((res) => res.json())
         )
     );
-    const questionmap: QuestionMap = rawQuestions
-        .map((questions, index) => ({
-            [queues[index].id]: questions,
-        }))
-        .reduce((map, questions) => ({ ...map, ...questions }));
-
+    let questionmap: QuestionMap = {};
+    if (rawQuestions.length !== 0) {
+        questionmap = rawQuestions
+            .map((questions, index) => ({
+                [queues[index].id]: questions,
+            }))
+            .reduce((map, questions) => ({ ...map, ...questions }));
+    }
     return {
         course,
         leadership: leadership.filter((m) => isLeadershipRole(m.kind)),
