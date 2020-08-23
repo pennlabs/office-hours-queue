@@ -10,6 +10,7 @@ import {
 interface DeleteQuestionModalProps {
     question: Question;
     queue: Queue;
+    queueMutate: mutateResourceListFunction<Queue>;
     open: boolean;
     setOpen: React.Dispatch<React.SetStateAction<boolean>>;
     mutate: mutateResourceListFunction<Question>;
@@ -17,13 +18,22 @@ interface DeleteQuestionModalProps {
 }
 
 const DeleteQuestionModal = (props: DeleteQuestionModalProps) => {
-    const { question, queue, open, setOpen, mutate, toastFunc } = props;
+    const {
+        question,
+        queue,
+        queueMutate,
+        open,
+        setOpen,
+        mutate,
+        toastFunc,
+    } = props;
 
     const onDelete = async () => {
         try {
             await mutate(question.id, {
                 status: QuestionStatus.WITHDRAWN,
             });
+            queueMutate(-1, null);
             setOpen(false);
             toastFunc("Question withdrawn!", null);
         } catch (e) {

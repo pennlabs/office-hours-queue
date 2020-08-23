@@ -4,16 +4,17 @@ import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 import QuestionForm from "./QuestionForm";
 import QuestionCard from "./QuestionCard";
-import { Queue, Course } from "../../../types";
+import { Queue, Course, mutateResourceListFunction } from "../../../types";
 import { useQuestions } from "../../../hooks/data-fetching/course";
 
 interface StudentQueueProps {
     course: Course;
     queue: Queue;
+    queueMutate: mutateResourceListFunction<Queue>;
 }
 
 const StudentQueue = (props: StudentQueueProps) => {
-    const { course, queue } = props;
+    const { course, queue, queueMutate } = props;
     const [toast, setToast] = useState({ message: "", success: true });
     const [toastOpen, setToastOpen] = useState(false);
     // TODO: initial props for this
@@ -79,6 +80,7 @@ const StudentQueue = (props: StudentQueueProps) => {
                         question={questions[0]}
                         course={course}
                         queue={queue}
+                        queueMutate={queueMutate}
                         mutate={mutateQuestions}
                         toastFunc={updateToast}
                     />
@@ -96,6 +98,7 @@ const StudentQueue = (props: StudentQueueProps) => {
                     <QuestionForm
                         course={course}
                         queueId={queue.id}
+                        queueMutate={queueMutate}
                         mutate={mutateQuestions}
                         toastFunc={updateToast}
                     />

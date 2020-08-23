@@ -14,11 +14,12 @@ interface QuestionCardProps {
     question: Question;
     course: Course;
     queue: Queue;
+    queueMutate: mutateResourceListFunction<Queue>;
     mutate: mutateResourceListFunction<Question>;
     toastFunc: (success: string, error: any) => void;
 }
 const QuestionCard = (props: QuestionCardProps) => {
-    const { question, course, queue, mutate, toastFunc } = props;
+    const { question, course, queue, mutate, toastFunc, queueMutate } = props;
     const [{ position }, , ,] = useQuestionPosition(
         course.id,
         queue.id,
@@ -48,6 +49,7 @@ const QuestionCard = (props: QuestionCardProps) => {
             <DeleteQuestionModal
                 open={openDelete}
                 queue={queue}
+                queueMutate={queueMutate}
                 question={question}
                 setOpen={setOpenDelete}
                 toastFunc={toastFunc}
