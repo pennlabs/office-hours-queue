@@ -18,7 +18,7 @@ export const withProtectPage = (
         const wrappedProps = await WrappedComponent.getInitialProps(ctx);
         const { user } = wrappedProps;
         if (user && !condition(user, ctx)) {
-            return nextRedirect(ctx, () => true, "/404");
+            nextRedirect(ctx, () => true, "/404");
         }
 
         return wrappedProps;

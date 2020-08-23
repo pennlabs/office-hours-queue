@@ -29,7 +29,7 @@ export const withAuth = (WrappedComponent) => {
         if (res.ok) {
             user = await res.json();
         } else {
-            return nextRedirect(ctx, (url) => url !== "/", "/");
+            nextRedirect(ctx, (url) => url !== "/", "/");
         }
 
         const props =

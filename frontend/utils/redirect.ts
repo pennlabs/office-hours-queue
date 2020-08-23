@@ -14,6 +14,4 @@ export default function nextRedirect(
     } else if (condition(window.location.pathname)) {
         Router.replace(redirectUrl);
     }
-
-    return { user: null };
 }
