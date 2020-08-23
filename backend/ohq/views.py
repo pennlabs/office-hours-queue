@@ -1,11 +1,10 @@
-import json
 import re
 from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.core.validators import ValidationError, validate_email
 from django.db.models import Count, Exists, FloatField, IntegerField, OuterRef, Q, Subquery
-from django.http import HttpResponse
+from django.http import JsonResponse
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, viewsets
@@ -145,13 +144,12 @@ class QuestionViewSet(viewsets.ModelViewSet):
             qs = qs.filter(asked_by=self.request.user)
         return qs
 
-    @action(methods=["GET"], detail=True)
+    @action(detail=True)
     def position(self, request, course_pk, queue_pk, pk=None):
         """
         Get the position of a question within its queue.
         """
-
-        question = Question.objects.get(pk=pk)
+        question = self.get_object()
         position = -1
         if question.status == Question.STATUS_ASKED:
             position = (
@@ -160,8 +158,7 @@ class QuestionViewSet(viewsets.ModelViewSet):
                 ).count()
                 + 1
             )
-        response = {"position": position}
-        return HttpResponse(json.dumps(response))
+        return JsonResponse({"position": position})
 
     def list(self, request, *args, **kwargs):
         """
@@ -255,12 +252,13 @@ class QueueViewSet(viewsets.ModelViewSet):
         """
         Clear the queue by rejecting all questions which are currently open (in the asked state).
         """
-        Question.objects.filter(queue=pk, status=Question.STATUS_ASKED).update(
+        queue = self.get_object()
+        Question.objects.filter(queue=queue, status=Question.STATUS_ASKED).update(
             status=Question.STATUS_REJECTED,
             rejected_reason="OH_ENDED",
             responded_to_by=self.request.user,
         )
-        return HttpResponse('{"detail": "success"}')
+        return JsonResponse({"detail": "success"})
 
 
 class MembershipViewSet(viewsets.ModelViewSet):

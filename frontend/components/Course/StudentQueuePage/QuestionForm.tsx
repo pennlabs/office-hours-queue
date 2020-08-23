@@ -3,11 +3,17 @@ import { Segment, Form, Header, Button } from "semantic-ui-react";
 
 import { isValidURL } from "../../../utils";
 import { createQuestion } from "../../../hooks/data-fetching/course";
-import { Course, mutateResourceListFunction, Question } from "../../../types";
+import {
+    Course,
+    mutateResourceListFunction,
+    Question,
+    Queue,
+} from "../../../types";
 
 interface QuestionFormProps {
     course: Course;
     queueId: number;
+    queueMutate: mutateResourceListFunction<Queue>;
     mutate: mutateResourceListFunction<Question>;
     toastFunc: (success: string, error: any) => void;
 }
@@ -58,6 +64,7 @@ const QuestionForm = (props: QuestionFormProps) => {
             await createQuestion(props.course.id, props.queueId, input);
             // TODO: make arguments here optional?
             await props.mutate(-1, null);
+            await props.queueMutate(-1, null);
             props.toastFunc("Question successfully added to queue", null);
         } catch (e) {
             await props.mutate(-1, null);

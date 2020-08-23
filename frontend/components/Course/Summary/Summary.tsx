@@ -5,19 +5,35 @@ import { Segment, Grid, Table, Loader, Pagination } from "semantic-ui-react";
 import {
     useQuestions,
     QuestionSummaryFilters,
+    QuestionListResult,
 } from "../../../hooks/data-fetching/questionsummary";
 import SummaryForm from "./SummaryForm";
+import { useCourse } from "../../../hooks/data-fetching/course";
+import { Course, User } from "../../../types";
+import { prettifyQuestionState } from "../../../utils/enums";
 
 const MAX_QUESTIONS_PER_PAGE = 20;
+interface SummaryProps {
+    course: Course;
+    questionListResult: QuestionListResult;
+}
 
-const Summary = ({ course }) => {
+const Summary = (props: SummaryProps) => {
+    const { course: rawCourse, questionListResult } = props;
+    const [course, , ,] = useCourse(rawCourse.id, rawCourse);
+
     const [filterState, setFilterState] = useState<
         Partial<QuestionSummaryFilters>
     >({ page: 1 });
 
-    // TODO: Add initial state
+    const getFullName = (user: User) => `${user.firstName} ${user.lastName}`;
+
     // TODO: Handle loaders
-    const [data, , loading] = useQuestions(course.id, filterState, null);
+    const [data, , loading] = useQuestions(
+        course.id,
+        filterState,
+        questionListResult
+    );
     return (
         <div>
             <Grid.Row>
@@ -52,10 +68,11 @@ const Summary = ({ course }) => {
                                 {data.results.map((qs) => (
                                     <Table.Row>
                                         <Table.Cell>
-                                            {qs.askedBy?.firstName}
+                                            {getFullName(qs.askedBy)}
                                         </Table.Cell>
                                         <Table.Cell>
-                                            {qs.respondedToBy?.firstName}
+                                            {qs.respondedToBy &&
+                                                getFullName(qs.respondedToBy)}
                                         </Table.Cell>
                                         <Table.Cell>{qs.text}</Table.Cell>
                                         <Table.Cell>
@@ -68,7 +85,9 @@ const Summary = ({ course }) => {
                                                 timeStyle: "short",
                                             })}
                                         </Table.Cell>
-                                        <Table.Cell>{qs.status}</Table.Cell>
+                                        <Table.Cell>
+                                            {prettifyQuestionState(qs.status)}
+                                        </Table.Cell>
                                     </Table.Row>
                                 ))}
                             </Table.Body>

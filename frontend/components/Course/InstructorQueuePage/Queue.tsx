@@ -2,26 +2,38 @@ import React, { useState } from "react";
 import { Header, Label, Grid, Segment, Button } from "semantic-ui-react";
 import Questions from "./Questions";
 import ClearQueueModal from "./ClearQueueModal";
-import { mutateResourceListFunction, Queue as QueueType } from "../../../types";
+import {
+    mutateResourceListFunction,
+    Queue as QueueType,
+    Question,
+} from "../../../types";
 import { useQuestions } from "../../../hooks/data-fetching/course";
 
 interface QueueProps {
     courseId: number;
     queue: QueueType;
+    questions: Question[];
     mutate: mutateResourceListFunction<QueueType>;
     leader: boolean;
     editFunc: () => void;
 }
 const Queue = (props: QueueProps) => {
-    const { courseId, queue, mutate, leader, editFunc } = props;
+    const {
+        courseId,
+        queue,
+        questions: rawQuestions,
+        mutate,
+        leader,
+        editFunc,
+    } = props;
     const { id: queueId, active, estimatedWaitTime } = queue;
 
     /* STATE */
-    // TODO: proper inital props on this
     const [questions, , , mutateQuestions] = useQuestions(
         courseId,
         queueId,
-        3000
+        rawQuestions,
+        queue.active ? 3000 : 0
     );
     const [clearModalOpen, setClearModalOpen] = useState(false);
 
@@ -33,14 +45,14 @@ const Queue = (props: QueueProps) => {
         await mutate(queueId, { active: false });
     };
 
-    return (
+    return queue && questions ? (
         <Segment basic>
             <ClearQueueModal
                 courseId={courseId}
                 queueId={queueId}
                 open={clearModalOpen}
                 queue={queue}
-                refetch={mutate}
+                mutate={mutate}
                 closeFunc={() => setClearModalOpen(false)}
             />
             <Header as="h3">
@@ -118,12 +130,12 @@ const Queue = (props: QueueProps) => {
             <Grid.Row columns={1}>
                 <Questions
                     questions={questions}
-                    refetch={mutateQuestions}
+                    mutate={mutateQuestions}
                     active={active}
                 />
             </Grid.Row>
         </Segment>
-    );
+    ) : null;
 };
 
 export default Queue;

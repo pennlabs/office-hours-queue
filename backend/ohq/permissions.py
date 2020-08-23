@@ -132,8 +132,8 @@ class QuestionPermission(permissions.BasePermission):
 
         # Students can get or modify their own question
         # TAs+ can get or modify any questions
-        if view.action in ["retrieve", "update", "partial_update"]:
-            return obj.asked_by is request.user or membership.is_ta
+        if view.action in ["retrieve", "update", "partial_update", "position"]:
+            return obj.asked_by == request.user or membership.is_ta
 
     def has_permission(self, request, view):
         # Anonymous users can't do anything
@@ -198,14 +198,14 @@ class MembershipPermission(permissions.BasePermission):
         # Students can get their own memberships
         # TAs+ can get any memberships
         if view.action == "retrieve":
-            return obj.user is request.user or membership.is_ta
+            return obj.user == request.user or membership.is_ta
 
         # Students can delete their own memberships
         # Head TAs+ can delete any memberships
         # TODO: make sure Head TAs+ can't delete professors
         # and professors can't delete themselves
         if view.action == "destroy":
-            return obj.user is request.user or membership.is_leadership
+            return obj.user == request.user or membership.is_leadership
 
         # Head TAs+ can modify any membership
         # TODO: make sure Head TAs+ can't delete professors

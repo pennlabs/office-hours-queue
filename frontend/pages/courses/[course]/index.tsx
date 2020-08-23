@@ -1,55 +1,102 @@
 import React from "react";
-import { useRouter } from "next/router";
 import { Grid } from "semantic-ui-react";
-import Course from "../../../components/Course/Course";
+import { NextPageContext } from "next";
+import CourseWrapper from "../../../components/Course/CourseWrapper";
 import { withAuth } from "../../../context/auth";
 import { doApiRequest } from "../../../utils/fetch";
 import { isLeadershipRole } from "../../../utils/enums";
+import {
+    CoursePageProps,
+    Queue,
+    Course,
+    Membership,
+    Question,
+    QuestionMap,
+} from "../../../types";
+import InstructorQueuePage from "../../../components/Course/InstructorQueuePage/InstructorQueuePage";
+import StudentQueuePage from "../../../components/Course/StudentQueuePage/StudentQueuePage";
 
-const CoursePage = (props) => {
-    const router = useRouter();
-    const { course: courseId } = router.query;
-    const { course, memberships, invites, leadership } = props;
+interface QueuePageProps extends CoursePageProps {
+    queues: Queue[];
+    questionmap: QuestionMap;
+}
+
+const QueuePage = (props: QueuePageProps) => {
+    const { course, leadership, queues, questionmap } = props;
     return (
         <Grid columns="equal" divided style={{ width: "100%" }} stackable>
-            <Course
-                // TODO: better fix
-                // @ts-ignore
-                courseId={parseInt(courseId, 10)}
+            <CourseWrapper
                 course={course}
-                memberships={memberships}
-                invites={invites}
                 leadership={leadership}
+                render={(staff: boolean) => {
+                    return (
+                        <>
+                            {staff && (
+                                <InstructorQueuePage
+                                    courseId={course.id}
+                                    queues={queues}
+                                    questionmap={questionmap}
+                                />
+                            )}
+                            {!staff && (
+                                <StudentQueuePage
+                                    course={course}
+                                    queues={queues}
+                                    questionmap={questionmap}
+                                />
+                            )}
+                        </>
+                    );
+                }}
             />
         </Grid>
     );
 };
 
-CoursePage.getInitialProps = async (context) => {
+QueuePage.getInitialProps = async (
+    context: NextPageContext
+): Promise<QueuePageProps> => {
     const { query, req } = context;
     const data = {
         headers: req ? { cookie: req.headers.cookie } : undefined,
     };
-
-    const [course, memberships, invites, leadership] = await Promise.all([
+    const [course, leadership, queues]: [
+        Course,
+        Membership[],
+        Queue[]
+    ] = await Promise.all([
         doApiRequest(`/courses/${query.course}/`, data).then((res) =>
             res.json()
         ),
         doApiRequest(`/courses/${query.course}/members/`, data).then((res) =>
             res.json()
         ),
-        doApiRequest(`/courses/${query.course}/invites/`, data).then((res) =>
-            res.json()
-        ),
-        doApiRequest(`/courses/${query.course}/members/`, data).then((res) =>
+        doApiRequest(`/courses/${query.course}/queues/`, data).then((res) =>
             res.json()
         ),
     ]);
+    // Generate a new questions object that's a map from queue id to a
+    // list of questions in the queue. The API calls are wrapped in a
+    // Promise.all to ensure those calls are made simultaneously
+    const rawQuestions: Question[][] = await Promise.all(
+        queues.map((queue) =>
+            doApiRequest(
+                `/courses/${query.course}/queues/${queue.id}/questions/`,
+                data
+            ).then((res) => res.json())
+        )
+    );
+    const questionmap: QuestionMap = rawQuestions
+        .map((questions, index) => ({
+            [queues[index].id]: questions,
+        }))
+        .reduce((map, questions) => ({ ...map, ...questions }), {});
+
     return {
         course,
-        memberships,
-        invites,
         leadership: leadership.filter((m) => isLeadershipRole(m.kind)),
+        queues,
+        questionmap,
     };
 };
-export default withAuth(CoursePage);
+export default withAuth(QueuePage);

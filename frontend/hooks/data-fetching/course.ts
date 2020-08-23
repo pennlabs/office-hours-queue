@@ -88,21 +88,23 @@ export async function getSemesters(): Promise<Semester[]> {
         .catch((_) => []);
 }
 
-export const useQueues = (courseId: number) =>
+export const useQueues = (courseId: number, initialData: Queue[]) =>
     useResourceList<Queue>(
         `/courses/${courseId}/queues/`,
-        (id) => `/courses/${courseId}/queues/${id}/`
+        (id) => `/courses/${courseId}/queues/${id}/`,
+        initialData
     );
 
 export const useQuestions = (
     courseId: number,
     queueId: number,
+    initialData: Question[],
     refreshInterval: number
 ) =>
     useResourceList<Question>(
         `/courses/${courseId}/queues/${queueId}/questions/`,
         (id) => `/courses/${courseId}/queues/${queueId}/questions/${id}/`,
-        [],
+        initialData,
         { refreshInterval }
     );
 

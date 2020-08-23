@@ -91,6 +91,11 @@ export interface Semester {
     term: string;
     pretty: string;
 }
+
+export interface QuestionMap {
+    [queueId: number]: Question[];
+}
+
 export type mutateFunction<D> = (
     data?: D,
     shouldRevalidate?: boolean
@@ -113,4 +118,9 @@ export type mutateResourceListFunction<D extends Identifiable> = (
 export interface Toast {
     message: string;
     success: boolean;
+}
+
+export interface CoursePageProps {
+    course: Course;
+    leadership: Membership[];
 }

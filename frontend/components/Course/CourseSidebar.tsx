@@ -8,6 +8,7 @@ import {
     List,
     Icon,
 } from "semantic-ui-react";
+import { useRouter } from "next/router";
 import { prettifyRole } from "../../utils/enums";
 
 import AboutModal from "../LandingPage/AboutModal";
@@ -20,11 +21,9 @@ import { Membership } from "../../types";
 interface CourseSidebarProps {
     courseId: number;
     leadership: Membership[];
-    active: string;
-    clickFunc: React.Dispatch<React.SetStateAction<string>>;
 }
 const CourseSidebar = (props: CourseSidebarProps) => {
-    const { courseId, leadership: leadershipRaw, active, clickFunc } = props;
+    const { courseId, leadership: leadershipRaw } = props;
     const [leadershipUnsorted, , , ,] = useLeadership(courseId, leadershipRaw);
     const leadership = leadershipUnsorted.sort(leadershipSortFunc);
 
@@ -37,6 +36,8 @@ const CourseSidebar = (props: CourseSidebarProps) => {
         overflow: "hidden",
     };
     const [showAboutModal, setShowAboutModal] = useState(false);
+
+    const router = useRouter();
 
     return (
         <Grid.Column width={3}>
@@ -52,8 +53,8 @@ const CourseSidebar = (props: CourseSidebarProps) => {
                         style={noWrapStyle}
                         name="Queues"
                         icon="hourglass one"
-                        onClick={() => clickFunc("queues")}
-                        active={active === "queues"}
+                        href={`/courses/${courseId}`}
+                        active={router.pathname.endsWith("[course]")}
                         color="blue"
                     />
                     {staff && (
@@ -61,8 +62,8 @@ const CourseSidebar = (props: CourseSidebarProps) => {
                             style={noWrapStyle}
                             name="Roster"
                             icon="users"
-                            onClick={() => clickFunc("roster")}
-                            active={active === "roster"}
+                            href={`/courses/${courseId}/roster`}
+                            active={router.pathname.endsWith("roster")}
                             color="blue"
                         />
                     )}
@@ -71,8 +72,8 @@ const CourseSidebar = (props: CourseSidebarProps) => {
                             style={noWrapStyle}
                             name="Analytics"
                             icon="chart bar"
-                            onClick={() => clickFunc("analytics")}
-                            active={active === "analytics"}
+                            href={`/courses/${courseId}/analytics`}
+                            active={router.pathname.endsWith("analytics")}
                             color="blue"
                         />
                     )}
@@ -81,8 +82,8 @@ const CourseSidebar = (props: CourseSidebarProps) => {
                             style={noWrapStyle}
                             name="Question Summary"
                             icon="list ol"
-                            onClick={() => clickFunc("summary")}
-                            active={active === "summary"}
+                            href={`/courses/${courseId}/summary`}
+                            active={router.pathname.endsWith("summary")}
                             color="blue"
                         />
                     )}
@@ -91,8 +92,8 @@ const CourseSidebar = (props: CourseSidebarProps) => {
                             style={noWrapStyle}
                             name="Course Settings"
                             icon="settings"
-                            onClick={() => clickFunc("settings")}
-                            active={active === "settings"}
+                            href={`/courses/${courseId}/settings`}
+                            active={router.pathname.endsWith("settings")}
                             color="blue"
                         />
                     )}
