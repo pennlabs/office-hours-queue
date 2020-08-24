@@ -9,14 +9,11 @@ from ohq.models import Question
 def sendSMS(to, body):
     try:
         client = Client(settings.TWILIO_SID, settings.TWILIO_AUTH_TOKEN)
-        msg = client.messages.create(to=str(to), from_=settings.TWILIO_NUMBER, body=body)
-        return msg.sid is not None
+        client.messages.create(to=str(to), from_=settings.TWILIO_NUMBER, body=body)
     except TwilioRestException as e:
         capture_message(e, level="error")
-        return False
     except TwilioException as e:  # likely a credential issue in development
         capture_message(e, level="error")
-        return False
 
 
 def sendSMSVerification(to, verification_code):
