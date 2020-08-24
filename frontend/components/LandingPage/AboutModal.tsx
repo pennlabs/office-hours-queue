@@ -7,7 +7,6 @@ interface AboutModalProps {
 }
 const AboutModal = (props: AboutModalProps) => {
     const { open, closeFunc } = props;
-    // TODO: replace this with Labs feedback button
     return (
         <Modal open={open} style={{ width: "350px" }}>
             <Modal.Content>
