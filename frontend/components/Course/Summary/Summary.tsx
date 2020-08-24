@@ -89,9 +89,12 @@ const Summary = (props: SummaryProps) => {
                                     <Table.HeaderCell colSpan="6">
                                         <Pagination
                                             activePage={filters.page}
-                                            totalPages={Math.ceil(
-                                                data.count /
-                                                    MAX_QUESTIONS_PER_PAGE
+                                            totalPages={Math.max(
+                                                1,
+                                                Math.ceil(
+                                                    data.count /
+                                                        MAX_QUESTIONS_PER_PAGE
+                                                )
                                             )}
                                             onPageChange={(
                                                 _,
