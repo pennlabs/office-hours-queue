@@ -440,13 +440,14 @@ class QuestionTestCase(TestCase):
 
     @parameterized.expand(users, name_func=get_test_name)
     def test_modify(self, user):
+        status = Question.STATUS_WITHDRAWN if user == "student" else Question.STATUS_ACTIVE
         test(
             self,
             user,
             "modify",
             "patch",
             reverse("ohq:question-detail", args=[self.course.id, self.queue.id, self.question.id]),
-            {"description": "new"},
+            {"status": status},
         )
 
 

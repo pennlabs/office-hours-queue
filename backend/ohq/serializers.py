@@ -212,6 +212,10 @@ class QuestionSerializer(QueueRouteMixin):
                 elif status == Question.STATUS_ASKED:
                     instance.responded_to_by = None
                     instance.time_response_started = None
+            else:  # User is updating a field other than the status
+                raise serializers.ValidationError(
+                    detail={"detail": "TAs can only change a question's status"}
+                )
         else:  # User is a student
             if "status" in validated_data:
                 status = validated_data["status"]
