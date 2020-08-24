@@ -131,7 +131,6 @@ const CourseSidebar = (props: CourseSidebarProps) => {
             <div
                 role="button"
                 className={`${styles.about} ${styles["about-dashboard"]}`}
-                // onClick={() => setShowAboutModal(true)}
             >
                 <a
                     href="https://airtable.com/shrIZxIjyAE3gOUSg"
