@@ -159,6 +159,10 @@ class CourseTestCase(TestCase):
 
     @parameterized.expand(users, name_func=get_test_name)
     def test_modify_archived(self, user):
+        """
+        Ensure no one can modify an archived course.
+        """
+
         self.course.archived = True
         self.course.save()
         test(
@@ -218,6 +222,14 @@ class QueueTestCase(TestCase):
                 "non_member": 403,
                 "anonymous": 403,
             },
+            "clear": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 403,
+                "non_member": 403,
+                "anonymous": 403,
+            },
         }
 
     @parameterized.expand(users, name_func=get_test_name)
@@ -266,12 +278,27 @@ class QueueTestCase(TestCase):
             {"active": True},
         )
 
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_clear(self, user):
+        """
+        Test who can clear questions from a queue.
+        """
+
+        test(
+            self,
+            user,
+            "clear",
+            "post",
+            reverse("ohq:queue-clear", args=[self.course.id, self.queue.id]),
+        )
+
 
 class QuestionTestCase(TestCase):
     def setUp(self):
         setUp(self)
         self.queue = Queue.objects.create(name="Queue", course=self.course)
         self.question = Question.objects.create(queue=self.queue, asked_by=self.student)
+        self.other_question = Question.objects.create(queue=self.queue, asked_by=self.ta)
 
         # Expected results
         self.expected = {
@@ -299,6 +326,16 @@ class QuestionTestCase(TestCase):
                 "non_member": 403,
                 "anonymous": 403,
             },
+            "position": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 200,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+            "retrieve-other": {"student": 404},
+            "position-other": {"student": 404},
             "destroy": {
                 "professor": 403,
                 "head_ta": 403,
@@ -348,6 +385,49 @@ class QuestionTestCase(TestCase):
             reverse("ohq:question-detail", args=[self.course.id, self.queue.id, self.question.id]),
         )
 
+    def test_retrieve_student_other_question(self):
+        """
+        Ensure a student can't access see anyone else's questions.
+        """
+
+        test(
+            self,
+            "student",
+            "retrieve-other",
+            "get",
+            reverse(
+                "ohq:question-detail", args=[self.course.id, self.queue.id, self.other_question.id]
+            ),
+        )
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_position(self, user):
+        test(
+            self,
+            user,
+            "position",
+            "get",
+            reverse(
+                "ohq:question-position", args=[self.course.id, self.queue.id, self.question.id]
+            ),
+        )
+
+    def test_position_student_other_question(self):
+        """
+        Ensure a student can't access see anyone else's question position.
+        """
+
+        test(
+            self,
+            "student",
+            "position-other",
+            "get",
+            reverse(
+                "ohq:question-position",
+                args=[self.course.id, self.queue.id, self.other_question.id],
+            ),
+        )
+
     @parameterized.expand(users, name_func=get_test_name)
     def test_destroy(self, user):
         test(
@@ -360,13 +440,14 @@ class QuestionTestCase(TestCase):
 
     @parameterized.expand(users, name_func=get_test_name)
     def test_modify(self, user):
+        status = Question.STATUS_WITHDRAWN if user == "student" else Question.STATUS_ACTIVE
         test(
             self,
             user,
             "modify",
             "patch",
             reverse("ohq:question-detail", args=[self.course.id, self.queue.id, self.question.id]),
-            {"description": "new"},
+            {"status": status},
         )
 
 

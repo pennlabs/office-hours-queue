@@ -58,7 +58,6 @@ class CoursePermission(permissions.BasePermission):
         if view.action == "list":
             return True
 
-        # TODO: change custom DLA backend to save user groups
         if view.action == "create":
             return (
                 request.user.groups.filter(name="faculty").exists()
@@ -88,7 +87,7 @@ class QueuePermission(permissions.BasePermission):
             return True
 
         # TAs+ can make changes
-        if view.action in ["update", "partial_update"]:
+        if view.action in ["update", "partial_update", "clear"]:
             return membership.is_ta and not obj.archived
 
         # Head TAs+ can create or delete a queue
