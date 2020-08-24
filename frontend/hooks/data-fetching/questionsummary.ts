@@ -53,7 +53,8 @@ export const useQuestions = (
     } = useFilteredResource(
         `/courses/${courseId}/questions/`,
         summaryFilterToQuery,
-        initialQuestions
+        initialQuestions,
+        { page: 1 }
     );
 
     return {
