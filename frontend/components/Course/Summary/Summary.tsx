@@ -1,10 +1,9 @@
 // TODO: sort by time asked
 
-import React, { useState } from "react";
+import React from "react";
 import { Segment, Grid, Table, Loader, Pagination } from "semantic-ui-react";
 import {
     useQuestions,
-    QuestionSummaryFilters,
     QuestionListResult,
 } from "../../../hooks/data-fetching/questionsummary";
 import SummaryForm from "./SummaryForm";
@@ -22,26 +21,18 @@ const Summary = (props: SummaryProps) => {
     const { course: rawCourse, questionListResult } = props;
     const [course, , ,] = useCourse(rawCourse.id, rawCourse);
 
-    const [filterState, setFilterState] = useState<
-        Partial<QuestionSummaryFilters>
-    >({ page: 1 });
-
     const getFullName = (user: User) => `${user.firstName} ${user.lastName}`;
 
     // TODO: Handle loaders
-    const [data, , loading] = useQuestions(
+    const { data, isValidating: loading, updateFilter, filters } = useQuestions(
         course.id,
-        filterState,
         questionListResult
     );
     return (
         <div>
             <Grid.Row>
                 <Segment basic>
-                    <SummaryForm
-                        setFilterState={setFilterState}
-                        filterState={filterState}
-                    />
+                    <SummaryForm updateFilter={updateFilter} />
                     <Table sortable celled padded striped>
                         <Table.Header>
                             <Table.Row>
@@ -97,20 +88,33 @@ const Summary = (props: SummaryProps) => {
                                 <Table.Row textAlign="right">
                                     <Table.HeaderCell colSpan="6">
                                         <Pagination
-                                            activePage={filterState.page}
-                                            totalPages={Math.ceil(
-                                                data.count /
-                                                    MAX_QUESTIONS_PER_PAGE
+                                            activePage={filters.page}
+                                            totalPages={Math.max(
+                                                1,
+                                                Math.ceil(
+                                                    data.count /
+                                                        MAX_QUESTIONS_PER_PAGE
+                                                )
                                             )}
                                             onPageChange={(
-                                                e,
+                                                _,
                                                 { activePage }
                                             ) => {
-                                                setFilterState({
-                                                    ...filterState,
-                                                    // TODO: ts warning here
-                                                    // @ts-ignore
-                                                    page: activePage,
+                                                let parsedPage: number;
+                                                if (
+                                                    typeof activePage ===
+                                                    "string"
+                                                ) {
+                                                    parsedPage = parseInt(
+                                                        activePage,
+                                                        10
+                                                    );
+                                                } else {
+                                                    parsedPage = activePage;
+                                                }
+
+                                                updateFilter({
+                                                    page: parsedPage,
                                                 });
                                             }}
                                         />
