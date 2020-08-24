@@ -27,7 +27,7 @@ for (const state of enumKeys(QuestionStatus)) {
     });
 }
 
-const SummaryForm = ({ filterState, setFilterState }) => {
+const SummaryForm = ({ updateFilter }) => {
     const handleChangeTime = (isAfter) => (e) => {
         const time = e.target.value;
         let value;
@@ -40,8 +40,7 @@ const SummaryForm = ({ filterState, setFilterState }) => {
             fieldName = "timeAskedLt";
         }
 
-        setFilterState({
-            ...filterState,
+        updateFilter({
             [fieldName]: value,
             page: 1,
         });
@@ -80,8 +79,7 @@ const SummaryForm = ({ filterState, setFilterState }) => {
                         placeholder="State"
                         options={stateOptions}
                         onChange={(e, { value }) => {
-                            setFilterState({
-                                ...filterState,
+                            updateFilter({
                                 status: value,
                                 page: 1,
                             });
@@ -100,8 +98,7 @@ const SummaryForm = ({ filterState, setFilterState }) => {
                             }
                             setDebounce(
                                 setTimeout(() => {
-                                    setFilterState({
-                                        ...filterState,
+                                    updateFilter({
                                         search: value,
                                         page: 1,
                                     });

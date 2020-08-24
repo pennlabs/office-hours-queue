@@ -1,4 +1,4 @@
-import useSWR from "swr";
+import { useFilteredResource, FilteredResourceResponse } from "./resources";
 import { QuestionStatus, Question } from "../../types";
 
 export interface QuestionSummaryFilters {
@@ -16,31 +16,51 @@ export interface QuestionListResult {
     results: Question[];
 }
 
+const summaryFilterToQuery = (
+    filter: Partial<QuestionSummaryFilters>
+): string => {
+    return (
+        // eslint-disable-next-line
+        "?" +
+        Object.keys(filter)
+            .map((key) => {
+                let renamedKey: string;
+                if (key === "timeAskedGt") {
+                    renamedKey = "time_asked__gt";
+                } else if (key === "timeAskedLt") {
+                    renamedKey = "time_asked__lt";
+                } else {
+                    renamedKey = key;
+                }
+                return `${encodeURIComponent(renamedKey)}=${encodeURIComponent(
+                    filter[key]
+                )}`;
+            })
+            .join("&")
+    );
+};
+
 export const useQuestions = (
     courseId: number,
-    filters: Partial<QuestionSummaryFilters>,
     initialQuestions: QuestionListResult
-): [QuestionListResult, any, boolean] => {
-    const query = Object.keys(filters)
-        .map((key) => {
-            let renamedKey: string;
-            if (key === "timeAskedGt") {
-                renamedKey = "time_asked__gt";
-            } else if (key === "timeAskedLt") {
-                renamedKey = "time_asked__lt";
-            } else {
-                renamedKey = key;
-            }
-            return `${encodeURIComponent(renamedKey)}=${encodeURIComponent(
-                filters[key]
-            )}`;
-        })
-        .join("&");
+): FilteredResourceResponse<QuestionListResult, QuestionSummaryFilters> => {
+    const {
+        data,
+        error,
+        isValidating,
+        filters,
+        updateFilter,
+    } = useFilteredResource(
+        `/courses/${courseId}/questions/`,
+        summaryFilterToQuery,
+        initialQuestions
+    );
 
-    const queryUrl = `/courses/${courseId}/questions/?${query}`;
-    const { data, error, isValidating } = useSWR(queryUrl, {
-        initialData: initialQuestions,
-    });
-
-    return [data, error, isValidating];
+    return {
+        data,
+        error,
+        isValidating,
+        filters,
+        updateFilter,
+    };
 };
