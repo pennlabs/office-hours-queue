@@ -29,8 +29,8 @@ export async function validateSMS(code) {
     });
 
     if (!res.ok) {
-        // TODO: figure out how to pass through django error to this error
-        throw new Error("validate phone failed");
+        const body = await res.json()
+        throw new Error(body.detail);
     }
 }
 
