@@ -206,6 +206,7 @@ class QuestionSerializer(QueueRouteMixin):
                     instance.time_response_started = timezone.now()
                 elif status == Question.STATUS_REJECTED:
                     instance.responded_to_by = user
+                    instance.time_response_started = timezone.now()
                     instance.time_responded_to = timezone.now()
                     instance.rejected_reason = validated_data["rejected_reason"]
                     sendUpNextNotification(queue_id)

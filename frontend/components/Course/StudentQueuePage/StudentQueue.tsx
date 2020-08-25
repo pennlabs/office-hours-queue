@@ -67,14 +67,16 @@ const StudentQueue = (props: StudentQueueProps) => {
                 />
             )}
 
-            {/* TODO: figure out estimated wait time */}
-            {(queue.active || queue.questionsAsked) && (
-                <Label
-                    content={`${queue.estimatedWaitTime} mins`}
-                    color="blue"
-                    icon="clock"
-                />
-            )}
+            {(queue.active || queue.questionsAsked) &&
+                queue.estimatedWaitTime !== -1 && (
+                    <Label
+                        content={`${queue.estimatedWaitTime} min${
+                            queue.estimatedWaitTime === 1 ? "" : "s"
+                        }`}
+                        color="blue"
+                        icon="clock"
+                    />
+                )}
             {queue.active && (
                 <Label
                     content={`${queue.staffActive || 0} staff active`}

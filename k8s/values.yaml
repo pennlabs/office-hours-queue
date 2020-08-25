@@ -25,3 +25,10 @@ applications:
         value: 80
       - name: DOMAIN
         value: ohq.pennlabs.org # TODO: change this to ohq.io
+
+cronjobs:
+  - name: calculate-waits
+    schedule: "*/5 * * * *"
+    image: pennlabs/office-hours-queue-backend
+    secret: office-hours-queue
+    cmd: ["python", "manage.py", "calculatewaittimes"]
