@@ -20,13 +20,17 @@ export enum Kind {
     PROFESSOR = "PROFESSOR",
 }
 
-// TODO: why is user a nullable field here? How is user injected?
-// Can we refactor so another type extends this?
+export interface BaseUser {
+    username: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+}
+
 export interface Membership {
     id: number;
     kind: Kind;
-    course: Course;
-    user?: User;
+    user: BaseUser;
 }
 
 export interface MembershipInvite {
@@ -41,14 +45,16 @@ export interface Profile {
     phoneNumber?: string;
 }
 
-export interface User {
+export interface UserMembership {
     id: number;
-    username: string;
-    firstName: string;
-    lastName: string;
-    email: string;
+    course: Course;
+    kind: Kind;
+}
+
+export interface User extends BaseUser {
+    id: number;
     profile: Profile;
-    membershipSet: Membership[];
+    membershipSet: UserMembership[];
 }
 
 export interface Queue {
