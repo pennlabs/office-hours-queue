@@ -14,6 +14,28 @@ interface InstructorQueuePageProps {
     queues: Queue[];
     questionmap: QuestionMap;
 }
+
+enum PageStateEnum {
+    QUEUES,
+    SETTINGS,
+    CREATE,
+}
+
+interface QueueState {
+    kind: PageStateEnum.QUEUES;
+}
+
+interface SettingsState {
+    kind: PageStateEnum.SETTINGS;
+    queueID: number;
+}
+
+interface CreateState {
+    kind: PageStateEnum.CREATE;
+}
+
+type PageState = QueueState | SettingsState | CreateState;
+
 const InstructorQueuePage = (props: InstructorQueuePageProps) => {
     const { courseId, queues: rawQueues, questionmap } = props;
 
@@ -22,48 +44,54 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
     const [leader, , , ,] = useStaff(courseId, initialUser);
     const [queues, , , mutate] = useQueues(courseId, rawQueues);
     const [success, setSuccess] = useState(false);
-    const [activeQueueId, setActiveQueueId] = useState(null);
-    const [active, setActive] = useState("queues");
+    const [pageState, setPageState] = useState<PageState>({
+        kind: PageStateEnum.QUEUES,
+    });
 
     /* HANDLER FUNCTIONS */
     const onQueueSettings = (id: number) => {
-        setActiveQueueId(id);
-        setActive("settings");
+        setPageState({ kind: PageStateEnum.SETTINGS, queueID: id });
     };
 
-    const getQueue = (id) => queues.find((q) => q.id === id);
+    const getQueue = (id: number) => {
+        return queues.find((q) => q.id === id);
+    };
 
     return (
         <Grid stackable>
-            {active === "queues" && queues && (
+            {pageState.kind === PageStateEnum.QUEUES && queues && (
                 <InstructorQueues
                     courseId={courseId}
                     queues={queues}
                     questionmap={questionmap}
                     editFunc={onQueueSettings}
                     createFunc={() => {
-                        setActive("create");
+                        setPageState({ kind: PageStateEnum.CREATE });
                     }}
                     mutate={mutate}
                     leader={leader}
                 />
             )}
-            {active === "settings" && (
+            {pageState.kind === PageStateEnum.SETTINGS && (
                 <Grid.Row>
                     <QueueSettings
-                        queue={getQueue(activeQueueId)}
+                        queue={getQueue(pageState.queueID)}
                         mutate={mutate}
-                        backFunc={() => setActive("queues")}
+                        backFunc={() =>
+                            setPageState({ kind: PageStateEnum.QUEUES })
+                        }
                     />
                 </Grid.Row>
             )}
-            {active === "create" && (
+            {pageState.kind === PageStateEnum.CREATE && (
                 <Grid.Row>
                     <CreateQueue
                         courseId={courseId}
                         mutate={mutate}
                         successFunc={() => setSuccess(true)}
-                        backFunc={() => setActive("queues")}
+                        backFunc={() =>
+                            setPageState({ kind: PageStateEnum.QUEUES })
+                        }
                     />
                 </Grid.Row>
             )}

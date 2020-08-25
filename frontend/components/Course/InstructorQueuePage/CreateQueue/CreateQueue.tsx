@@ -17,8 +17,8 @@ const CreateQueue = (props: CreateQueueProps) => {
     const [disabled, setDisabled] = useState(true);
     const [error, setError] = useState(false);
     const [input, setInput] = useState({
-        name: null,
-        description: null,
+        name: "",
+        description: "",
         tags: [],
         startEndTimes: [],
         courseId,

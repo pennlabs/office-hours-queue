@@ -11,7 +11,7 @@ import QueueForm from "./QueueForm";
 import { Queue, mutateResourceListFunction } from "../../../../types";
 
 interface QueueSettingsProps {
-    queue: Queue;
+    queue?: Queue;
     mutate: mutateResourceListFunction<Queue>;
     backFunc: () => void;
 }
