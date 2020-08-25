@@ -34,6 +34,16 @@ export async function validateSMS(code) {
     }
 }
 
+export async function resendSMSVerification() {
+    const res = await doApiRequest("/accounts/me/resend/", {
+        method: "POST",
+    });
+
+    if (!res.ok) {
+        throw new Error("could not resend verification code");
+    }
+}
+
 export async function updateUser(payload) {
     const processedPayload = payload;
     if (payload.profile.phoneNumber) {
