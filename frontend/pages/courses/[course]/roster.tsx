@@ -7,8 +7,14 @@ import staffCheck from "../../../utils/staffcheck";
 import { withProtectPage } from "../../../utils/protectpage";
 import { doApiRequest } from "../../../utils/fetch";
 import { isLeadershipRole } from "../../../utils/enums";
-import { CoursePageProps, Membership, MembershipInvite } from "../../../types";
+import {
+    CoursePageProps,
+    Membership,
+    MembershipInvite,
+    Course,
+} from "../../../types";
 import Roster from "../../../components/Course/Roster/Roster";
+import nextRedirect from "../../../utils/redirect";
 
 interface RosterPageProps extends CoursePageProps {
     memberships: Membership[];
@@ -43,25 +49,35 @@ RosterPage.getInitialProps = async (
     const data = {
         headers: req ? { cookie: req.headers.cookie } : undefined,
     };
-    const [course, memberships, invites, leadership] = await Promise.all([
-        doApiRequest(`/courses/${query.course}/`, data).then((res) =>
-            res.json()
-        ),
-        doApiRequest(`/courses/${query.course}/members/`, data).then((res) =>
-            res.json()
-        ),
-        doApiRequest(`/courses/${query.course}/invites/`, data).then((res) =>
-            res.json()
-        ),
-        doApiRequest(`/courses/${query.course}/members/`, data).then((res) =>
-            res.json()
-        ),
-    ]);
+
+    let course: Course;
+    let memberships: Membership[];
+    let invites: MembershipInvite[];
+
+    try {
+        [course, memberships, invites] = await Promise.all([
+            doApiRequest(`/courses/${query.course}/`, data).then((res) =>
+                res.json()
+            ),
+            doApiRequest(
+                `/courses/${query.course}/members/`,
+                data
+            ).then((res) => res.json()),
+            doApiRequest(
+                `/courses/${query.course}/invites/`,
+                data
+            ).then((res) => res.json()),
+        ]);
+    } catch (err) {
+        nextRedirect(context, () => true, "/404");
+        throw new Error("Next should redirect: unreachable");
+    }
+
     return {
         course,
         memberships,
         invites,
-        leadership: leadership.filter((m) => isLeadershipRole(m.kind)),
+        leadership: memberships.filter((m) => isLeadershipRole(m.kind)),
     };
 };
 export default withProtectPage(withAuth(RosterPage), (user, ctx) => {

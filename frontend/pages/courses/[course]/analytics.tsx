@@ -7,7 +7,8 @@ import staffCheck from "../../../utils/staffcheck";
 import { withProtectPage } from "../../../utils/protectpage";
 import { doApiRequest } from "../../../utils/fetch";
 import { isLeadershipRole } from "../../../utils/enums";
-import { CoursePageProps } from "../../../types";
+import nextRedirect from "../../../utils/redirect";
+import { CoursePageProps, Course, Membership } from "../../../types";
 import Analytics from "../../../components/Course/Analytics/Analytics";
 
 const AnalyticsPage = (props: CoursePageProps) => {
@@ -32,14 +33,24 @@ AnalyticsPage.getInitialProps = async (
     const data = {
         headers: req ? { cookie: req.headers.cookie } : undefined,
     };
-    const [course, leadership] = await Promise.all([
-        doApiRequest(`/courses/${query.course}/`, data).then((res) =>
-            res.json()
-        ),
-        doApiRequest(`/courses/${query.course}/members/`, data).then((res) =>
-            res.json()
-        ),
-    ]);
+    let course: Course;
+    let leadership: Membership[];
+
+    try {
+        [course, leadership] = await Promise.all([
+            doApiRequest(`/courses/${query.course}/`, data).then((res) =>
+                res.json()
+            ),
+            doApiRequest(
+                `/courses/${query.course}/members/`,
+                data
+            ).then((res) => res.json()),
+        ]);
+    } catch (err) {
+        nextRedirect(context, () => true, "/404");
+        throw new Error("Next should redirect: unreachable");
+    }
+
     return {
         course,
         leadership: leadership.filter((m) => isLeadershipRole(m.kind)),
