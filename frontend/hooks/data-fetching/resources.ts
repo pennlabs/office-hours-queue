@@ -11,7 +11,7 @@ export function useResource<R>(
     url: string,
     initialData?: R,
     config?: ConfigInterface<R>
-): [R, any, boolean, mutateResourceFunction<R>] {
+): [R | undefined, any, boolean, mutateResourceFunction<R>] {
     const { data, error, isValidating, mutate } = useSWR(url, {
         initialData,
         ...config,
@@ -20,11 +20,14 @@ export function useResource<R>(
         newResource: Partial<R>,
         method: string = "PATCH"
     ) => {
-        mutate({ ...data, ...newResource }, false);
+        if (data) {
+            mutate({ ...data, ...newResource }, false);
+        }
         await doApiRequest(url, {
             method,
             body: newResource,
         });
+
         return mutate();
     };
     return [data, error, isValidating, mutateWithAPI];
@@ -61,7 +64,7 @@ export function useResourceList<R extends Identifiable>(
     getResourceUrl: (id: number) => string,
     initialData?: R[],
     config?: ConfigInterface<R[]>
-): [R[], any, boolean, mutateResourceListFunction<R>] {
+): [R[] | undefined, any, boolean, mutateResourceListFunction<R>] {
     const { data, error, isValidating, mutate } = useSWR(listUrl, {
         initialData,
         ...config,
@@ -71,15 +74,21 @@ export function useResourceList<R extends Identifiable>(
         patchedResource: Partial<R> | null,
         method: string = "PATCH"
     ) => {
-        const [patchedList, didPatch] = patchInList(data, id, patchedResource);
-        if (didPatch) {
-            // Only perform an API request when the patch finds a matching entry.
-            mutate(patchedList, false);
-            await doApiRequest(getResourceUrl(id), {
-                method,
-                body: patchedResource,
-            });
+        if (data) {
+            const [patchedList, didPatch] = patchInList(
+                data,
+                id,
+                patchedResource
+            );
+            if (didPatch) {
+                mutate(patchedList, false);
+            }
         }
+        // Only perform an API request when the patch finds a matching entry.
+        await doApiRequest(getResourceUrl(id), {
+            method,
+            body: patchedResource,
+        });
         // Always revalidate, even if mutate was a no-op.
         return mutate();
     };
@@ -87,7 +96,7 @@ export function useResourceList<R extends Identifiable>(
 }
 
 export interface FilteredResourceResponse<R, F> {
-    data: R;
+    data?: R;
     error: any;
     isValidating: boolean;
     filters: Partial<F>;

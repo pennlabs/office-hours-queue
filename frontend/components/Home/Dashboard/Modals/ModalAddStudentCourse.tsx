@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { Modal, Button } from "semantic-ui-react";
 import AddStudentForm from "../Forms/AddStudentForm";
 import { joinCourse } from "../../../../hooks/data-fetching/dashboard";
-import { mutateFunction, Membership } from "../../../../types";
+import { mutateFunction, UserMembership } from "../../../../types";
 
 interface ModalAddStudentCourseProps {
     open: boolean;
     closeFunc: () => void;
-    mutate: mutateFunction<Membership[]>;
+    mutate: mutateFunction<UserMembership[]>;
     successFunc: React.Dispatch<React.SetStateAction<boolean>>;
 }
 const ModalAddStudentCourse = (props: ModalAddStudentCourseProps) => {

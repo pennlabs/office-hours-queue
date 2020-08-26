@@ -28,6 +28,12 @@ const CourseSidebar = (props: CourseSidebarProps) => {
     const leadership = leadershipUnsorted.sort(leadershipSortFunc);
 
     const { user: initialUser } = useContext(AuthUserContext);
+    if (!initialUser) {
+        throw new Error(
+            "Invariant broken, withAuth must be used with component"
+        );
+    }
+
     const [leader, staff, , ,] = useStaff(courseId, initialUser);
 
     const noWrapStyle = {

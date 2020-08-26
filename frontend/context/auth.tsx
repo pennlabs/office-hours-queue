@@ -3,10 +3,11 @@ import { NextPageContext, NextPage } from "next";
 import nextRedirect from "../utils/redirect";
 import { doApiRequest } from "../utils/fetch";
 import { User } from "../types";
+import { GIPPage } from "../utils/gippage";
 
-export const AuthUserContext: React.Context<{ user: User }> = createContext({
-    user: null,
-});
+export const AuthUserContext: React.Context<{ user?: User }> = createContext(
+    {}
+);
 
 export interface AuthProps {
     user?: User;
@@ -14,7 +15,7 @@ export interface AuthProps {
 
 export function withAuth<T>(
     WrappedComponent: NextPage<T>
-): NextPage<T & AuthProps> {
+): GIPPage<T & AuthProps> {
     const AuthedComponent = ({ user, ...props }: T & AuthProps) => {
         return (
             <AuthUserContext.Provider value={{ user }}>
@@ -31,18 +32,25 @@ export function withAuth<T>(
         };
 
         const res = await doApiRequest("/accounts/me/", headers);
-        let user: User = null;
+        let user: User | undefined;
         if (res.ok) {
             user = await res.json();
         } else {
-            nextRedirect(ctx, (url) => url !== "/", "/");
+            nextRedirect(
+                ctx,
+                (url) => url !== "/",
+                `/api/accounts/login/?next=${ctx.asPath}`
+            );
         }
 
-        const props =
-            WrappedComponent.getInitialProps &&
-            (await WrappedComponent.getInitialProps(ctx));
-
-        return { ...props, user };
+        if (WrappedComponent.getInitialProps) {
+            const props = await WrappedComponent.getInitialProps(ctx);
+            return { ...props, user };
+        } else {
+            // Cast is sound: if WrappedComponent doesn't have
+            // getInitialProps, then T : {}
+            return { user } as T & AuthProps;
+        }
     };
 
     return AuthedComponent;

@@ -5,10 +5,11 @@ import CourseWrapper from "../../../components/Course/CourseWrapper";
 import { withAuth } from "../../../context/auth";
 import staffCheck from "../../../utils/staffcheck";
 import { withProtectPage } from "../../../utils/protectpage";
-import { doApiRequest } from "../../../utils/fetch";
+import { doMultipleSuccessRequests } from "../../../utils/fetch";
 import { isLeadershipRole } from "../../../utils/enums";
 import CourseSettings from "../../../components/Course/CourseSettings/CourseSettings";
-import { CoursePageProps } from "../../../types";
+import { CoursePageProps, Course, Membership } from "../../../types";
+import nextRedirect from "../../../utils/redirect";
 
 const SettingsPage = (props: CoursePageProps) => {
     const { course, leadership } = props;
@@ -32,14 +33,22 @@ SettingsPage.getInitialProps = async (
     const data = {
         headers: req ? { cookie: req.headers.cookie } : undefined,
     };
-    const [course, leadership] = await Promise.all([
-        doApiRequest(`/courses/${query.course}/`, data).then((res) =>
-            res.json()
-        ),
-        doApiRequest(`/courses/${query.course}/members/`, data).then((res) =>
-            res.json()
-        ),
+
+    let course: Course;
+    let leadership: Membership[];
+
+    const response = await doMultipleSuccessRequests([
+        { path: `/courses/${query.course}/`, data },
+        { path: `/courses/${query.course}/members/`, data },
     ]);
+
+    if (response.success) {
+        [course, leadership] = response.data;
+    } else {
+        nextRedirect(context, () => true, "/404");
+        throw new Error("Next should redirect: unreachable");
+    }
+
     return {
         course,
         leadership: leadership.filter((m) => isLeadershipRole(m.kind)),

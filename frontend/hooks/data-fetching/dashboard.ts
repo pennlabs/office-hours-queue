@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { Course, Membership, mutateFunction } from "../../types";
+import { Course, UserMembership, mutateFunction } from "../../types";
 import { doApiRequest } from "../../utils/fetch";
 
 export async function getCourses(inputValue: string): Promise<Course[]> {
@@ -32,11 +32,11 @@ export async function createCourse(payload: any): Promise<void> {
 
 export function useMemberships(
     initialUser
-): [Membership[], any, boolean, mutateFunction<Membership[]>] {
+): [UserMembership[], any, boolean, mutateFunction<UserMembership[]>] {
     const { data, error, isValidating, mutate } = useSWR("/accounts/me/", {
         initialData: initialUser,
     });
-    const memberships: Membership[] = data ? data.membershipSet : [];
+    const memberships: UserMembership[] = data ? data.membershipSet : [];
 
     return [memberships, error, isValidating, mutate];
 }

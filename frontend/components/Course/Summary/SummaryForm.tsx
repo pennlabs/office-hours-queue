@@ -46,7 +46,7 @@ const SummaryForm = ({ updateFilter }) => {
         });
     };
 
-    const [debounce, setDebounce] = useState(null);
+    const [debounce, setDebounce] = useState<NodeJS.Timeout | null>(null);
 
     return (
         <Form>

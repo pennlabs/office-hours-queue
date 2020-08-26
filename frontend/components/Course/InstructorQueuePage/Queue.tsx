@@ -27,7 +27,6 @@ const Queue = (props: QueueProps) => {
         editFunc,
     } = props;
     const { id: queueId, active, estimatedWaitTime } = queue;
-
     /* STATE */
     const [questions, , , mutateQuestions] = useQuestions(
         courseId,
@@ -96,7 +95,7 @@ const Queue = (props: QueueProps) => {
                         <Button
                             size="mini"
                             content="Close"
-                            color={active ? "red" : null}
+                            color={active ? "red" : undefined}
                             disabled={!active}
                             loading={false}
                             onClick={onClose}
@@ -104,7 +103,7 @@ const Queue = (props: QueueProps) => {
                         <Button
                             size="mini"
                             content="Open"
-                            color={active ? null : "green"}
+                            color={active ? undefined : "green"}
                             disabled={active}
                             loading={false}
                             onClick={onOpen}

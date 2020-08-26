@@ -20,6 +20,11 @@ const QuestionCard = (props: QuestionCardProps) => {
     const { question, mutate: mutateQuestion } = props;
     const { id: questionId, askedBy } = question;
     const { user } = useContext(AuthUserContext);
+    if (!user) {
+        throw new Error(
+            "Invariant broken: withAuth must be used with component"
+        );
+    }
 
     const [open, setOpen] = useState(false);
     const timeString = (date, isLong) => {

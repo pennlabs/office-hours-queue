@@ -20,12 +20,15 @@ interface QuestionCardProps {
 }
 const QuestionCard = (props: QuestionCardProps) => {
     const { question, course, queue, mutate, toastFunc, queueMutate } = props;
-    const [{ position }, , ,] = useQuestionPosition(
+    const [positionData, , , ,] = useQuestionPosition(
         course.id,
         queue.id,
         question.id,
         3000
     );
+
+    const { position } = positionData!;
+
     const [openEdit, setOpenEdit] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
 

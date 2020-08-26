@@ -14,7 +14,7 @@ interface DeleteQuestionModalProps {
     open: boolean;
     setOpen: React.Dispatch<React.SetStateAction<boolean>>;
     mutate: mutateResourceListFunction<Question>;
-    toastFunc: (success: string, error: any) => void;
+    toastFunc: (success: string | null, error: any) => void;
 }
 
 const DeleteQuestionModal = (props: DeleteQuestionModalProps) => {

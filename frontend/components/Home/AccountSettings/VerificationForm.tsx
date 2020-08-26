@@ -13,20 +13,33 @@ interface VerificationFormProps {
     toastFunc: (Toast) => void;
     mutate: any; // TODO: make this more strict
 }
+
+interface CodeInputRefState {
+    input: string[];
+}
+
+interface CodeInputRef extends ReactCodeInput {
+    textInput: HTMLInputElement[];
+    value: string;
+    state: CodeInputRefState;
+}
+
 const VerificationForm = (props: VerificationFormProps) => {
-    const codeInput = useRef(null);
+    const codeInput = useRef<CodeInputRef>(null);
 
     const clearInput = () => {
-        if (codeInput.current.textInput[0]) {
-            codeInput.current.textInput[0].focus();
+        if (codeInput.current !== null) {
+            if (codeInput.current.textInput[0]) {
+                codeInput.current.textInput[0].focus();
+            }
+            codeInput.current.state.input[0] = "";
+            codeInput.current.state.input[1] = "";
+            codeInput.current.state.input[2] = "";
+            codeInput.current.state.input[3] = "";
+            codeInput.current.state.input[4] = "";
+            codeInput.current.state.input[5] = "";
+            codeInput.current.value = "";
         }
-        codeInput.current.state.input[0] = "";
-        codeInput.current.state.input[1] = "";
-        codeInput.current.state.input[2] = "";
-        codeInput.current.state.input[3] = "";
-        codeInput.current.state.input[4] = "";
-        codeInput.current.state.input[5] = "";
-        codeInput.current.value = "";
     };
 
     const onVerify = async (code) => {
@@ -78,7 +91,6 @@ const VerificationForm = (props: VerificationFormProps) => {
             <Segment textAlign="center" basic>
                 <ReactCodeInput
                     name="verification"
-                    type="number"
                     fields={6}
                     onChange={handleInputChange}
                     ref={codeInput}

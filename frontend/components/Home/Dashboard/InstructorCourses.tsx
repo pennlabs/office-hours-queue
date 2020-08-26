@@ -6,11 +6,11 @@ import CourseCard from "./Cards/CourseCard";
 import ArchivedCourseCard from "./Cards/ArchivedCourseCard";
 import AddCard from "./Cards/AddCard";
 import ModalAddInstructorCourse from "./Modals/ModalAddInstructorCourse";
-import { Course, mutateFunction, Membership, Toast } from "../../../types";
+import { Course, mutateFunction, UserMembership, Toast } from "../../../types";
 
 interface InstructorCoursesProps {
     courses: Course[];
-    mutate: mutateFunction<Membership[]>;
+    mutate: mutateFunction<UserMembership[]>;
 }
 const InstructorCourses = (props: InstructorCoursesProps) => {
     /* STATE */

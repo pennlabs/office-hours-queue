@@ -5,11 +5,12 @@ import CourseWrapper from "../../../components/Course/CourseWrapper";
 import { withAuth } from "../../../context/auth";
 import staffCheck from "../../../utils/staffcheck";
 import { withProtectPage } from "../../../utils/protectpage";
-import { doApiRequest } from "../../../utils/fetch";
+import { doMultipleSuccessRequests } from "../../../utils/fetch";
 import { isLeadershipRole } from "../../../utils/enums";
-import { CoursePageProps } from "../../../types";
+import { CoursePageProps, Course, Membership } from "../../../types";
 import Summary from "../../../components/Course/Summary/Summary";
 import { QuestionListResult } from "../../../hooks/data-fetching/questionsummary";
+import nextRedirect from "../../../utils/redirect";
 
 interface SummaryPageProps extends CoursePageProps {
     questionListResult: QuestionListResult;
@@ -41,17 +42,24 @@ SummaryPage.getInitialProps = async (
     const data = {
         headers: req ? { cookie: req.headers.cookie } : undefined,
     };
-    const [course, leadership, questionListResult] = await Promise.all([
-        doApiRequest(`/courses/${query.course}/`, data).then((res) =>
-            res.json()
-        ),
-        doApiRequest(`/courses/${query.course}/members/`, data).then((res) =>
-            res.json()
-        ),
-        doApiRequest(`/courses/${query.course}/questions/`, data).then((res) =>
-            res.json()
-        ),
+
+    let course: Course;
+    let leadership: Membership[];
+    let questionListResult: QuestionListResult;
+
+    const response = await doMultipleSuccessRequests([
+        { path: `/courses/${query.course}/`, data },
+        { path: `/courses/${query.course}/members/`, data },
+        { path: `/courses/${query.course}/questions/`, data },
     ]);
+
+    if (response.success) {
+        [course, leadership, questionListResult] = response.data;
+    } else {
+        nextRedirect(context, () => true, "/404");
+        throw new Error("Next should redirect: unreachable");
+    }
+
     return {
         course,
         leadership: leadership.filter((m) => isLeadershipRole(m.kind)),

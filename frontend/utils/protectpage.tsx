@@ -1,11 +1,14 @@
 import React from "react";
-import { NextPageContext, NextPage } from "next";
+import { NextPageContext } from "next";
 import { AuthProps } from "../context/auth";
 import { User } from "../types";
 import nextRedirect from "./redirect";
+import { GIPPage } from "./gippage";
 
 export function withProtectPage<T extends AuthProps>(
-    WrappedComponent: NextPage<T>,
+    // this enforces that WrappedComponent has a
+    // getInitialProps that contains a user object
+    WrappedComponent: GIPPage<T>,
     condition: (user: User, ctx: NextPageContext) => boolean
 ) {
     const ProtectedComponent = ({ ...props }: T) => {

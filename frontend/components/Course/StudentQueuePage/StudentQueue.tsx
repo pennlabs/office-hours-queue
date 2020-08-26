@@ -24,13 +24,18 @@ const StudentQueue = (props: StudentQueueProps) => {
     const [toast, setToast] = useState({ message: "", success: true });
     const [toastOpen, setToastOpen] = useState(false);
 
-    const [questions, , , mutateQuestions] = useQuestions(
+    const [questionsData, , , mutateQuestions] = useQuestions(
         course.id,
         queue.id,
         rawQuestions,
         queue.active ? 3000 : 0
     );
-    const updateToast = (success: string, error) => {
+
+    // questionsData cannot be null because
+    // the key stays constant and initialData is provided
+    const questions = questionsData!;
+
+    const updateToast = (success: string | null, error) => {
         toast.success = success !== null;
         toast.message = success || errorMessage(error);
         setToast(toast);

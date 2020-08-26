@@ -19,11 +19,18 @@ export enum Kind {
     HEAD_TA = "HEAD_TA",
     PROFESSOR = "PROFESSOR",
 }
+
+export interface BaseUser {
+    username: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+}
+
 export interface Membership {
     id: number;
     kind: Kind;
-    course?: Course;
-    user?: User;
+    user: BaseUser;
 }
 
 export interface MembershipInvite {
@@ -38,14 +45,16 @@ export interface Profile {
     phoneNumber?: string;
 }
 
-export interface User {
-    id?: number;
-    username: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    profile?: Profile;
-    membershipSet?: Membership[];
+export interface UserMembership {
+    id: number;
+    course: Course;
+    kind: Kind;
+}
+
+export interface User extends BaseUser {
+    id: number;
+    profile: Profile;
+    membershipSet: UserMembership[];
 }
 
 export interface Queue {
@@ -99,7 +108,7 @@ export interface QuestionMap {
 export type mutateFunction<D> = (
     data?: D,
     shouldRevalidate?: boolean
-) => Promise<D>;
+) => Promise<D | undefined>;
 
 export interface Identifiable {
     id: number;
@@ -108,12 +117,12 @@ export interface Identifiable {
 export type mutateResourceFunction<D> = (
     data?: Partial<D>,
     method?: string
-) => Promise<D>;
+) => Promise<D | undefined>;
 export type mutateResourceListFunction<D extends Identifiable> = (
     id: number,
     data: Partial<D> | null,
     method?: string
-) => Promise<D[]>;
+) => Promise<D[] | undefined>;
 
 export interface Toast {
     message: string;

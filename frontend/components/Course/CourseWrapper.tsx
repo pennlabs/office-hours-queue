@@ -15,6 +15,12 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
     const { course: rawCourse, leadership } = props;
     const [course, , ,] = useCourse(rawCourse.id, rawCourse);
     const { user: initialUser } = useContext(AuthUserContext);
+    if (!initialUser) {
+        throw new Error(
+            "Invariant broken: withAuth must be used with component"
+        );
+    }
+
     const [, staff, , ,] = useStaff(rawCourse.id, initialUser);
 
     return course ? (

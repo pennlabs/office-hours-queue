@@ -1,22 +1,24 @@
+import { Kind, QuestionStatus } from "../types";
+
 export const roleOptions = [
     {
         key: 0,
-        value: "PROFESSOR",
+        value: Kind.PROFESSOR,
         text: "Professor",
     },
     {
         key: 1,
-        value: "HEAD_TA",
+        value: Kind.HEAD_TA,
         text: "Head TA",
     },
     {
         key: 2,
-        value: "TA",
+        value: Kind.TA,
         text: "TA",
     },
     {
         key: 3,
-        value: "STUDENT",
+        value: Kind.STUDENT,
         text: "Student",
     },
 ];
@@ -24,26 +26,30 @@ export const roleOptions = [
 export const staffRoleOptions = [
     {
         key: 0,
-        value: "PROFESSOR",
+        value: Kind.PROFESSOR,
         text: "Professor",
     },
     {
         key: 1,
-        value: "HEAD_TA",
+        value: Kind.HEAD_TA,
         text: "Head TA",
     },
     {
         key: 2,
-        value: "TA",
+        value: Kind.TA,
         text: "TA",
     },
 ];
 
-export function prettifyRole(role) {
-    return roleOptions.find((o) => o.value === role).text;
+export function prettifyRole(role: Kind) {
+    const optObj = roleOptions.find((o) => o.value === role);
+    if (!optObj) {
+        throw new Error("invariant broken");
+    }
+    return optObj.text;
 }
 
-export function isLeadershipRole(role) {
+export function isLeadershipRole(role: Kind) {
     return ["PROFESSOR", "HEAD_TA"].indexOf(role) >= 0;
 }
 
@@ -75,6 +81,10 @@ export const questionStateOptions = [
     },
 ];
 
-export function prettifyQuestionState(state) {
-    return questionStateOptions.find((o) => o.value === state).text;
+export function prettifyQuestionState(state: QuestionStatus) {
+    const optObj = questionStateOptions.find((o) => o.value === state);
+    if (!optObj) {
+        throw new Error("invariant broken");
+    }
+    return optObj.text;
 }

@@ -3,8 +3,9 @@ import { Grid } from "semantic-ui-react";
 import { NextPageContext } from "next";
 import CourseWrapper from "../../../components/Course/CourseWrapper";
 import { withAuth } from "../../../context/auth";
-import { doApiRequest } from "../../../utils/fetch";
+import { doMultipleSuccessRequests, doApiRequest } from "../../../utils/fetch";
 import { isLeadershipRole } from "../../../utils/enums";
+import nextRedirect from "../../../utils/redirect";
 import {
     CoursePageProps,
     Queue,
@@ -60,21 +61,24 @@ QueuePage.getInitialProps = async (
     const data = {
         headers: req ? { cookie: req.headers.cookie } : undefined,
     };
-    const [course, leadership, queues]: [
-        Course,
-        Membership[],
-        Queue[]
-    ] = await Promise.all([
-        doApiRequest(`/courses/${query.course}/`, data).then((res) =>
-            res.json()
-        ),
-        doApiRequest(`/courses/${query.course}/members/`, data).then((res) =>
-            res.json()
-        ),
-        doApiRequest(`/courses/${query.course}/queues/`, data).then((res) =>
-            res.json()
-        ),
+
+    let course: Course;
+    let leadership: Membership[];
+    let queues: Queue[];
+
+    const response = await doMultipleSuccessRequests([
+        { path: `/courses/${query.course}/`, data },
+        { path: `/courses/${query.course}/members/`, data },
+        { path: `/courses/${query.course}/queues/`, data },
     ]);
+
+    if (response.success) {
+        [course, leadership, queues] = response.data;
+    } else {
+        nextRedirect(context, () => true, "/404");
+        // this will never hit
+        throw new Error("Next redirects: Unreachable");
+    }
     // Generate a new questions object that's a map from queue id to a
     // list of questions in the queue. The API calls are wrapped in a
     // Promise.all to ensure those calls are made simultaneously

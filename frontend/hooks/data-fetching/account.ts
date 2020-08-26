@@ -44,14 +44,21 @@ export async function resendSMSVerification() {
     }
 }
 
-export async function updateUser(payload) {
-    const processedPayload = payload;
-    if (payload.profile.phoneNumber) {
+export async function updateUser(payload: Partial<User>) {
+    const processedPayload: Partial<User> = payload;
+    if (processedPayload.profile && payload.profile?.phoneNumber) {
         // TODO: Better error handling
-        processedPayload.profile.phoneNumber = parsePhoneNumberFromString(
+
+        const parsedNumber = parsePhoneNumberFromString(
             String(payload.profile.phoneNumber),
             "US"
-        ).number;
+        )?.number;
+
+        if (!parsedNumber) {
+            throw new Error("phone parsing failed");
+        }
+
+        processedPayload.profile.phoneNumber = parsedNumber as string;
     }
     const res = await doApiRequest("/accounts/me/", {
         method: "PATCH",
