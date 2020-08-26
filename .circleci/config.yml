@@ -11,11 +11,66 @@ branch-filters: &branch-filters
       only:
         - master
 
+jobs: # TODO: All of this is just to add redis to the CircleCI environment. Figure out a better way
+  django-check:
+    parameters:
+      project-location:
+        description: Location of the django project. Defaults to .
+        type: string
+        default: "."
+
+      project-name:
+        description: Name of the django project. Required
+        type: string
+
+      python-version:
+        description: Python version to use. Defaults to 3.7
+        type: string
+        default: "3.7"
+
+      black:
+        description: Run black?
+        type: boolean
+        default: true
+
+      flake8:
+        description: Run flake8?
+        type: boolean
+        default: true
+    docker:
+      - image: circleci/python:<< parameters.python-version >>
+        environment:
+          PIPENV_VENV_IN_PROJECT: true
+          DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/postgres
+      - image: postgres:12
+        environment:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+      - image: redis:4.0
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python<< parameters.python-version >>/site-packages
+      - django-tools/setup:
+          project-location: << parameters.project-location >>
+          python-version: << parameters.python-version >>
+      - django-tools/lint:
+          project-location: << parameters.project-location >>
+          black: << parameters.black >>
+          flake8: << parameters.flake8 >>
+      - django-tools/test:
+          project-location: << parameters.project-location >>
+          project-name: << parameters.project-name >>
+      - django-tools/code-coverage:
+          project-location: << parameters.project-location >>
+      - django-tools/upload-artifacts:
+          project-location: << parameters.project-location >>
 workflows:
   version: 2
   build-and-deploy:
     jobs:
-      - django-tools/check:
+      - django-check:
           project-name: officehoursqueue
           project-location: backend
       - react-tools/check:
@@ -23,7 +78,7 @@ workflows:
       - docker/publish:
           name: publish-backend
           requires:
-            - django-tools/check
+            - django-check
           path: backend
           cache_from: "pennlabs/office-hours-queue-backend:latest"
           image: "pennlabs/office-hours-queue-backend"
