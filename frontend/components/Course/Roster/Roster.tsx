@@ -30,10 +30,14 @@ const Roster = (props: RosterProps) => {
         column: string;
     };
 
-    const [memberships, , , membershipsMutate] = useMembers(
+    const [membershipsData, , , membershipsMutate] = useMembers(
         courseId,
         rawMemberships
     );
+
+    // membershipsData is non null because initialData is provided
+    // and the key stays the same
+    const memberships = membershipsData!;
 
     const { user: initialUser } = useContext(AuthUserContext);
     if (!initialUser) {
@@ -42,13 +46,18 @@ const Roster = (props: RosterProps) => {
         );
     }
 
-    const [leader, , , ,] = useStaff(courseId, initialUser);
+    const [leader, , ,] = useStaff(courseId, initialUser);
+
     /* STATE */
     const [filteredUsers, setFilteredUsers] = useState(memberships);
-    const [invitedMembers, , , invitedMutate] = useInvitedMembers(
+    const [invitedMembersData, , , invitedMutate] = useInvitedMembers(
         courseId,
         invites
     );
+
+    // invitedMembersData is non null because initialData is provided
+    // and the key stays the same
+    const invitedMembers = invitedMembersData!;
 
     const [open, setOpen] = useState(false);
     const [invitedTableState, setInvitedTableState]: [

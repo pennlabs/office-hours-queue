@@ -48,7 +48,16 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
     }
 
     const [leader, , , ,] = useStaff(courseId, initialUser);
-    const [queues, , , mutate] = useQueues(courseId, rawQueues);
+    if (!leader) {
+        throw new Error("member doesn't belong in course");
+    }
+
+    const [queuesData, , , mutate] = useQueues(courseId, rawQueues);
+
+    // queuesData is non null because initialData is provided
+    // and the key stays the same
+    const queues = queuesData!;
+
     const [success, setSuccess] = useState(false);
     const [pageState, setPageState] = useState<PageState>({
         kind: PageStateEnum.QUEUES,

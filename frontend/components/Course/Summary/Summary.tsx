@@ -23,9 +23,9 @@ const Summary = (props: SummaryProps) => {
 
     const getFullName = (user: User) => `${user.firstName} ${user.lastName}`;
 
-    // TODO: Handle loaders
     const { data, isValidating: loading, updateFilter, filters } = useQuestions(
-        course.id,
+        // course is non-null because initial data is provided and key never changes
+        course!.id,
         questionListResult
     );
     return (

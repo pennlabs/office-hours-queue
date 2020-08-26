@@ -27,7 +27,6 @@ const Queue = (props: QueueProps) => {
         editFunc,
     } = props;
     const { id: queueId, active, estimatedWaitTime } = queue;
-
     /* STATE */
     const [questions, , , mutateQuestions] = useQuestions(
         courseId,

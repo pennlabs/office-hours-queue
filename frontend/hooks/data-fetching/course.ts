@@ -41,9 +41,17 @@ export function useStaff(
     const { data, error, isValidating, mutate } = useSWR("/accounts/me/", {
         initialData: initialUser,
     });
-    const course = data.membershipSet.find(
+
+    // data cannot be null because key does not change and
+    // initialData is provided
+    const course = data!.membershipSet.find(
         (membership) => membership.course.id === courseId
     );
+
+    if (!course) {
+        throw new Error("User does not belong in this class");
+    }
+
     const leader = isLeadershipRole(course.kind);
     const staff = course.kind !== Kind.STUDENT;
     return [leader, staff, error, isValidating, mutate];
