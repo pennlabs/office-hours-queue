@@ -36,7 +36,11 @@ export function withAuth<T>(
         if (res.ok) {
             user = await res.json();
         } else {
-            nextRedirect(ctx, (url) => url !== "/", "/");
+            nextRedirect(
+                ctx,
+                (url) => url !== "/",
+                `/api/accounts/login/?next=${ctx.asPath}`
+            );
         }
 
         if (WrappedComponent.getInitialProps) {
