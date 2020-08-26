@@ -9,6 +9,7 @@ import {
     updateUser,
     useAccountInfo,
 } from "../../../hooks/data-fetching/account";
+import { logException } from "../../../utils/sentry";
 
 const AccountForm = () => {
     const { user: initialUser } = useContext(AuthUserContext);
@@ -69,6 +70,7 @@ const AccountForm = () => {
                 setSmsOpen(true);
             }
         } catch (e) {
+            logException(e);
             setToast({
                 success: false,
                 message: "There was an error updating your account",

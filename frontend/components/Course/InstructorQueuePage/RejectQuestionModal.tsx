@@ -6,6 +6,7 @@ import {
     QuestionStatus,
 } from "../../../types";
 import { fullName } from "./QuestionCard";
+import { logException } from "../../../utils/sentry";
 
 const rejectOptions = [
     { key: "NOT_HERE", value: "NOT_HERE", text: "Not Here" },
@@ -68,6 +69,7 @@ const RejectQuestionModal = (props: RejectQuestionModalProps) => {
             await rejectQuestion();
             closeFunc();
         } catch (e) {
+            logException(e);
             console.log(e);
         }
     };

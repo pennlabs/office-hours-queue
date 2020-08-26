@@ -9,6 +9,7 @@ import {
     Question,
     Queue,
 } from "../../../types";
+import { logException } from "../../../utils/sentry";
 
 interface QuestionFormProps {
     course: Course;
@@ -74,6 +75,7 @@ const QuestionForm = (props: QuestionFormProps) => {
             await props.queueMutate(-1, null);
             props.toastFunc("Question successfully added to queue", null);
         } catch (e) {
+            logException(e);
             await props.mutate(-1, null);
             props.toastFunc(null, e);
         }

@@ -8,6 +8,7 @@ import AsyncSelect from "react-select/async";
 import { useRouter } from "next/router";
 import { Course, mutateResourceFunction, Semester } from "../../../types";
 import { getSemesters } from "../../../hooks/data-fetching/course";
+import { logException } from "../../../utils/sentry";
 
 interface CourseFormProps {
     course: Course;
@@ -97,6 +98,7 @@ const CourseForm = (props: CourseFormProps) => {
             setSuccess(true);
             setDisabled(true);
         } catch (e) {
+            logException(e);
             setLoading(false);
             setError(true);
         }
@@ -112,6 +114,7 @@ const CourseForm = (props: CourseFormProps) => {
             setOpen(false);
             router.replace("/");
         } catch (e) {
+            logException(e);
             setLoading(false);
             setArchiveError(true);
         }

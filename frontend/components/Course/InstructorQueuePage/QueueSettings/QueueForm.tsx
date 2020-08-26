@@ -3,6 +3,7 @@ import { Form, Button, Modal } from "semantic-ui-react";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 import { Queue, mutateResourceListFunction } from "../../../../types";
+import { logException } from "../../../../utils/sentry";
 
 // TODO: error check PATCH
 interface QueueFormProps {
@@ -50,6 +51,7 @@ const QueueForm = (props: QueueFormProps) => {
             setSuccess(true);
             props.backFunc();
         } catch (e) {
+            logException(e);
             setError(true);
         }
     };

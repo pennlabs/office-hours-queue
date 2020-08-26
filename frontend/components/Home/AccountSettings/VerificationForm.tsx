@@ -7,6 +7,7 @@ import {
     validateSMS,
     resendSMSVerification,
 } from "../../../hooks/data-fetching/account";
+import { logException } from "../../../utils/sentry";
 
 interface VerificationFormProps {
     openFunc: React.Dispatch<React.SetStateAction<boolean>>;
@@ -52,6 +53,7 @@ const VerificationForm = (props: VerificationFormProps) => {
                 message: "Phone number successfully verified",
             });
         } catch (e) {
+            logException(e);
             clearInput();
             let message;
             if (e.message.includes("Incorrect")) {
@@ -72,6 +74,7 @@ const VerificationForm = (props: VerificationFormProps) => {
         try {
             await resendSMSVerification();
         } catch (e) {
+            logException(e);
             props.toastFunc({
                 success: false,
                 message:
