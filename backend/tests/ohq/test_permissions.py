@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
@@ -439,7 +441,8 @@ class QuestionTestCase(TestCase):
         )
 
     @parameterized.expand(users, name_func=get_test_name)
-    def test_modify(self, user):
+    @patch("ohq.serializers.sendUpNextNotificationTask.delay")
+    def test_modify(self, user, mock_delay):
         status = Question.STATUS_WITHDRAWN if user == "student" else Question.STATUS_ACTIVE
         test(
             self,
@@ -449,6 +452,10 @@ class QuestionTestCase(TestCase):
             reverse("ohq:question-detail", args=[self.course.id, self.queue.id, self.question.id]),
             {"status": status},
         )
+        if user == "student":
+            mock_delay.assert_called()
+        else:
+            mock_delay.assert_not_called()
 
 
 class QuestionSearchTestCase(TestCase):

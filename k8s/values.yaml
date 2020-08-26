@@ -14,6 +14,8 @@ applications:
         value: ohq.pennlabs.org # TODO: change this to ohq.io
       - name: DJANGO_SETTINGS_MODULE
         value: officehoursqueue.settings.production
+      - name: REDIS_URL
+        value: redis://office-hours-queue-redis:6379
   - name: react
     image: pennlabs/office-hours-queue-frontend
     ingress:
@@ -25,3 +27,23 @@ applications:
         value: 80
       - name: DOMAIN
         value: ohq.pennlabs.org # TODO: change this to ohq.io
+  - name: redis
+    image: redis
+    tag: "4.0"
+    port: 6379
+  - name: celery
+    image: pennlabs/office-hours-queue-backend
+    secret: office-hours-queue
+    cmd: ["celery","-A", "OHQ", "worker", "-linfo"]
+    extraEnv:
+      - name: DJANGO_SETTINGS_MODULE
+        value: officehoursqueue.settings.production
+      - name: REDIS_URL
+        value: redis://office-hours-queue-redis:6379
+
+cronjobs:
+  - name: calculate-waits
+    schedule: "*/5 * * * *"
+    image: pennlabs/office-hours-queue-backend
+    secret: office-hours-queue
+    cmd: ["python", "manage.py", "calculatewaittimes"]

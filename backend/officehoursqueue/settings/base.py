@@ -171,3 +171,7 @@ EMAIL_TOOLS = {
 TWILIO_SID = os.environ.get("TWILIO_SID", "")
 TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_TOKEN", "")
 TWILIO_NUMBER = os.environ.get("TWILIO_NUMBER", "")
+
+# Celery
+
+MESSAGE_BROKER_URL = os.environ.get("REDIS_URL", "redis://localhost")

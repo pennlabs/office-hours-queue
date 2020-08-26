@@ -66,18 +66,23 @@ const Queue = (props: QueueProps) => {
             <Grid>
                 <Grid.Row columns="equal">
                     <Grid.Column only="computer mobile">
-                        <Label
-                            content={`${questions.length} user${
-                                questions.length === 1 ? "" : "s"
-                            }`}
-                            color="blue"
-                            icon="user"
-                        />
-                        <Label
-                            content={`${estimatedWaitTime} minute wait`}
-                            color="blue"
-                            icon="clock"
-                        />
+                        {questions.length !== 0 && (
+                            <Label
+                                content={`${questions.length} user${
+                                    questions.length === 1 ? "" : "s"
+                                }`}
+                                color="blue"
+                                icon="user"
+                            />
+                        )}
+                        {/* TODO: make these checks more smart (users in queue) like student view */}
+                        {estimatedWaitTime !== -1 && (
+                            <Label
+                                content={`${estimatedWaitTime} minute wait`}
+                                color="blue"
+                                icon="clock"
+                            />
+                        )}
                     </Grid.Column>
                     <Grid.Column textAlign="right" floated="right">
                         {leader && (

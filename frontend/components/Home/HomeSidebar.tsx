@@ -51,11 +51,15 @@ const Sidebar = () => {
                 </Menu>
             </Segment>
             <div
-                className={`${styles.about} ${styles["about-dashboard"]}`}
-                onClick={() => setShowAboutModal(true)}
                 role="button"
+                className={`${styles.about} ${styles["about-dashboard"]}`}
             >
-                <p>Feedback</p>
+                <a
+                    href="https://airtable.com/shrIZxIjyAE3gOUSg"
+                    target="_blank"
+                >
+                    <p>Feedback</p>
+                </a>
             </div>
             <AboutModal
                 open={showAboutModal}

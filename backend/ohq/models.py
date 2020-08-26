@@ -190,7 +190,8 @@ class Queue(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     archived = models.BooleanField(default=False)
 
-    estimated_wait_time = models.IntegerField(default=0)
+    # Estimated wait time for the queue, in minutes
+    estimated_wait_time = models.IntegerField(default=-1)
     active = models.BooleanField(default=False)
     # TODO: re-add some sort of scheduling feature?
 

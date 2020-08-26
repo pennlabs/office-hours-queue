@@ -1,4 +1,5 @@
 from datetime import datetime
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.test import RequestFactory, TestCase
@@ -173,6 +174,7 @@ class QueueSerializerTestCase(TestCase):
         self.assertEqual(new_name, self.queue.name)
 
 
+@patch("ohq.serializers.sendUpNextNotificationTask.delay")
 class QuestionSerializerTestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
@@ -192,7 +194,7 @@ class QuestionSerializerTestCase(TestCase):
             queue=self.queue, asked_by=self.student, text=self.question_text
         )
 
-    def test_create(self):
+    def test_create(self, mock_delay):
         self.client.force_authenticate(user=self.student)
         self.client.post(
             reverse("ohq:question-list", args=[self.course.id, self.queue.id]), {"text": "Help me"}
@@ -201,8 +203,9 @@ class QuestionSerializerTestCase(TestCase):
         question = Question.objects.all().order_by("time_asked")[1]
         self.assertEqual(self.student, question.asked_by)
         self.assertEqual(Question.STATUS_ASKED, question.status)
+        mock_delay.assert_not_called()
 
-    def test_student_update(self):
+    def test_student_update(self, mock_delay):
         """
         Ensure a student can update their question's text and videochat link.
         """
@@ -217,8 +220,9 @@ class QuestionSerializerTestCase(TestCase):
         self.question.refresh_from_db()
         self.assertEqual(text, self.question.text)
         self.assertEqual(url, self.question.video_chat_url)
+        mock_delay.assert_not_called()
 
-    def test_student_withdraw(self):
+    def test_student_withdraw(self, mock_delay):
         """
         Ensure a student can withdraw their question.
         """
@@ -230,8 +234,9 @@ class QuestionSerializerTestCase(TestCase):
         )
         self.question.refresh_from_db()
         self.assertEqual(Question.STATUS_WITHDRAWN, self.question.status)
+        mock_delay.assert_called()
 
-    def test_student_active(self):
+    def test_student_active(self, mock_delay):
         """
         Ensure students can't mark a question as active
         """
@@ -244,8 +249,9 @@ class QuestionSerializerTestCase(TestCase):
         self.assertEqual(400, response.status_code)
         self.question.refresh_from_db()
         self.assertEqual(Question.STATUS_ASKED, self.question.status)
+        mock_delay.assert_not_called()
 
-    def test_ta_update(self):
+    def test_ta_update(self, mock_delay):
         """
         Ensure TAs+ can start answering, undo answering, and reject a question
         """
@@ -277,8 +283,9 @@ class QuestionSerializerTestCase(TestCase):
         self.assertEqual(Question.STATUS_REJECTED, self.question.status)
         self.assertEqual(self.ta, self.question.responded_to_by)
         self.assertEqual(rejected_reason, self.question.rejected_reason)
+        mock_delay.assert_called()
 
-    def test_ta_answer(self):
+    def test_ta_answer(self, mock_delay):
         """
         Ensure TAs+ can answer a question
         """
@@ -300,8 +307,9 @@ class QuestionSerializerTestCase(TestCase):
         self.question.refresh_from_db()
         self.assertEqual(Question.STATUS_ANSWERED, self.question.status)
         self.assertEqual(self.ta, self.question.responded_to_by)
+        mock_delay.assert_called()
 
-    def test_ta_update_text(self):
+    def test_ta_update_text(self, mock_delay):
         """
         Ensure TAs+ can't modify a question's contents
         """
@@ -314,8 +322,9 @@ class QuestionSerializerTestCase(TestCase):
         self.assertEqual(400, response.status_code)
         self.question.refresh_from_db()
         self.assertEqual(self.question_text, self.question.text)
+        mock_delay.assert_not_called()
 
-    def test_ta_withdraw(self):
+    def test_ta_withdraw(self, mock_delay):
         """
         Ensure TAs+ can't mark a question as withdrawn
         """
@@ -328,3 +337,4 @@ class QuestionSerializerTestCase(TestCase):
         self.assertEqual(400, response.status_code)
         self.question.refresh_from_db()
         self.assertEqual(Question.STATUS_ASKED, self.question.status)
+        mock_delay.assert_not_called()

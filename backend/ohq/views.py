@@ -4,8 +4,9 @@ from datetime import timedelta
 from django.contrib.auth import get_user_model
 from django.core.validators import ValidationError, validate_email
 from django.db.models import Count, Exists, FloatField, IntegerField, OuterRef, Q, Subquery
-from django.http import JsonResponse
+from django.http import HttpResponseBadRequest, JsonResponse
 from django.utils import timezone
+from django.utils.crypto import get_random_string
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, viewsets
 from rest_framework.decorators import action
@@ -32,11 +33,13 @@ from ohq.serializers import (
     CourseSerializer,
     MembershipInviteSerializer,
     MembershipSerializer,
+    Profile,
     QuestionSerializer,
     QueueSerializer,
     SemesterSerializer,
     UserPrivateSerializer,
 )
+from ohq.sms import sendSMSVerification
 
 
 User = get_user_model()
@@ -61,6 +64,33 @@ class UserView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user
+
+
+class ResendNotificationView(generics.CreateAPIView):
+    """
+    update:
+    Generate and send a new SMS verification if the current one
+    has expired
+    """
+
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserPrivateSerializer
+
+    def get_object(self):
+        return self.request.user
+
+    def post(self, request, *args, **kwargs):
+        user = self.get_object()
+        elapsed_time = timezone.now() - user.profile.sms_verification_timestamp
+        if elapsed_time.total_seconds() > Profile.SMS_VERIFICATION_EXPIRATION_MINUTES * 60:
+            user.profile.sms_verification_code = get_random_string(
+                length=6, allowed_chars="1234567890"
+            )
+            user.profile.sms_verification_timestamp = timezone.now()
+            sendSMSVerification(user.profile.phone_number, user.profile.sms_verification_code)
+            user.save()
+            return JsonResponse({"detail": "success"})
+        return HttpResponseBadRequest()
 
 
 class CourseViewSet(viewsets.ModelViewSet):

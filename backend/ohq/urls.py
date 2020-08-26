@@ -9,6 +9,7 @@ from ohq.views import (
     QuestionSearchView,
     QuestionViewSet,
     QueueViewSet,
+    ResendNotificationView,
     SemesterViewSet,
     UserView,
 )
@@ -30,6 +31,7 @@ queue_router.register("questions", QuestionViewSet, basename="question")
 
 additional_urls = [
     path("accounts/me/", UserView.as_view(), name="me"),
+    path("accounts/me/resend/", ResendNotificationView.as_view(), name="resend"),
     path("courses/<slug:course_pk>/mass-invite/", MassInviteView.as_view(), name="mass-invite"),
     path(
         "courses/<slug:course_pk>/questions/", QuestionSearchView.as_view(), name="questionsearch"

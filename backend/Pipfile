@@ -32,6 +32,8 @@ django-email-tools = "*"
 twilio = "*"
 djangorestframework-camel-case = "*"
 django-filter = "*"
+celery = "*"
+redis = "*"
 
 [requires]
 python_version = "3.7"

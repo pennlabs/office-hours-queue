@@ -1,8 +1,10 @@
 import json
+from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 from djangorestframework_camel_case.util import camelize
 from rest_framework.test import APIClient
 
@@ -23,6 +25,35 @@ class UserViewTestCase(TestCase):
         self.client.force_authenticate(user=self.user)
         response = self.client.get(reverse("ohq:me"))
         self.assertEqual(json.loads(response.content), camelize(self.serializer.data))
+
+
+class ResendNotificationViewTestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create(username="user")
+        self.verification_code = "123456"
+        self.user.profile.sms_verification_code = self.verification_code
+        self.user.profile.sms_verification_timestamp = timezone.now()
+
+    def test_resend_fail(self):
+        """
+        Ensure resend fails if sent within 10 minutes.
+        """
+
+        self.client.force_authenticate(user=self.user)
+        response = self.client.post(reverse("ohq:resend"))
+        self.assertEqual(400, response.status_code)
+
+    def test_resend_success(self):
+        """
+        Ensure resend works if sent after 10 minutes.
+        """
+
+        self.user.profile.sms_verification_timestamp = timezone.now() - timedelta(minutes=11)
+        self.client.force_authenticate(user=self.user)
+        response = self.client.post(reverse("ohq:resend"))
+        self.assertEqual(200, response.status_code)
+        self.assertNotEqual(self.verification_code, self.user.profile.sms_verification_code)
 
 
 class MassInviteTestCase(TestCase):

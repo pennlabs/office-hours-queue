@@ -6,6 +6,7 @@ from rest_framework import serializers
 
 from ohq.models import Course, Membership, MembershipInvite, Profile, Question, Queue, Semester
 from ohq.sms import sendSMSVerification
+from ohq.tasks import sendUpNextNotificationTask
 
 
 class CourseRouteMixin(serializers.ModelSerializer):
@@ -191,6 +192,7 @@ class QuestionSerializer(QueueRouteMixin):
         """
         user = self.context["request"].user
         membership = Membership.objects.get(course=instance.queue.course, user=user)
+        queue_id = self.context["view"].kwargs["queue_pk"]
 
         if membership.is_ta:  # User is a TA+
             if "status" in validated_data:
@@ -205,10 +207,13 @@ class QuestionSerializer(QueueRouteMixin):
                     instance.time_response_started = timezone.now()
                 elif status == Question.STATUS_REJECTED:
                     instance.responded_to_by = user
+                    instance.time_response_started = timezone.now()
                     instance.time_responded_to = timezone.now()
                     instance.rejected_reason = validated_data["rejected_reason"]
+                    sendUpNextNotificationTask.delay(queue_id)
                 elif status == Question.STATUS_ANSWERED:
                     instance.time_responded_to = timezone.now()
+                    sendUpNextNotificationTask.delay(queue_id)
                 elif status == Question.STATUS_ASKED:
                     instance.responded_to_by = None
                     instance.time_response_started = None
@@ -221,6 +226,7 @@ class QuestionSerializer(QueueRouteMixin):
                 status = validated_data["status"]
                 if status == Question.STATUS_WITHDRAWN:
                     instance.status = status
+                    sendUpNextNotificationTask.delay(queue_id)
                 else:
                     raise serializers.ValidationError(
                         detail={"detail": "Students can only withdraw a question"}
@@ -234,6 +240,11 @@ class QuestionSerializer(QueueRouteMixin):
         return instance
 
     def create(self, validated_data):
+        queue = Queue.objects.get(pk=self.context["view"].kwargs["queue_pk"])
+        questions_ahead = Question.objects.filter(
+            queue=queue, status=Question.STATUS_ASKED, time_asked__lt=timezone.now()
+        ).count()
+        validated_data["should_send_up_soon_notification"] = questions_ahead >= 4
         validated_data["status"] = Question.STATUS_ASKED
         validated_data["asked_by"] = self.context["request"].user
         return super().create(validated_data)
@@ -296,7 +307,7 @@ class UserPrivateSerializer(serializers.ModelSerializer):
                     length=6, allowed_chars="1234567890"
                 )
                 profile.sms_verification_timestamp = timezone.now()
-                sendSMSVerification(str(profile.phone_number), profile.sms_verification_code)
+                sendSMSVerification(profile.phone_number, profile.sms_verification_code)
 
             # Handle SMS verification
             if "sms_verification_code" in profile_fields:

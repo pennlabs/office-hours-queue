@@ -3,7 +3,10 @@ import "./VerificationModal.module.css";
 
 import { Segment } from "semantic-ui-react";
 import ReactCodeInput from "react-code-input";
-import { validateSMS } from "../../../hooks/data-fetching/account";
+import {
+    validateSMS,
+    resendSMSVerification,
+} from "../../../hooks/data-fetching/account";
 
 interface VerificationFormProps {
     openFunc: React.Dispatch<React.SetStateAction<boolean>>;
@@ -52,6 +55,18 @@ const VerificationForm = (props: VerificationFormProps) => {
         }
     };
 
+    const resendVerification = async () => {
+        try {
+            await resendSMSVerification();
+        } catch (e) {
+            props.toastFunc({
+                success: false,
+                message:
+                    "Please wait 10 minutes before resending a verification code",
+            });
+        }
+    };
+
     const handleInputChange = async (value) => {
         if (value.length === 6) {
             await onVerify(value);
@@ -74,11 +89,7 @@ const VerificationForm = (props: VerificationFormProps) => {
                 Missed your verification code?{" "}
                 <a
                     role="button"
-                    onClick={() => {
-                        /* if (!sendLoading || !verifyLoading) */
-                        /*     return sendVerification(); */
-                        // TODO: add resend verification code ability
-                    }}
+                    onClick={resendVerification}
                     style={{ cursor: "pointer" }}
                 >
                     Resend

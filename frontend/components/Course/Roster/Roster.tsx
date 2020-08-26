@@ -211,6 +211,23 @@ const Roster = (props: RosterProps) => {
         setChangeRoleToast();
     };
 
+    const getInviteFilter = (column: string): string[] => {
+        if (column === "role") {
+            return ["kind"];
+        } else {
+            return ["email"];
+        }
+    };
+
+    const getFilter = (column: string): string[] => {
+        if (column === "role") {
+            return ["kind"];
+        } else if (column === "fullName") {
+            return ["user.firstName", "user.lastName"];
+        } else {
+            return ["user.email"];
+        }
+    };
     return (
         <div>
             {memberships && (
@@ -287,9 +304,13 @@ const Roster = (props: RosterProps) => {
                             <Table.Body>
                                 {_.orderBy(
                                     invitedMembers,
-                                    invitedTableState.direction === "ascending"
-                                        ? "asc"
-                                        : "desc"
+                                    getInviteFilter(invitedTableState.column),
+                                    [
+                                        invitedTableState.direction ===
+                                        "ascending"
+                                            ? "asc"
+                                            : "desc",
+                                    ]
                                 ).map((invitedMember) => (
                                     <Table.Row>
                                         <Table.Cell>
@@ -371,10 +392,12 @@ const Roster = (props: RosterProps) => {
                             <Table.Body>
                                 {_.orderBy(
                                     filteredUsers,
-                                    tableState.column,
-                                    tableState.direction === "ascending"
-                                        ? "asc"
-                                        : "desc"
+                                    getFilter(tableState.column),
+                                    [
+                                        tableState.direction === "ascending"
+                                            ? "asc"
+                                            : "desc",
+                                    ]
                                 ).map((membership: Membership) => (
                                     <Table.Row key={membership.id}>
                                         <Table.Cell>
