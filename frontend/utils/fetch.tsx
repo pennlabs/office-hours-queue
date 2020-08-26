@@ -2,7 +2,7 @@ import getCsrf from "../csrf";
 
 export const SITE_ORIGIN =
     process.env.NODE_ENV === "production"
-        ? `https://${process.env.DOMAIN || "ohq.pennlabs.org"}` // TODO: replace this with ohq.io
+        ? `https://${process.env.DOMAIN || "ohq.io"}`
         : `http://localhost:${process.env.PORT || 3000}`;
 
 export const API_BASE_URL = `${SITE_ORIGIN}/api`;
