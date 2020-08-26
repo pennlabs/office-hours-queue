@@ -36,6 +36,12 @@ const Roster = (props: RosterProps) => {
     );
 
     const { user: initialUser } = useContext(AuthUserContext);
+    if (!initialUser) {
+        throw new Error(
+            "Invariant broken: withAuth must be used with component"
+        );
+    }
+
     const [leader, , , ,] = useStaff(courseId, initialUser);
     /* STATE */
     const [filteredUsers, setFilteredUsers] = useState(memberships);

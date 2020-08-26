@@ -41,6 +41,12 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
 
     /* STATE */
     const { user: initialUser } = useContext(AuthUserContext);
+    if (!initialUser) {
+        throw new Error(
+            "Invariant broken: withAuth must be used with component"
+        );
+    }
+
     const [leader, , , ,] = useStaff(courseId, initialUser);
     const [queues, , , mutate] = useQueues(courseId, rawQueues);
     const [success, setSuccess] = useState(false);
