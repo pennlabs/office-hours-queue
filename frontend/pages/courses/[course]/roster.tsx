@@ -5,7 +5,7 @@ import CourseWrapper from "../../../components/Course/CourseWrapper";
 import { withAuth } from "../../../context/auth";
 import staffCheck from "../../../utils/staffcheck";
 import { withProtectPage } from "../../../utils/protectpage";
-import { doApiRequest } from "../../../utils/fetch";
+import { doMultipleSuccessRequests } from "../../../utils/fetch";
 import { isLeadershipRole } from "../../../utils/enums";
 import {
     CoursePageProps,
@@ -54,21 +54,15 @@ RosterPage.getInitialProps = async (
     let memberships: Membership[];
     let invites: MembershipInvite[];
 
-    try {
-        [course, memberships, invites] = await Promise.all([
-            doApiRequest(`/courses/${query.course}/`, data).then((res) =>
-                res.json()
-            ),
-            doApiRequest(
-                `/courses/${query.course}/members/`,
-                data
-            ).then((res) => res.json()),
-            doApiRequest(
-                `/courses/${query.course}/invites/`,
-                data
-            ).then((res) => res.json()),
-        ]);
-    } catch (err) {
+    const response = await doMultipleSuccessRequests([
+        { path: `/courses/${query.course}/`, data },
+        { path: `/courses/${query.course}/members/`, data },
+        { path: `/courses/${query.course}/invites/`, data },
+    ]);
+
+    if (response.success) {
+        [course, memberships, invites] = response.data;
+    } else {
         nextRedirect(context, () => true, "/404");
         throw new Error("Next should redirect: unreachable");
     }

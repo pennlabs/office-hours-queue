@@ -35,3 +35,59 @@ export function doApiRequest(path: string, data?: any): Promise<Response> {
     }
     return fetch(getApiUrl(path), formattedData);
 }
+
+interface Success {
+    data: any;
+    success: true;
+}
+
+interface Failure {
+    success: false;
+}
+
+type VerifiedResponse = Success | Failure;
+
+// wraps doApiRequest to return a discriminated union
+// this allows us to distinguish between an error due to
+// accessing incorrect resources or an internet issue
+
+export async function doSuccessRequest(
+    path: string,
+    data?: any
+): Promise<VerifiedResponse> {
+    const res = await doApiRequest(path, data);
+    if (!res.ok) {
+        return {
+            success: false,
+        };
+    }
+    return {
+        success: true,
+        data: await res.json(),
+    };
+}
+
+interface SuccessRequest {
+    path: string;
+    data?: any;
+}
+
+export async function doMultipleSuccessRequests(
+    reqs: SuccessRequest[]
+): Promise<VerifiedResponse> {
+    const res = await Promise.all(
+        reqs.map((req) => doSuccessRequest(req.path, req.data))
+    );
+    if (res.reduce((acc, curr) => acc && curr.success, true)) {
+        return {
+            success: true,
+            // data-flow analysis isn't good enough to figure out
+            // reduce condition makes sure all responses have succeeded
+            data: res.map((succ) => (succ as Success).data),
+        };
+    } else {
+        return {
+            success: false,
+        };
+    }
+}

@@ -3,7 +3,7 @@ import { Grid } from "semantic-ui-react";
 import { NextPageContext } from "next";
 import CourseWrapper from "../../../components/Course/CourseWrapper";
 import { withAuth } from "../../../context/auth";
-import { doApiRequest } from "../../../utils/fetch";
+import { doMultipleSuccessRequests, doApiRequest } from "../../../utils/fetch";
 import { isLeadershipRole } from "../../../utils/enums";
 import nextRedirect from "../../../utils/redirect";
 import {
@@ -66,20 +66,15 @@ QueuePage.getInitialProps = async (
     let leadership: Membership[];
     let queues: Queue[];
 
-    try {
-        [course, leadership, queues] = await Promise.all([
-            doApiRequest(`/courses/${query.course}/`, data).then((res) =>
-                res.json()
-            ),
-            doApiRequest(
-                `/courses/${query.course}/members/`,
-                data
-            ).then((res) => res.json()),
-            doApiRequest(`/courses/${query.course}/queues/`, data).then((res) =>
-                res.json()
-            ),
-        ]);
-    } catch (err) {
+    const response = await doMultipleSuccessRequests([
+        { path: `/courses/${query.course}/`, data },
+        { path: `/courses/${query.course}/members/`, data },
+        { path: `/courses/${query.course}/queues/`, data },
+    ]);
+
+    if (response.success) {
+        [course, leadership, queues] = response.data;
+    } else {
         nextRedirect(context, () => true, "/404");
         // this will never hit
         throw new Error("Next redirects: Unreachable");
