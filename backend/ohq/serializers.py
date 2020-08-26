@@ -5,7 +5,8 @@ from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 
 from ohq.models import Course, Membership, MembershipInvite, Profile, Question, Queue, Semester
-from ohq.sms import sendSMSVerification, sendUpNextNotification
+from ohq.sms import sendSMSVerification
+from ohq.tasks import sendUpNextNotificationTask
 
 
 class CourseRouteMixin(serializers.ModelSerializer):
@@ -209,10 +210,10 @@ class QuestionSerializer(QueueRouteMixin):
                     instance.time_response_started = timezone.now()
                     instance.time_responded_to = timezone.now()
                     instance.rejected_reason = validated_data["rejected_reason"]
-                    sendUpNextNotification(queue_id)
+                    sendUpNextNotificationTask.delay(queue_id)
                 elif status == Question.STATUS_ANSWERED:
                     instance.time_responded_to = timezone.now()
-                    sendUpNextNotification(queue_id)
+                    sendUpNextNotificationTask.delay(queue_id)
                 elif status == Question.STATUS_ASKED:
                     instance.responded_to_by = None
                     instance.time_response_started = None
@@ -225,7 +226,7 @@ class QuestionSerializer(QueueRouteMixin):
                 status = validated_data["status"]
                 if status == Question.STATUS_WITHDRAWN:
                     instance.status = status
-                    sendUpNextNotification(queue_id)
+                    sendUpNextNotificationTask.delay(queue_id)
                 else:
                     raise serializers.ValidationError(
                         detail={"detail": "Students can only withdraw a question"}

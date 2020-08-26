@@ -15,3 +15,6 @@ os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 # Use the console for email in development
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+# Celery
+MESSAGE_BROKER_URL = os.environ.get("REDIS_URL", "redis://localhost")

@@ -1,6 +1,7 @@
 import os
 
 import sentry_sdk
+from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 
 from officehoursqueue.settings.base import *  # noqa: F401, F403
@@ -20,7 +21,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY", None)
 
 # Sentry settings
 SENTRY_URL = os.environ.get("SENTRY_URL", "")
-sentry_sdk.init(dsn=SENTRY_URL, integrations=[DjangoIntegration()])
+sentry_sdk.init(dsn=SENTRY_URL, integrations=[CeleryIntegration(), DjangoIntegration()])
 
 # DLA settings
 PLATFORM_ACCOUNTS = {"ADMIN_PERMISSION": "ohq_admin"}

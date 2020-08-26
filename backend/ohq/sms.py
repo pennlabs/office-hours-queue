@@ -3,8 +3,6 @@ from sentry_sdk import capture_message
 from twilio.base.exceptions import TwilioException, TwilioRestException
 from twilio.rest import Client
 
-from ohq.models import Question
-
 
 def sendSMS(to, body):
     try:
@@ -21,20 +19,7 @@ def sendSMSVerification(to, verification_code):
     sendSMS(to, body)
 
 
-def sendUpNextNotification(queue_id):
-    """
-    Send an SMS notification to the 3rd person in a queue if they have verified their phone number
-    and the queue was at least 4 people long when they joined it.
-    """
-
-    questions = Question.objects.filter(queue=queue_id, status=Question.STATUS_ASKED).order_by(
-        "time_asked"
-    )
-    if questions.count() >= 3:
-        question = questions[2]
-        user = question.asked_by
-        if question.should_send_up_soon_notification and user.profile.sms_verified:
-            course = question.queue.course
-            course_title = f"{course.department} {course.course_code}"
-            body = f"You are currently 3rd in line for {course_title}, be ready soon!"
-            sendSMS(user.profile.phone_number, body)
+def sendUpNextNotification(user, course):
+    course_title = f"{course.department} {course.course_code}"
+    body = f"You are currently 3rd in line for {course_title}, be ready soon!"
+    sendSMS(user.profile.phone_number, body)
