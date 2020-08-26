@@ -29,7 +29,7 @@ export async function validateSMS(code) {
     });
 
     if (!res.ok) {
-        const body = await res.json()
+        const body = await res.json();
         throw new Error(body.detail);
     }
 }
