@@ -1,4 +1,3 @@
-import React from "react";
 let Sentry;
 
 const SENTRY_URL =
@@ -26,16 +25,4 @@ export function logException(ex: Error, context?: any): void {
 
 export function logMessage(msg: string): void {
     Sentry.captureMessage(msg);
-}
-
-export default function withSentry(WrappedComponent) {
-    return class SentryComponent extends React.Component {
-        render() {
-            try {
-                return <WrappedComponent {...this.props} />;
-            } catch (ex) {
-                logException(ex);
-            }
-        }
-    };
 }

@@ -1,6 +1,6 @@
+import React, { ReactElement } from "react";
 import NextErrorComponent from "next/error";
 import { NextPageContext } from "next";
-import { ReactElement } from "react";
 
 import { logMessage } from "../utils/sentry";
 
