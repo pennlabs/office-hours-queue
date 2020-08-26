@@ -30,7 +30,7 @@ const StudentQueue = (props: StudentQueueProps) => {
         rawQuestions,
         queue.active ? 3000 : 0
     );
-    const updateToast = (success: string, error) => {
+    const updateToast = (success: string | null, error) => {
         toast.success = success !== null;
         toast.message = success || errorMessage(error);
         setToast(toast);

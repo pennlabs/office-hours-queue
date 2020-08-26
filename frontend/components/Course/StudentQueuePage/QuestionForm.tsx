@@ -15,12 +15,19 @@ interface QuestionFormProps {
     queueId: number;
     queueMutate: mutateResourceListFunction<Queue>;
     mutate: mutateResourceListFunction<Question>;
-    toastFunc: (success: string, error: any) => void;
+    toastFunc: (success: string | null, error: any) => void;
 }
+
+interface QuestionFormState {
+    text: string;
+    tags: string[];
+    videoChatUrl?: string;
+}
+
 const QuestionForm = (props: QuestionFormProps) => {
     const loading = false;
     const { course } = props;
-    const [input, setInput] = useState<Partial<Question>>({
+    const [input, setInput] = useState<QuestionFormState>({
         text: "",
         tags: [],
     });
@@ -41,7 +48,7 @@ const QuestionForm = (props: QuestionFormProps) => {
             !input.text ||
                 (course.requireVideoChatUrlOnQuestions && !input.videoChatUrl)
         );
-        if (name === "videoChatUrl") {
+        if (input.videoChatUrl) {
             setValidURL(isValidURL(input.videoChatUrl));
             if (course.videoChatEnabled && input.videoChatUrl === "") {
                 setValidURL(true);

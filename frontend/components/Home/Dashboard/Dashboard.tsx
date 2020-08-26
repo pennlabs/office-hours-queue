@@ -5,7 +5,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import InstructorCourses from "./InstructorCourses";
 import StudentCourses from "./StudentCourses";
 import { AuthUserContext } from "../../../context/auth";
-import { Course, Kind, Membership, mutateFunction } from "../../../types";
+import { Course, Kind, UserMembership, mutateFunction } from "../../../types";
 import { useMemberships } from "../../../hooks/data-fetching/dashboard";
 
 // TODO: try to readd new user stuff, rip out loading stuff
@@ -13,10 +13,10 @@ const Dashboard = () => {
     const { user: initalUser } = useContext(AuthUserContext);
 
     const [memberships, , , mutate]: [
-        Membership[],
+        UserMembership[],
         any,
         boolean,
-        mutateFunction<Membership[]>
+        mutateFunction<UserMembership[]>
     ] = useMemberships(initalUser);
 
     const getCourses = (isStudent: boolean): Course[] => {

@@ -10,10 +10,27 @@ interface InviteModalProps {
     successFunc: () => void;
     setToast: React.Dispatch<React.SetStateAction<any>>; // TODO: restrict this
 }
+
+enum InviteKind {
+    PROFESSOR = "PROFESSOR",
+    HEADTA = "HEAD_TA",
+    TA = "TA",
+    STUDENT = "STUDENT",
+}
+
+// TODO: This hasn't been handled
+interface InviteState {
+    emails: string[];
+    kind: InviteKind;
+}
+
 const InviteModal = (props: InviteModalProps) => {
     const { courseId, open, closeFunc, successFunc, setToast } = props;
     const [loading, setLoading] = useState(false);
-    const [input, setInput] = useState({ emails: null, kind: null });
+    const [input, setInput] = useState<InviteState>({
+        emails: [],
+        kind: InviteKind.PROFESSOR,
+    });
     const [disabled, setDisabled] = useState(true);
 
     const handleInputChange = (e, { name, value }) => {
@@ -28,7 +45,8 @@ const InviteModal = (props: InviteModalProps) => {
         }
         try {
             setLoading(true);
-            await sendMassInvites(courseId, input.emails, input.kind);
+            // TODO: Not quite sure what backend expects here, fix
+            await sendMassInvites(courseId, input.emails.join(""), input.kind);
             setLoading(false);
             closeFunc();
             successFunc();

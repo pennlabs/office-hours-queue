@@ -5,7 +5,7 @@ import { createCourse } from "../../../../hooks/data-fetching/dashboard";
 import {
     Course,
     mutateFunction,
-    Membership,
+    UserMembership,
     Toast,
     Kind,
 } from "../../../../types";
@@ -13,7 +13,7 @@ import {
 interface ModalAddInstructorCourseProps {
     open: boolean;
     closeFunc: () => void;
-    mutate: mutateFunction<Membership[]>;
+    mutate: mutateFunction<UserMembership[]>;
     toastFunc: (toast: Toast) => void;
 }
 interface CreateCourse extends Course {
@@ -94,7 +94,7 @@ const ModalAddInstructorCourse = (props: ModalAddInstructorCourseProps) => {
             });
         } catch (e) {
             setLoading(false);
-            toastFunc({ message: null, success: false });
+            toastFunc({ message: "Something went wrong", success: false });
         }
     };
 

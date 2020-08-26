@@ -5,11 +5,11 @@ import Alert from "@material-ui/lab/Alert";
 import CourseCard from "./Cards/CourseCard";
 import AddCard from "./Cards/AddCard";
 import ModalAddStudentCourse from "./Modals/ModalAddStudentCourse";
-import { Course, mutateFunction, Membership } from "../../../types";
+import { Course, mutateFunction, UserMembership } from "../../../types";
 
 interface StudentCoursesProps {
     courses: Course[];
-    mutate: mutateFunction<Membership[]>;
+    mutate: mutateFunction<UserMembership[]>;
 }
 
 const StudentCourses = (props: StudentCoursesProps) => {
