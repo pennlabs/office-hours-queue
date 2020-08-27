@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { Segment, Label, Header, Grid, Message, Icon } from "semantic-ui-react";
+import {
+    Segment,
+    Label,
+    Header,
+    Grid,
+    Message,
+    Icon,
+    Dimmer,
+    Loader,
+} from "semantic-ui-react";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 import QuestionForm from "./QuestionForm";
@@ -24,15 +33,28 @@ const StudentQueue = (props: StudentQueueProps) => {
     const [toast, setToast] = useState({ message: "", success: true });
     const [toastOpen, setToastOpen] = useState(false);
 
-    const [questionsData, , , mutateQuestions] = useQuestions(
+    const [questionsData, , loading, mutateQuestions] = useQuestions(
         course.id,
         queue.id,
         rawQuestions,
         queue.active ? 3000 : 0
     );
 
+    if (loading) {
+        return (
+            <Dimmer
+                style={{ marginTop: "3rem" }}
+                active
+                inverted
+                inline="centered"
+            >
+                <Loader size="big" inverted />
+            </Dimmer>
+        );
+    }
+
     // questionsData cannot be null because
-    // the key stays constant and initialData is provided
+    // loading is false to reach this point
     const questions = questionsData!;
 
     const updateToast = (success: string | null, error) => {
