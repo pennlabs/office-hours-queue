@@ -1,4 +1,5 @@
 import React from "react";
+import Head from "next/head";
 import { Grid } from "semantic-ui-react";
 import { NextPageContext } from "next";
 import CourseWrapper from "../../../components/Course/CourseWrapper";
@@ -18,20 +19,25 @@ interface SummaryPageProps extends CoursePageProps {
 const SummaryPage = (props: SummaryPageProps) => {
     const { course, leadership, questionListResult } = props;
     return (
-        <Grid columns="equal" divided style={{ width: "100%" }} stackable>
-            <CourseWrapper
-                course={course}
-                leadership={leadership}
-                render={() => {
-                    return (
-                        <Summary
-                            course={course}
-                            questionListResult={questionListResult}
-                        />
-                    );
-                }}
-            />
-        </Grid>
+        <>
+            <Head>
+                <title>{`OHQ | ${course.courseCode}`}</title>
+            </Head>
+            <Grid columns="equal" divided style={{ width: "100%" }} stackable>
+                <CourseWrapper
+                    course={course}
+                    leadership={leadership}
+                    render={() => {
+                        return (
+                            <Summary
+                                course={course}
+                                questionListResult={questionListResult}
+                            />
+                        );
+                    }}
+                />
+            </Grid>
+        </>
     );
 };
 

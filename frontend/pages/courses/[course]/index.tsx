@@ -1,4 +1,5 @@
 import React from "react";
+import Head from "next/head";
 import { Grid } from "semantic-ui-react";
 import { NextPageContext } from "next";
 import CourseWrapper from "../../../components/Course/CourseWrapper";
@@ -25,32 +26,37 @@ interface QueuePageProps extends CoursePageProps {
 const QueuePage = (props: QueuePageProps) => {
     const { course, leadership, queues, questionmap } = props;
     return (
-        <Grid columns="equal" divided style={{ width: "100%" }} stackable>
-            <CourseWrapper
-                course={course}
-                leadership={leadership}
-                render={(staff: boolean) => {
-                    return (
-                        <>
-                            {staff && (
-                                <InstructorQueuePage
-                                    courseId={course.id}
-                                    queues={queues}
-                                    questionmap={questionmap}
-                                />
-                            )}
-                            {!staff && (
-                                <StudentQueuePage
-                                    course={course}
-                                    queues={queues}
-                                    questionmap={questionmap}
-                                />
-                            )}
-                        </>
-                    );
-                }}
-            />
-        </Grid>
+        <>
+            <Head>
+                <title>{`OHQ | ${course.courseCode}`} </title>
+            </Head>
+            <Grid columns="equal" divided style={{ width: "100%" }} stackable>
+                <CourseWrapper
+                    course={course}
+                    leadership={leadership}
+                    render={(staff: boolean) => {
+                        return (
+                            <>
+                                {staff && (
+                                    <InstructorQueuePage
+                                        courseId={course.id}
+                                        queues={queues}
+                                        questionmap={questionmap}
+                                    />
+                                )}
+                                {!staff && (
+                                    <StudentQueuePage
+                                        course={course}
+                                        queues={queues}
+                                        questionmap={questionmap}
+                                    />
+                                )}
+                            </>
+                        );
+                    }}
+                />
+            </Grid>
+        </>
     );
 };
 
