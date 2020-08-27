@@ -47,8 +47,10 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
         );
     }
 
-    const [leader, , , ,] = useStaff(courseId, initialUser);
-    if (!leader) {
+    let leader: boolean;
+    try {
+        [leader, , , ,] = useStaff(courseId, initialUser);
+    } catch (err) {
         throw new Error("member doesn't belong in course");
     }
 
