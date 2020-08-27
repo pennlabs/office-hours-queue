@@ -278,7 +278,7 @@ class QueueViewSet(viewsets.ModelViewSet):
                 questions_asked=Subquery(questions_asked[:1]),
                 staff_active=Subquery(staff_active[:1]),
             )
-            .order_by()
+            .order_by("id")
         )
 
     @action(methods=["POST"], detail=True)
@@ -333,7 +333,7 @@ class MembershipViewSet(viewsets.ModelViewSet):
                 | Q(kind=Membership.KIND_HEAD_TA)
                 | Q(user=self.request.user)
             )
-        return qs
+        return qs.order_by("user__first_name")
 
 
 class MembershipInviteViewSet(viewsets.ModelViewSet):
