@@ -48,9 +48,6 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
     }
 
     const [leader, , , ,] = useStaff(courseId, initialUser);
-    if (!leader) {
-        throw new Error("member doesn't belong in course");
-    }
 
     const [queuesData, , , mutate] = useQueues(courseId, rawQueues);
 
