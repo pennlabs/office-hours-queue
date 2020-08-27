@@ -6,6 +6,7 @@ import {
     mutateResourceListFunction,
     QuestionStatus,
 } from "../../../types";
+import { logException } from "../../../utils/sentry";
 
 interface DeleteQuestionModalProps {
     question: Question;
@@ -37,6 +38,7 @@ const DeleteQuestionModal = (props: DeleteQuestionModalProps) => {
             setOpen(false);
             toastFunc("Question withdrawn!", null);
         } catch (e) {
+            logException(e);
             setOpen(false);
             toastFunc(null, e);
         }

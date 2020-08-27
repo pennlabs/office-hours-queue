@@ -9,6 +9,7 @@ import {
     Toast,
     Kind,
 } from "../../../../types";
+import { logException } from "../../../../utils/sentry";
 
 interface ModalAddInstructorCourseProps {
     open: boolean;
@@ -93,6 +94,7 @@ const ModalAddInstructorCourse = (props: ModalAddInstructorCourseProps) => {
                 success: true,
             });
         } catch (e) {
+            logException(e);
             setLoading(false);
             toastFunc({ message: "Something went wrong", success: false });
         }

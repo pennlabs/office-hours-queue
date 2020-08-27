@@ -10,15 +10,16 @@ const AboutModal = (props: AboutModalProps) => {
     return (
         <Modal open={open} style={{ width: "350px" }}>
             <Modal.Content>
-                OHQ was built by Steven Bursztyn, Chris Fischer, Monal Garg,
-                Karen Shen, and Marshall Vail.
+                OHQ is maintained by Penn Labs and was originally built by
+                Steven Bursztyn, Chris Fischer, Monal Garg, Karen Shen, and
+                Marshall Vail
                 <br />
                 <br />
                 To submit a bug, please use this{" "}
                 <a
                     target="_blank"
                     rel="noopener noreferrer"
-                    href="https://forms.gle/ZABQZ31HRoP6VLhT8"
+                    href="https://airtable.com/shrIZxIjyAE3gOUSg"
                 >
                     form
                 </a>
@@ -30,9 +31,9 @@ const AboutModal = (props: AboutModalProps) => {
                 <a
                     target="_blank"
                     rel="noopener noreferrer"
-                    href="mailto:support@ohq.io"
+                    href="mailto:contact@ohq.io"
                 >
-                    support@ohq.io
+                    contact@ohq.io
                 </a>
                 .
             </Modal.Content>

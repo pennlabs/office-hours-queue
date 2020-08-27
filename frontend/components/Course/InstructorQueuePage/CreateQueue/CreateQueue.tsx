@@ -4,6 +4,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 import { createQueue } from "../../../../hooks/data-fetching/course";
 import { mutateResourceListFunction, Queue } from "../../../../types";
+import { logException } from "../../../../utils/sentry";
 
 interface CreateQueueProps {
     courseId: number;
@@ -41,6 +42,7 @@ const CreateQueue = (props: CreateQueueProps) => {
             backFunc();
             successFunc();
         } catch (e) {
+            logException(e);
             setError(true);
         }
     };

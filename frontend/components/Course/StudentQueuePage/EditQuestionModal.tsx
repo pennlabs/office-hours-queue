@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Modal, Form, Button } from "semantic-ui-react";
 import { Course, Question, mutateResourceListFunction } from "../../../types";
+import { logException } from "../../../utils/sentry";
 
 interface EditQuestionModalProps {
     course: Course;
@@ -61,6 +62,7 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
             setOpen(false);
             toastFunc("Question successfully updated", null);
         } catch (e) {
+            logException(e);
             setOpen(false);
             toastFunc(null, e);
         }

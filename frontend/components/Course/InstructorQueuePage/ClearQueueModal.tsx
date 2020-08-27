@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Modal, List, Button } from "semantic-ui-react";
 import { mutateResourceListFunction, Queue } from "../../../types";
 import { clearQueue } from "../../../hooks/data-fetching/course";
+import { logException } from "../../../utils/sentry";
 
 interface ClearQueueModalProps {
     queue: Queue;
@@ -24,6 +25,7 @@ const ClearQueueModal = (props: ClearQueueModalProps) => {
             await setRefetchLoading(false);
             closeFunc();
         } catch (e) {
+            logException(e);
             await setRefetchLoading(false);
         }
     };
