@@ -162,7 +162,7 @@ PLATFORM_ACCOUNTS = {
 # Email Settings
 
 EMAIL_TOOLS = {
-    "FROM_EMAIL": f"OHQ <contact@{DOMAIN}>",
+    "FROM_EMAIL": f"Office Hours Queue <contact@{DOMAIN}>",
     "TEMPLATE_DIRECTORY": os.path.join(BASE_DIR, "officehoursqueue", "templates", "emails"),
 }
 
