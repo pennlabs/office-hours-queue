@@ -47,12 +47,7 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
         );
     }
 
-    let leader: boolean;
-    try {
-        [leader, , , ,] = useStaff(courseId, initialUser);
-    } catch (err) {
-        throw new Error("member doesn't belong in course");
-    }
+    const [leader, , , ,] = useStaff(courseId, initialUser);
 
     const [queuesData, , , mutate] = useQueues(courseId, rawQueues);
 
