@@ -275,7 +275,7 @@ class QueueViewSet(viewsets.ModelViewSet):
             questions_active=Subquery(questions_active[:1], output_field=IntegerField()),
             questions_asked=Subquery(questions_asked[:1]),
             staff_active=Subquery(staff_active[:1]),
-        )
+        ).order_by()
 
     @action(methods=["POST"], detail=True)
     def clear(self, request, course_pk, pk=None):
