@@ -218,7 +218,7 @@ const CourseForm = (props: CourseFormProps) => {
             </Form.Field>
             <Form.Field required>
                 <label htmlFor="invite-only">Invite Only?</label>
-                <Form.Radio
+                <Form.Checkbox
                     id="invite-only"
                     defaultChecked={course.inviteOnly}
                     name="inviteOnly"
