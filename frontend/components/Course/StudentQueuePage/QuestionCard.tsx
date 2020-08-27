@@ -27,8 +27,6 @@ const QuestionCard = (props: QuestionCardProps) => {
         3000
     );
 
-    const { position } = positionData!;
-
     const [openEdit, setOpenEdit] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
 
@@ -70,8 +68,9 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     overflow: "hidden",
                                 }}
                             >
-                                {position !== -1 &&
-                                    `Position in Queue: #${position}`}
+                                {positionData &&
+                                    positionData.position !== -1 &&
+                                    `Position in Queue: #${positionData.position}`}
                             </Header>
                         </Grid.Column>
                         <Grid.Column width={6}>

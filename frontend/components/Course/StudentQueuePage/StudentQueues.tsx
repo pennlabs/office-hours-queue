@@ -24,7 +24,7 @@ const StudentQueues = (props: StudentQueuesProps) => {
     return (
         <>
             {queues && (
-                <Grid.Row columns="equal" stackable>
+                <Grid.Row columns="equal">
                     {queues.length !== 0 &&
                         queues.map((queue) => (
                             <Grid.Column>
