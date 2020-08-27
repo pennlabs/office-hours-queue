@@ -33,14 +33,14 @@ const StudentQueue = (props: StudentQueueProps) => {
     const [toast, setToast] = useState({ message: "", success: true });
     const [toastOpen, setToastOpen] = useState(false);
 
-    const [questionsData, , loading, mutateQuestions] = useQuestions(
+    const [questions, , , mutateQuestions] = useQuestions(
         course.id,
         queue.id,
         rawQuestions,
         queue.active ? 3000 : 0
     );
 
-    if (loading) {
+    if (!questions) {
         return (
             <Dimmer
                 style={{ marginTop: "3rem" }}
@@ -52,10 +52,6 @@ const StudentQueue = (props: StudentQueueProps) => {
             </Dimmer>
         );
     }
-
-    // questionsData cannot be null because
-    // loading is false to reach this point
-    const questions = questionsData!;
 
     const updateToast = (success: string | null, error) => {
         toast.success = success !== null;
