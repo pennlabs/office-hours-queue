@@ -85,10 +85,13 @@ export function useResourceList<R extends Identifiable>(
             }
         }
         // Only perform an API request when the patch finds a matching entry.
-        await doApiRequest(getResourceUrl(id), {
-            method,
-            body: patchedResource,
-        });
+        // TODO: make this more ergonomic with optionals
+        if (id !== -1) {
+            await doApiRequest(getResourceUrl(id), {
+                method,
+                body: patchedResource,
+            });
+        }
         // Always revalidate, even if mutate was a no-op.
         return mutate();
     };

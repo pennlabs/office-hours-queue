@@ -1,4 +1,5 @@
 import React from "react";
+import Head from "next/head";
 import { Grid } from "semantic-ui-react";
 import { NextPageContext } from "next";
 import CourseWrapper from "../../../components/Course/CourseWrapper";
@@ -14,15 +15,20 @@ import nextRedirect from "../../../utils/redirect";
 const SettingsPage = (props: CoursePageProps) => {
     const { course, leadership } = props;
     return (
-        <Grid columns="equal" divided style={{ width: "100%" }} stackable>
-            <CourseWrapper
-                course={course}
-                leadership={leadership}
-                render={() => {
-                    return <CourseSettings course={course} />;
-                }}
-            />
-        </Grid>
+        <>
+            <Head>
+                <title>{`OHQ | ${course.courseCode}`}</title>
+            </Head>
+            <Grid columns="equal" divided style={{ width: "100%" }} stackable>
+                <CourseWrapper
+                    course={course}
+                    leadership={leadership}
+                    render={() => {
+                        return <CourseSettings course={course} />;
+                    }}
+                />
+            </Grid>
+        </>
     );
 };
 
