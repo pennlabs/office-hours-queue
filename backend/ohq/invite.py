@@ -1,6 +1,8 @@
-from django.core.validators import validate_email
-from ohq.models import Membership, MembershipInvite
 from django.contrib.auth import get_user_model
+from django.core.validators import validate_email
+
+from ohq.models import Membership, MembershipInvite
+
 
 User = get_user_model()
 
@@ -37,3 +39,5 @@ def invite_emails(course, emails, kind):
     for email in emails:
         invite = MembershipInvite.objects.create(email=email, course=course, kind=kind)
         invite.send_email()
+
+    return len(users)

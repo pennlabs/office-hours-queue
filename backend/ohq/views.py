@@ -2,7 +2,7 @@ import re
 from datetime import timedelta
 
 from django.contrib.auth import get_user_model
-from django.core.validators import ValidationError, validate_email
+from django.core.validators import ValidationError
 from django.db.models import Count, Exists, FloatField, IntegerField, OuterRef, Q, Subquery
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.utils import timezone
@@ -400,12 +400,12 @@ class MassInviteView(APIView):
         except ValidationError:
             return Response({"detail": "invalid emails"}, status=400)
 
-        invite_emails(course, emails, kind)
+        members_added = invite_emails(course, emails, kind)
 
         return Response(
             data={
                 "detail": "success",
-                "members_added": len(users),
+                "members_added": members_added,
                 "invites_sent": len(emails),
             },
             status=201,

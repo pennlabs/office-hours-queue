@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
+
 from ohq.invite import filter_emails, invite_emails
-from ohq.models import Semester, Membership, Course
+from ohq.models import Course, Membership, Semester
 
 
 class Command(BaseCommand):
