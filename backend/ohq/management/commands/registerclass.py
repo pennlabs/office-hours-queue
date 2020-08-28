@@ -40,11 +40,19 @@ class Command(BaseCommand):
             semester=semester,
         )
 
+        self.stdout.write(f"Created new course {department} {course_code} in {term} {year}")
+
         emails = filter_emails(new_course, emails)
         groups = {Membership.KIND_PROFESSOR: [], Membership.KIND_HEAD_TA: []}
         for i in range(len(emails)):
             kind, email = roles[i], emails[i]
             groups[kind].append(email)
 
-        invite_emails(new_course, groups[Membership.KIND_PROFESSOR], Membership.KIND_PROFESSOR)
-        invite_emails(new_course, groups[Membership.KIND_HEAD_TA], Membership.KIND_HEAD_TA)
+        added, invited = invite_emails(
+            new_course, groups[Membership.KIND_PROFESSOR], Membership.KIND_PROFESSOR
+        )
+        self.stdout.write(f"Added {added} professor(s) and invited {invited} professor(s)")
+        added, invited = invite_emails(
+            new_course, groups[Membership.KIND_HEAD_TA], Membership.KIND_HEAD_TA
+        )
+        self.stdout.write(f"Added {added} Head TA(s) and invited {invited} Head TA(s)")
