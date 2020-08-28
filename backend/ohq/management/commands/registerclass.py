@@ -17,9 +17,7 @@ class Command(BaseCommand):
         parser.add_argument("year", type=int)
         parser.add_argument("--emails", nargs="+", type=str)
         parser.add_argument(
-            "--roles",
-            nargs="+",
-            choices=[Membership.KIND_PROFESSOR, Membership.KIND_HEAD_TA],
+            "--roles", nargs="+", choices=[Membership.KIND_PROFESSOR, Membership.KIND_HEAD_TA],
         )
 
     def handle(self, *args, **kwargs):
@@ -48,9 +46,5 @@ class Command(BaseCommand):
             kind, email = roles[i], emails[i]
             groups[kind].append(email)
 
-        invite_emails(
-            new_course, groups[Membership.KIND_PROFESSOR], Membership.KIND_PROFESSOR
-        )
-        invite_emails(
-            new_course, groups[Membership.KIND_HEAD_TA], Membership.KIND_HEAD_TA
-        )
+        invite_emails(new_course, groups[Membership.KIND_PROFESSOR], Membership.KIND_PROFESSOR)
+        invite_emails(new_course, groups[Membership.KIND_HEAD_TA], Membership.KIND_HEAD_TA)

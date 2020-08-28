@@ -13,15 +13,15 @@ def filter_emails(course, emails):
         validate_email(email)
 
     # Remove invitees already in class
-    existing = Membership.objects.filter(
-        course=course, user__email__in=emails
-    ).values_list("user__email", flat=True)
+    existing = Membership.objects.filter(course=course, user__email__in=emails).values_list(
+        "user__email", flat=True
+    )
 
     emails = list(set(emails) - set(existing))
 
-    existing = MembershipInvite.objects.filter(
-        course=course, email__in=emails
-    ).values_list("email", flat=True)
+    existing = MembershipInvite.objects.filter(course=course, email__in=emails).values_list(
+        "email", flat=True
+    )
     emails = list(set(emails) - set(existing))
 
     return emails
