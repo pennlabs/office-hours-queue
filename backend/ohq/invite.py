@@ -40,4 +40,4 @@ def invite_emails(course, emails, kind):
         invite = MembershipInvite.objects.create(email=email, course=course, kind=kind)
         invite.send_email()
 
-    return len(users)
+    return (len(users), len(emails))

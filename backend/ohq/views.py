@@ -400,13 +400,13 @@ class MassInviteView(APIView):
         except ValidationError:
             return Response({"detail": "invalid emails"}, status=400)
 
-        members_added = invite_emails(course, emails, kind)
+        members_added, invites_sent = invite_emails(course, emails, kind)
 
         return Response(
             data={
                 "detail": "success",
                 "members_added": members_added,
-                "invites_sent": len(emails),
+                "invites_sent": invites_sent,
             },
             status=201,
         )
