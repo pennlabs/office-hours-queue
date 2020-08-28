@@ -7,6 +7,7 @@ import StudentCourses from "./StudentCourses";
 import { AuthUserContext } from "../../../context/auth";
 import { Course, Kind, UserMembership, mutateFunction } from "../../../types";
 import { useMemberships } from "../../../hooks/data-fetching/dashboard";
+import { isLeadershipRole } from "../../../utils/enums";
 
 // TODO: try to readd new user stuff, rip out loading stuff
 const Dashboard = () => {
@@ -29,6 +30,11 @@ const Dashboard = () => {
             })
             .map((membership) => membership.course);
     };
+
+    const canCreateCourse: boolean =
+        memberships.findIndex((membership) =>
+            isLeadershipRole(membership.kind)
+        ) !== -1;
 
     /* STATE */
     // const [newUserModalOpen, setNewUserModalOpen] = useState(props.newUser);
@@ -110,6 +116,7 @@ const Dashboard = () => {
                         <InstructorCourses
                             courses={getCourses(false)}
                             mutate={mutate}
+                            canCreateCourse={canCreateCourse}
                         />,
                     ]}
                 </Grid>

@@ -11,12 +11,13 @@ import { Course, mutateFunction, UserMembership, Toast } from "../../../types";
 interface InstructorCoursesProps {
     courses: Course[];
     mutate: mutateFunction<UserMembership[]>;
+    canCreateCourse: boolean;
 }
 const InstructorCourses = (props: InstructorCoursesProps) => {
     /* STATE */
     const [open, setOpen] = useState(false);
     const [showArchived, setShowArchived] = useState(false);
-    const { courses, mutate } = props;
+    const { courses, mutate, canCreateCourse } = props;
     const [toast, setToast] = useState<Toast>({ success: true, message: "" });
     const [toastOpen, setToastOpen] = useState(false);
 
@@ -51,12 +52,14 @@ const InstructorCourses = (props: InstructorCoursesProps) => {
                             </Grid.Column>
                         )
                 )}
-                <Grid.Column style={{ width: "280px" }}>
-                    <AddCard
-                        clickFunc={() => setOpen(true)}
-                        isStudent={false}
-                    />
-                </Grid.Column>
+                {canCreateCourse && (
+                    <Grid.Column style={{ width: "280px" }}>
+                        <AddCard
+                            clickFunc={() => setOpen(true)}
+                            isStudent={false}
+                        />
+                    </Grid.Column>
+                )}
             </Grid.Row>
             {courses.filter((course) => course.archived).length > 0 && (
                 <Grid.Row padded="true">
