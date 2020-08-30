@@ -8,8 +8,8 @@ class Command(BaseCommand):
     help = "Creates a course with default settings and invites users to course"
 
     def add_arguments(self, parser):
-        parser.add_argument("course_code", type=str)
         parser.add_argument("department", type=str)
+        parser.add_argument("course_code", type=str)
         parser.add_argument("course_title", type=str)
         parser.add_argument(
             "term", type=str, choices=[choice[0] for choice in Semester.TERM_CHOICES]
@@ -42,11 +42,12 @@ class Command(BaseCommand):
 
         self.stdout.write(f"Created new course {department} {course_code} in {term} {year}")
 
+        role_map = {email: role for role, email in zip(roles, emails)}
+
         emails = filter_emails(new_course, emails)
         groups = {Membership.KIND_PROFESSOR: [], Membership.KIND_HEAD_TA: []}
-        for i in range(len(emails)):
-            kind, email = roles[i], emails[i]
-            groups[kind].append(email)
+        for email in emails:
+            groups[role_map[email]].append(email)
 
         added, invited = invite_emails(
             new_course, groups[Membership.KIND_PROFESSOR], Membership.KIND_PROFESSOR
