@@ -146,13 +146,13 @@ const StudentQueue = (props: StudentQueueProps) => {
                         toastFunc={updateToast}
                     />
                 )}
-                <Grid.Row columns={1}>
-                    {lastQuestions && lastQuestions.length !== 0 && (
+                {lastQuestions && lastQuestions.length !== 0 && (
+                    <Grid.Row columns={1}>
                         <Grid.Column>
                             <LastQuestionCard question={lastQuestions[0]} />
                         </Grid.Column>
-                    )}
-                </Grid.Row>
+                    </Grid.Row>
+                )}
             </Grid.Row>
             <Snackbar
                 open={toastOpen}
