@@ -16,10 +16,19 @@ interface QuestionCardProps {
     queue: Queue;
     queueMutate: mutateResourceListFunction<Queue>;
     mutate: mutateResourceListFunction<Question>;
+    lastQuestionsMutate: mutateResourceListFunction<Question>;
     toastFunc: (success: string, error: any) => void;
 }
 const QuestionCard = (props: QuestionCardProps) => {
-    const { question, course, queue, mutate, toastFunc, queueMutate } = props;
+    const {
+        question,
+        course,
+        queue,
+        mutate,
+        toastFunc,
+        queueMutate,
+        lastQuestionsMutate,
+    } = props;
     const [positionData, , , ,] = useQuestionPosition(
         course.id,
         queue.id,
@@ -51,6 +60,7 @@ const QuestionCard = (props: QuestionCardProps) => {
                 open={openDelete}
                 queue={queue}
                 queueMutate={queueMutate}
+                lastQuestionsMutate={lastQuestionsMutate}
                 question={question}
                 setOpen={setOpenDelete}
                 toastFunc={toastFunc}

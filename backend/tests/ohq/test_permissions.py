@@ -312,6 +312,14 @@ class QuestionTestCase(TestCase):
                 "non_member": 403,
                 "anonymous": 403,
             },
+            "last": {
+                "professor": 403,
+                "head_ta": 403,
+                "ta": 403,
+                "student": 200,
+                "non_member": 403,
+                "anonymous": 403,
+            },
             "create": {
                 "professor": 403,
                 "head_ta": 403,
@@ -364,6 +372,16 @@ class QuestionTestCase(TestCase):
             "list",
             "get",
             reverse("ohq:question-list", args=[self.course.id, self.queue.id]),
+        )
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_last(self, user):
+        test(
+            self,
+            user,
+            "last",
+            "get",
+            reverse("ohq:question-last", args=[self.course.id, self.queue.id]),
         )
 
     @parameterized.expand(users, name_func=get_test_name)

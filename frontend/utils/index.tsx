@@ -1,4 +1,4 @@
-import { Membership, Kind } from "../types";
+import { Membership, Kind, User } from "../types";
 
 export function isValidEmail(email: string) {
     const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -29,4 +29,8 @@ export function leadershipSortFunc(a: Membership, b: Membership) {
         return a.user.email < b.user.email ? -1 : 1;
     }
     return 0;
+}
+
+export function getFullName(user: User): string {
+    return `${user.firstName} ${user.lastName}`;
 }

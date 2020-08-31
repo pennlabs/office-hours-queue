@@ -151,8 +151,8 @@ class QuestionPermission(permissions.BasePermission):
         if view.action == "destroy":
             return False
 
-        # Students can create questions:
-        if view.action == "create":
+        # Students can create questions and view their last asked question:
+        if view.action in ["create", "last"]:
             return membership.kind == Membership.KIND_STUDENT
 
         # Students+ can get, list, or modify questions

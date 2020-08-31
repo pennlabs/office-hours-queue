@@ -190,6 +190,24 @@ class QuestionViewSet(viewsets.ModelViewSet):
             )
         return JsonResponse({"position": position})
 
+    @action(detail=False)
+    def last(self, request, course_pk, queue_pk):
+        """
+        Get the last question you asked in a queue. Only visible to Students.
+        """
+
+        queryset = Question.objects.filter(
+            Q(queue=queue_pk)
+            & Q(asked_by=request.user)
+            & (
+                Q(status=Question.STATUS_WITHDRAWN)
+                | Q(status=Question.STATUS_REJECTED)
+                | Q(status=Question.STATUS_ANSWERED)
+            )
+        ).order_by("-time_asked")[:1]
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     def list(self, request, *args, **kwargs):
         """
         Update a staff member's last active time when they view questions

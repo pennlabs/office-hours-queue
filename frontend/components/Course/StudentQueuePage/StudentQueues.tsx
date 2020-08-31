@@ -1,7 +1,6 @@
 import React from "react";
 import { Segment, Grid, Message } from "semantic-ui-react";
 import StudentQueue from "./StudentQueue";
-// import LastQuestionCard from "./LastQuestionCard";
 import {
     Queue,
     Course,
@@ -17,9 +16,6 @@ interface StudentQueuesProps {
 }
 const StudentQueues = (props: StudentQueuesProps) => {
     const { queues, course, queueMutate, questionmap } = props;
-    // const showQuestion = (question) => {
-    //     return question.state === "ACTIVE" || question.state === "STARTED";
-    // };
 
     return (
         <>
@@ -49,14 +45,6 @@ const StudentQueues = (props: StudentQueuesProps) => {
                     )}
                 </Grid.Row>
             )}
-            {/* // TODO: replace this with a user-level canAskQuestions check */}
-            {/* <Grid.Row columns={1}>
-                {question && !showQuestion(question) && (
-                    <Grid.Column>
-                        <LastQuestionCard question={question} />
-                    </Grid.Column>
-                )}
-            </Grid.Row> */}
         </>
     );
 };
