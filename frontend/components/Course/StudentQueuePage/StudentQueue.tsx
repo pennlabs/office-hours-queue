@@ -19,7 +19,11 @@ import {
     mutateResourceListFunction,
     Question,
 } from "../../../types";
-import { useQuestions } from "../../../hooks/data-fetching/course";
+import {
+    useQuestions,
+    useLastQuestions,
+} from "../../../hooks/data-fetching/course";
+import LastQuestionCard from "./LastQuestionCard";
 
 interface StudentQueueProps {
     course: Course;
@@ -37,6 +41,11 @@ const StudentQueue = (props: StudentQueueProps) => {
         course.id,
         queue.id,
         rawQuestions,
+        queue.active ? 3000 : 0
+    );
+    const [lastQuestions, , , mutateLastQuestions] = useLastQuestions(
+        course.id,
+        queue.id,
         queue.active ? 3000 : 0
     );
 
@@ -114,6 +123,7 @@ const StudentQueue = (props: StudentQueueProps) => {
                         course={course}
                         queue={queue}
                         queueMutate={queueMutate}
+                        lastQuestionsMutate={mutateLastQuestions}
                         mutate={mutateQuestions}
                         toastFunc={updateToast}
                     />
@@ -136,18 +146,13 @@ const StudentQueue = (props: StudentQueueProps) => {
                         toastFunc={updateToast}
                     />
                 )}
-                {/* TODO: figure out this check */}
-                {/* {queue.active &&
-                    hasQuestion &&
-                    questions.length === 0 && (
-                        <Message
-                            style={{ marginTop: "10px" }}
-                            info
-                            header="Question already in queue"
-                            icon="comment alternate outline"
-                            content="You already have asked a question in another queue"
-                        />
-                    )} */}
+                {lastQuestions && lastQuestions.length !== 0 && (
+                    <Grid.Row columns={1}>
+                        <Grid.Column>
+                            <LastQuestionCard question={lastQuestions[0]} />
+                        </Grid.Column>
+                    </Grid.Row>
+                )}
             </Grid.Row>
             <Snackbar
                 open={toastOpen}

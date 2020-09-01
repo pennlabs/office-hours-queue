@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Segment, Message } from "semantic-ui-react";
+import { Question } from "../../../types";
+import { getFullName } from "../../../utils";
 
-const LastQuestionCard = ({ question }) => {
+const LastQuestionCard = ({ question }: { question: Question }) => {
     const timeString = (date) => {
         return new Date(date).toLocaleString("en-US", {
             // TODO: this isn't a good fix
@@ -11,10 +13,8 @@ const LastQuestionCard = ({ question }) => {
         });
     };
 
-    const formatReason = (reason, other) => {
+    const formatReason = (reason) => {
         switch (reason) {
-            case "OTHER":
-                return `Other (${other})`;
             case "NOT_HERE":
                 return "Not Here";
             case "OH_ENDED":
@@ -41,51 +41,52 @@ const LastQuestionCard = ({ question }) => {
 
     return (
         <Segment basic>
-            <Segment padded attached="top" color={segmentColor(question.state)}>
-                {question.state === "REJECTED" && (
+            <Segment
+                padded
+                attached="top"
+                color={segmentColor(question.status)}
+            >
+                {question.status === "REJECTED" && (
                     <div>
                         The following question you asked on{" "}
                         <b>{timeString(question.timeAsked)}</b> was rejected
-                        {question.rejectedBy && [
+                        {question.respondedToBy && [
                             " by ",
-                            <b>{question.rejectedBy.preferredName}</b>,
+                            <b>{getFullName(question.respondedToBy)}</b>,
                         ]}
                         :
                         <br />
-                        <Message error>{`"${question.text}"`}</Message>
-                        The reason for rejection was:
-                        <b>{` ${formatReason(
-                            question.rejectedReason,
-                            question.rejectedReasonOther
-                        )}`}</b>
+                        <Message error>{question.text}</Message>
+                        The reason for rejection was:{" "}
+                        <b>{formatReason(question.rejectedReason)}</b>
                     </div>
                 )}
-                {question.state === "ANSWERED" && (
+                {question.status === "ANSWERED" && (
                     <div>
                         The following question you asked on{" "}
                         <b>{timeString(question.timeAsked)}</b> was answered
-                        {question.answeredBy && [
+                        {question.respondedToBy && [
                             " by ",
-                            <b>{question.answeredBy.preferredName}</b>,
+                            <b>{getFullName(question.respondedToBy)}</b>,
                         ]}
                         :
                         <br />
-                        <Message success>{`"${question.text}"`}</Message>
+                        <Message success>{question.text}</Message>
                     </div>
                 )}
-                {question.state === "WITHDRAWN" && (
+                {question.status === "WITHDRAWN" && (
                     <div>
-                        You withdrew the following question on{" "}
-                        <b>{timeString(question.timeWithdrawn)}</b>:
-                        <Message info>{`"${question.text}"`}</Message>
+                        You withdrew the following question that was asked on{" "}
+                        <b>{timeString(question.timeAsked)}</b>:
+                        <Message info>{question.text}</Message>
                     </div>
                 )}
             </Segment>
             <Message
                 attached="bottom"
-                error={question.state === "REJECTED"}
-                success={question.state === "ANSWERED"}
-                info={question.state === "WITHDRAWN"}
+                error={question.status === "REJECTED"}
+                success={question.status === "ANSWERED"}
+                info={question.status === "WITHDRAWN"}
             >
                 If you believe this is an error, please contact course staff!
             </Message>

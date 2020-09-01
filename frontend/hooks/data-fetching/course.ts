@@ -128,6 +128,18 @@ export const useQuestionPosition = (
         { refreshInterval }
     );
 
+export const useLastQuestions = (
+    courseId: number,
+    queueId: number,
+    refreshInterval: number
+) =>
+    useResourceList<Question>(
+        `/courses/${courseId}/queues/${queueId}/questions/last/`,
+        (id) => `/courses/${courseId}/queues/${queueId}/last/${id}/`,
+        [],
+        { refreshInterval }
+    );
+
 export async function clearQueue(courseId: number, queueId: number) {
     await doApiRequest(`/courses/${courseId}/queues/${queueId}/clear/`, {
         method: "POST",
