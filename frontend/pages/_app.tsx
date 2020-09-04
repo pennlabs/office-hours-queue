@@ -10,6 +10,7 @@ const MyApp = ({ Component, pageProps }) => {
             value={{
                 fetcher: (path, ...args) =>
                     doApiRequest(path, ...args).then((res) => res.json()),
+                refreshWhenHidden: true,
             }}
         >
             {/* This is necessary for generic HOC */}
