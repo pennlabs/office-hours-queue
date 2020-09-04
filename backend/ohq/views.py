@@ -218,6 +218,21 @@ class QuestionViewSet(viewsets.ModelViewSet):
         membership.save()
         return super().list(request, *args, **kwargs)
 
+    def create(self, request, *args, **kwargs):
+        """
+        Ensures user can only create one question in ASKED or ACTIVE status
+        """
+        pending_questions = Question.objects.filter(
+            Q(queue=kwargs["queue_pk"])
+            & Q(asked_by=request.user)
+            & (Q(status=Question.STATUS_ASKED) | Q(status=Question.STATUS_ACTIVE))
+        )
+
+        if len(pending_questions) > 0:
+            return HttpResponseBadRequest()
+
+        return super().create(request, *args, **kwargs)
+
 
 class QuestionSearchView(generics.ListAPIView):
     filter_backends = [DjangoFilterBackend]
