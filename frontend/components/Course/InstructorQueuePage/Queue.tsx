@@ -66,7 +66,9 @@ const Queue = (props: QueueProps) => {
                 player.play();
             }
         }
-    }, [JSON.stringify(questions)]);
+        // questions is not stale because we check for deep equality
+        // eslint-disable-next-line
+    }, [JSON.stringify(questions), player]);
 
     const onOpen = async () => {
         await mutate(queueId, { active: true });
