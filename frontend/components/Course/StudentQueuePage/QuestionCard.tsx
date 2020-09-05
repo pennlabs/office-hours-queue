@@ -129,8 +129,8 @@ const QuestionCard = (props: QuestionCardProps) => {
                                 overflow: "hidden",
                             }}
                         >
-                            /* if responseStarted, then someone responded to
-                            question */
+                            {/* if responseStarted, then someone responded to
+                            question */}
                             {question.timeResponseStarted && (
                                 <Popup
                                     wide
