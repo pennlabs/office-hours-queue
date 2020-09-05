@@ -103,22 +103,24 @@ const Dashboard = () => {
                     />
                     {/* )} */}
                     {/* {!props.loading && */}
-                    {hasInstructorCourses && [
-                        <Grid.Row>
-                            <Segment basic padded>
-                                <Header as="h2">
-                                    <Header.Content>
-                                        Instructor Courses
-                                    </Header.Content>
-                                </Header>
-                            </Segment>
-                        </Grid.Row>,
-                        <InstructorCourses
-                            courses={getCourses(false)}
-                            mutate={mutate}
-                            canCreateCourse={canCreateCourse}
-                        />,
-                    ]}
+                    {hasInstructorCourses && (
+                        <>
+                            <Grid.Row>
+                                <Segment basic padded>
+                                    <Header as="h2">
+                                        <Header.Content>
+                                            Instructor Courses
+                                        </Header.Content>
+                                    </Header>
+                                </Segment>
+                            </Grid.Row>
+                            <InstructorCourses
+                                courses={getCourses(false)}
+                                mutate={mutate}
+                                canCreateCourse={canCreateCourse}
+                            />
+                        </>
+                    )}
                 </Grid>
             )}
             <Snackbar
