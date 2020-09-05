@@ -15,7 +15,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ohq.filters import QuestionSearchFilter
-from ohq.invite import filter_emails, invite_emails
+from ohq.invite import parse_and_send_invites
 from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester
 from ohq.pagination import QuestionSearchPagination
 from ohq.permissions import (
@@ -396,11 +396,9 @@ class MassInviteView(APIView):
         emails = [x for x in emails if x]
 
         try:
-            emails = filter_emails(course, emails)
+            members_added, invites_sent = parse_and_send_invites(course, emails, kind)
         except ValidationError:
             return Response({"detail": "invalid emails"}, status=400)
-
-        members_added, invites_sent = invite_emails(course, emails, kind)
 
         return Response(
             data={

@@ -75,7 +75,7 @@ class RegisterClassTestCase(TestCase):
         self.assertEqual(Membership.KIND_HEAD_TA, head1.kind)
         self.assertEqual(Membership.KIND_HEAD_TA, head2.kind)
 
-        course_msg = "Created new course CIS 160 in FALL 2020"
+        course_msg = "Created new course 'CIS 160: Fall 2020'"
         prof_msg = "Added 1 professor(s) and invited 1 professor(s)"
         ta_msg = "Added 1 Head TA(s) and invited 1 Head TA(s)"
 

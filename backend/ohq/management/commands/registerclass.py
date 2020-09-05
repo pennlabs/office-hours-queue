@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 
-from ohq.invite import filter_emails, invite_emails
+from ohq.invite import parse_and_send_invites
 from ohq.models import Course, Membership, Semester
 
 
@@ -40,20 +40,19 @@ class Command(BaseCommand):
             semester=semester,
         )
 
-        self.stdout.write(f"Created new course {department} {course_code} in {term} {year}")
+        self.stdout.write(f"Created new course '{new_course}'")
 
         role_map = {email: role for role, email in zip(roles, emails)}
 
-        emails = filter_emails(new_course, emails)
         groups = {Membership.KIND_PROFESSOR: [], Membership.KIND_HEAD_TA: []}
         for email in emails:
             groups[role_map[email]].append(email)
 
-        added, invited = invite_emails(
+        added, invited = parse_and_send_invites(
             new_course, groups[Membership.KIND_PROFESSOR], Membership.KIND_PROFESSOR
         )
         self.stdout.write(f"Added {added} professor(s) and invited {invited} professor(s)")
-        added, invited = invite_emails(
+        added, invited = parse_and_send_invites(
             new_course, groups[Membership.KIND_HEAD_TA], Membership.KIND_HEAD_TA
         )
         self.stdout.write(f"Added {added} Head TA(s) and invited {invited} Head TA(s)")
