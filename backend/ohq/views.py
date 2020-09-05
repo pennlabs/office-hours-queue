@@ -3,6 +3,7 @@ from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.core.validators import ValidationError, validate_email
+from django.db import transaction, OperationalError
 from django.db.models import Count, Exists, FloatField, IntegerField, OuterRef, Q, Subquery
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.utils import timezone
@@ -222,16 +223,21 @@ class QuestionViewSet(viewsets.ModelViewSet):
         """
         Ensures user can only create one question in ASKED or ACTIVE status
         """
-        pending_questions = Question.objects.filter(
-            Q(queue=kwargs["queue_pk"])
-            & Q(asked_by=request.user)
-            & (Q(status=Question.STATUS_ASKED) | Q(status=Question.STATUS_ACTIVE))
-        )
+        while True:
+            try:
+                with transaction.atomic():
+                    pending_questions = Question.objects.filter(
+                        Q(queue=kwargs["queue_pk"])
+                        & Q(asked_by=request.user)
+                        & (Q(status=Question.STATUS_ASKED) | Q(status=Question.STATUS_ACTIVE))
+                    )
 
-        if len(pending_questions) > 0:
-            return HttpResponseBadRequest()
+                    if len(pending_questions) > 0:
+                        return HttpResponseBadRequest()
 
-        return super().create(request, *args, **kwargs)
+                    return super().create(request, *args, **kwargs)
+            except OperationalError:
+                continue
 
 
 class QuestionSearchView(generics.ListAPIView):

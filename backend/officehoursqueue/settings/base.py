@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 
 import dj_database_url
+import psycopg2.extensions
 
 
 DOMAIN = os.environ.get("DOMAIN", "example.com")
@@ -90,6 +91,10 @@ DATABASES = {
     "default": dj_database_url.config(
         default="postgres://postgres:postgres@localhost:5432/postgres"
     )
+}
+
+DATABASES["default"]["OPTIONS"] = {
+    "isolation_level": psycopg2.extensions.ISOLATION_LEVEL_SERIALIZABLE
 }
 
 
