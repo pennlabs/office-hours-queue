@@ -82,14 +82,14 @@ export enum QuestionStatus {
 export interface Question {
     id: number;
     text: string;
-    videoChatUrl: string;
+    videoChatUrl?: string;
     status: QuestionStatus;
-    timeAsked: Date;
+    timeAsked: string;
     askedBy: User;
-    respondedToBy: User;
+    respondedToBy?: User;
     rejectedReason: string | null;
-    timeResponseStarted: Date;
-    timeRespondedTo: Date;
+    timeResponseStarted?: string;
+    timeRespondedTo?: string;
     position: number;
     shouldSendUpSoonNotification: boolean;
     tags?: string[];

@@ -129,14 +129,16 @@ const QuestionCard = (props: QuestionCardProps) => {
                                 overflow: "hidden",
                             }}
                         >
+                            /* if responseStarted, then someone responded to
+                            question */
                             {question.timeResponseStarted && (
                                 <Popup
                                     wide
                                     trigger={<Icon name="sync" loading />}
                                     content={`Started by ${
-                                        question.respondedToBy.firstName
+                                        question.respondedToBy!.firstName
                                     } ${
-                                        question.respondedToBy.lastName
+                                        question.respondedToBy!.lastName
                                     } on ${timeString(
                                         question.timeResponseStarted
                                     )}`}
