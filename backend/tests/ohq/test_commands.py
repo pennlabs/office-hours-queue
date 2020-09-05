@@ -32,7 +32,7 @@ class RegisterClassTestCase(TestCase):
     def test_input_email_role_length_mismatch(self):
         with self.assertRaises(CommandError):
             call_command(
-                "registerclass",
+                "createcourse",
                 *self.course,
                 emails=["a@b.com", "a@c.com"],
                 roles=[Membership.KIND_PROFESSOR],
@@ -41,7 +41,7 @@ class RegisterClassTestCase(TestCase):
     def test_register_class(self):
         out = StringIO()
         call_command(
-            "registerclass",
+            "createcourse",
             *self.course,
             emails=["prof1@a.com", "head1@a.com", "prof2@a.com", "head2@a.com"],
             roles=[
