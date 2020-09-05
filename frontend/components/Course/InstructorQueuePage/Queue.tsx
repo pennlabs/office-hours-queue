@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import UIfx from "uifx";
 import { Header, Label, Grid, Segment, Button } from "semantic-ui-react";
 import Questions from "./Questions";
 import ClearQueueModal from "./ClearQueueModal";
+import * as bellAudio from "./notification.mp3";
 import {
     mutateResourceListFunction,
     Queue as QueueType,
@@ -17,6 +19,7 @@ interface QueueProps {
     leader: boolean;
     editFunc: () => void;
 }
+
 const Queue = (props: QueueProps) => {
     const {
         courseId,
@@ -34,7 +37,36 @@ const Queue = (props: QueueProps) => {
         rawQuestions,
         queue.active ? 3000 : 0
     );
+
+    const latestAsked = useRef(
+        questions && questions[0]?.timeAsked
+            ? new Date(questions[0].timeAsked)
+            : new Date(0)
+    );
+
     const [clearModalOpen, setClearModalOpen] = useState(false);
+
+    const [player, setPlayer] = useState<UIfx | undefined>();
+    useEffect(() => {
+        setPlayer(
+            new UIfx(bellAudio, {
+                throttleMs: 100,
+            })
+        );
+    }, []);
+
+    useEffect(() => {
+        if (
+            questions &&
+            questions[0] &&
+            new Date(questions[0].timeAsked) > latestAsked.current
+        ) {
+            latestAsked.current = new Date(questions[0].timeAsked);
+            if (player) {
+                player.play();
+            }
+        }
+    }, [JSON.stringify(questions)]);
 
     const onOpen = async () => {
         await mutate(queueId, { active: true });

@@ -185,8 +185,9 @@ const QuestionCard = (props: QuestionCardProps) => {
                                         />
                                     </Header.Content>
                                 )}
+                                {/* if response started, then some user responded */}
                                 {question.timeResponseStarted &&
-                                    question.respondedToBy.username ===
+                                    question.respondedToBy!.username ===
                                         user.username && (
                                         <Header.Content>
                                             <Button
@@ -200,8 +201,9 @@ const QuestionCard = (props: QuestionCardProps) => {
                                             />
                                         </Header.Content>
                                     )}
+                                {/* if response started, then some user responded */}
                                 {question.timeResponseStarted &&
-                                    question.respondedToBy.username ===
+                                    question.respondedToBy!.username ===
                                         user.username && (
                                         <Header.Content>
                                             <Button
@@ -227,12 +229,13 @@ const QuestionCard = (props: QuestionCardProps) => {
                                                 size="mini"
                                                 color="blue"
                                                 content={
-                                                    question.respondedToBy
+                                                    // if responseStarted, then someone responded
+                                                    question.respondedToBy!
                                                         .username ===
                                                     user.username
                                                         ? "Rejoin Call"
                                                         : `Join Call (with ${fullName(
-                                                              question.respondedToBy
+                                                              question.respondedToBy!
                                                           )})`
                                                 }
                                                 disabled={isLoading()}
@@ -256,8 +259,9 @@ const QuestionCard = (props: QuestionCardProps) => {
                                 <Popup
                                     wide
                                     trigger={<Icon name="sync" loading />}
+                                    // if responseStarted, then someone responded
                                     content={`Started by ${fullName(
-                                        question.respondedToBy
+                                        question.respondedToBy!
                                     )} on ${timeString(
                                         question.timeResponseStarted,
                                         true

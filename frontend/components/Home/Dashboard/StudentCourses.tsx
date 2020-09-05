@@ -20,7 +20,7 @@ const StudentCourses = (props: StudentCoursesProps) => {
 
     return (
         <>
-            <Grid.Row padded="true" stackable>
+            <Grid.Row padded="true">
                 <ModalAddStudentCourse
                     open={open}
                     closeFunc={() => setOpen(false)}
