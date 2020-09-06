@@ -2,7 +2,7 @@ import re
 from datetime import timedelta
 
 from django.contrib.auth import get_user_model
-from django.core.validators import ValidationError, validate_email
+from django.core.validators import ValidationError
 from django.db.models import Count, Exists, FloatField, IntegerField, OuterRef, Q, Subquery
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.utils import timezone
@@ -15,6 +15,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ohq.filters import QuestionSearchFilter
+from ohq.invite import parse_and_send_invites
 from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester
 from ohq.pagination import QuestionSearchPagination
 from ohq.permissions import (
@@ -412,37 +413,16 @@ class MassInviteView(APIView):
         emails = [x.strip() for x in re.split("\n|,", request.data.get("emails", ""))]
         emails = [x for x in emails if x]
 
-        # Validate emails
         try:
-            for email in emails:
-                validate_email(email)
+            members_added, invites_sent = parse_and_send_invites(course, emails, kind)
         except ValidationError:
             return Response({"detail": "invalid emails"}, status=400)
-        # Remove invitees already in class
-        existing = Membership.objects.filter(course=course, user__email__in=emails).values_list(
-            "user__email", flat=True
-        )
-        emails = list(set(emails) - set(existing))
-
-        # Remove invitees already sent an invite
-        existing = MembershipInvite.objects.filter(course=course, email__in=emails).values_list(
-            "email", flat=True
-        )
-        emails = list(set(emails) - set(existing))
-
-        # Directly add invitees with existing accounts
-        users = User.objects.filter(email__in=emails)
-        for user in users:
-            membership = Membership.objects.create(course=course, user=user, kind=kind)
-            membership.send_email()
-
-        # Create membership invites for invitees without an account
-        emails = list(set(emails) - set(users.values_list("email", flat=True)))
-        for email in emails:
-            invite = MembershipInvite.objects.create(email=email, course=course, kind=kind)
-            invite.send_email()
 
         return Response(
-            data={"detail": "success", "members_added": len(users), "invites_sent": len(emails)},
+            data={
+                "detail": "success",
+                "members_added": members_added,
+                "invites_sent": invites_sent,
+            },
             status=201,
         )
