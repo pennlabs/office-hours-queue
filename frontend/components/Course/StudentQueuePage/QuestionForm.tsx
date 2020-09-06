@@ -26,7 +26,6 @@ interface QuestionFormState {
 }
 
 const QuestionForm = (props: QuestionFormProps) => {
-    const loading = false;
     const { course } = props;
     const [input, setInput] = useState<QuestionFormState>({
         text: "",
@@ -38,6 +37,7 @@ const QuestionForm = (props: QuestionFormProps) => {
     const [validURL, setValidURL] = useState(
         !course.requireVideoChatUrlOnQuestions
     );
+    const [createPending, setCreatePending] = useState(false);
 
     const handleInputChange = (e, { name, value }) => {
         if (name === "text" && value.length > charLimit) return;
@@ -68,6 +68,7 @@ const QuestionForm = (props: QuestionFormProps) => {
     // };
 
     const onSubmit = async () => {
+        setCreatePending(true);
         try {
             await createQuestion(props.course.id, props.queueId, input);
             // TODO: make arguments here optional?
@@ -79,6 +80,7 @@ const QuestionForm = (props: QuestionFormProps) => {
             await props.mutate(-1, null);
             props.toastFunc(null, e);
         }
+        setCreatePending(false);
     };
 
     return (
@@ -93,7 +95,6 @@ const QuestionForm = (props: QuestionFormProps) => {
                         <Form.TextArea
                             id="form-question"
                             name="text"
-                            disabled={loading}
                             value={input.text}
                             onChange={handleInputChange}
                         />
@@ -115,7 +116,6 @@ const QuestionForm = (props: QuestionFormProps) => {
                             <Form.Input
                                 id="form-vid-url"
                                 name="videoChatUrl"
-                                disabled={loading}
                                 placeholder="Sample URL: https://zoom.us/j/123456789?pwd=abcdefg"
                                 onChange={handleInputChange}
                             />
@@ -143,8 +143,8 @@ const QuestionForm = (props: QuestionFormProps) => {
                     compact
                     content="Submit"
                     color="blue"
-                    disabled={loading || disabled || !validURL}
-                    loading={loading}
+                    disabled={createPending || disabled || !validURL}
+                    loading={createPending}
                     onClick={onSubmit}
                 />
             </Segment>
