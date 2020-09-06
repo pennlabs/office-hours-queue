@@ -1,9 +1,6 @@
-import json
-
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.test import TestCase
-from django.urls import reverse
 
 from ohq.invite import parse_and_send_invites
 from ohq.models import Course, Membership, MembershipInvite, Semester

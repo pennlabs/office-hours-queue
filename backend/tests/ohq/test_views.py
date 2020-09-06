@@ -81,12 +81,10 @@ class MassInviteTestCase(TestCase):
 
     def test_valid_emails(self):
         self.client.force_authenticate(user=self.professor)
+        emails = "professor@example.com,user2@example.com,user3@example.com,user4@example.com"
         response = self.client.post(
             reverse("ohq:mass-invite", args=[self.course.id]),
-            data={
-                "emails": "professor@example.com,user2@example.com,user3@example.com,user4@example.com",
-                "kind": "TA",
-            },
+            data={"emails": emails, "kind": "TA"},
         )
 
         self.assertEqual(201, response.status_code)
