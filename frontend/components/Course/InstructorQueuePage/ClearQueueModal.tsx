@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Modal, List, Button } from "semantic-ui-react";
-import { mutateResourceListFunction, Queue } from "../../../types";
+import { mutateResourceListFunction, Queue, Question } from "../../../types";
 import { clearQueue } from "../../../hooks/data-fetching/course";
 import { logException } from "../../../utils/sentry";
 
@@ -8,7 +8,7 @@ interface ClearQueueModalProps {
     queue: Queue;
     courseId: number;
     queueId: number;
-    mutate: mutateResourceListFunction<Queue>;
+    mutate: mutateResourceListFunction<Question>;
     closeFunc: () => void;
     open: boolean;
 }
@@ -20,13 +20,14 @@ const ClearQueueModal = (props: ClearQueueModalProps) => {
     const onSubmit = async () => {
         // firebase.analytics.logEvent("queue_clear");
         try {
-            await setRefetchLoading(true);
+            setRefetchLoading(true);
             await clearQueue(courseId, queueId);
-            await setRefetchLoading(false);
+            setRefetchLoading(false);
+            mutate(-1, null);
             closeFunc();
         } catch (e) {
             logException(e);
-            await setRefetchLoading(false);
+            setRefetchLoading(false);
         }
     };
 
@@ -38,13 +39,7 @@ const ClearQueueModal = (props: ClearQueueModalProps) => {
                     You are about to clear all remaining questions on{" "}
                     <b>{queue.name}</b>.<br />
                     <br />
-                    Doing so will:
-                    <List ordered>
-                        <List.Item>Reject all pending questions.</List.Item>
-                        <List.Item>
-                            Finish all questions currently being answered.
-                        </List.Item>
-                    </List>
+                    Doing so will reject all pending questions.
                 </div>
             </Modal.Content>
             <Modal.Actions>
