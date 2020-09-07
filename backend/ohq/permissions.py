@@ -1,6 +1,6 @@
 from rest_framework import permissions
 
-from ohq.models import Course, Membership
+from ohq.models import Course, Membership, Question
 
 
 # Hierarchy of permissions is usually:
@@ -151,9 +151,17 @@ class QuestionPermission(permissions.BasePermission):
         if view.action == "destroy":
             return False
 
-        # Students can create questions and view their last asked question:
-        if view.action in ["create", "last"]:
+        # Students can view their last asked question:
+        if view.action == "last":
             return membership.kind == Membership.KIND_STUDENT
+
+        # Students can only create 1 question per queue
+        if view.action == "create":
+            existing_question = Question.objects.filter(
+                queue=view.kwargs["queue_pk"], asked_by=request.user
+            ).first()
+
+            return membership.kind == Membership.KIND_STUDENT and existing_question is None
 
         # Students+ can get, list, or modify questions
         # With restrictions defined in has_object_permission

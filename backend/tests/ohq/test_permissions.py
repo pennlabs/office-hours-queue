@@ -328,6 +328,7 @@ class QuestionTestCase(TestCase):
                 "non_member": 403,
                 "anonymous": 403,
             },
+            "create-existing": {"student": 403},
             "retrieve": {
                 "professor": 200,
                 "head_ta": 200,
@@ -386,6 +387,7 @@ class QuestionTestCase(TestCase):
 
     @parameterized.expand(users, name_func=get_test_name)
     def test_create(self, user):
+        self.question.delete()
         test(
             self,
             user,
@@ -393,6 +395,20 @@ class QuestionTestCase(TestCase):
             "post",
             reverse("ohq:question-list", args=[self.course.id, self.queue.id]),
             {"text": "question", "description": "description"},
+        )
+
+    def test_create_student_existing(self):
+        """
+        Ensure a student can't submit multiple questions to a queue.
+        """
+
+        test(
+            self,
+            "student",
+            "create-existing",
+            "post",
+            reverse("ohq:question-list", args=[self.course.id, self.queue.id]),
+            {"text": "question"},
         )
 
     @parameterized.expand(users, name_func=get_test_name)
