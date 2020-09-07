@@ -387,7 +387,8 @@ class QuestionTestCase(TestCase):
 
     @parameterized.expand(users, name_func=get_test_name)
     def test_create(self, user):
-        self.question.delete()
+        self.question.status = Question.STATUS_ANSWERED
+        self.question.save()
         test(
             self,
             user,
