@@ -1,12 +1,12 @@
 import { useRef } from "react";
 
-function useDebounce<Args>(
-    f: (...args: Args[]) => void,
+function useDebounce<T extends any[]>(
+    f: (...args: T) => void,
     interval: number
-): (...args: Args[]) => void {
+): (...args: T) => void {
     const ref = useRef<NodeJS.Timeout | null>(null);
 
-    const debouncedF = (...args: any[]): void => {
+    const debouncedF = (...args: T): void => {
         if (ref.current) {
             clearTimeout(ref.current);
         }
