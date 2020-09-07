@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework import permissions
 
 from ohq.models import Course, Membership, Question
@@ -158,7 +159,9 @@ class QuestionPermission(permissions.BasePermission):
         # Students can only create 1 question per queue
         if view.action == "create":
             existing_question = Question.objects.filter(
-                queue=view.kwargs["queue_pk"], asked_by=request.user
+                Q(queue=view.kwargs["queue_pk"])
+                & Q(asked_by=request.user)
+                & (Q(status=Question.STATUS_ASKED) | Q(status=Question.STATUS_ACTIVE))
             ).first()
 
             return membership.kind == Membership.KIND_STUDENT and existing_question is None
