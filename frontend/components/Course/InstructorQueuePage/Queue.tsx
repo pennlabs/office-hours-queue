@@ -85,7 +85,7 @@ const Queue = (props: QueueProps) => {
                 queueId={queueId}
                 open={clearModalOpen}
                 queue={queue}
-                mutate={mutate}
+                mutate={mutateQuestions}
                 closeFunc={() => setClearModalOpen(false)}
             />
             <Header as="h3">
