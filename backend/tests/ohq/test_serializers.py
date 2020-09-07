@@ -185,9 +185,13 @@ class QuestionSerializerTestCase(TestCase):
         self.queue = Queue.objects.create(name="Queue", course=self.course)
         self.ta = User.objects.create(username="ta")
         self.student = User.objects.create(username="student")
+        self.student2 = User.objects.create(username="student2")
         Membership.objects.create(course=self.course, user=self.ta, kind=Membership.KIND_TA)
         Membership.objects.create(
             course=self.course, user=self.student, kind=Membership.KIND_STUDENT
+        )
+        Membership.objects.create(
+            course=self.course, user=self.student2, kind=Membership.KIND_STUDENT
         )
         self.question_text = "This is a question"
         self.question = Question.objects.create(
@@ -195,13 +199,13 @@ class QuestionSerializerTestCase(TestCase):
         )
 
     def test_create(self, mock_delay):
-        self.client.force_authenticate(user=self.student)
+        self.client.force_authenticate(user=self.student2)
         self.client.post(
             reverse("ohq:question-list", args=[self.course.id, self.queue.id]), {"text": "Help me"}
         )
         self.assertEqual(2, Question.objects.all().count())
         question = Question.objects.all().order_by("time_asked")[1]
-        self.assertEqual(self.student, question.asked_by)
+        self.assertEqual(self.student2, question.asked_by)
         self.assertEqual(Question.STATUS_ASKED, question.status)
         mock_delay.assert_not_called()
 
