@@ -59,9 +59,12 @@ const Queue = (props: QueueProps) => {
         if (
             questions &&
             questions[0] &&
-            new Date(questions[0].timeAsked) > latestAsked.current
+            new Date(questions[questions.length - 1].timeAsked) >
+                latestAsked.current
         ) {
-            latestAsked.current = new Date(questions[0].timeAsked);
+            latestAsked.current = new Date(
+                questions[questions.length - 1].timeAsked
+            );
             if (player) {
                 player.play();
             }
