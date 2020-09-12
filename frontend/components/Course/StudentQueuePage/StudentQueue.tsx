@@ -23,6 +23,7 @@ import {
     useQuestions,
     useLastQuestions,
 } from "../../../hooks/data-fetching/course";
+import { POLL_INTERVAL } from "../../../constants";
 import LastQuestionCard from "./LastQuestionCard";
 
 interface StudentQueueProps {
@@ -41,12 +42,12 @@ const StudentQueue = (props: StudentQueueProps) => {
         course.id,
         queue.id,
         rawQuestions,
-        queue.active ? 3000 : 0
+        queue.active ? POLL_INTERVAL : 0
     );
     const [lastQuestions, , , mutateLastQuestions] = useLastQuestions(
         course.id,
         queue.id,
-        queue.active ? 3000 : 0
+        queue.active ? POLL_INTERVAL : 0
     );
 
     if (!questions) {

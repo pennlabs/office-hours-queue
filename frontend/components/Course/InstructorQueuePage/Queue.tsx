@@ -10,6 +10,7 @@ import {
     Question,
 } from "../../../types";
 import { useQuestions } from "../../../hooks/data-fetching/course";
+import { POLL_INTERVAL } from "../../../constants";
 
 interface QueueProps {
     courseId: number;
@@ -35,7 +36,7 @@ const Queue = (props: QueueProps) => {
         courseId,
         queueId,
         rawQuestions,
-        queue.active ? 3000 : 0
+        queue.active ? POLL_INTERVAL : 0
     );
 
     const latestAsked = useRef(

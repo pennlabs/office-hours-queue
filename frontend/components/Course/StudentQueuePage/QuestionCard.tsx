@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Segment, Header, Button, Popup, Icon, Grid } from "semantic-ui-react";
 import EditQuestionModal from "./EditQuestionModal";
 import DeleteQuestionModal from "./DeleteQuestionModal";
+import { POLL_INTERVAL } from "../../../constants";
 import {
     Question,
     Course,
@@ -33,7 +34,7 @@ const QuestionCard = (props: QuestionCardProps) => {
         course.id,
         queue.id,
         question.id,
-        3000
+        POLL_INTERVAL
     );
 
     const [openEdit, setOpenEdit] = useState(false);
