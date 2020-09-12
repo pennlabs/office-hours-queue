@@ -34,6 +34,7 @@ djangorestframework-camel-case = "*"
 django-filter = "*"
 celery = "*"
 redis = "*"
+django-auto-prefetching = "*"
 
 [requires]
 python_version = "3.7"
