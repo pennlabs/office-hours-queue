@@ -1,4 +1,5 @@
 import useSWR, { mutate as globalMutate } from "swr";
+import { useRealtimeResourceList } from "@pennlabs/rest-live-hooks";
 import {
     Course,
     Kind,
@@ -106,14 +107,17 @@ export const useQueues = (courseId: number, initialData: Queue[]) =>
 export const useQuestions = (
     courseId: number,
     queueId: number,
-    initialData: Question[],
-    refreshInterval: number
+    initialData: Question[]
 ) =>
-    useResourceList<Question>(
-        `/courses/${courseId}/queues/${queueId}/questions/`,
+    useRealtimeResourceList(
+        `/courses/${courseId}/queues/${queueId}/questions`,
         (id) => `/courses/${courseId}/queues/${queueId}/questions/${id}/`,
-        initialData,
-        { refreshInterval }
+        {
+            model: "ohq.Question",
+            property: "queue_id",
+            value: queueId,
+        },
+        { initialData }
     );
 
 export const useQuestionPosition = (

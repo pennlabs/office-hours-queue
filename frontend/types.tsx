@@ -90,7 +90,6 @@ export interface Question {
     rejectedReason: string | null;
     timeResponseStarted?: string;
     timeRespondedTo?: string;
-    position: number;
     shouldSendUpSoonNotification: boolean;
     tags?: string[];
 }
