@@ -19,6 +19,7 @@ applications:
         value: redis://office-hours-queue-redis:6379
   - name: react
     image: pennlabs/office-hours-queue-frontend
+    replicas: 5
     ingress:
       hosts:
         - host: ohq.io
