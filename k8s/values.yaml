@@ -5,7 +5,7 @@ applications:
   - name: django
     image: pennlabs/office-hours-queue-backend
     secret: office-hours-queue
-    replicas: 3
+    replicas: 8
     ingress:
       hosts:
         - host: ohq.io
