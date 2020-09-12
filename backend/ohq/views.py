@@ -7,8 +7,8 @@ from django.db.models import Count, Exists, FloatField, IntegerField, OuterRef, 
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.utils import timezone
 from django.utils.crypto import get_random_string
-from django_filters.rest_framework import DjangoFilterBackend
 from django_auto_prefetching import AutoPrefetchViewSetMixin
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
