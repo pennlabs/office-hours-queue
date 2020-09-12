@@ -7,6 +7,7 @@ from django.db.models import Count, Exists, FloatField, IntegerField, OuterRef, 
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.utils import timezone
 from django.utils.crypto import get_random_string
+from django_auto_prefetching import AutoPrefetchViewSetMixin
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, viewsets
 from rest_framework.decorators import action
@@ -94,7 +95,7 @@ class ResendNotificationView(generics.CreateAPIView):
         return HttpResponseBadRequest()
 
 
-class CourseViewSet(viewsets.ModelViewSet):
+class CourseViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
     """
     retrieve:
     Return a single course with all information fields present.
@@ -136,7 +137,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         )
 
 
-class QuestionViewSet(viewsets.ModelViewSet):
+class QuestionViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
     """
     retrieve:
     Return a single question with all information fields present.
@@ -233,7 +234,7 @@ class QuestionSearchView(generics.ListAPIView):
         ).order_by("time_asked")
 
 
-class QueueViewSet(viewsets.ModelViewSet):
+class QueueViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
     """
     retrieve:
     Return a single queue.
@@ -314,7 +315,7 @@ class QueueViewSet(viewsets.ModelViewSet):
         return JsonResponse({"detail": "success"})
 
 
-class MembershipViewSet(viewsets.ModelViewSet):
+class MembershipViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
     """
     retrieve:
     Return a single membership.
@@ -355,7 +356,7 @@ class MembershipViewSet(viewsets.ModelViewSet):
         return qs.order_by("user__first_name")
 
 
-class MembershipInviteViewSet(viewsets.ModelViewSet):
+class MembershipInviteViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
     """
     retrieve:
     Return a single membership invite.
