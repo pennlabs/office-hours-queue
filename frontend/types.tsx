@@ -92,6 +92,10 @@ export interface Question {
     timeRespondedTo?: string;
     shouldSendUpSoonNotification: boolean;
     tags?: string[];
+    // this is a marker field for subscribe requests
+    // it should never have a value
+    // eslint-disable-next-line
+    queue_id: undefined;
 }
 
 export interface Semester {

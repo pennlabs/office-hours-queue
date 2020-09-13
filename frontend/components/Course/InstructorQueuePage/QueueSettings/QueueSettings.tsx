@@ -7,8 +7,9 @@ import {
     Dimmer,
     Loader,
 } from "semantic-ui-react";
+import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import QueueForm from "./QueueForm";
-import { Queue, mutateResourceListFunction } from "../../../../types";
+import { Queue } from "../../../../types";
 
 interface QueueSettingsProps {
     queue?: Queue;

@@ -1,5 +1,11 @@
+import { useEffect } from "react";
 import useSWR, { mutate as globalMutate } from "swr";
-import { useRealtimeResourceList } from "@pennlabs/rest-live-hooks";
+import {
+    useRealtimeResourceList,
+    useRealtimeResource,
+} from "@pennlabs/rest-live-hooks";
+// TODO: REMOVE THIS AS SOON AS WE REFACTOR
+import { useResourceList as useResourceListNew } from "@pennlabs/rest-hooks";
 import {
     Course,
     Kind,
@@ -98,10 +104,10 @@ export async function getSemesters(): Promise<Semester[]> {
 }
 
 export const useQueues = (courseId: number, initialData: Queue[]) =>
-    useResourceList<Queue>(
+    useResourceListNew<Queue>(
         `/courses/${courseId}/queues/`,
         (id) => `/courses/${courseId}/queues/${id}/`,
-        initialData
+        { initialData }
     );
 
 export const useQuestions = (
@@ -123,26 +129,61 @@ export const useQuestions = (
 export const useQuestionPosition = (
     courseId: number,
     queueId: number,
-    id: number,
-    refreshInterval: number
-) =>
-    useResource(
-        `/courses/${courseId}/queues/${queueId}/questions/${id}/position/`,
-        { position: -1 },
-        { refreshInterval }
+    id: number
+) => {
+    const { data: qdata } = useRealtimeResource<Queue>(
+        `/courses/${courseId}/queues/${queueId}/id`,
+        {
+            model: "ohq.Queue",
+            property: "id",
+            value: queueId,
+        }
     );
 
-export const useLastQuestions = (
-    courseId: number,
-    queueId: number,
-    refreshInterval: number
-) =>
-    useResourceList<Question>(
-        `/courses/${courseId}/queues/${queueId}/questions/last/`,
-        (id) => `/courses/${courseId}/queues/${queueId}/last/${id}/`,
-        [],
-        { refreshInterval }
+    const [
+        data,
+        error,
+        isValidating,
+        mutate,
+    ] = useResource(
+        `/courses/${courseId}/queues/${queueId}/questions/${id}/position/`,
+        { position: -1 }
     );
+
+    const stringified = JSON.stringify(qdata);
+    useEffect(() => {
+        mutate();
+    }, [mutate, stringified]);
+    return [data, error, isValidating, mutate];
+};
+
+// only student queues should use this, since it doesn't make
+// much sense otherwise
+export const useLastQuestions = (courseId: number, queueId: number) => {
+    const { data: qdata } = useRealtimeResourceList<Question, "queue_id">(
+        `/courses/${courseId}/queues/${queueId}/questions`,
+        (id) => `/courses/${courseId}/queues/${queueId}/questions/${id}`,
+        {
+            model: "ohq.Question",
+            property: "queue_id",
+            value: queueId,
+        }
+    );
+
+    const [data, error, isValidating, mutate] = useResourceList(
+        `/courses/${courseId}/queues/${queueId}/questions/last/`,
+        (id) => `/courses/${courseId}/queues/${queueId}/last/${id}/`
+    );
+
+    const stringified = JSON.stringify(qdata);
+
+    // this revalidates the last question query whenever there is a websocket update
+    useEffect(() => {
+        mutate(-1, null);
+    }, [mutate, stringified]);
+
+    return [data, error, isValidating, mutate];
+};
 
 export async function clearQueue(courseId: number, queueId: number) {
     await doApiRequest(`/courses/${courseId}/queues/${queueId}/clear/`, {
