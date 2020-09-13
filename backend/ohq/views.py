@@ -7,7 +7,7 @@ from django.db.models import Count, Exists, FloatField, IntegerField, OuterRef, 
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.utils import timezone
 from django.utils.crypto import get_random_string
-from django_auto_prefetching import AutoPrefetchViewSetMixin
+from django_auto_prefetching import prefetch
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, viewsets
 from rest_framework.decorators import action
@@ -95,7 +95,7 @@ class ResendNotificationView(generics.CreateAPIView):
         return HttpResponseBadRequest()
 
 
-class CourseViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
+class CourseViewSet(viewsets.ModelViewSet):
     """
     retrieve:
     Return a single course with all information fields present.
@@ -130,14 +130,15 @@ class CourseViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         is_member = Membership.objects.filter(course=OuterRef("pk"), user=self.request.user)
-        return (
+        qs = (
             Course.objects.filter(Q(invite_only=False) | Q(membership__user=self.request.user))
             .distinct()
             .annotate(is_member=Exists(is_member))
         )
+        return prefetch(qs, self.get_serializer_class())
 
 
-class QuestionViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
+class QuestionViewSet(viewsets.ModelViewSet):
     """
     retrieve:
     Return a single question with all information fields present.
@@ -174,7 +175,7 @@ class QuestionViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
 
         if not membership.is_ta:
             qs = qs.filter(asked_by=self.request.user)
-        return qs
+        return prefetch(qs, self.serializer_class)
 
     @action(detail=True)
     def position(self, request, course_pk, queue_pk, pk=None):
@@ -229,12 +230,13 @@ class QuestionSearchView(generics.ListAPIView):
     serializer_class = QuestionSerializer
 
     def get_queryset(self):
-        return Question.objects.filter(
+        qs = Question.objects.filter(
             queue__in=Queue.objects.filter(course=self.kwargs["course_pk"])
         ).order_by("time_asked")
+        return prefetch(qs, self.serializer_class)
 
 
-class QueueViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
+class QueueViewSet(viewsets.ModelViewSet):
     """
     retrieve:
     Return a single queue.
@@ -290,8 +292,7 @@ class QueueViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
             .annotate(count=Count("*", output_field=FloatField()),)
             .values("count")
         )
-
-        return (
+        qs = (
             Queue.objects.filter(course=self.kwargs["course_pk"], archived=False)
             .annotate(
                 questions_active=Subquery(questions_active[:1], output_field=IntegerField()),
@@ -300,6 +301,7 @@ class QueueViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
             )
             .order_by("id")
         )
+        return prefetch(qs, self.serializer_class)
 
     @action(methods=["POST"], detail=True)
     def clear(self, request, course_pk, pk=None):
@@ -315,7 +317,7 @@ class QueueViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
         return JsonResponse({"detail": "success"})
 
 
-class MembershipViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
+class MembershipViewSet(viewsets.ModelViewSet):
     """
     retrieve:
     Return a single membership.
@@ -343,7 +345,7 @@ class MembershipViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
     serializer_class = MembershipSerializer
 
     def get_queryset(self):
-        qs = Membership.objects.filter(course=self.kwargs["course_pk"])
+        qs = Membership.objects.filter(course=self.kwargs["course_pk"]).order_by("user__first_name")
 
         membership = Membership.objects.get(course=self.kwargs["course_pk"], user=self.request.user)
 
@@ -353,10 +355,10 @@ class MembershipViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
                 | Q(kind=Membership.KIND_HEAD_TA)
                 | Q(user=self.request.user)
             )
-        return qs.order_by("user__first_name")
+        return prefetch(qs, self.serializer_class)
 
 
-class MembershipInviteViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
+class MembershipInviteViewSet(viewsets.ModelViewSet):
     """
     retrieve:
     Return a single membership invite.
