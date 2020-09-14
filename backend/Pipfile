@@ -35,6 +35,11 @@ django-filter = "*"
 celery = "*"
 redis = "*"
 django-auto-prefetching = "*"
+django-rest-live = "*"
+channels = "*"
+channels-redis = "*"
+uvicorn = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.7"
