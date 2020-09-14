@@ -1202,10 +1202,10 @@
   dependencies:
     swr ">=0.3.1"
 
-"@pennlabs/rest-live-hooks@^0.1.7":
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/@pennlabs/rest-live-hooks/-/rest-live-hooks-0.1.7.tgz#31f965f793e64b59bc6b7e4fa8728a454a49b61f"
-  integrity sha512-EgAaAcRZGd79nzaFX8qDoqNtWOsYc2U8D6AnfNECb3IJwVkZXutHKDpTaopHusbqxxdl5uxqA+7bgpRK6zRtIA==
+"@pennlabs/rest-live-hooks@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@pennlabs/rest-live-hooks/-/rest-live-hooks-0.2.0.tgz#f7a2c5d07ec2c136ea894d683ef5acbf8b37c99d"
+  integrity sha512-knLJFcizWle/wLtpvPTsxgS5pY8+hP4kHfrOXhgli9VPLtoO7qqUvR6Qsm+MavN1lTzs5q7TjOlh1QoY+w5smg==
   dependencies:
     "@pennlabs/rest-hooks" "^0.1.6"
     swr "^0.3.1"

@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     "email_tools.apps.EmailToolsConfig",
     "accounts.apps.AccountsConfig",
     "ohq.apps.OhqConfig",
+    "channels",
+    "rest_live",
 ]
 
 MIDDLEWARE = [
