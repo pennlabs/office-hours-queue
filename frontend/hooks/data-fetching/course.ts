@@ -103,11 +103,15 @@ export async function getSemesters(): Promise<Semester[]> {
         .catch((_) => []);
 }
 
+function newResourceFetcher<R>(path, ...args): R | Promise<R> {
+    return fetch(path, ...args).then((res) => res.json());
+}
+
 export const useQueues = (courseId: number, initialData: Queue[]) =>
     useResourceListNew<Queue>(
-        `/courses/${courseId}/queues/`,
-        (id) => `/courses/${courseId}/queues/${id}/`,
-        { initialData }
+        `/api/courses/${courseId}/queues/`,
+        (id) => `/api/courses/${courseId}/queues/${id}/`,
+        { initialData, fetcher: newResourceFetcher }
     );
 
 export const useQuestions = (
@@ -116,14 +120,14 @@ export const useQuestions = (
     initialData: Question[]
 ) =>
     useRealtimeResourceList(
-        `/courses/${courseId}/queues/${queueId}/questions`,
-        (id) => `/courses/${courseId}/queues/${queueId}/questions/${id}/`,
+        `/api/courses/${courseId}/queues/${queueId}/questions`,
+        (id) => `/api/courses/${courseId}/queues/${queueId}/questions/${id}/`,
         {
             model: "ohq.Question",
             property: "queue_id",
             value: queueId,
         },
-        { initialData }
+        { initialData, fetcher: newResourceFetcher }
     );
 
 export const useQuestionPosition = (
@@ -132,12 +136,13 @@ export const useQuestionPosition = (
     id: number
 ) => {
     const { data: qdata } = useRealtimeResource<Queue>(
-        `/courses/${courseId}/queues/${queueId}/id`,
+        `/api/courses/${courseId}/queues/${queueId}/id`,
         {
             model: "ohq.Queue",
             property: "id",
             value: queueId,
-        }
+        },
+        { fetcher: newResourceFetcher }
     );
 
     const [
@@ -153,7 +158,7 @@ export const useQuestionPosition = (
     const stringified = JSON.stringify(qdata);
     useEffect(() => {
         mutate();
-    }, [mutate, stringified]);
+    }, [stringified]);
     return [data, error, isValidating, mutate];
 };
 
@@ -161,13 +166,14 @@ export const useQuestionPosition = (
 // much sense otherwise
 export const useLastQuestions = (courseId: number, queueId: number) => {
     const { data: qdata } = useRealtimeResourceList<Question, "queue_id">(
-        `/courses/${courseId}/queues/${queueId}/questions`,
-        (id) => `/courses/${courseId}/queues/${queueId}/questions/${id}`,
+        `/api/courses/${courseId}/queues/${queueId}/questions`,
+        (id) => `/api/courses/${courseId}/queues/${queueId}/questions/${id}`,
         {
             model: "ohq.Question",
             property: "queue_id",
             value: queueId,
-        }
+        },
+        { fetcher: newResourceFetcher }
     );
 
     const [data, error, isValidating, mutate] = useResourceList(
@@ -180,7 +186,7 @@ export const useLastQuestions = (courseId: number, queueId: number) => {
     // this revalidates the last question query whenever there is a websocket update
     useEffect(() => {
         mutate(-1, null);
-    }, [mutate, stringified]);
+    }, [stringified]);
 
     return [data, error, isValidating, mutate];
 };

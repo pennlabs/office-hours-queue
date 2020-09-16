@@ -3,11 +3,6 @@ const express = require("express");
 const next = require("next");
 
 const devProxy = {
-    "/api/ws": {
-        target: "http://localhost:8000",
-        changeOrigin: true,
-        ws: true,
-    },
     "/api": {
         target: "http://localhost:8000",
         changeOrigin: true,
