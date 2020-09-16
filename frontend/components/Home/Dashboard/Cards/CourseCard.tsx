@@ -18,6 +18,9 @@ const CourseCard = (props: CourseCardProps) => {
         <Segment basic>
             <Link href={path}>
                 <Segment.Group
+                    style={{
+                        cursor: "pointer",
+                    }}
                     raised={hover}
                     onMouseEnter={() => setHover(true)}
                     onMouseLeave={() => setHover(false)}
