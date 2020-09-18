@@ -40,6 +40,7 @@ channels = "*"
 channels-redis = "*"
 uvicorn = "*"
 gunicorn = "*"
+drf-renderer-xlsx = "*"
 
 [requires]
 python_version = "3.7"
