@@ -51,6 +51,7 @@ const Queue = (props: QueueProps) => {
     useEffect(() => {
         setPlayer(
             new UIfx(bellAudio, {
+                volume: 0.5,
                 throttleMs: 100,
             })
         );
