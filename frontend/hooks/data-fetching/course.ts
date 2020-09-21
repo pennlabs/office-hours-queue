@@ -16,6 +16,7 @@ import {
     Queue,
     Semester,
     User,
+    QuestionStatus,
 } from "../../types";
 import { isLeadershipRole } from "../../utils/enums";
 import { doApiRequest } from "../../utils/fetch";
@@ -118,8 +119,8 @@ export const useQuestions = (
     courseId: number,
     queueId: number,
     initialData: Question[]
-) =>
-    useRealtimeResourceList(
+) => {
+    const { data, ...other } = useRealtimeResourceList(
         `/api/courses/${courseId}/queues/${queueId}/questions`,
         (id) => `/api/courses/${courseId}/queues/${queueId}/questions/${id}/`,
         {
@@ -129,6 +130,13 @@ export const useQuestions = (
         },
         { initialData, fetcher: newResourceFetcher }
     );
+    const filteredData = data?.filter(
+        (q) =>
+            q.status === QuestionStatus.ACTIVE ||
+            q.status === QuestionStatus.ASKED
+    );
+    return { filteredData, ...other };
+};
 
 export const useQuestionPosition = (
     courseId: number,
