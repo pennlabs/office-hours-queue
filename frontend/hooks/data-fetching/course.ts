@@ -128,7 +128,20 @@ export const useQuestions = (
             property: "queue_id",
             value: queueId,
         },
-        { initialData, fetcher: newResourceFetcher }
+        {
+            initialData,
+            fetcher: newResourceFetcher,
+            orderBy: (q1, q2) => {
+                const date1 = new Date(q1.timeAsked);
+                const date2 = new Date(q2.timeAsked);
+
+                if (date1 > date2) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            },
+        }
     );
     const filteredData = data?.filter(
         (q) =>
