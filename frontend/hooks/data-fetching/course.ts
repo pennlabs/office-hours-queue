@@ -135,7 +135,7 @@ export const useQuestions = (
             q.status === QuestionStatus.ACTIVE ||
             q.status === QuestionStatus.ASKED
     );
-    return { filteredData, ...other };
+    return { data: filteredData, ...other };
 };
 
 export const useQuestionPosition = (
