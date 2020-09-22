@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     "accounts.apps.AccountsConfig",
     "ohq.apps.OhqConfig",
     "channels",
-    "rest_live",
+    "rest_live.apps.RestLiveConfig",
 ]
 
 MIDDLEWARE = [
