@@ -1,7 +1,11 @@
 import React from "react";
 import { Modal, Segment, Button } from "semantic-ui-react";
-import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
-import { Question, Queue, QuestionStatus } from "../../../types";
+import {
+    Question,
+    Queue,
+    mutateResourceListFunction,
+    QuestionStatus,
+} from "../../../types";
 import { logException } from "../../../utils/sentry";
 
 interface DeleteQuestionModalProps {

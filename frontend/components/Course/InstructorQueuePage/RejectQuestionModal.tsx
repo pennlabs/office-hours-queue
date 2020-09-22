@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { Button, Form, Modal, Segment } from "semantic-ui-react";
-import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
-import { Question, QuestionStatus } from "../../../types";
+import {
+    mutateResourceListFunction,
+    Question,
+    QuestionStatus,
+} from "../../../types";
 import { fullName } from "./QuestionCard";
 import { logException } from "../../../utils/sentry";
 

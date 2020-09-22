@@ -35,11 +35,6 @@ django-filter = "*"
 celery = "*"
 redis = "*"
 django-auto-prefetching = "*"
-django-rest-live = ">=0.2.2"
-channels = "*"
-channels-redis = "*"
-uvicorn = "*"
-gunicorn = "*"
 
 [requires]
 python_version = "3.7"

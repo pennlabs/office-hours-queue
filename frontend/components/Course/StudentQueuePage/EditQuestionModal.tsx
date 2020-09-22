@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Form, Button } from "semantic-ui-react";
-import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
-import { Course, Question } from "../../../types";
+import { Course, Question, mutateResourceListFunction } from "../../../types";
 import { logException } from "../../../utils/sentry";
 
 interface EditQuestionModalProps {

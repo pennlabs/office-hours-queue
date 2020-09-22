@@ -49,7 +49,7 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
 
     const [leader, , , ,] = useStaff(courseId, initialUser);
 
-    const { data: queuesData, mutate } = useQueues(courseId, rawQueues);
+    const [queuesData, , , mutate] = useQueues(courseId, rawQueues);
 
     // queuesData is non null because initialData is provided
     // and the key stays the same

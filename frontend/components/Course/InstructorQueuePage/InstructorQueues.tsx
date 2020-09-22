@@ -1,8 +1,11 @@
 import React from "react";
 import { Grid, Segment, Icon, Message } from "semantic-ui-react";
-import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Queue from "./Queue";
-import { Queue as QueueType, QuestionMap } from "../../../types";
+import {
+    Queue as QueueType,
+    mutateResourceListFunction,
+    QuestionMap,
+} from "../../../types";
 
 interface InstructorQueuesProps {
     courseId: number;
@@ -10,7 +13,7 @@ interface InstructorQueuesProps {
     questionmap: QuestionMap;
     leader: boolean;
     mutate: mutateResourceListFunction<QueueType>;
-    editFunc: (n: number) => void;
+    editFunc: (number) => void;
     createFunc: () => void;
 }
 const InstructorQueues = (props: InstructorQueuesProps) => {

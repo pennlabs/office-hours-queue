@@ -1,24 +1,8 @@
-deploy_version: 0.1.22
+deploy_version: 0.1.21
 image_tag: latest
 
 applications:
-  - name: django-asgi
-    image: pennlabs/office-hours-queue-backend
-    secret: office-hours-queue
-    cmd: ["/usr/local/bin/asgi-run"]
-    replicas: 4
-    ingress:
-      hosts:
-        - host: ohq.io
-          paths: ["/api/ws"]
-    extraEnv:
-      - name: DOMAIN
-        value: ohq.io
-      - name: DJANGO_SETTINGS_MODULE
-        value: officehoursqueue.settings.production
-      - name: REDIS_URL
-        value: redis://office-hours-queue-redis:6379
-  - name: django-wsgi
+  - name: django
     image: pennlabs/office-hours-queue-backend
     secret: office-hours-queue
     replicas: 8

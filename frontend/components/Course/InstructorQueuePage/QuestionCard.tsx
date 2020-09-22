@@ -1,10 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Button, Grid, Header, Icon, Popup, Segment } from "semantic-ui-react";
 import moment from "moment";
-import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import RejectQuestionModal from "./RejectQuestionModal";
 import { AuthUserContext } from "../../../context/auth";
-import { Question, QuestionStatus, User } from "../../../types";
+import {
+    mutateResourceListFunction,
+    Question,
+    QuestionStatus,
+    User,
+} from "../../../types";
 
 export const fullName = (user: User) => `${user.firstName} ${user.lastName}`;
 

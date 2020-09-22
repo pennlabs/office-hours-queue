@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import { Segment, Header, Button, Popup, Icon, Grid } from "semantic-ui-react";
-import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import EditQuestionModal from "./EditQuestionModal";
 import DeleteQuestionModal from "./DeleteQuestionModal";
-import { Question, Course, Queue } from "../../../types";
+import { POLL_INTERVAL } from "../../../constants";
+import {
+    Question,
+    Course,
+    Queue,
+    mutateResourceListFunction,
+} from "../../../types";
 import { useQuestionPosition } from "../../../hooks/data-fetching/course";
 
 interface QuestionCardProps {
@@ -28,7 +33,8 @@ const QuestionCard = (props: QuestionCardProps) => {
     const [positionData, , , ,] = useQuestionPosition(
         course.id,
         queue.id,
-        question.id
+        question.id,
+        POLL_INTERVAL
     );
 
     const [openEdit, setOpenEdit] = useState(false);

@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { Form, Button, Modal } from "semantic-ui-react";
-import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
-import { Queue } from "../../../../types";
+import { Queue, mutateResourceListFunction } from "../../../../types";
 import { logException } from "../../../../utils/sentry";
 
 // TODO: error check PATCH

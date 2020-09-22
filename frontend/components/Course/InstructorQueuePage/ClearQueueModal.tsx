@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Modal, List, Button } from "semantic-ui-react";
-import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
-import { Queue, Question } from "../../../types";
+import { mutateResourceListFunction, Queue, Question } from "../../../types";
 import { clearQueue } from "../../../hooks/data-fetching/course";
 import { logException } from "../../../utils/sentry";
 
@@ -19,6 +18,7 @@ const ClearQueueModal = (props: ClearQueueModalProps) => {
     const loading = false;
 
     const onSubmit = async () => {
+        // firebase.analytics.logEvent("queue_clear");
         try {
             setRefetchLoading(true);
             await clearQueue(courseId, queueId);

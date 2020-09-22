@@ -1,9 +1,8 @@
 import React from "react";
 import { Grid, Message } from "semantic-ui-react";
-import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import _ from "lodash";
 import QuestionCard from "./QuestionCard";
-import { Question } from "../../../types";
+import { mutateResourceListFunction, Question } from "../../../types";
 
 interface QuestionsProps {
     questions: Question[];

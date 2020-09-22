@@ -48,8 +48,6 @@ INSTALLED_APPS = [
     "email_tools.apps.EmailToolsConfig",
     "accounts.apps.AccountsConfig",
     "ohq.apps.OhqConfig",
-    "channels",
-    "rest_live.apps.RestLiveConfig",
 ]
 
 MIDDLEWARE = [
@@ -82,7 +80,8 @@ TEMPLATES = [
     }
 ]
 
-ASGI_APPLICATION = "officehoursqueue.routing.application"
+WSGI_APPLICATION = "officehoursqueue.wsgi.application"
+
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
@@ -173,13 +172,6 @@ TWILIO_SID = os.environ.get("TWILIO_SID", "")
 TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_TOKEN", "")
 TWILIO_NUMBER = os.environ.get("TWILIO_NUMBER", "")
 
-# Redis URL used for celery, channels and general caching.
-REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost")
-
 # Celery
 
-MESSAGE_BROKER_URL = REDIS_URL
-
-# Default to in-memory Channel Layer for dev and CI.
-
-CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
+MESSAGE_BROKER_URL = os.environ.get("REDIS_URL", "redis://localhost")
