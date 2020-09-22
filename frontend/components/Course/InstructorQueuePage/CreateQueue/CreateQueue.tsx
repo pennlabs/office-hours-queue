@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Grid, Segment, Header, Form, Button } from "semantic-ui-react";
+import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 import { createQueue } from "../../../../hooks/data-fetching/course";
-import { mutateResourceListFunction, Queue } from "../../../../types";
+import { Queue } from "../../../../types";
 import { logException } from "../../../../utils/sentry";
 
 interface CreateQueueProps {

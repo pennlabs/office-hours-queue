@@ -23,10 +23,12 @@ export function useResource<R>(
         if (data) {
             mutate({ ...data, ...newResource }, false);
         }
-        await doApiRequest(url, {
-            method,
-            body: newResource,
-        });
+        if (newResource) {
+            await doApiRequest(url, {
+                method,
+                body: newResource,
+            });
+        }
 
         return mutate();
     };
