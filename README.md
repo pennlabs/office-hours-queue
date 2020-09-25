@@ -19,8 +19,9 @@ Navigate to `/backend`. Then,
 
 0. (Initial setup)
   - a. `pipenv install --dev`
+  
         You might have to install openssl with Homebrew (`brew install openssl`) and set the following environment variable for the linker.
-        - `export LDFLAGS="-I/usr/local/opt/openssl/include -L/usr/local/opt/openssl/lib`
+        + `export LDFLAGS="-I/usr/local/opt/openssl/include -L/usr/local/opt/openssl/lib`
   - b. `pipenv shell`
   - c. `python manage.py createsuperuser`
   - d. `python manage.py migrate`
