@@ -21,6 +21,11 @@ import {
 import { isLeadershipRole } from "../../utils/enums";
 import { doApiRequest } from "../../utils/fetch";
 import { useResource, useResourceList } from "./resources";
+import {
+    QUEUE_STATUS_POLL_INTERVAL,
+    STAFF_QUESTION_POLL_INTERVAL,
+    STUDENT_QUESTION_POS_POLL_INTERVAL,
+} from "../../constants";
 
 export const useCourse = (courseId: number, initialCourse: Course) =>
     useResource(`/courses/${courseId}/`, initialCourse);
@@ -112,7 +117,11 @@ export const useQueues = (courseId: number, initialData: Queue[]) =>
     useResourceListNew<Queue>(
         `/api/courses/${courseId}/queues/`,
         (id) => `/api/courses/${courseId}/queues/${id}/`,
-        { initialData, fetcher: newResourceFetcher }
+        {
+            initialData,
+            fetcher: newResourceFetcher,
+            refreshInterval: QUEUE_STATUS_POLL_INTERVAL,
+        }
     );
 
 export const useQuestions = (
@@ -131,6 +140,7 @@ export const useQuestions = (
         {
             initialData,
             fetcher: newResourceFetcher,
+            refreshInterval: STAFF_QUESTION_POLL_INTERVAL,
             orderBy: (q1, q2) => {
                 const date1 = new Date(q1.timeAsked);
                 const date2 = new Date(q2.timeAsked);
@@ -173,7 +183,7 @@ export const useQuestionPosition = (
         mutate,
     ] = useResource(
         `/courses/${courseId}/queues/${queueId}/questions/${id}/position/`,
-        { position: -1 }
+        { position: -1, refreshInterval: STUDENT_QUESTION_POS_POLL_INTERVAL }
     );
 
     const stringified = JSON.stringify(qdata);
@@ -194,7 +204,9 @@ export const useLastQuestions = (courseId: number, queueId: number) => {
             property: "queue_id",
             value: queueId,
         },
-        { fetcher: newResourceFetcher }
+        {
+            fetcher: newResourceFetcher,
+        }
     );
 
     const [data, error, isValidating, mutate] = useResourceList(
