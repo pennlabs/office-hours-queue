@@ -34,7 +34,7 @@ const QueuePage = (props: QueuePageProps) => {
                 <CourseWrapper
                     course={course}
                     leadership={leadership}
-                    render={(staff: boolean) => {
+                    render={(staff: boolean, play: () => void) => {
                         return (
                             <>
                                 {staff && (
@@ -42,6 +42,7 @@ const QueuePage = (props: QueuePageProps) => {
                                         courseId={course.id}
                                         queues={queues}
                                         questionmap={questionmap}
+                                        play={play}
                                     />
                                 )}
                                 {!staff && (

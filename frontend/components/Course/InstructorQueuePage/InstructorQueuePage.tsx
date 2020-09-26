@@ -13,6 +13,7 @@ interface InstructorQueuePageProps {
     courseId: number;
     queues: Queue[];
     questionmap: QuestionMap;
+    play: () => void;
 }
 
 enum PageStateEnum {
@@ -37,7 +38,7 @@ interface CreateState {
 type PageState = QueueState | SettingsState | CreateState;
 
 const InstructorQueuePage = (props: InstructorQueuePageProps) => {
-    const { courseId, queues: rawQueues, questionmap } = props;
+    const { courseId, queues: rawQueues, questionmap, play } = props;
 
     /* STATE */
     const { user: initialUser } = useContext(AuthUserContext);
@@ -82,6 +83,7 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
                     }}
                     mutate={mutate}
                     leader={leader}
+                    play={play}
                 />
             )}
             {pageState.kind === PageStateEnum.SETTINGS && (

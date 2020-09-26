@@ -15,6 +15,7 @@ interface InstructorQueuesProps {
     mutate: mutateResourceListFunction<QueueType>;
     editFunc: (number) => void;
     createFunc: () => void;
+    play: () => void;
 }
 const InstructorQueues = (props: InstructorQueuesProps) => {
     const {
@@ -25,6 +26,7 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
         createFunc,
         mutate,
         editFunc,
+        play
     } = props;
 
     const numActive = () => {
@@ -49,6 +51,7 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
                                         leader={leader}
                                         mutate={mutate}
                                         editFunc={() => editFunc(queue.id)}
+                                        play={play}
                                     />
                                 </Grid.Column>
                             )

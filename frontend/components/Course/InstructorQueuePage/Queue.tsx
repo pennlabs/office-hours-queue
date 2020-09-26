@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import UIfx from "uifx";
 import { Header, Label, Grid, Segment, Button } from "semantic-ui-react";
 import Questions from "./Questions";
 import ClearQueueModal from "./ClearQueueModal";
-import * as bellAudio from "./notification.mp3";
 import {
     mutateResourceListFunction,
     Queue as QueueType,
@@ -19,6 +17,7 @@ interface QueueProps {
     mutate: mutateResourceListFunction<QueueType>;
     leader: boolean;
     editFunc: () => void;
+    play: () => void;
 }
 
 const Queue = (props: QueueProps) => {
@@ -29,6 +28,7 @@ const Queue = (props: QueueProps) => {
         mutate,
         leader,
         editFunc,
+        play
     } = props;
     const { id: queueId, active, estimatedWaitTime } = queue;
     /* STATE */
@@ -47,14 +47,7 @@ const Queue = (props: QueueProps) => {
 
     const [clearModalOpen, setClearModalOpen] = useState(false);
 
-    const [player, setPlayer] = useState<UIfx | undefined>();
-    useEffect(() => {
-        setPlayer(
-            new UIfx(bellAudio, {
-                throttleMs: 100,
-            })
-        );
-    }, []);
+    // const play = usePlayer(bellAudio);
 
     useEffect(() => {
         if (
@@ -66,13 +59,11 @@ const Queue = (props: QueueProps) => {
             latestAsked.current = new Date(
                 questions[questions.length - 1].timeAsked
             );
-            if (player) {
-                player.play();
-            }
+            play();
         }
         // questions is not stale because we check for deep equality
         // eslint-disable-next-line
-    }, [JSON.stringify(questions), player]);
+    }, [JSON.stringify(questions), play]);
 
     const onOpen = async () => {
         await mutate(queueId, { active: true });
