@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form } from "semantic-ui-react";
+import { Form, Button } from "semantic-ui-react";
 import TextField from "@material-ui/core/TextField";
 import { QuestionStatus } from "../../../types";
 
@@ -27,7 +27,7 @@ for (const state of enumKeys(QuestionStatus)) {
     });
 }
 
-const SummaryForm = ({ updateFilter }) => {
+const SummaryForm = ({ updateFilter, downloadUrl }) => {
     const handleChangeTime = (isAfter) => (e) => {
         const time = e.target.value;
         let value;
@@ -105,6 +105,14 @@ const SummaryForm = ({ updateFilter }) => {
                                 }, 1000)
                             );
                         }}
+                    />
+                </Form.Field>
+                <Form.Field style={{ marginLeft: "auto", marginTop: "auto" }}>
+                    <Button
+                        content="Download"
+                        download
+                        primary
+                        href={downloadUrl}
                     />
                 </Form.Field>
             </Form.Group>
