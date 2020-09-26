@@ -1,10 +1,14 @@
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
-from django.urls import path
-from rest_live.consumers import SubscriptionConsumer
+from channels.security.websocket import AllowedHostsOriginValidator
+
+import ohq.routing
 
 
-websockets = AuthMiddlewareStack(
-    URLRouter([path("api/ws/subscribe/", SubscriptionConsumer, name="subscriptions")])
+application = ProtocolTypeRouter(
+    {
+        "websocket": AllowedHostsOriginValidator(
+            AuthMiddlewareStack(URLRouter(ohq.routing.websocket_urlpatterns))
+        )
+    }
 )
-application = ProtocolTypeRouter({"websocket": websockets})
