@@ -13,7 +13,7 @@ interface StudentQueuePageProps {
 const StudentQueuePage = (props: StudentQueuePageProps) => {
     const { course: rawCourse, queues: rawQueues, questionmap } = props;
     const [course, , ,] = useCourse(rawCourse.id, rawCourse);
-    const [queues, , , mutate] = useQueues(course!.id, rawQueues);
+    const { data: queues, mutate } = useQueues(course!.id, rawQueues);
 
     return (
         <Grid stackable>

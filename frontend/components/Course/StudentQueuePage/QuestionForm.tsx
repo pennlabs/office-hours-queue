@@ -1,14 +1,10 @@
 import React, { useState } from "react";
 import { Segment, Form, Header, Button } from "semantic-ui-react";
+import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 
 import { isValidURL } from "../../../utils";
 import { createQuestion } from "../../../hooks/data-fetching/course";
-import {
-    Course,
-    mutateResourceListFunction,
-    Question,
-    Queue,
-} from "../../../types";
+import { Course, Question, Queue } from "../../../types";
 import { logException } from "../../../utils/sentry";
 
 interface QuestionFormProps {
