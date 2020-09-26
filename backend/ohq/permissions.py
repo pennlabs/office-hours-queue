@@ -178,13 +178,25 @@ def has_permission_for_question(user, instance):
     if not user.is_authenticated:
         return False
 
-    membership = Membership.objects.filter(course=instance.queue.course).first()
+    membership = Membership.objects.filter(course=instance.queue.course, user=user).first()
     # If user is not in the class, don't let them view questions.
     if membership is None:
         return False
 
     # Let students view their own questions, let TAs and above view all questions.
     return instance.asked_by == user or membership.is_ta
+
+
+def has_permission_for_queue(user, instance):
+    """
+    Permission function for Queue model for django-rest-live.
+    """
+    if not user.is_authenticated:
+        return False
+
+    membership = Membership.objects.filter(course=instance.course, user=user).first()
+    # If user is not in class, don't let them view queue info.
+    return membership is not None
 
 
 class QuestionSearchPermission(permissions.BasePermission):

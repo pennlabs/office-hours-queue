@@ -6,7 +6,7 @@ from rest_framework import serializers
 from rest_live.decorators import subscribable
 
 from ohq.models import Course, Membership, MembershipInvite, Profile, Question, Queue, Semester
-from ohq.permissions import has_permission_for_question
+from ohq.permissions import has_permission_for_question, has_permission_for_queue
 from ohq.sms import sendSMSVerification
 from ohq.tasks import sendUpNextNotificationTask
 
@@ -120,6 +120,7 @@ class MembershipInviteSerializer(CourseRouteMixin):
         fields = ("id", "email", "kind", "time_created")
 
 
+@subscribable("id", has_permission_for_queue)
 class QueueSerializer(CourseRouteMixin):
     questions_active = serializers.IntegerField(default=0, read_only=True)
     questions_asked = serializers.IntegerField(default=0, read_only=True)
