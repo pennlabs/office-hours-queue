@@ -243,6 +243,13 @@ class QuestionSearchView(XLSXFileMixin, generics.ListAPIView):
         ).order_by("time_asked")
         return prefetch(qs, self.serializer_class)
 
+    @property
+    def paginator(self):
+        if isinstance(self.request.accepted_renderer, XLSXRenderer):  # xlsx download
+            self._paginator = None
+            return None
+        return super().paginator
+
 
 class QueueViewSet(viewsets.ModelViewSet):
     """
