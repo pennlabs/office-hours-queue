@@ -47,7 +47,7 @@ applications:
         value: ohq.io
   - name: redis
     image: redis
-    tag: "4.0"
+    tag: "6.0"
     port: 6379
   - name: celery
     image: pennlabs/office-hours-queue-backend
