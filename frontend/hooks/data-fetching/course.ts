@@ -157,7 +157,7 @@ export const useQuestionPosition = (
     id: number
 ) => {
     const { data: qdata } = useRealtimeResource<Queue>(
-        `/api/courses/${courseId}/queues/${queueId}/id`,
+        `/api/courses/${courseId}/queues/${queueId}/`,
         {
             model: "ohq.Queue",
             property: "id",
