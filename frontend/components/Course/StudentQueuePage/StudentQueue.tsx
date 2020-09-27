@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Segment,
     Label,
@@ -31,10 +31,11 @@ interface StudentQueueProps {
     queue: Queue;
     queueMutate: mutateResourceListFunction<Queue>;
     questions: Question[];
+    play: () => void;
 }
 
 const StudentQueue = (props: StudentQueueProps) => {
-    const { course, queue, queueMutate, questions: rawQuestions } = props;
+    const { course, queue, queueMutate, questions: rawQuestions, play } = props;
     const [toast, setToast] = useState({ message: "", success: true });
     const [toastOpen, setToastOpen] = useState(false);
 
@@ -127,6 +128,7 @@ const StudentQueue = (props: StudentQueueProps) => {
                         lastQuestionsMutate={mutateLastQuestions}
                         mutate={mutateQuestions}
                         toastFunc={updateToast}
+                        play={play}
                     />
                 )}
                 {!queue.active && questions.length === 0 && (

@@ -48,7 +48,7 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                             </Segment>
                         </Grid.Column>
 
-                        {staff && <Grid.Column>
+                        <Grid.Column>
                             <Segment basic floated="right">
                                 <Header floated="right" as="h3">
                                     Notifications
@@ -57,7 +57,7 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                                     </Header.Subheader>
                                 </Header>
                             </Segment>
-                        </Grid.Column>}
+                        </Grid.Column>
                     </Grid>
                 )}
                 {render(staff, play)}

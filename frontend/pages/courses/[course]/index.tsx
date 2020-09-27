@@ -50,6 +50,7 @@ const QueuePage = (props: QueuePageProps) => {
                                         course={course}
                                         queues={queues}
                                         questionmap={questionmap}
+                                        play={play}
                                     />
                                 )}
                             </>

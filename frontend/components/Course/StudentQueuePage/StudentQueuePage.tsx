@@ -9,9 +9,10 @@ interface StudentQueuePageProps {
     course: Course;
     queues: Queue[];
     questionmap: QuestionMap;
+    play: () => void;
 }
 const StudentQueuePage = (props: StudentQueuePageProps) => {
-    const { course: rawCourse, queues: rawQueues, questionmap } = props;
+    const { course: rawCourse, queues: rawQueues, questionmap, play } = props;
     const [course, , ,] = useCourse(rawCourse.id, rawCourse);
     const [queues, , , mutate] = useQueues(course!.id, rawQueues);
 
@@ -24,6 +25,7 @@ const StudentQueuePage = (props: StudentQueuePageProps) => {
                 queues={queues!}
                 queueMutate={mutate}
                 questionmap={questionmap}
+                play={play}
             />
         </Grid>
     );

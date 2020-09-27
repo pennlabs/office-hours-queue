@@ -13,9 +13,10 @@ interface StudentQueuesProps {
     course: Course;
     queueMutate: mutateResourceListFunction<Queue>;
     questionmap: QuestionMap;
+    play: () => void;
 }
 const StudentQueues = (props: StudentQueuesProps) => {
-    const { queues, course, queueMutate, questionmap } = props;
+    const { queues, course, queueMutate, questionmap, play } = props;
 
     return (
         <>
@@ -30,6 +31,7 @@ const StudentQueues = (props: StudentQueuesProps) => {
                                     queue={queue}
                                     queueMutate={queueMutate}
                                     questions={questionmap[queue.id]}
+                                    play={play}
                                 />
                             </Grid.Column>
                         ))}

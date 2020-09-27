@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Segment, Header, Button, Popup, Icon, Grid } from "semantic-ui-react";
 import EditQuestionModal from "./EditQuestionModal";
 import DeleteQuestionModal from "./DeleteQuestionModal";
 import { POLL_INTERVAL } from "../../../constants";
 import {
     Question,
+    QuestionStatus,
     Course,
     Queue,
     mutateResourceListFunction,
@@ -19,6 +20,7 @@ interface QuestionCardProps {
     mutate: mutateResourceListFunction<Question>;
     lastQuestionsMutate: mutateResourceListFunction<Question>;
     toastFunc: (success: string, error: any) => void;
+    play: () => void;
 }
 const QuestionCard = (props: QuestionCardProps) => {
     const {
@@ -29,6 +31,7 @@ const QuestionCard = (props: QuestionCardProps) => {
         toastFunc,
         queueMutate,
         lastQuestionsMutate,
+        play
     } = props;
     const [positionData, , , ,] = useQuestionPosition(
         course.id,
@@ -46,6 +49,13 @@ const QuestionCard = (props: QuestionCardProps) => {
             minute: "numeric",
         });
     };
+
+    useEffect(() => {
+        if (question.status == QuestionStatus.ACTIVE) {
+            play();
+        }
+        // eslint-disable-next-line
+    }, [question.status]);
 
     return (
         <div style={{ marginTop: "10px" }}>
