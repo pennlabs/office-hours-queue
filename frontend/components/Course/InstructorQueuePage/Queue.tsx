@@ -28,7 +28,7 @@ const Queue = (props: QueueProps) => {
         mutate,
         leader,
         editFunc,
-        play
+        play,
     } = props;
     const { id: queueId, active, estimatedWaitTime } = queue;
     /* STATE */

@@ -26,7 +26,7 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
         createFunc,
         mutate,
         editFunc,
-        play
+        play,
     } = props;
 
     const numActive = () => {

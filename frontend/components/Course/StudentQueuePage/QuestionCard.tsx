@@ -31,7 +31,7 @@ const QuestionCard = (props: QuestionCardProps) => {
         toastFunc,
         queueMutate,
         lastQuestionsMutate,
-        play
+        play,
     } = props;
     const [positionData, , , ,] = useQuestionPosition(
         course.id,
