@@ -178,7 +178,7 @@ def has_permission_for_question(user, instance):
     if not user.is_authenticated:
         return False
 
-    membership = Membership.objects.filter(course=instance.queue.course).first()
+    membership = Membership.objects.filter(course=instance.queue.course, user=user).first()
     # If user is not in the class, don't let them view questions.
     if membership is None:
         return False
