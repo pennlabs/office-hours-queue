@@ -36,7 +36,7 @@ const QueuePage = (props: QueuePageProps) => {
                     leadership={leadership}
                     render={(staff: boolean, play: () => void) => {
                         return (
-                            <>
+                            <div style={{marginTop: "-30px"}}>
                                 {staff && (
                                     <InstructorQueuePage
                                         courseId={course.id}
@@ -53,7 +53,7 @@ const QueuePage = (props: QueuePageProps) => {
                                         play={play}
                                     />
                                 )}
-                            </>
+                            </div>
                         );
                     }}
                 />
