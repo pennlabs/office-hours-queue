@@ -176,14 +176,10 @@ export const useQuestionPosition = (
         { fetcher: newResourceFetcher }
     );
 
-    const [
-        data,
-        error,
-        isValidating,
-        mutate,
-    ] = useResource(
+    const [data, error, isValidating, mutate] = useResource(
         `/courses/${courseId}/queues/${queueId}/questions/${id}/position/`,
-        { position: -1, refreshInterval: STUDENT_QUESTION_POS_POLL_INTERVAL }
+        { position: -1 },
+        { refreshInterval: STUDENT_QUESTION_POS_POLL_INTERVAL }
     );
 
     const stringified = JSON.stringify(qdata);
