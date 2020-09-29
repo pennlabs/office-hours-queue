@@ -252,9 +252,10 @@ export const useQuestionPosition = (
 //
 
 export const useLastQuestions = (courseId: number, queueId: number) =>
-    useResourceList(
-        `/courses/${courseId}/queues/${queueId}/questions/last/`,
-        (id) => `/courses/${courseId}/queues/${queueId}/last/${id}/`
+    useResourceListNew<Question>(
+        `/api/courses/${courseId}/queues/${queueId}/questions/last/`,
+        (id) => `/api/courses/${courseId}/queues/${queueId}/last/${id}/`,
+        { initialData: [], refreshInterval: 5000, fetcher: newResourceFetcher }
     );
 
 export async function clearQueue(courseId: number, queueId: number) {
