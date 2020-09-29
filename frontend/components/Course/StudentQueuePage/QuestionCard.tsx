@@ -4,7 +4,11 @@ import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import EditQuestionModal from "./EditQuestionModal";
 import DeleteQuestionModal from "./DeleteQuestionModal";
 import { Question, Course, Queue } from "../../../types";
-import { useQuestionPosition } from "../../../hooks/data-fetching/course";
+import {
+    useQuestionPosition,
+    finishQuestion,
+} from "../../../hooks/data-fetching/course";
+import { logException } from "../../../utils/sentry";
 
 interface QuestionCardProps {
     question: Question;
@@ -13,7 +17,7 @@ interface QuestionCardProps {
     queueMutate: mutateResourceListFunction<Queue>;
     mutate: mutateResourceListFunction<Question>;
     lastQuestionsMutate: mutateResourceListFunction<Question>;
-    toastFunc: (success: string, error: any) => void;
+    toastFunc: (success: string | null, error: any) => void;
 }
 const QuestionCard = (props: QuestionCardProps) => {
     const {
@@ -39,6 +43,15 @@ const QuestionCard = (props: QuestionCardProps) => {
             hour: "numeric",
             minute: "numeric",
         });
+    };
+
+    const markQuestionAsAnswered = async () => {
+        try {
+            await finishQuestion(course.id, queue.id, question.id);
+        } catch (e) {
+            logException(e);
+            toastFunc(null, e);
+        }
     };
 
     return (
@@ -109,6 +122,17 @@ const QuestionCard = (props: QuestionCardProps) => {
                                             color="green"
                                             content="Edit"
                                             onClick={() => setOpenEdit(true)}
+                                        />
+                                    </Header.Content>
+                                )}
+                                {question.timeResponseStarted && (
+                                    <Header.Content>
+                                        <Button
+                                            compact
+                                            size="mini"
+                                            color="green"
+                                            content="Mark as Answered"
+                                            onClick={markQuestionAsAnswered}
                                         />
                                     </Header.Content>
                                 )}

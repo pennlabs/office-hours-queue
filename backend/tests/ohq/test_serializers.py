@@ -255,6 +255,20 @@ class QuestionSerializerTestCase(TestCase):
         self.assertEqual(Question.STATUS_ASKED, self.question.status)
         mock_delay.assert_not_called()
 
+    def test_student_answered(self, mock_delay):
+        """
+        Ensure a student can mark their question as answered
+        """
+
+        self.client.force_authenticate(user=self.student)
+        self.client.patch(
+            reverse("ohq:question-detail", args=[self.course.id, self.queue.id, self.question.id]),
+            {"status": Question.STATUS_ANSWERED},
+        )
+        self.question.refresh_from_db()
+        self.assertEqual(Question.STATUS_ANSWERED, self.question.status)
+        mock_delay.assert_not_called()
+
     def test_ta_update(self, mock_delay):
         """
         Ensure TAs+ can start answering, undo answering, and reject a question
