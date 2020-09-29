@@ -221,8 +221,8 @@ export const useQuestionPosition = (
 // much sense otherwise
 // export const useLastQuestions = (courseId: number, queueId: number) => {
 //     const { data: qdata } = useRealtimeResourceList<Question, "queue_id">(
-//         `/api/courses/${courseId}/queues/${queueId}/questions`,
-//         (id) => `/api/courses/${courseId}/queues/${queueId}/questions/${id}`,
+//         `/api/courses/${courseId}/queues/${queueId}/questions/`,
+//         (id) => `/api/courses/${courseId}/queues/${queueId}/questions/${id}/`,
 //         {
 //             model: "ohq.Question",
 //             property: "queue_id",
