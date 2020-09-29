@@ -245,6 +245,12 @@ class QuestionSearchView(XLSXFileMixin, generics.ListAPIView):
 
     @property
     def paginator(self):
+        """
+        Removes pagination from the XLSX Render so that TAs can download a full list
+        of asked questions.
+        https://www.django-rest-framework.org/api-guide/renderers/#varying-behaviour-by-media-type
+        """
+
         if isinstance(self.request.accepted_renderer, XLSXRenderer):  # xlsx download
             self._paginator = None
             return None
