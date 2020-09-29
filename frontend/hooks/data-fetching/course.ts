@@ -130,7 +130,7 @@ export const useQueues = (courseId: number, initialData: Queue[]) =>
 //     initialData: Question[]
 // ) => {
 //     const { data, ...other } = useRealtimeResourceList(
-//         `/api/courses/${courseId}/queues/${queueId}/questions`,
+//         `/api/courses/${courseId}/queues/${queueId}/questions/`,
 //         (id) => `/api/courses/${courseId}/queues/${queueId}/questions/${id}/`,
 //         {
 //             model: "ohq.Question",
