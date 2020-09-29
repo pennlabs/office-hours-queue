@@ -21,7 +21,7 @@ applications:
   - name: django-wsgi
     image: pennlabs/office-hours-queue-backend
     secret: office-hours-queue
-    replicas: 4
+    replicas: 8
     ingress:
       hosts:
         - host: ohq.io
