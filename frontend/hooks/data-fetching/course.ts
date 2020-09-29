@@ -168,8 +168,8 @@ export const useQuestions = (
     initialData: Question[]
 ) =>
     useResourceListNew<Question>(
-        `/courses/${courseId}/queues/${queueId}/questions`,
-        (id) => `/courses/${courseId}/queues/${queueId}/questions/${id}`,
+        `/api/courses/${courseId}/queues/${queueId}/questions/`,
+        (id) => `/api/courses/${courseId}/queues/${queueId}/questions/${id}/`,
         {
             initialData,
             refreshInterval: 5000,
