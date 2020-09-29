@@ -258,3 +258,22 @@ export async function createQueue(
         throw new Error("Unable to create queue");
     }
 }
+
+export async function finishQuestion(
+    courseId: number,
+    queueId: number,
+    questionId: number
+): Promise<void> {
+    const payload = { status: QuestionStatus.ANSWERED };
+    const res = await doApiRequest(
+        `/courses/${courseId}/queues/${queueId}/questions/${questionId}/`,
+        {
+            method: "PATCH",
+            body: payload,
+        }
+    );
+
+    if (!res.ok) {
+        throw new Error("Unable to finish question");
+    }
+}

@@ -231,6 +231,9 @@ class QuestionSerializer(QueueRouteMixin):
                 if status == Question.STATUS_WITHDRAWN:
                     instance.status = status
                     sendUpNextNotificationTask.delay(queue_id)
+                elif status == Question.STATUS_ANSWERED:
+                    instance.status = status
+                    instance.time_responded_to = timezone.now()
                 else:
                     raise serializers.ValidationError(
                         detail={"detail": "Students can only withdraw a question"}
