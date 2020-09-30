@@ -3,6 +3,7 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.security.websocket import AllowedHostsOriginValidator
 
 import ohq.routing
+import ohq.urls
 
 
 application = ProtocolTypeRouter(
