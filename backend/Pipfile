@@ -38,7 +38,7 @@ django-auto-prefetching = "*"
 django-rest-live = ">=0.2.2"
 channels = "*"
 channels-redis = "*"
-uvicorn = "*"
+uvicorn = {extras = ["standard"],version = "*"}
 gunicorn = "*"
 drf-renderer-xlsx = "*"
 
