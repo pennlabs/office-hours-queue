@@ -3,9 +3,10 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.security.websocket import AllowedHostsOriginValidator
 
 import ohq.routing
-# DO NOT DELETE THIS IMPORT! Django REST Live requires urls to be imported from async entrypoint.
-import ohq.urls
+import ohq.urls  # DO NOT DELETE THIS IMPORT!
 
+
+# Django REST Live requires urls too be imported from the async entrypoint.
 
 application = ProtocolTypeRouter(
     {
