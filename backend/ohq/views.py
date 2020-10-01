@@ -9,16 +9,13 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django_auto_prefetching import prefetch
 from django_filters.rest_framework import DjangoFilterBackend
-from djangorestframework_camel_case.render import (
-    CamelCaseBrowsableAPIRenderer,
-    CamelCaseJSONRenderer,
-)
 from drf_renderer_xlsx.mixins import XLSXFileMixin
 from drf_renderer_xlsx.renderers import XLSXRenderer
 from rest_framework import filters, generics, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 
 from ohq.filters import QuestionSearchFilter
@@ -233,7 +230,7 @@ class QuestionSearchView(XLSXFileMixin, generics.ListAPIView):
     filterset_class = QuestionSearchFilter
     pagination_class = QuestionSearchPagination
     permission_classes = [QuestionSearchPermission | IsSuperuser]
-    renderer_classes = [CamelCaseJSONRenderer, CamelCaseBrowsableAPIRenderer, XLSXRenderer]
+    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES + [XLSXRenderer]
     serializer_class = QuestionSerializer
     filename = "questions.xlsx"
 
@@ -251,7 +248,7 @@ class QuestionSearchView(XLSXFileMixin, generics.ListAPIView):
         https://www.django-rest-framework.org/api-guide/renderers/#varying-behaviour-by-media-type
         """
 
-        if isinstance(self.request.accepted_renderer, XLSXRenderer):  # xlsx download
+        if self.request.accepted_renderer.format == "xlsx":  # xlsx download
             self._paginator = None
             return None
         return super().paginator
