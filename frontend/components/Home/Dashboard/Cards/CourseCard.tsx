@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Segment, Header } from "semantic-ui-react";
+import { Segment, Header, Dropdown, Icon } from "semantic-ui-react";
 import Link from "next/link";
 import { Course } from "../../../../types";
 
@@ -34,10 +34,21 @@ const CourseCard = (props: CourseCardProps) => {
                             style={{
                                 whiteSpace: "nowrap",
                                 textOverflow: "ellipsis",
-                                overflow: "hidden",
                             }}
                         >
                             {`${course.department} ${course.courseCode}`}
+                            <Dropdown icon={
+                                    <Icon name="ellipsis vertical" style={{ width: "auto", margin: "0" }}/>
+                                }
+                                direction="left"
+                                style={{ float: "right"}}
+                            >
+                                <Dropdown.Menu>
+                                    <Dropdown.Item>
+                                        Leave
+                                    </Dropdown.Item>
+                                </Dropdown.Menu>
+                            </Dropdown>
                             <Header.Subheader
                                 style={{
                                     whiteSpace: "nowrap",
