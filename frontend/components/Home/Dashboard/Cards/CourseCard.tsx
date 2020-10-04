@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Segment, Header, Dropdown, Icon } from "semantic-ui-react";
 import Link from "next/link";
 import { Course } from "../../../../types";
+import ModalLeaveStudentCourse from "../Modals/ModalLeaveStudentCourse";
 
 interface CourseCardProps {
     course: Course;
@@ -9,10 +10,17 @@ interface CourseCardProps {
 const CourseCard = (props: CourseCardProps) => {
     const { course } = props;
     const [hover, setHover] = useState(false);
+    const [showLeave, setShowLeave] = useState(false);
 
     const path = {
         pathname: `/courses/${course.id}`,
     };
+
+    const handleLeaveClick = (event: React.MouseEvent<HTMLDivElement>, data) => {
+        console.log(data);
+        console.log(event.target);
+        setShowLeave(true);
+    }
 
     return (
         <Segment basic>
@@ -38,14 +46,22 @@ const CourseCard = (props: CourseCardProps) => {
                         >
                             {`${course.department} ${course.courseCode}`}
                             <Dropdown icon={
-                                    <Icon name="ellipsis vertical" style={{ width: "auto", margin: "0" }}/>
+                                    <Icon
+                                        name="ellipsis vertical"
+                                        style={{ width: "auto", margin: "0", paddingLeft: "4px" }}
+                                    />
                                 }
                                 direction="left"
                                 style={{ float: "right"}}
                             >
                                 <Dropdown.Menu>
-                                    <Dropdown.Item>
+                                    <Dropdown.Item onClick={handleLeaveClick}>
                                         Leave
+                                        <ModalLeaveStudentCourse
+                                            open={showLeave}
+                                            closeFunc={() => {setShowLeave(false)}}
+                                            course={course}
+                                        />
                                     </Dropdown.Item>
                                 </Dropdown.Menu>
                             </Dropdown>
