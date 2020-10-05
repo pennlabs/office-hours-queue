@@ -1,5 +1,6 @@
-import React from "react";
-import { Grid } from "semantic-ui-react";
+import React, { useContext } from "react";
+import { Grid, Message } from "semantic-ui-react";
+import { WSContext } from "@pennlabs/rest-live-hooks";
 import StudentQueues from "./StudentQueues";
 
 import { useQueues, useCourse } from "../../../hooks/data-fetching/course";
@@ -15,17 +16,26 @@ const StudentQueuePage = (props: StudentQueuePageProps) => {
     const [course, , ,] = useCourse(rawCourse.id, rawCourse);
     const { data: queues, mutate } = useQueues(course!.id, rawQueues);
 
+    const { isConnected } = useContext(WSContext);
+
     return (
-        <Grid stackable>
-            <StudentQueues
-                // course and queues are non-null because
-                // key never changes and initial data are provided
-                course={course!}
-                queues={queues!}
-                queueMutate={mutate}
-                questionmap={questionmap}
-            />
-        </Grid>
+        <>
+            {!isConnected && (
+                <Message warning>
+                    You are not currently connected to OHQ. Reconnecting...
+                </Message>
+            )}
+            <Grid stackable>
+                <StudentQueues
+                    // course and queues are non-null because
+                    // key never changes and initial data are provided
+                    course={course!}
+                    queues={queues!}
+                    queueMutate={mutate}
+                    questionmap={questionmap}
+                />
+            </Grid>
+        </>
     );
 };
 
