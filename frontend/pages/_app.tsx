@@ -3,6 +3,7 @@ import "semantic-ui-css/semantic.min.css";
 import "../styles/index.css";
 import { SWRConfig } from "swr";
 import { doApiRequest } from "../utils/fetch";
+import withGA from "../utils/ga/withGA";
 
 const MyApp = ({ Component, pageProps }) => {
     return (
@@ -20,4 +21,4 @@ const MyApp = ({ Component, pageProps }) => {
     );
 };
 
-export default MyApp;
+export default withGA(MyApp);
