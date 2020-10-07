@@ -24,6 +24,11 @@ const CourseCard = (props: CourseCardProps) => {
 
     return (
         <Segment basic>
+            <ModalLeaveStudentCourse
+                open={showLeave}
+                closeFunc={() => {setShowLeave(false)}}
+                course={course}
+            />
             <Link href={path}>
                 <Segment.Group
                     style={{
@@ -57,11 +62,6 @@ const CourseCard = (props: CourseCardProps) => {
                                 <Dropdown.Menu>
                                     <Dropdown.Item onClick={handleLeaveClick}>
                                         Leave
-                                        <ModalLeaveStudentCourse
-                                            open={showLeave}
-                                            closeFunc={() => {setShowLeave(false)}}
-                                            course={course}
-                                        />
                                     </Dropdown.Item>
                                 </Dropdown.Menu>
                             </Dropdown>
