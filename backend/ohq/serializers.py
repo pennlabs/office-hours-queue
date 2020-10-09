@@ -159,11 +159,19 @@ class QueueSerializer(CourseRouteMixin):
         return instance
 
 
+class TagSerializer(CourseRouteMixin):
+    class Meta:
+        model = Tag
+        fields = ("id", "name")
+
+
 @subscribable("id", has_permission_for_question)
 @subscribable("queue_id", has_permission_for_question)
 class QuestionSerializer(QueueRouteMixin):
     asked_by = UserSerializer(read_only=True)
     responded_to_by = UserSerializer(read_only=True)
+    # tags_pretty = serializers.StringRelatedField(many=True, source="tags")
+    # tags = TagSerializer(many=True, read_only=True)
 
     class Meta:
         model = Question
@@ -179,6 +187,8 @@ class QuestionSerializer(QueueRouteMixin):
             "responded_to_by",
             "rejected_reason",
             "should_send_up_soon_notification",
+            # "tags",
+            # "tags_pretty",
         )
         read_only_fields = (
             "time_asked",
@@ -255,17 +265,6 @@ class QuestionSerializer(QueueRouteMixin):
         validated_data["status"] = Question.STATUS_ASKED
         validated_data["asked_by"] = self.context["request"].user
         return super().create(validated_data)
-
-
-class TagSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Tag
-        fields = (
-            "id",
-            "name",
-            "queue"
-        )
-
 
 
 class MembershipPrivateSerializer(CourseRouteMixin):

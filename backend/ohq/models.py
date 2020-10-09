@@ -206,17 +206,17 @@ class Queue(models.Model):
 
 class Tag(models.Model):
     """
-    Tags for different queues
+    Tags for a course.
     """
 
     name = models.CharField(max_length=255)
-    queue = models.ForeignKey(Queue, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     class Meta:
-        constraints = [models.UniqueConstraint(fields=["name", "queue"], name="unique_queue_tag")]
-    
+        constraints = [models.UniqueConstraint(fields=["name", "course"], name="unique_course_tag")]
+
     def __str__(self):
-        return f"{self.queue}: {self.name}"
+        return f"{self.course}: {self.name}"
 
 
 class Question(models.Model):

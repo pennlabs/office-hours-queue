@@ -31,6 +31,7 @@ from ohq.permissions import (
     QuestionPermission,
     QuestionSearchPermission,
     QueuePermission,
+    TagPermission,
 )
 from ohq.schemas import MassInviteSchema
 from ohq.serializers import (
@@ -42,8 +43,8 @@ from ohq.serializers import (
     QuestionSerializer,
     QueueSerializer,
     SemesterSerializer,
+    TagSerializer,
     UserPrivateSerializer,
-    TagSerializer
 )
 from ohq.sms import sendSMSVerification
 
@@ -337,11 +338,34 @@ class QueueViewSet(viewsets.ModelViewSet):
 
 
 class TagViewSet(viewsets.ModelViewSet):
+    """
+    retrieve:
+    Return a single tag with all information fields present.
+
+    list:
+    Return a list of tags specific to a course.
+
+    create:
+    Create a tag.
+
+    update:
+    Update all fields in the tag.
+    You must specify all of the fields or use a patch request.
+
+    partial_update:
+    Update certain fields in the tag.
+    Only specify the fields that you want to change.
+
+    destroy:
+    Delete a tag.
+    """
+
+    permission_classes = [TagPermission | IsSuperuser]
     serializer_class = TagSerializer
 
     def get_queryset(self):
-        tags = Tag.objects.filter(queue=self.kwargs["queue_pk"])
-        return prefetch(tags, self.serializer_class)
+        qs = Tag.objects.filter(course=self.kwargs["course_pk"])
+        return prefetch(qs, self.serializer_class)
 
 
 class MembershipViewSet(viewsets.ModelViewSet):

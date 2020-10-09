@@ -6,7 +6,7 @@ from django.urls import reverse
 from parameterized import parameterized
 from rest_framework.test import APIClient
 
-from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester
+from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester, Tag
 
 
 User = get_user_model()
@@ -292,6 +292,102 @@ class QueueTestCase(TestCase):
             "clear",
             "post",
             reverse("ohq:queue-clear", args=[self.course.id, self.queue.id]),
+        )
+
+
+class TagTestCase(TestCase):
+    def setUp(self):
+        setUp(self)
+        self.tag = Tag.objects.create(name="test", course=self.course)
+
+        # Expected results
+        self.expected = {
+            "list": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 200,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+            "create": {
+                "professor": 201,
+                "head_ta": 201,
+                "ta": 403,
+                "student": 403,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+            "retrieve": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 200,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+            "destroy": {
+                "professor": 204,
+                "head_ta": 204,
+                "ta": 403,
+                "student": 403,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+            "modify": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 403,
+                "student": 403,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+        }
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_list(self, user):
+        test(self, user, "list", "get", reverse("ohq:tag-list", args=[self.course.id]))
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_create(self, user):
+        test(
+            self,
+            user,
+            "create",
+            "post",
+            reverse("ohq:tag-list", args=[self.course.id]),
+            {"name": "new", "description": "description"},
+        )
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_retrieve(self, user):
+        test(
+            self,
+            user,
+            "retrieve",
+            "get",
+            reverse("ohq:tag-detail", args=[self.course.id, self.tag.id]),
+        )
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_destroy(self, user):
+        test(
+            self,
+            user,
+            "destroy",
+            "delete",
+            reverse("ohq:tag-detail", args=[self.course.id, self.tag.id]),
+        )
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_modify(self, user):
+        test(
+            self,
+            user,
+            "modify",
+            "patch",
+            reverse("ohq:tag-detail", args=[self.course.id, self.tag.id]),
+            {"name": "test2"},
         )
 
 
