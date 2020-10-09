@@ -204,6 +204,21 @@ class Queue(models.Model):
         return f"{self.course}: {self.name}"
 
 
+class Tag(models.Model):
+    """
+    Tags for different queues
+    """
+
+    name = models.CharField(max_length=255)
+    queue = models.ForeignKey(Queue, on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["name", "queue"], name="unique_queue_tag")]
+    
+    def __str__(self):
+        return f"{self.queue}: {self.name}"
+
+
 class Question(models.Model):
     """
     A question asked within a queue.
@@ -240,3 +255,5 @@ class Question(models.Model):
     rejected_reason = models.CharField(max_length=255, blank=True, null=True)
 
     should_send_up_soon_notification = models.BooleanField(default=False)
+
+    tags = models.ManyToManyField(Tag)

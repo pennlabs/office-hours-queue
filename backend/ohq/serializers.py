@@ -5,7 +5,7 @@ from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 from rest_live.decorators import subscribable
 
-from ohq.models import Course, Membership, MembershipInvite, Profile, Question, Queue, Semester
+from ohq.models import Course, Membership, MembershipInvite, Profile, Question, Queue, Semester, Tag
 from ohq.permissions import has_permission_for_question
 from ohq.sms import sendSMSVerification
 from ohq.tasks import sendUpNextNotificationTask
@@ -255,6 +255,17 @@ class QuestionSerializer(QueueRouteMixin):
         validated_data["status"] = Question.STATUS_ASKED
         validated_data["asked_by"] = self.context["request"].user
         return super().create(validated_data)
+
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = (
+            "id",
+            "name",
+            "queue"
+        )
+
 
 
 class MembershipPrivateSerializer(CourseRouteMixin):

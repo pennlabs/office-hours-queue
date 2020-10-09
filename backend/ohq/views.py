@@ -20,7 +20,7 @@ from rest_framework.views import APIView
 
 from ohq.filters import QuestionSearchFilter
 from ohq.invite import parse_and_send_invites
-from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester
+from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester, Tag
 from ohq.pagination import QuestionSearchPagination
 from ohq.permissions import (
     CoursePermission,
@@ -43,6 +43,7 @@ from ohq.serializers import (
     QueueSerializer,
     SemesterSerializer,
     UserPrivateSerializer,
+    TagSerializer
 )
 from ohq.sms import sendSMSVerification
 
@@ -333,6 +334,14 @@ class QueueViewSet(viewsets.ModelViewSet):
             responded_to_by=self.request.user,
         )
         return JsonResponse({"detail": "success"})
+
+
+class TagViewSet(viewsets.ModelViewSet):
+    serializer_class = TagSerializer
+
+    def get_queryset(self):
+        tags = Tag.objects.filter(queue=self.kwargs["queue_pk"])
+        return prefetch(tags, self.serializer_class)
 
 
 class MembershipViewSet(viewsets.ModelViewSet):
