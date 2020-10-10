@@ -14,7 +14,7 @@ export function usePlayer(
     const player = useRef<UIfx>();
     useEffect(() => {
         player.current = new UIfx(audio, { throttleMs: 100 });
-    }, []);
+    }, [audio]);
 
     const [notifs, setNotifs] = useState(true);
 
