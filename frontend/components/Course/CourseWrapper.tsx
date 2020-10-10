@@ -66,15 +66,15 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                                 <div
                                     style={{
                                         float: "right",
-                                        paddingTop: "10px",
+                                        paddingTop: "0.71rem",
                                     }}
                                 >
                                     <div
                                         style={{
                                             display: "inline",
                                             position: "relative",
-                                            top: "2px",
-                                            fontSize: "18px",
+                                            top: "0.14rem",
+                                            fontSize: "1.29rem",
                                             fontFamily: "Lato",
                                             color: "#666666",
                                         }}
@@ -85,7 +85,7 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                                     <Icon
                                         size="large"
                                         style={{
-                                            paddingLeft: "10px",
+                                            paddingLeft: "0.71rem",
                                             cursor: "pointer",
                                             color: "rgba(0, 0, 0, 0.6)",
                                         }}

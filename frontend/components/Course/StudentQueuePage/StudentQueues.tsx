@@ -24,7 +24,7 @@ const StudentQueues = (props: StudentQueuesProps) => {
                 <Grid.Row columns="equal">
                     {queues.length !== 0 &&
                         queues.map((queue) => (
-                            <Grid.Column>
+                            <Grid.Column key={`column${queue.id}`}>
                                 <StudentQueue
                                     key={queue.id}
                                     course={course}

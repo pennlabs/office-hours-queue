@@ -51,7 +51,7 @@ const QuestionCard = (props: QuestionCardProps) => {
     };
 
     useEffect(() => {
-        if (question.status == QuestionStatus.ACTIVE) {
+        if (question.status === QuestionStatus.ACTIVE) {
             play();
         }
         // eslint-disable-next-line

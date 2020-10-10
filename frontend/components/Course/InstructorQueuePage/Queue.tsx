@@ -47,8 +47,6 @@ const Queue = (props: QueueProps) => {
 
     const [clearModalOpen, setClearModalOpen] = useState(false);
 
-    // const play = usePlayer(bellAudio);
-
     useEffect(() => {
         if (
             questions &&
