@@ -18,16 +18,15 @@ export function usePlayer(
     const player = useRef<UIfx>();
     useEffect(() => {
         player.current = new UIfx(audio, { throttleMs: 100 });
-    });
+    }, []);
 
     const [notifs, setNotifs] = useState(true);
 
-    const play = useRef<() => void>();
-    play.current = () => {
+    const play = useRef<() => void>(() => {
         if (notifs) {
             player.current?.play();
         }
-    };
+    });
 
     return [notifs, setNotifs, play];
 }
