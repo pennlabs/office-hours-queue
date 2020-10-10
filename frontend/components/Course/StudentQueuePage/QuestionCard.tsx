@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, MutableRefObject } from "react";
 import { Segment, Header, Button, Popup, Icon, Grid } from "semantic-ui-react";
 import EditQuestionModal from "./EditQuestionModal";
 import DeleteQuestionModal from "./DeleteQuestionModal";
@@ -20,7 +20,7 @@ interface QuestionCardProps {
     mutate: mutateResourceListFunction<Question>;
     lastQuestionsMutate: mutateResourceListFunction<Question>;
     toastFunc: (success: string, error: any) => void;
-    play: () => void;
+    play: MutableRefObject<(() => void) | undefined>;
 }
 const QuestionCard = (props: QuestionCardProps) => {
     const {
@@ -51,11 +51,10 @@ const QuestionCard = (props: QuestionCardProps) => {
     };
 
     useEffect(() => {
-        if (question.status === QuestionStatus.ACTIVE) {
-            play();
+        if (question.status === QuestionStatus.ACTIVE && play.current) {
+            play.current();
         }
-        // eslint-disable-next-line
-    }, [question.status]);
+    }, [question.status, play]);
 
     return (
         <div style={{ marginTop: "10px" }}>

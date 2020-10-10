@@ -1,4 +1,4 @@
-import React from "react";
+import React, { MutableRefObject } from "react";
 import { Grid, Segment, Icon, Message } from "semantic-ui-react";
 import Queue from "./Queue";
 import {
@@ -15,7 +15,7 @@ interface InstructorQueuesProps {
     mutate: mutateResourceListFunction<QueueType>;
     editFunc: (number) => void;
     createFunc: () => void;
-    play: () => void;
+    play: MutableRefObject<(() => void) | undefined>;
 }
 const InstructorQueues = (props: InstructorQueuesProps) => {
     const {

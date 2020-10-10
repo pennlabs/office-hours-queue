@@ -1,4 +1,4 @@
-import React from "react";
+import React, { MutableRefObject } from "react";
 import Head from "next/head";
 import { Grid } from "semantic-ui-react";
 import { NextPageContext } from "next";
@@ -34,7 +34,10 @@ const QueuePage = (props: QueuePageProps) => {
                 <CourseWrapper
                     course={course}
                     leadership={leadership}
-                    render={(staff: boolean, play: () => void) => {
+                    render={(
+                        staff: boolean,
+                        play: MutableRefObject<(() => void) | undefined>
+                    ) => {
                         return (
                             <div style={{ marginTop: "-2.14rem" }}>
                                 {staff && (

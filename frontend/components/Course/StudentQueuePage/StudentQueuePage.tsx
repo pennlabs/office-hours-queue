@@ -1,4 +1,4 @@
-import React from "react";
+import React, { MutableRefObject } from "react";
 import { Grid } from "semantic-ui-react";
 import StudentQueues from "./StudentQueues";
 
@@ -9,7 +9,7 @@ interface StudentQueuePageProps {
     course: Course;
     queues: Queue[];
     questionmap: QuestionMap;
-    play: () => void;
+    play: MutableRefObject<(() => void) | undefined>;
 }
 const StudentQueuePage = (props: StudentQueuePageProps) => {
     const { course: rawCourse, queues: rawQueues, questionmap, play } = props;

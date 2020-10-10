@@ -1,14 +1,5 @@
-import React, { useState, useContext, createRef } from "react";
-import {
-    Grid,
-    Segment,
-    Header,
-    Checkbox,
-    CheckboxProps,
-    Icon,
-    Button,
-    ButtonProps,
-} from "semantic-ui-react";
+import React, { useContext, MutableRefObject } from "react";
+import { Grid, Segment, Header, Icon, ButtonProps } from "semantic-ui-react";
 import CourseSidebar from "./CourseSidebar";
 
 import { AuthUserContext } from "../../context/auth";
@@ -18,7 +9,10 @@ import { usePlayer } from "../../hooks/player";
 import { Course as CourseType, Membership } from "../../types";
 
 interface CourseProps {
-    render: (staff: boolean, play: () => void) => JSX.Element;
+    render: (
+        staff: boolean,
+        play: MutableRefObject<(() => void) | undefined>
+    ) => JSX.Element;
     course: CourseType;
     leadership: Membership[];
 }

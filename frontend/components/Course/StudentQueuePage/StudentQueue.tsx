@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, MutableRefObject } from "react";
 import {
     Segment,
     Label,
@@ -31,7 +31,7 @@ interface StudentQueueProps {
     queue: Queue;
     queueMutate: mutateResourceListFunction<Queue>;
     questions: Question[];
-    play: () => void;
+    play: MutableRefObject<(() => void) | undefined>;
 }
 
 const StudentQueue = (props: StudentQueueProps) => {

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, MutableRefObject } from "react";
 import { Grid } from "semantic-ui-react";
 import Alert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
@@ -13,7 +13,7 @@ interface InstructorQueuePageProps {
     courseId: number;
     queues: Queue[];
     questionmap: QuestionMap;
-    play: () => void;
+    play: MutableRefObject<(() => void) | undefined>;
 }
 
 enum PageStateEnum {
