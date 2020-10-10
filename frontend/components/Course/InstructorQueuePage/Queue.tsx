@@ -2,13 +2,9 @@ import React, { useState, useEffect, useRef, MutableRefObject } from "react";
 import { Header, Label, Grid, Segment, Button } from "semantic-ui-react";
 import Questions from "./Questions";
 import ClearQueueModal from "./ClearQueueModal";
-import {
-    mutateResourceListFunction,
-    Queue as QueueType,
-    Question,
-} from "../../../types";
+import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
+import { Queue as QueueType, Question } from "../../../types";
 import { useQuestions } from "../../../hooks/data-fetching/course";
-import { POLL_INTERVAL } from "../../../constants";
 
 interface QueueProps {
     courseId: number;
@@ -32,11 +28,10 @@ const Queue = (props: QueueProps) => {
     } = props;
     const { id: queueId, active, estimatedWaitTime } = queue;
     /* STATE */
-    const [questions, , , mutateQuestions] = useQuestions(
+    const { data: questions, mutate: mutateQuestions } = useQuestions(
         courseId,
         queueId,
-        rawQuestions,
-        queue.active ? POLL_INTERVAL : 0
+        rawQuestions
     );
 
     const latestAsked = useRef(

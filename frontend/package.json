@@ -8,13 +8,15 @@
         "start": "NODE_ENV=production node server.js",
         "test": "echo no tests yet",
         "codecov": "echo no codecov",
-        "lint": "eslint . --ext .tsx --ext .ts",
+        "lint": "eslint . --ext .tsx --ext .ts && tsc -b tsconfig.json",
         "lint-fix": "eslint . --ext .tsx --ext .ts --fix",
         "precommit": "lint-staged"
     },
     "dependencies": {
         "@material-ui/core": "^4.11.0",
         "@material-ui/lab": "^4.0.0-alpha.56",
+        "@pennlabs/rest-hooks": "^0.1.6",
+        "@pennlabs/rest-live-hooks": "^1.0.1",
         "@sentry/browser": "^5.21.4",
         "@sentry/node": "^5.21.4",
         "chart.js": "^2.9.3",

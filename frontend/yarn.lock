@@ -1195,6 +1195,22 @@
   resolved "https://registry.yarnpkg.com/@next/react-refresh-utils/-/react-refresh-utils-9.4.4.tgz#d94cbb3b354a07f1f5b80e554d6b9e34aba99e41"
   integrity sha512-9nKENeWRI6kQk44TbeqleIVtNLfcS3klVUepzl/ZCqzR5Bi06uqBCD277hdVvG/wL1pxA+R/pgJQLqnF5E2wPQ==
 
+"@pennlabs/rest-hooks@^0.1.6":
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/@pennlabs/rest-hooks/-/rest-hooks-0.1.6.tgz#73bd5537860d99f5649d36b861334547158db60d"
+  integrity sha512-VTwZg4kvYUEFvHaWUNNJEGnMZkylJxuKmoaArciAWh8MRF0erGzWK0HtAvPRhJOHUdPTDkqcEquMhlRNUo6hRg==
+  dependencies:
+    swr ">=0.3.1"
+
+"@pennlabs/rest-live-hooks@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@pennlabs/rest-live-hooks/-/rest-live-hooks-1.0.1.tgz#1237f6fc4762d92458f6e4e9f0553c5ef033dc02"
+  integrity sha512-vaCAnJTviCkzYqAhdKrZqFJEJgiJ309ESLk54ktNy1qDiGV5vME+Gjc6ZtBtAqNanV7vSPF/chAC6mKArf3pCA==
+  dependencies:
+    "@pennlabs/rest-hooks" "^0.1.6"
+    reconnecting-websocket "^4.4.0"
+    swr "^0.3.1"
+
 "@semantic-ui-react/event-stack@^3.1.0":
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/@semantic-ui-react/event-stack/-/event-stack-3.1.1.tgz#3263d17511db81a743167fe45281a24b3eb6b3c8"
@@ -6665,6 +6681,11 @@ readdirp@~3.4.0:
   dependencies:
     picomatch "^2.2.1"
 
+reconnecting-websocket@^4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/reconnecting-websocket/-/reconnecting-websocket-4.4.0.tgz#3b0e5b96ef119e78a03135865b8bb0af1b948783"
+  integrity sha512-D2E33ceRPga0NvTDhJmphEgJ7FUYF0v4lr1ki0csq06OdlxKfugGzN0dSkxM/NfqCxYELK4KcaTOUOjTV6Dcng==
+
 reflect.ownkeys@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/reflect.ownkeys/-/reflect.ownkeys-0.2.0.tgz#749aceec7f3fdf8b63f927a04809e90c5c0b3460"
@@ -7602,6 +7623,13 @@ svgo@^1.0.0:
     stable "^0.1.8"
     unquote "~1.1.1"
     util.promisify "~1.0.0"
+
+swr@>=0.3.1, swr@^0.3.1:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/swr/-/swr-0.3.2.tgz#1197e06553f71afbc42dba758459f12daea96805"
+  integrity sha512-Bs5Bihq1hQ66O5bdKaL47iZ2nlAaBsd8tTLRLkw9stZeuBEfH7zSuQI95S2TpchL0ybsMq3isWwuso2uPvCfHA==
+  dependencies:
+    fast-deep-equal "2.0.1"
 
 swr@^0.3.0:
   version "0.3.0"

@@ -1,11 +1,27 @@
-deploy_version: 0.1.21
+deploy_version: 0.1.22
 image_tag: latest
 
 applications:
-  - name: django
+  - name: django-asgi
     image: pennlabs/office-hours-queue-backend
     secret: office-hours-queue
-    replicas: 8
+    cmd: ["/usr/local/bin/asgi-run"]
+    replicas: 2
+    ingress:
+      hosts:
+        - host: ohq.io
+          paths: ["/api/ws"]
+    extraEnv:
+      - name: DOMAIN
+        value: ohq.io
+      - name: DJANGO_SETTINGS_MODULE
+        value: officehoursqueue.settings.production
+      - name: REDIS_URL
+        value: redis://office-hours-queue-redis:6379
+  - name: django-wsgi
+    image: pennlabs/office-hours-queue-backend
+    secret: office-hours-queue
+    replicas: 4
     ingress:
       hosts:
         - host: ohq.io
@@ -31,12 +47,12 @@ applications:
         value: ohq.io
   - name: redis
     image: redis
-    tag: "4.0"
+    tag: "6.0"
     port: 6379
   - name: celery
     image: pennlabs/office-hours-queue-backend
     secret: office-hours-queue
-    cmd: ["celery","-A", "officehoursqueue", "worker", "-linfo"]
+    cmd: ["celery","-A", "officehoursqueue", "worker", "-lINFO"]
     extraEnv:
       - name: DJANGO_SETTINGS_MODULE
         value: officehoursqueue.settings.production

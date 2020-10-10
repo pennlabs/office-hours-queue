@@ -1,12 +1,8 @@
 import React, { MutableRefObject } from "react";
 import { Segment, Grid, Message } from "semantic-ui-react";
+import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import StudentQueue from "./StudentQueue";
-import {
-    Queue,
-    Course,
-    mutateResourceListFunction,
-    QuestionMap,
-} from "../../../types";
+import { Queue, Course, QuestionMap } from "../../../types";
 
 interface StudentQueuesProps {
     queues: Queue[];

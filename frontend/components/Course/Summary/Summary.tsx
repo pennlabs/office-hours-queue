@@ -23,7 +23,13 @@ const Summary = (props: SummaryProps) => {
 
     const getFullName = (user: User) => `${user.firstName} ${user.lastName}`;
 
-    const { data, isValidating: loading, updateFilter, filters } = useQuestions(
+    const {
+        data,
+        isValidating: loading,
+        updateFilter,
+        filters,
+        downloadUrl,
+    } = useQuestions(
         // course is non-null because initial data is provided and key never changes
         course!.id,
         questionListResult
@@ -32,7 +38,10 @@ const Summary = (props: SummaryProps) => {
         <div>
             <Grid.Row>
                 <Segment basic>
-                    <SummaryForm updateFilter={updateFilter} />
+                    <SummaryForm
+                        updateFilter={updateFilter}
+                        downloadUrl={downloadUrl}
+                    />
                     <Table sortable celled padded striped>
                         <Table.Header>
                             <Table.Row>

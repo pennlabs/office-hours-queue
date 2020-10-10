@@ -9,10 +9,13 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django_auto_prefetching import prefetch
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_renderer_xlsx.mixins import XLSXFileMixin
+from drf_renderer_xlsx.renderers import XLSXRenderer
 from rest_framework import filters, generics, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 
 from ohq.filters import QuestionSearchFilter
@@ -121,7 +124,7 @@ class CourseViewSet(viewsets.ModelViewSet):
     permission_classes = [CoursePermission | IsSuperuser]
     serializer_class = CourseSerializer
     filter_backends = [filters.SearchFilter]
-    search_fields = ["course_code", "department"]
+    search_fields = ["course_code", "department", "course_title"]
 
     def get_serializer_class(self):
         if self.action == "create":
@@ -222,18 +225,33 @@ class QuestionViewSet(viewsets.ModelViewSet):
         return super().list(request, *args, **kwargs)
 
 
-class QuestionSearchView(generics.ListAPIView):
+class QuestionSearchView(XLSXFileMixin, generics.ListAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_class = QuestionSearchFilter
     pagination_class = QuestionSearchPagination
     permission_classes = [QuestionSearchPermission | IsSuperuser]
+    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES + [XLSXRenderer]
     serializer_class = QuestionSerializer
+    filename = "questions.xlsx"
 
     def get_queryset(self):
         qs = Question.objects.filter(
             queue__in=Queue.objects.filter(course=self.kwargs["course_pk"])
         ).order_by("time_asked")
         return prefetch(qs, self.serializer_class)
+
+    @property
+    def paginator(self):
+        """
+        Removes pagination from the XLSX Render so that TAs can download a full list
+        of asked questions.
+        https://www.django-rest-framework.org/api-guide/renderers/#varying-behaviour-by-media-type
+        """
+
+        if self.request.accepted_renderer.format == "xlsx":  # xlsx download
+            self._paginator = None
+            return None
+        return super().paginator
 
 
 class QueueViewSet(viewsets.ModelViewSet):

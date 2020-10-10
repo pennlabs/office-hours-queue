@@ -11,19 +11,14 @@ import {
 } from "semantic-ui-react";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
+import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import QuestionForm from "./QuestionForm";
 import QuestionCard from "./QuestionCard";
-import {
-    Queue,
-    Course,
-    mutateResourceListFunction,
-    Question,
-} from "../../../types";
+import { Queue, Course, Question } from "../../../types";
 import {
     useQuestions,
     useLastQuestions,
 } from "../../../hooks/data-fetching/course";
-import { POLL_INTERVAL } from "../../../constants";
 import LastQuestionCard from "./LastQuestionCard";
 
 interface StudentQueueProps {
@@ -39,16 +34,14 @@ const StudentQueue = (props: StudentQueueProps) => {
     const [toast, setToast] = useState({ message: "", success: true });
     const [toastOpen, setToastOpen] = useState(false);
 
-    const [questions, , , mutateQuestions] = useQuestions(
+    const { data: questions, mutate: mutateQuestions } = useQuestions(
         course.id,
         queue.id,
-        rawQuestions,
-        queue.active ? POLL_INTERVAL : 0
+        rawQuestions
     );
     const [lastQuestions, , , mutateLastQuestions] = useLastQuestions(
         course.id,
-        queue.id,
-        queue.active ? POLL_INTERVAL : 0
+        queue.id
     );
 
     if (!questions) {

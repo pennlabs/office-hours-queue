@@ -5,7 +5,7 @@ from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 
 from officehoursqueue.settings.base import *  # noqa: F401, F403
-from officehoursqueue.settings.base import DOMAIN
+from officehoursqueue.settings.base import DOMAIN, REDIS_URL
 
 
 DEBUG = False
@@ -32,3 +32,11 @@ EMAIL_PORT = int(os.getenv("SMTP_PORT", 587))
 EMAIL_HOST_USER = os.getenv("SMTP_USERNAME")
 EMAIL_HOST_PASSWORD = os.getenv("SMTP_PASSWORD")
 EMAIL_USE_TLS = True
+
+# Redis Channel Layer
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {"hosts": [REDIS_URL]},
+    },
+}

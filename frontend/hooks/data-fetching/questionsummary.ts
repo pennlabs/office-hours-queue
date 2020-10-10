@@ -40,28 +40,50 @@ const summaryFilterToQuery = (
     );
 };
 
+interface QuestionsFilterResponse
+    extends FilteredResourceResponse<
+        QuestionListResult,
+        QuestionSummaryFilters
+    > {
+    downloadUrl: string;
+}
+
 export const useQuestions = (
     courseId: number,
     initialQuestions: QuestionListResult
-): FilteredResourceResponse<QuestionListResult, QuestionSummaryFilters> => {
+): QuestionsFilterResponse => {
+    const baseUrl = `/courses/${courseId}/questions/`;
+
     const {
         data,
         error,
         isValidating,
         filters,
         updateFilter,
-    } = useFilteredResource(
-        `/courses/${courseId}/questions/`,
-        summaryFilterToQuery,
-        initialQuestions,
-        { page: 1 }
-    );
+    } = useFilteredResource(baseUrl, summaryFilterToQuery, initialQuestions, {
+        page: 1,
+    });
+
+    const filterCopy = { ...filters };
+    delete filterCopy.page;
+    const filterString = summaryFilterToQuery(filterCopy);
+
+    // get rid of trailing slash
+    let downloadUrl = `/api${baseUrl.slice(0, -1)}`;
+
+    // filter is empty will return "?"
+    if (filterString.length === 1) {
+        downloadUrl += "?format=xlsx";
+    } else {
+        downloadUrl += `${filterString}&format=xlsx`;
+    }
 
     return {
         data,
         error,
         isValidating,
         filters,
+        downloadUrl,
         updateFilter,
     };
 };

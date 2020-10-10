@@ -1,8 +1,9 @@
 import React, { useState, useEffect, MutableRefObject } from "react";
 import { Segment, Header, Button, Popup, Icon, Grid } from "semantic-ui-react";
+import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import EditQuestionModal from "./EditQuestionModal";
 import DeleteQuestionModal from "./DeleteQuestionModal";
-import { POLL_INTERVAL } from "../../../constants";
+import { Question, Course, Queue } from "../../../types";
 import {
     Question,
     QuestionStatus,
@@ -11,6 +12,11 @@ import {
     mutateResourceListFunction,
 } from "../../../types";
 import { useQuestionPosition } from "../../../hooks/data-fetching/course";
+import {
+    useQuestionPosition,
+    finishQuestion,
+} from "../../../hooks/data-fetching/course";
+import { logException } from "../../../utils/sentry";
 
 interface QuestionCardProps {
     question: Question;
@@ -19,7 +25,7 @@ interface QuestionCardProps {
     queueMutate: mutateResourceListFunction<Queue>;
     mutate: mutateResourceListFunction<Question>;
     lastQuestionsMutate: mutateResourceListFunction<Question>;
-    toastFunc: (success: string, error: any) => void;
+    toastFunc: (success: string | null, error: any) => void;
     play: MutableRefObject<(() => void) | undefined>;
 }
 const QuestionCard = (props: QuestionCardProps) => {
@@ -36,8 +42,7 @@ const QuestionCard = (props: QuestionCardProps) => {
     const [positionData, , , ,] = useQuestionPosition(
         course.id,
         queue.id,
-        question.id,
-        POLL_INTERVAL
+        question.id
     );
 
     const [openEdit, setOpenEdit] = useState(false);
@@ -55,6 +60,15 @@ const QuestionCard = (props: QuestionCardProps) => {
             play.current();
         }
     }, [question.status, play]);
+
+    const markQuestionAsAnswered = async () => {
+        try {
+            await finishQuestion(course.id, queue.id, question.id);
+        } catch (e) {
+            logException(e);
+            toastFunc(null, e);
+        }
+    };
 
     return (
         <div style={{ marginTop: "10px" }}>
@@ -124,6 +138,17 @@ const QuestionCard = (props: QuestionCardProps) => {
                                             color="green"
                                             content="Edit"
                                             onClick={() => setOpenEdit(true)}
+                                        />
+                                    </Header.Content>
+                                )}
+                                {question.timeResponseStarted && (
+                                    <Header.Content>
+                                        <Button
+                                            compact
+                                            size="mini"
+                                            color="green"
+                                            content="Mark as Answered"
+                                            onClick={markQuestionAsAnswered}
                                         />
                                     </Header.Content>
                                 )}
