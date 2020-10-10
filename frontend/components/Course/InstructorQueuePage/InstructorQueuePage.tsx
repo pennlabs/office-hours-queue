@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, MutableRefObject } from "react";
 import { Grid, Message } from "semantic-ui-react";
 import { WSContext } from "@pennlabs/rest-live-hooks";
 import Alert from "@material-ui/lab/Alert";
@@ -14,6 +14,7 @@ interface InstructorQueuePageProps {
     courseId: number;
     queues: Queue[];
     questionmap: QuestionMap;
+    play: MutableRefObject<() => void>;
 }
 
 enum PageStateEnum {
@@ -38,7 +39,7 @@ interface CreateState {
 type PageState = QueueState | SettingsState | CreateState;
 
 const InstructorQueuePage = (props: InstructorQueuePageProps) => {
-    const { courseId, queues: rawQueues, questionmap } = props;
+    const { courseId, queues: rawQueues, questionmap, play } = props;
 
     /* STATE */
     const { user: initialUser } = useContext(AuthUserContext);
@@ -74,9 +75,11 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
     return (
         <>
             {!isConnected && (
-                <Message warning>
-                    You are not currently connected to OHQ. Reconnecting...
-                </Message>
+                <div style={{ paddingTop: "1rem" }}>
+                    <Message warning>
+                        You are not currently connected to OHQ. Reconnecting...
+                    </Message>
+                </div>
             )}
             <Grid stackable>
                 {pageState.kind === PageStateEnum.QUEUES && queues && (
@@ -90,6 +93,7 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
                         }}
                         mutate={mutate}
                         leader={leader}
+                        play={play}
                     />
                 )}
                 {pageState.kind === PageStateEnum.SETTINGS && (

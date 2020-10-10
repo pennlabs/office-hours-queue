@@ -34,7 +34,7 @@ const InstructorCourses = (props: InstructorCoursesProps) => {
 
     return (
         <>
-            <Grid.Row padded="true" stackable>
+            <Grid.Row padded="true">
                 <ModalAddInstructorCourse
                     open={open}
                     closeFunc={() => setOpen(false)}

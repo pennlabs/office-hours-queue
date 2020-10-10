@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, MutableRefObject } from "react";
 import { Grid, Message } from "semantic-ui-react";
 import { WSContext } from "@pennlabs/rest-live-hooks";
 import StudentQueues from "./StudentQueues";
@@ -10,9 +10,10 @@ interface StudentQueuePageProps {
     course: Course;
     queues: Queue[];
     questionmap: QuestionMap;
+    play: MutableRefObject<() => void>;
 }
 const StudentQueuePage = (props: StudentQueuePageProps) => {
-    const { course: rawCourse, queues: rawQueues, questionmap } = props;
+    const { course: rawCourse, queues: rawQueues, questionmap, play } = props;
     const [course, , ,] = useCourse(rawCourse.id, rawCourse);
     const { data: queues, mutate } = useQueues(course!.id, rawQueues);
 
@@ -21,9 +22,11 @@ const StudentQueuePage = (props: StudentQueuePageProps) => {
     return (
         <>
             {!isConnected && (
-                <Message warning>
-                    You are not currently connected to OHQ. Reconnecting...
-                </Message>
+                <div style={{ paddingTop: "1rem" }}>
+                    <Message warning>
+                        You are not currently connected to OHQ. Reconnecting...
+                    </Message>
+                </div>
             )}
             <Grid stackable>
                 <StudentQueues
@@ -33,6 +36,7 @@ const StudentQueuePage = (props: StudentQueuePageProps) => {
                     queues={queues!}
                     queueMutate={mutate}
                     questionmap={questionmap}
+                    play={play}
                 />
             </Grid>
         </>

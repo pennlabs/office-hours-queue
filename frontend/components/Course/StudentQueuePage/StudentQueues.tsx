@@ -1,4 +1,4 @@
-import React from "react";
+import React, { MutableRefObject } from "react";
 import { Segment, Grid, Message } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import StudentQueue from "./StudentQueue";
@@ -9,9 +9,10 @@ interface StudentQueuesProps {
     course: Course;
     queueMutate: mutateResourceListFunction<Queue>;
     questionmap: QuestionMap;
+    play: MutableRefObject<() => void>;
 }
 const StudentQueues = (props: StudentQueuesProps) => {
-    const { queues, course, queueMutate, questionmap } = props;
+    const { queues, course, queueMutate, questionmap, play } = props;
 
     return (
         <>
@@ -19,13 +20,14 @@ const StudentQueues = (props: StudentQueuesProps) => {
                 <Grid.Row columns="equal">
                     {queues.length !== 0 &&
                         queues.map((queue) => (
-                            <Grid.Column>
+                            <Grid.Column key={`column${queue.id}`}>
                                 <StudentQueue
                                     key={queue.id}
                                     course={course}
                                     queue={queue}
                                     queueMutate={queueMutate}
                                     questions={questionmap[queue.id]}
+                                    play={play}
                                 />
                             </Grid.Column>
                         ))}
