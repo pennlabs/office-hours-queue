@@ -37,7 +37,7 @@ const QueuePage = (props: QueuePageProps) => {
                     leadership={leadership}
                     render={(
                         staff: boolean,
-                        play: MutableRefObject<(() => void) | undefined>
+                        play: MutableRefObject<() => void>
                     ) => {
                         return (
                             <div style={{ marginTop: "-2.14rem" }}>

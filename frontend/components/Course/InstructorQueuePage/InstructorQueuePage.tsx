@@ -14,7 +14,7 @@ interface InstructorQueuePageProps {
     courseId: number;
     queues: Queue[];
     questionmap: QuestionMap;
-    play: MutableRefObject<(() => void) | undefined>;
+    play: MutableRefObject<() => void>;
 }
 
 enum PageStateEnum {
@@ -75,9 +75,11 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
     return (
         <>
             {!isConnected && (
-                <Message warning>
-                    You are not currently connected to OHQ. Reconnecting...
-                </Message>
+                <div style={{paddingTop: "1rem"}}>
+                    <Message warning>
+                        You are not currently connected to OHQ. Reconnecting...
+                    </Message>
+                </div>
             )}
             <Grid stackable>
                 {pageState.kind === PageStateEnum.QUEUES && queues && (

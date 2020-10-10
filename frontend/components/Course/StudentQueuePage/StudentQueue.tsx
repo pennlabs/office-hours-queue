@@ -26,7 +26,7 @@ interface StudentQueueProps {
     queue: Queue;
     queueMutate: mutateResourceListFunction<Queue>;
     questions: Question[];
-    play: MutableRefObject<(() => void) | undefined>;
+    play: MutableRefObject<() => void>;
 }
 
 const StudentQueue = (props: StudentQueueProps) => {

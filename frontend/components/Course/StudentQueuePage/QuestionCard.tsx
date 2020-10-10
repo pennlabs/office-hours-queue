@@ -3,15 +3,7 @@ import { Segment, Header, Button, Popup, Icon, Grid } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import EditQuestionModal from "./EditQuestionModal";
 import DeleteQuestionModal from "./DeleteQuestionModal";
-import { Question, Course, Queue } from "../../../types";
-import {
-    Question,
-    QuestionStatus,
-    Course,
-    Queue,
-    mutateResourceListFunction,
-} from "../../../types";
-import { useQuestionPosition } from "../../../hooks/data-fetching/course";
+import { Question, Course, Queue, QuestionStatus } from "../../../types";
 import {
     useQuestionPosition,
     finishQuestion,
@@ -26,7 +18,7 @@ interface QuestionCardProps {
     mutate: mutateResourceListFunction<Question>;
     lastQuestionsMutate: mutateResourceListFunction<Question>;
     toastFunc: (success: string | null, error: any) => void;
-    play: MutableRefObject<(() => void) | undefined>;
+    play: MutableRefObject<() => void>;
 }
 const QuestionCard = (props: QuestionCardProps) => {
     const {
@@ -56,7 +48,7 @@ const QuestionCard = (props: QuestionCardProps) => {
     };
 
     useEffect(() => {
-        if (question.status === QuestionStatus.ACTIVE && play.current) {
+        if (question.status === QuestionStatus.ACTIVE) {
             play.current();
         }
     }, [question.status, play]);

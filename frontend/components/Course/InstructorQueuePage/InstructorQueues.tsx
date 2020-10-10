@@ -12,7 +12,7 @@ interface InstructorQueuesProps {
     mutate: mutateResourceListFunction<QueueType>;
     editFunc: (n: number) => void;
     createFunc: () => void;
-    play: MutableRefObject<(() => void) | undefined>;
+    play: MutableRefObject<() => void>;
 }
 const InstructorQueues = (props: InstructorQueuesProps) => {
     const {

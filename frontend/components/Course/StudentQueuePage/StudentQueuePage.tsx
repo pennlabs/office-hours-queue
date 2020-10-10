@@ -10,7 +10,7 @@ interface StudentQueuePageProps {
     course: Course;
     queues: Queue[];
     questionmap: QuestionMap;
-    play: MutableRefObject<(() => void) | undefined>;
+    play: MutableRefObject<() => void>;
 }
 const StudentQueuePage = (props: StudentQueuePageProps) => {
     const { course: rawCourse, queues: rawQueues, questionmap, play } = props;
@@ -22,9 +22,11 @@ const StudentQueuePage = (props: StudentQueuePageProps) => {
     return (
         <>
             {!isConnected && (
-                <Message warning>
-                    You are not currently connected to OHQ. Reconnecting...
-                </Message>
+                <div style={{paddingTop: "1rem"}}>
+                    <Message warning>
+                        You are not currently connected to OHQ. Reconnecting...
+                    </Message>
+                </div>
             )}
             <Grid stackable>
                 <StudentQueues

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, MutableRefObject } from "react";
 import { Header, Label, Grid, Segment, Button } from "semantic-ui-react";
+import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Questions from "./Questions";
 import ClearQueueModal from "./ClearQueueModal";
-import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import { Queue as QueueType, Question } from "../../../types";
 import { useQuestions } from "../../../hooks/data-fetching/course";
 
@@ -13,7 +13,7 @@ interface QueueProps {
     mutate: mutateResourceListFunction<QueueType>;
     leader: boolean;
     editFunc: () => void;
-    play: MutableRefObject<(() => void) | undefined>;
+    play: MutableRefObject<() => void>;
 }
 
 const Queue = (props: QueueProps) => {
@@ -52,9 +52,7 @@ const Queue = (props: QueueProps) => {
             latestAsked.current = new Date(
                 questions[questions.length - 1].timeAsked
             );
-            if (play.current) {
-                play.current();
-            }
+            play.current();
         }
         // questions is not stale because we check for deep equality
         // eslint-disable-next-line
