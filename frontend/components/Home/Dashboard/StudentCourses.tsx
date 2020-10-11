@@ -20,7 +20,9 @@ const StudentCourses = (props: StudentCoursesProps) => {
     const [success, setSuccess] = useState(false); // opening snackbar
 
     const [openLeave, setOpenLeave] = useState(false);
-    const [leaveMembership, setLeaveMembership] = useState<UserMembership | undefined>(undefined);
+    const [leaveMembership, setLeaveMembership] = useState<
+        UserMembership | undefined
+    >(undefined);
 
     return (
         <>
