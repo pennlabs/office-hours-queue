@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import { Segment, Header, Dropdown, Icon } from "semantic-ui-react";
 import Link from "next/link";
-import { Course } from "../../../../types";
+import { Course, mutateFunction, UserMembership } from "../../../../types";
 import ModalLeaveStudentCourse from "../Modals/ModalLeaveStudentCourse";
 
 interface CourseCardProps {
     course: Course;
+    mutate: mutateFunction<UserMembership[]>;
+    isStudent: boolean;
 }
+
 const CourseCard = (props: CourseCardProps) => {
-    const { course } = props;
+    const { course, mutate, isStudent } = props;
     const [hover, setHover] = useState(false);
     const [showLeave, setShowLeave] = useState(false);
 
@@ -16,19 +19,14 @@ const CourseCard = (props: CourseCardProps) => {
         pathname: `/courses/${course.id}`,
     };
 
-    const handleLeaveClick = (event: React.MouseEvent<HTMLDivElement>, data) => {
-        console.log(data);
-        console.log(event.target);
-        setShowLeave(true);
-    }
-
     return (
         <Segment basic>
-            <ModalLeaveStudentCourse
+            {isStudent ? <ModalLeaveStudentCourse
                 open={showLeave}
                 closeFunc={() => {setShowLeave(false)}}
                 course={course}
-            />
+                mutate={mutate}
+            /> : undefined}
             <Link href={path}>
                 <Segment.Group
                     style={{
@@ -50,7 +48,7 @@ const CourseCard = (props: CourseCardProps) => {
                             }}
                         >
                             {`${course.department} ${course.courseCode}`}
-                            <Dropdown icon={
+                            {isStudent ? <Dropdown icon={
                                     <Icon
                                         name="ellipsis vertical"
                                         style={{ width: "auto", margin: "0", paddingLeft: "4px" }}
@@ -60,11 +58,11 @@ const CourseCard = (props: CourseCardProps) => {
                                 style={{ float: "right"}}
                             >
                                 <Dropdown.Menu>
-                                    <Dropdown.Item onClick={handleLeaveClick}>
+                                    <Dropdown.Item onClick={() => setShowLeave(true)}>
                                         Leave
                                     </Dropdown.Item>
                                 </Dropdown.Menu>
-                            </Dropdown>
+                            </Dropdown> : undefined}
                             <Header.Subheader
                                 style={{
                                     whiteSpace: "nowrap",
