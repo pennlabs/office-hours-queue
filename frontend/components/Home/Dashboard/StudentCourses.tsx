@@ -5,36 +5,51 @@ import Alert from "@material-ui/lab/Alert";
 import CourseCard from "./Cards/CourseCard";
 import AddCard from "./Cards/AddCard";
 import ModalAddStudentCourse from "./Modals/ModalAddStudentCourse";
+import ModalLeaveStudentCourse from "./Modals/ModalLeaveStudentCourse";
 import { Course, mutateFunction, UserMembership } from "../../../types";
 
 interface StudentCoursesProps {
-    courses: Course[];
+    memberships: UserMembership[];
     mutate: mutateFunction<UserMembership[]>;
 }
 
 const StudentCourses = (props: StudentCoursesProps) => {
-    const { mutate, courses } = props;
+    const { mutate, memberships } = props;
     /* STATE */
     const [open, setOpen] = useState(false);
     const [success, setSuccess] = useState(false); // opening snackbar
 
+    const [openLeave, setOpenLeave] = useState(false);
+    const [leaveMembership, setLeaveMembership] = useState<UserMembership | undefined>(undefined);
+
     return (
         <>
             <Grid.Row padded="true">
+                <ModalLeaveStudentCourse
+                    open={openLeave}
+                    leaveMembership={leaveMembership}
+                    closeFunc={() => setOpenLeave(false)}
+                    mutate={mutate}
+                />
                 <ModalAddStudentCourse
                     open={open}
                     closeFunc={() => setOpen(false)}
                     mutate={mutate}
                     successFunc={setSuccess}
                 />
-                {courses.map(
-                    (course) =>
-                        !course.archived && (
+                {memberships.map(
+                    (membership) =>
+                        !membership.course.archived && (
                             <Grid.Column
-                                key={course.id}
+                                key={membership.course.id}
                                 style={{ width: "280px" }}
                             >
-                                <CourseCard course={course} mutate={mutate} isStudent={true}/>
+                                <CourseCard
+                                    membership={membership}
+                                    mutate={mutate}
+                                    setOpenLeave={setOpenLeave}
+                                    setLeaveMembership={setLeaveMembership}
+                                />
                             </Grid.Column>
                         )
                 )}

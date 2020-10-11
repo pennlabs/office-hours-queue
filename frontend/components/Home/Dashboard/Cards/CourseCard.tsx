@@ -1,32 +1,33 @@
 import React, { useState } from "react";
 import { Segment, Header, Dropdown, Icon } from "semantic-ui-react";
 import Link from "next/link";
-import { Course, mutateFunction, UserMembership } from "../../../../types";
-import ModalLeaveStudentCourse from "../Modals/ModalLeaveStudentCourse";
+import { Course, mutateFunction, UserMembership, Kind } from "../../../../types";
 
 interface CourseCardProps {
-    course: Course;
+    membership: UserMembership;
     mutate: mutateFunction<UserMembership[]>;
-    isStudent: boolean;
+    setOpenLeave?: (open: boolean) => void;
+    setLeaveMembership?: (membership: UserMembership) => void;
 }
 
 const CourseCard = (props: CourseCardProps) => {
-    const { course, mutate, isStudent } = props;
+    const { membership, mutate, setOpenLeave, setLeaveMembership } = props;
+    const course = membership.course;
     const [hover, setHover] = useState(false);
-    const [showLeave, setShowLeave] = useState(false);
 
     const path = {
         pathname: `/courses/${course.id}`,
     };
+    
+    const handleLeave = () => {
+        if (setLeaveMembership && setOpenLeave) {
+            setLeaveMembership(membership);
+            setOpenLeave(true);
+        }
+    }
 
     return (
         <Segment basic>
-            {isStudent ? <ModalLeaveStudentCourse
-                open={showLeave}
-                closeFunc={() => {setShowLeave(false)}}
-                course={course}
-                mutate={mutate}
-            /> : undefined}
             <Link href={path}>
                 <Segment.Group
                     style={{
@@ -48,7 +49,7 @@ const CourseCard = (props: CourseCardProps) => {
                             }}
                         >
                             {`${course.department} ${course.courseCode}`}
-                            {isStudent ? <Dropdown icon={
+                            {membership.kind === Kind.STUDENT ? <Dropdown icon={
                                     <Icon
                                         name="ellipsis vertical"
                                         style={{ width: "auto", margin: "0", paddingLeft: "4px" }}
@@ -58,7 +59,7 @@ const CourseCard = (props: CourseCardProps) => {
                                 style={{ float: "right"}}
                             >
                                 <Dropdown.Menu>
-                                    <Dropdown.Item onClick={() => setShowLeave(true)}>
+                                    <Dropdown.Item onClick={handleLeave}>
                                         Leave
                                     </Dropdown.Item>
                                 </Dropdown.Menu>

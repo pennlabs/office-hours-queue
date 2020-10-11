@@ -9,7 +9,7 @@ import ModalAddInstructorCourse from "./Modals/ModalAddInstructorCourse";
 import { Course, mutateFunction, UserMembership, Toast } from "../../../types";
 
 interface InstructorCoursesProps {
-    courses: Course[];
+    memberships: UserMembership[];
     mutate: mutateFunction<UserMembership[]>;
     canCreateCourse: boolean;
 }
@@ -17,7 +17,7 @@ const InstructorCourses = (props: InstructorCoursesProps) => {
     /* STATE */
     const [open, setOpen] = useState(false);
     const [showArchived, setShowArchived] = useState(false);
-    const { courses, mutate, canCreateCourse } = props;
+    const { memberships, mutate, canCreateCourse } = props;
     const [toast, setToast] = useState<Toast>({ success: true, message: "" });
     const [toastOpen, setToastOpen] = useState(false);
 
@@ -41,14 +41,14 @@ const InstructorCourses = (props: InstructorCoursesProps) => {
                     toastFunc={updateToast}
                     mutate={mutate}
                 />
-                {courses.map(
-                    (course) =>
-                        !course.archived && (
+                {memberships.map(
+                    (membership) =>
+                        !membership.course.archived && (
                             <Grid.Column
-                                key={course.id}
+                                key={membership.course.id}
                                 style={{ width: "280px" }}
                             >
-                                <CourseCard course={course} mutate={mutate} isStudent={false}/>
+                                <CourseCard membership={membership} mutate={mutate}/>
                             </Grid.Column>
                         )
                 )}
@@ -61,7 +61,7 @@ const InstructorCourses = (props: InstructorCoursesProps) => {
                     </Grid.Column>
                 )}
             </Grid.Row>
-            {courses.filter((course) => course.archived).length > 0 && (
+            {memberships.filter(({course}) => course.archived).length > 0 && (
                 <Grid.Row padded="true">
                     <Grid.Column padded="true">
                         <Segment basic compact>
@@ -80,8 +80,8 @@ const InstructorCourses = (props: InstructorCoursesProps) => {
                 </Grid.Row>
             )}
             <Grid.Row padded="true" style={{ width: "280px" }}>
-                {courses.map(
-                    (course) =>
+                {memberships.map(
+                    ({course}) =>
                         course.archived &&
                         showArchived && (
                             <Grid.Column style={{ width: "280px" }}>
