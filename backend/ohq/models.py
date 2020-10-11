@@ -256,4 +256,4 @@ class Question(models.Model):
 
     should_send_up_soon_notification = models.BooleanField(default=False)
 
-    tags = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(Tag, blank=True)

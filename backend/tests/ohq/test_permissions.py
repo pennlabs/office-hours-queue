@@ -59,6 +59,7 @@ def test(self, user, action_name, request, url, data=None):
 
     self.client.force_authenticate(user=getattr(self, user))
     response = getattr(self.client, request)(url, data)
+    print(response.content)
     self.client.force_authenticate(user=None)
     self.assertEqual(self.expected[action_name][user], response.status_code)
 
@@ -397,6 +398,7 @@ class QuestionTestCase(TestCase):
         self.queue = Queue.objects.create(name="Queue", course=self.course)
         self.question = Question.objects.create(queue=self.queue, asked_by=self.student)
         self.other_question = Question.objects.create(queue=self.queue, asked_by=self.ta)
+        self.tag = Tag.objects.create(name="existing-tag", course=self.course)
 
         # Expected results
         self.expected = {
@@ -425,6 +427,8 @@ class QuestionTestCase(TestCase):
                 "anonymous": 403,
             },
             "create-existing": {"student": 403},
+            "create-tag-existing": {"student": 200},
+            "create-tag-new": {"student": 200},
             "retrieve": {
                 "professor": 200,
                 "head_ta": 200,
@@ -459,6 +463,8 @@ class QuestionTestCase(TestCase):
                 "non_member": 403,
                 "anonymous": 403,
             },
+            "modify-tag-existing": {"student": 200},
+            "modify-tag-new": {"student": 200},
         }
 
     @parameterized.expand(users, name_func=get_test_name)
@@ -491,7 +497,7 @@ class QuestionTestCase(TestCase):
             "create",
             "post",
             reverse("ohq:question-list", args=[self.course.id, self.queue.id]),
-            {"text": "question", "description": "description"},
+            {"text": "question", "tags": []},
         )
 
     def test_create_student_existing(self):
@@ -587,6 +593,66 @@ class QuestionTestCase(TestCase):
             mock_delay.assert_called()
         else:
             mock_delay.assert_not_called()
+
+    def test_create_existing_tag(self):
+        """
+        Ensure a student can create a question with existing tags.
+        """
+        self.question.delete()
+        test(
+            self,
+            "student",
+            "create-tag-existing",
+            "post",
+            reverse("ohq:question-list", args=[self.course.id, self.queue.id]),
+            {"text": "question", "tags": [{"name": "existing-tag"}]},
+        )
+
+    def test_create_new_tag(self):
+        """
+        Ensure a student can not create a question with new tags.
+        """
+
+        self.question.delete()
+        test(
+            self,
+            "student",
+            "create-tag-new",
+            "post",
+            reverse("ohq:question-list", args=[self.course.id, self.queue.id]),
+            {"text": "question", "tags": [{"name": "new-tag"}]},
+        )
+        question = Question.objects.get(text="question")
+        self.assertEqual(0, question.tags.all())
+        self.assertEqual(1, Tag.objects.all().count())
+
+    def test_update_existing_tag(self):
+        """
+        Ensure a student can update a question with existing tags.
+        """
+
+        test(
+            self,
+            "student",
+            "modify-tag-existing",
+            "patch",
+            reverse("ohq:question-detail", args=[self.course.id, self.queue.id, self.question.id]),
+            {"tags": [{"name": "existing-tag"}]},
+        )
+
+    def test_update_new_tag(self):
+        """
+        Ensure a student can not update a question with existing tags.
+        """
+
+        test(
+            self,
+            "student",
+            "modify-tag-new",
+            "patch",
+            reverse("ohq:question-detail", args=[self.course.id, self.queue.id, self.question.id]),
+            {"tags": [{"name": "new-tag"}]},
+        )
 
 
 class QuestionSearchTestCase(TestCase):

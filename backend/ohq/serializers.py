@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from phonenumber_field.serializerfields import PhoneNumberField
@@ -170,8 +171,7 @@ class TagSerializer(CourseRouteMixin):
 class QuestionSerializer(QueueRouteMixin):
     asked_by = UserSerializer(read_only=True)
     responded_to_by = UserSerializer(read_only=True)
-    # tags_pretty = serializers.StringRelatedField(many=True, source="tags")
-    # tags = TagSerializer(many=True, read_only=True)
+    tags = TagSerializer(many=True)
 
     class Meta:
         model = Question
@@ -187,8 +187,7 @@ class QuestionSerializer(QueueRouteMixin):
             "responded_to_by",
             "rejected_reason",
             "should_send_up_soon_notification",
-            # "tags",
-            # "tags_pretty",
+            "tags",
         )
         read_only_fields = (
             "time_asked",
@@ -252,11 +251,20 @@ class QuestionSerializer(QueueRouteMixin):
                 instance.text = validated_data["text"]
             if "video_chat_url" in validated_data:
                 instance.video_chat_url = validated_data["video_chat_url"]
-
+            if "tags" in validated_data:
+                instance.tags.clear()
+                for tag_data in validated_data.pop("tags"):
+                    try:
+                        tag = Tag.objects.get(**tag_data)
+                        instance.tags.add(tag)
+                    except ObjectDoesNotExist:
+                        continue
         instance.save()
         return instance
 
     def create(self, validated_data):
+        # TODO: "tags is required" error
+        tags = validated_data.pop("tags")
         queue = Queue.objects.get(pk=self.context["view"].kwargs["queue_pk"])
         questions_ahead = Question.objects.filter(
             queue=queue, status=Question.STATUS_ASKED, time_asked__lt=timezone.now()
@@ -264,7 +272,14 @@ class QuestionSerializer(QueueRouteMixin):
         validated_data["should_send_up_soon_notification"] = questions_ahead >= 4
         validated_data["status"] = Question.STATUS_ASKED
         validated_data["asked_by"] = self.context["request"].user
-        return super().create(validated_data)
+        question = super().create(validated_data)
+        for tag_data in tags:
+            try:
+                tag = Tag.objects.get(**tag_data)
+                question.tags.add(tag)
+            except ObjectDoesNotExist:
+                continue
+        return question
 
 
 class MembershipPrivateSerializer(CourseRouteMixin):
