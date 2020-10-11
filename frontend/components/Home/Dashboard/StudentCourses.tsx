@@ -46,7 +46,6 @@ const StudentCourses = (props: StudentCoursesProps) => {
                             >
                                 <CourseCard
                                     membership={membership}
-                                    mutate={mutate}
                                     setOpenLeave={setOpenLeave}
                                     setLeaveMembership={setLeaveMembership}
                                 />

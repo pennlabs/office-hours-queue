@@ -48,7 +48,7 @@ const InstructorCourses = (props: InstructorCoursesProps) => {
                                 key={membership.course.id}
                                 style={{ width: "280px" }}
                             >
-                                <CourseCard membership={membership} mutate={mutate}/>
+                                <CourseCard membership={membership}/>
                             </Grid.Column>
                         )
                 )}

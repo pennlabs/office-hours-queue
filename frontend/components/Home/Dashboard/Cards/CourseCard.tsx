@@ -5,13 +5,12 @@ import { Course, mutateFunction, UserMembership, Kind } from "../../../../types"
 
 interface CourseCardProps {
     membership: UserMembership;
-    mutate: mutateFunction<UserMembership[]>;
     setOpenLeave?: (open: boolean) => void;
     setLeaveMembership?: (membership: UserMembership) => void;
 }
 
 const CourseCard = (props: CourseCardProps) => {
-    const { membership, mutate, setOpenLeave, setLeaveMembership } = props;
+    const { membership, setOpenLeave, setLeaveMembership } = props;
     const course = membership.course;
     const [hover, setHover] = useState(false);
 
