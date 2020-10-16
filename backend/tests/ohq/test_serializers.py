@@ -201,7 +201,8 @@ class QuestionSerializerTestCase(TestCase):
     def test_create(self, mock_delay):
         self.client.force_authenticate(user=self.student2)
         self.client.post(
-            reverse("ohq:question-list", args=[self.course.id, self.queue.id]), {"text": "Help me"}
+            reverse("ohq:question-list", args=[self.course.id, self.queue.id]),
+            {"text": "Help me", "tags": []},
         )
         self.assertEqual(2, Question.objects.all().count())
         question = Question.objects.all().order_by("time_asked")[1]

@@ -59,7 +59,6 @@ def test(self, user, action_name, request, url, data=None):
 
     self.client.force_authenticate(user=getattr(self, user))
     response = getattr(self.client, request)(url, data)
-    print(response.content)
     self.client.force_authenticate(user=None)
     self.assertEqual(self.expected[action_name][user], response.status_code)
 
@@ -427,8 +426,8 @@ class QuestionTestCase(TestCase):
                 "anonymous": 403,
             },
             "create-existing": {"student": 403},
-            "create-tag-existing": {"student": 200},
-            "create-tag-new": {"student": 200},
+            "create-tag-existing": {"student": 201},
+            "create-tag-new": {"student": 201},
             "retrieve": {
                 "professor": 200,
                 "head_ta": 200,
@@ -623,7 +622,7 @@ class QuestionTestCase(TestCase):
             {"text": "question", "tags": [{"name": "new-tag"}]},
         )
         question = Question.objects.get(text="question")
-        self.assertEqual(0, question.tags.all())
+        self.assertEqual(0, question.tags.all().count())
         self.assertEqual(1, Tag.objects.all().count())
 
     def test_update_existing_tag(self):

@@ -148,6 +148,7 @@ REST_FRAMEWORK = {
         "djangorestframework_camel_case.parser.CamelCaseJSONParser",
         # Any other parsers
     ),
+    "TEST_REQUEST_DEFAULT_FORMAT": "json",
 }
 
 # DLA Settings

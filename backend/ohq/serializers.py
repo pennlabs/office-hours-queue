@@ -263,7 +263,6 @@ class QuestionSerializer(QueueRouteMixin):
         return instance
 
     def create(self, validated_data):
-        # TODO: "tags is required" error
         tags = validated_data.pop("tags")
         queue = Queue.objects.get(pk=self.context["view"].kwargs["queue_pk"])
         questions_ahead = Question.objects.filter(
