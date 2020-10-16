@@ -179,6 +179,8 @@ class QuestionSerializer(QueueRouteMixin):
             "responded_to_by",
             "rejected_reason",
             "should_send_up_soon_notification",
+            "note",
+            "resolved_note",
         )
         read_only_fields = (
             "time_asked",
@@ -187,6 +189,7 @@ class QuestionSerializer(QueueRouteMixin):
             "time_responded_to",
             "responded_to_by",
             "should_send_up_soon_notification",
+            "resolved_note",
         )
 
     def update(self, instance, validated_data):
@@ -221,10 +224,9 @@ class QuestionSerializer(QueueRouteMixin):
                 elif status == Question.STATUS_ASKED:
                     instance.responded_to_by = None
                     instance.time_response_started = None
-            else:  # User is updating a field other than the status
-                raise serializers.ValidationError(
-                    detail={"detail": "TAs can only change a question's status"}
-                )
+            if "note" in validated_data:
+                instance.note = validated_data["note"]
+                instance.resolved_note = False
         else:  # User is a student
             if "status" in validated_data:
                 status = validated_data["status"]
@@ -242,6 +244,9 @@ class QuestionSerializer(QueueRouteMixin):
                 instance.text = validated_data["text"]
             if "video_chat_url" in validated_data:
                 instance.video_chat_url = validated_data["video_chat_url"]
+            # If a student modifies a question, discard any note added by a TA and mark as resolved
+            instance.note = ""
+            instance.resolved_note = True
 
         instance.save()
         return instance
@@ -254,6 +259,7 @@ class QuestionSerializer(QueueRouteMixin):
         validated_data["should_send_up_soon_notification"] = questions_ahead >= 4
         validated_data["status"] = Question.STATUS_ASKED
         validated_data["asked_by"] = self.context["request"].user
+        validated_data["note"] = ""
         return super().create(validated_data)
 
 
