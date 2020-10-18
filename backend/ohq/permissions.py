@@ -325,3 +325,30 @@ class MassInvitePermission(permissions.BasePermission):
             return False
 
         return membership.is_leadership
+
+class AnnouncementPermission(permissions.BasePermission):
+    """
+    TAs+ can create/update/delete announcements
+    Students can get/list announcements
+    """
+
+    def has_permission(self, request, view):
+        # Anonymous users can't do anything
+        if not request.user.is_authenticated:
+            return False
+
+        membership = Membership.objects.filter(
+            course=view.kwargs["course_pk"], user=request.user
+        ).first()
+
+        # Non-Students can't do anything
+        if membership is None:
+            return False
+
+        # TAs+ can list membership invites
+        if view.action in ["list", "retrieve"]:
+            return True
+
+        # TAs+ can create, modify, and delete announcements
+        return membership.is_ta
+

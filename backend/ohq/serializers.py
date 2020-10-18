@@ -5,7 +5,7 @@ from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 from rest_live.decorators import subscribable
 
-from ohq.models import Course, Membership, MembershipInvite, Profile, Question, Queue, Semester
+from ohq.models import Course, Membership, MembershipInvite, Profile, Question, Queue, Semester, Announcement
 from ohq.permissions import has_permission_for_question
 from ohq.sms import sendSMSVerification
 from ohq.tasks import sendUpNextNotificationTask
@@ -338,3 +338,34 @@ class UserPrivateSerializer(serializers.ModelSerializer):
 
             profile.save()
         return super().update(instance, validated_data)
+    
+class AnnouncementSerialiazer(CourseRouteMixin):
+    """
+    Serializer for announcements
+    """
+
+    class Meta:
+        model = Announcement
+        fields = (
+            "id",
+            "content",
+            "author",
+            "time_updated"
+        )
+        read_only_fields = (
+            "author"
+        )
+
+    def create(self, validated_data):
+        # course = Course.objects.get(pk=self.context["view"].kwargs["course_pk"])
+        validated_data["author"] = self.context["request"].user
+        return super().create(validated_data)
+    
+    def update(self, validated_data):
+        validated_data["author"] = self.context["request"].user
+        return super().update(validated_data)
+    
+
+
+
+

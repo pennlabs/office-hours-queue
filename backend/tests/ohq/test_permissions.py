@@ -6,7 +6,7 @@ from django.urls import reverse
 from parameterized import parameterized
 from rest_framework.test import APIClient
 
-from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester
+from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester, Announcement
 
 
 User = get_user_model()
@@ -756,4 +756,101 @@ class MassInviteTestCase(TestCase):
             "post",
             reverse("ohq:mass-invite", args=[self.course.id]),
             {"emails": "test@example.com,test2@example.com", "kind": Membership.KIND_STUDENT},
+        )
+
+class AnnouncementTestCase(TestCase):
+    def setUp(self):
+        setUp(self)
+        self.announcement = Announcement.objects.get(course=self.course, author=self.professor, content="Original announcement")
+
+        # Expected results
+        self.expected = {
+            "list": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 200,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+            "create": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 403,
+                "non_member": 403,
+                "anonymous": 403,
+            }
+            "retrieve": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 200,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+            "destroy": {
+                "professor": 204,
+                "head_ta": 204,
+                "ta": 204,
+                "student": 403,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+            "modify": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 403,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+        }
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_list(self, user):
+        test(self, user, "list", "get", reverse("ohq:announcement-list", args=[self.course.id]))
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_create(self, user):
+        test(
+            self,
+            user,
+            "create",
+            "post",
+            reverse("ohq:announcement-create", args=[self.course.id]),
+            {
+                "content": "New announcement"
+            },
+        )
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_retrieve(self, user):
+        test(
+            self,
+            user,
+            "retrieve",
+            "get",
+            reverse("ohq:announcement-detail", args=[self.course.id, self.announcement.id]),
+        )
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_destroy(self, user):
+        test(
+            self,
+            user,
+            "destroy",
+            "delete",
+            reverse("ohq:announcement-detail", args=[self.course.id, self.announcement.id]),
+        )
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_modify(self, user):
+        test(
+            self,
+            user,
+            "modify",
+            "patch",
+            reverse("ohq:announcement-detail", args=[self.course.id, self.announcement.id]),
+            {"content": "Updated announcement"},
         )

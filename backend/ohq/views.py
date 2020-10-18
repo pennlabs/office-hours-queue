@@ -20,7 +20,7 @@ from rest_framework.views import APIView
 
 from ohq.filters import QuestionSearchFilter
 from ohq.invite import parse_and_send_invites
-from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester
+from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester, Announcement
 from ohq.pagination import QuestionSearchPagination
 from ohq.permissions import (
     CoursePermission,
@@ -31,6 +31,7 @@ from ohq.permissions import (
     QuestionPermission,
     QuestionSearchPermission,
     QueuePermission,
+    AnnouncementPermission
 )
 from ohq.schemas import MassInviteSchema
 from ohq.serializers import (
@@ -43,6 +44,7 @@ from ohq.serializers import (
     QueueSerializer,
     SemesterSerializer,
     UserPrivateSerializer,
+    AnnouncementSerialiazer
 )
 from ohq.sms import sendSMSVerification
 
@@ -447,3 +449,32 @@ class MassInviteView(APIView):
             },
             status=201,
         )
+
+class AnnouncementViewSet(viewsets.ModelViewSet):
+    """
+    retrieve:
+    Return a single announcement.
+
+    list:
+    Return a list of announcements specific to a course.
+
+    create:
+    Create a announcement.
+
+    update:
+    Update all fields in the announcement.
+    You must specify all of the fields or use a patch request.
+
+    partial_update:
+    Update certain fields in the announcement.
+    Only specify the fields that you want to change.
+
+    destroy:
+    Delete a announcement.
+    """
+
+    permission_classes = [AnnouncementPermission | IsSuperuser]
+    serializer_class = AnnouncementSerialiazer
+
+    def get_queryset(self):
+        return Announcement.objects.filter(course=self.kwargs["course_pk"])

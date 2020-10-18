@@ -240,3 +240,13 @@ class Question(models.Model):
     rejected_reason = models.CharField(max_length=255, blank=True, null=True)
 
     should_send_up_soon_notification = models.BooleanField(default=False)
+
+class Announcement(models.Model):
+    """
+    TA announcement within a class
+    """
+
+    content = models.CharField(max_length=255)
+    author = models.ForeignKey(User, related_name="announcements", on_delete=models.CASCADE)
+    time_updated = models.DateTimeField(auto_now=True)
+    course = models.ForeignKey(Course, related_name="announcements", on_delete=models.CASCADE)
