@@ -24,7 +24,7 @@ export async function leaveCourse(
     membershipId: string
 ): Promise<void> {
     const res = await doApiRequest(
-        `/courses/${courseId}/members/${membershipId}`,
+        `/courses/${courseId}/members/${membershipId}/`,
         {
             method: "DELETE",
         }

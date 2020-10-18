@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Segment, Header, Dropdown, Icon } from "semantic-ui-react";
 import Link from "next/link";
-import { Course, mutateFunction, UserMembership, Kind } from "../../../../types";
+import { UserMembership, Kind } from "../../../../types";
 
 interface CourseCardProps {
     membership: UserMembership;
@@ -17,13 +17,13 @@ const CourseCard = (props: CourseCardProps) => {
     const path = {
         pathname: `/courses/${course.id}`,
     };
-    
+
     const handleLeave = () => {
         if (setLeaveMembership && setOpenLeave) {
             setLeaveMembership(membership);
             setOpenLeave(true);
         }
-    }
+    };
 
     return (
         <Segment basic>
@@ -48,21 +48,28 @@ const CourseCard = (props: CourseCardProps) => {
                             }}
                         >
                             {`${course.department} ${course.courseCode}`}
-                            {membership.kind === Kind.STUDENT ? <Dropdown icon={
-                                    <Icon
-                                        name="ellipsis vertical"
-                                        style={{ width: "auto", margin: "0", paddingLeft: "4px" }}
-                                    />
-                                }
-                                direction="left"
-                                style={{ float: "right"}}
-                            >
-                                <Dropdown.Menu>
-                                    <Dropdown.Item onClick={handleLeave}>
-                                        Leave
-                                    </Dropdown.Item>
-                                </Dropdown.Menu>
-                            </Dropdown> : undefined}
+                            {membership.kind === Kind.STUDENT ? (
+                                <Dropdown
+                                    icon={
+                                        <Icon
+                                            name="ellipsis vertical"
+                                            style={{
+                                                width: "auto",
+                                                margin: "0",
+                                                paddingLeft: "4px",
+                                            }}
+                                        />
+                                    }
+                                    direction="left"
+                                    style={{ float: "right" }}
+                                >
+                                    <Dropdown.Menu>
+                                        <Dropdown.Item onClick={handleLeave}>
+                                            Leave
+                                        </Dropdown.Item>
+                                    </Dropdown.Menu>
+                                </Dropdown>
+                            ) : undefined}
                             <Header.Subheader
                                 style={{
                                     whiteSpace: "nowrap",

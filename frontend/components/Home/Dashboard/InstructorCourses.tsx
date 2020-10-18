@@ -48,7 +48,7 @@ const InstructorCourses = (props: InstructorCoursesProps) => {
                                 key={membership.course.id}
                                 style={{ width: "280px" }}
                             >
-                                <CourseCard membership={membership}/>
+                                <CourseCard membership={membership} />
                             </Grid.Column>
                         )
                 )}
@@ -61,7 +61,7 @@ const InstructorCourses = (props: InstructorCoursesProps) => {
                     </Grid.Column>
                 )}
             </Grid.Row>
-            {memberships.filter(({course}) => course.archived).length > 0 && (
+            {memberships.filter(({ course }) => course.archived).length > 0 && (
                 <Grid.Row padded="true">
                     <Grid.Column padded="true">
                         <Segment basic compact>
@@ -81,7 +81,7 @@ const InstructorCourses = (props: InstructorCoursesProps) => {
             )}
             <Grid.Row padded="true" style={{ width: "280px" }}>
                 {memberships.map(
-                    ({course}) =>
+                    ({ course }) =>
                         course.archived &&
                         showArchived && (
                             <Grid.Column style={{ width: "280px" }}>

@@ -21,13 +21,12 @@ const Dashboard = () => {
     ] = useMemberships(initalUser);
 
     const getMemberships = (isStudent: boolean): UserMembership[] => {
-        return memberships
-            .filter((membership) => {
-                return (
-                    (isStudent && membership.kind === Kind.STUDENT) ||
-                    (!isStudent && membership.kind !== Kind.STUDENT)
-                );
-            })
+        return memberships.filter((membership) => {
+            return (
+                (isStudent && membership.kind === Kind.STUDENT) ||
+                (!isStudent && membership.kind !== Kind.STUDENT)
+            );
+        });
     };
 
     const canCreateCourse: boolean =
