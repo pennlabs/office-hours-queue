@@ -5,6 +5,7 @@ import CourseSidebar from "./CourseSidebar";
 import { AuthUserContext } from "../../context/auth";
 import { useCourse, useStaff } from "../../hooks/data-fetching/course";
 import * as bellAudio from "./InstructorQueuePage/notification.mp3";
+import Footer from "../common/Footer";
 import { usePlayer } from "../../hooks/player";
 import { Course as CourseType, Membership } from "../../types";
 
@@ -41,7 +42,10 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
     return course ? (
         <>
             <CourseSidebar courseId={course.id} leadership={leadership} />
-            <Grid.Column width={13}>
+            <Grid.Column
+                width={13}
+                style={{ display: "flex", flexDirection: "column" }}
+            >
                 {course.department && (
                     <Grid columns="equal">
                         <Grid.Column>
@@ -96,6 +100,7 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                     </Grid>
                 )}
                 {render(staff, play)}
+                <Footer />
             </Grid.Column>
         </>
     ) : (
