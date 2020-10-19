@@ -11,7 +11,7 @@ import {
 import { useRouter } from "next/router";
 import { prettifyRole } from "../../utils/enums";
 
-import AboutModal from "../LandingPage/AboutModal";
+import AboutModal from "../common/AboutModal";
 import { AuthUserContext } from "../../context/auth";
 import { useLeadership, useStaff } from "../../hooks/data-fetching/course";
 import styles from "../../styles/landingpage.module.css";
