@@ -1,0 +1,8 @@
+{
+    "baseUrl": "http://localhost:3000",
+    "fixturesFolder": false,
+    "viewportWidth": 1440,
+    "viewportHeight": 900,
+    "defaultCommandTimeout": 60000,
+    "videoUploadOnPasses": false
+}
