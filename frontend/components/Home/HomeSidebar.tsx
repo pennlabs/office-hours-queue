@@ -47,6 +47,18 @@ const Sidebar = () => {
                         color="blue"
                         href="/settings"
                     />
+                    <Menu.Item
+                        style={{
+                            whiteSpace: "nowrap",
+                            textOverflow: "ellipsis",
+                            overflow: "hidden",
+                        }}
+                        name="FAQ"
+                        icon="question circle"
+                        active={router.pathname === "/faq"}
+                        color="blue"
+                        href="/faq"
+                    />
                     <SignOutButton />
                 </Menu>
             </Segment>
