@@ -56,7 +56,10 @@ SummaryPage.getInitialProps = async (
     const response = await doMultipleSuccessRequests([
         { path: `/courses/${query.course}/`, data },
         { path: `/courses/${query.course}/members/`, data },
-        { path: `/courses/${query.course}/questions/`, data },
+        {
+            path: `/courses/${query.course}/questions/?order_by=-time_asked`,
+            data,
+        },
     ]);
 
     if (response.success) {
