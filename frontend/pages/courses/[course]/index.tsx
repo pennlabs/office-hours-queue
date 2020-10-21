@@ -1,6 +1,7 @@
-import React from "react";
+import React, { MutableRefObject } from "react";
 import Head from "next/head";
 import { Grid } from "semantic-ui-react";
+import { WebsocketProvider } from "@pennlabs/rest-live-hooks";
 import { NextPageContext } from "next";
 import CourseWrapper from "../../../components/Course/CourseWrapper";
 import { withAuth } from "../../../context/auth";
@@ -26,7 +27,7 @@ interface QueuePageProps extends CoursePageProps {
 const QueuePage = (props: QueuePageProps) => {
     const { course, leadership, queues, questionmap } = props;
     return (
-        <>
+        <WebsocketProvider url="/api/ws/subscribe/">
             <Head>
                 <title>{`OHQ | ${course.department} ${course.courseCode}`}</title>
             </Head>
@@ -34,14 +35,18 @@ const QueuePage = (props: QueuePageProps) => {
                 <CourseWrapper
                     course={course}
                     leadership={leadership}
-                    render={(staff: boolean) => {
+                    render={(
+                        staff: boolean,
+                        play: MutableRefObject<() => void>
+                    ) => {
                         return (
-                            <>
+                            <div style={{ marginTop: "-2.14rem" }}>
                                 {staff && (
                                     <InstructorQueuePage
                                         courseId={course.id}
                                         queues={queues}
                                         questionmap={questionmap}
+                                        play={play}
                                     />
                                 )}
                                 {!staff && (
@@ -49,14 +54,15 @@ const QueuePage = (props: QueuePageProps) => {
                                         course={course}
                                         queues={queues}
                                         questionmap={questionmap}
+                                        play={play}
                                     />
                                 )}
-                            </>
+                            </div>
                         );
                     }}
                 />
             </Grid>
-        </>
+        </WebsocketProvider>
     );
 };
 
