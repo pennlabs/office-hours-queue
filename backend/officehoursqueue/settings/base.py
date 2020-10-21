@@ -45,11 +45,11 @@ INSTALLED_APPS = [
     "rest_framework",
     "django_filters",
     "phonenumber_field",
+    "channels",
+    "rest_live.apps.RestLiveConfig",
     "email_tools.apps.EmailToolsConfig",
     "accounts.apps.AccountsConfig",
     "ohq.apps.OhqConfig",
-    "channels",
-    "rest_live.apps.RestLiveConfig",
 ]
 
 MIDDLEWARE = [
