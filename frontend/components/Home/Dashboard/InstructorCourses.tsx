@@ -6,7 +6,7 @@ import CourseCard from "./Cards/CourseCard";
 import ArchivedCourseCard from "./Cards/ArchivedCourseCard";
 import AddCard from "./Cards/AddCard";
 import ModalAddInstructorCourse from "./Modals/ModalAddInstructorCourse";
-import { Course, mutateFunction, UserMembership, Toast } from "../../../types";
+import { mutateFunction, UserMembership, Toast } from "../../../types";
 
 interface InstructorCoursesProps {
     memberships: UserMembership[];

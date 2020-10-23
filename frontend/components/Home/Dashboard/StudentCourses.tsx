@@ -6,7 +6,7 @@ import CourseCard from "./Cards/CourseCard";
 import AddCard from "./Cards/AddCard";
 import ModalAddStudentCourse from "./Modals/ModalAddStudentCourse";
 import ModalLeaveStudentCourse from "./Modals/ModalLeaveStudentCourse";
-import { Course, mutateFunction, UserMembership } from "../../../types";
+import { mutateFunction, Toast, UserMembership } from "../../../types";
 
 interface StudentCoursesProps {
     memberships: UserMembership[];
@@ -20,9 +20,17 @@ const StudentCourses = (props: StudentCoursesProps) => {
     const [success, setSuccess] = useState(false); // opening snackbar
 
     const [openLeave, setOpenLeave] = useState(false);
-    const [leaveMembership, setLeaveMembership] = useState<
-        UserMembership | undefined
-    >(undefined);
+    const [leaveMembership, setLeaveMembership] = useState<UserMembership | undefined>(undefined);
+
+    const [toastOpen, setToastOpen] = useState(false);
+    const [toast, setToast] = useState<Toast>({ success: true, message: "" });
+
+    const updateToast = ({ message, success }: Toast) => {
+        toast.success = success;
+        toast.message = success ? `Left ${message}!` : "There was an error!";
+        setToast(toast);
+        setToastOpen(true);
+    };
 
     return (
         <>
@@ -32,6 +40,7 @@ const StudentCourses = (props: StudentCoursesProps) => {
                     leaveMembership={leaveMembership}
                     closeFunc={() => setOpenLeave(false)}
                     mutate={mutate}
+                    toastFunc={updateToast}
                 />
                 <ModalAddStudentCourse
                     open={open}
@@ -58,6 +67,19 @@ const StudentCourses = (props: StudentCoursesProps) => {
                     <AddCard clickFunc={() => setOpen(true)} isStudent={true} />
                 </Grid.Column>
             </Grid.Row>
+
+            <Snackbar
+                open={toastOpen}
+                autoHideDuration={6000}
+                onClose={() => setToastOpen(false)}
+            >
+                <Alert
+                    severity={toast.success ? "success" : "error"}
+                    onClose={() => setToastOpen(false)}
+                >
+                    <span>{toast.message}</span>
+                </Alert>
+            </Snackbar>
 
             <Snackbar
                 open={success}

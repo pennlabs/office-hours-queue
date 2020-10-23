@@ -1,23 +1,31 @@
 import React from "react";
 import { Modal, Button } from "semantic-ui-react";
 import { leaveCourse } from "../../../../hooks/data-fetching/dashboard";
-import { mutateFunction, UserMembership } from "../../../../types";
+import { mutateFunction, Toast, UserMembership } from "../../../../types";
+import { logException } from "../../../../utils/sentry";
 
 interface ModalLeaveStudentCourseProps {
     open: boolean;
     leaveMembership?: UserMembership;
     closeFunc: () => void;
     mutate: mutateFunction<UserMembership[]>;
+    toastFunc: (toast: Toast) => void;
 }
 
 const ModalLeaveStudentCourse = (props: ModalLeaveStudentCourseProps) => {
-    const { open, leaveMembership, closeFunc, mutate } = props;
+    const { open, leaveMembership, closeFunc, mutate, toastFunc } = props;
 
     const leaveFunc = async () => {
-        await leaveCourse(
-            `${leaveMembership?.course.id}`,
-            `${leaveMembership?.id}`
-        );
+        try {
+            await leaveCourse(
+                `${leaveMembership?.course.id}`,
+                `${leaveMembership?.id}`
+            );
+            toastFunc({ message: `${leaveMembership?.course.department} ${leaveMembership?.course.courseCode}`, success: true });
+        } catch (e) {
+            logException(e);
+            toastFunc({ message: "Something went wrong", success: false });
+        }
         mutate();
         closeFunc();
     };
