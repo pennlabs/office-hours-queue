@@ -11,7 +11,7 @@ interface CourseCardProps {
 
 const CourseCard = (props: CourseCardProps) => {
     const { membership, setOpenLeave, setLeaveMembership } = props;
-    const course = membership.course;
+    const { course } = membership;
     const [hover, setHover] = useState(false);
 
     const path = {
