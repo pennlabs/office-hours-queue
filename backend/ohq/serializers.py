@@ -353,7 +353,7 @@ class AnnouncementSerialiazer(CourseRouteMixin):
             "time_updated"
         )
         read_only_fields = (
-            "author"
+            "author",
         )
 
     def create(self, validated_data):
@@ -361,9 +361,9 @@ class AnnouncementSerialiazer(CourseRouteMixin):
         validated_data["author"] = self.context["request"].user
         return super().create(validated_data)
     
-    def update(self, validated_data):
+    def update(self, instance, validated_data):
         validated_data["author"] = self.context["request"].user
-        return super().update(validated_data)
+        return super().update(instance, validated_data)
     
 
 

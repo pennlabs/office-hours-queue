@@ -761,7 +761,7 @@ class MassInviteTestCase(TestCase):
 class AnnouncementTestCase(TestCase):
     def setUp(self):
         setUp(self)
-        self.announcement = Announcement.objects.get(course=self.course, author=self.professor, content="Original announcement")
+        self.announcement = Announcement.objects.create(course=self.course, author=self.professor, content="Original announcement")
 
         # Expected results
         self.expected = {
@@ -774,13 +774,13 @@ class AnnouncementTestCase(TestCase):
                 "anonymous": 403,
             },
             "create": {
-                "professor": 200,
-                "head_ta": 200,
-                "ta": 200,
+                "professor": 201,
+                "head_ta": 201,
+                "ta": 201,
                 "student": 403,
                 "non_member": 403,
                 "anonymous": 403,
-            }
+            },
             "retrieve": {
                 "professor": 200,
                 "head_ta": 200,
@@ -813,16 +813,19 @@ class AnnouncementTestCase(TestCase):
 
     @parameterized.expand(users, name_func=get_test_name)
     def test_create(self, user):
+        content = "New announcement"
         test(
             self,
             user,
             "create",
             "post",
-            reverse("ohq:announcement-create", args=[self.course.id]),
+            reverse("ohq:announcement-list", args=[self.course.id]),
             {
-                "content": "New announcement"
+                "content": content
             },
         )
+        announcement = Announcement.objects.get(content=content)
+        self.assertEqual(announcement.author, getattr(self, user))
 
     @parameterized.expand(users, name_func=get_test_name)
     def test_retrieve(self, user):
@@ -854,3 +857,5 @@ class AnnouncementTestCase(TestCase):
             reverse("ohq:announcement-detail", args=[self.course.id, self.announcement.id]),
             {"content": "Updated announcement"},
         )
+        self.announcement.refresh_from_db()
+        self.assertEqual(self.announcement.author, getattr(self, user))
