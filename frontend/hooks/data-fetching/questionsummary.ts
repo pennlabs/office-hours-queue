@@ -1,12 +1,18 @@
 import { useFilteredResource, FilteredResourceResponse } from "./resources";
 import { QuestionStatus, Question } from "../../types";
 
+export enum SummaryOrderBy {
+    TimeAskedAsc = "time_asked",
+    TimeAskedDesc = "-time_asked",
+}
+
 export interface QuestionSummaryFilters {
     page: number;
     timeAskedGt: string;
     timeAskedLt: string;
     status: QuestionStatus;
     search: string;
+    orderBy: SummaryOrderBy;
 }
 
 export interface QuestionListResult {
@@ -29,6 +35,8 @@ const summaryFilterToQuery = (
                     renamedKey = "time_asked__gt";
                 } else if (key === "timeAskedLt") {
                     renamedKey = "time_asked__lt";
+                } else if (key === "orderBy") {
+                    renamedKey = "order_by";
                 } else {
                     renamedKey = key;
                 }
@@ -62,6 +70,7 @@ export const useQuestions = (
         updateFilter,
     } = useFilteredResource(baseUrl, summaryFilterToQuery, initialQuestions, {
         page: 1,
+        orderBy: SummaryOrderBy.TimeAskedDesc,
     });
 
     const filterCopy = { ...filters };

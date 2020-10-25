@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import SignOutButton from "../SignOut";
 import styles from "../../styles/landingpage.module.css";
-import AboutModal from "../LandingPage/AboutModal";
+import AboutModal from "../common/AboutModal";
 
 const Sidebar = () => {
     const router = useRouter();
