@@ -21,7 +21,10 @@ const ModalLeaveStudentCourse = (props: ModalLeaveStudentCourseProps) => {
                 `${leaveMembership?.course.id}`,
                 `${leaveMembership?.id}`
             );
-            toastFunc({ message: `${leaveMembership?.course.department} ${leaveMembership?.course.courseCode}`, success: true });
+            toastFunc({
+                message: `${leaveMembership?.course.department} ${leaveMembership?.course.courseCode}`,
+                success: true,
+            });
         } catch (e) {
             logException(e);
             toastFunc({ message: "Something went wrong", success: false });
