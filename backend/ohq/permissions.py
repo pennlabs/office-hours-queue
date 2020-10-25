@@ -346,7 +346,7 @@ class AnnouncementPermission(permissions.BasePermission):
         if membership is None:
             return False
 
-        # TAs+ can list membership invites
+        # Students+ can get/list announcements
         if view.action in ["list", "retrieve"]:
             return True
 
