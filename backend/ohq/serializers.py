@@ -339,7 +339,7 @@ class UserPrivateSerializer(serializers.ModelSerializer):
             profile.save()
         return super().update(instance, validated_data)
     
-class AnnouncementSerialiazer(CourseRouteMixin):
+class AnnouncementSerializer(CourseRouteMixin):
     """
     Serializer for announcements
     """

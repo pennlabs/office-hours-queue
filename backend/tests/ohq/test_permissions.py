@@ -824,8 +824,6 @@ class AnnouncementTestCase(TestCase):
                 "content": content
             },
         )
-        announcement = Announcement.objects.get(content=content)
-        self.assertEqual(announcement.author, getattr(self, user))
 
     @parameterized.expand(users, name_func=get_test_name)
     def test_retrieve(self, user):
@@ -857,5 +855,3 @@ class AnnouncementTestCase(TestCase):
             reverse("ohq:announcement-detail", args=[self.course.id, self.announcement.id]),
             {"content": "Updated announcement"},
         )
-        self.announcement.refresh_from_db()
-        self.assertEqual(self.announcement.author, getattr(self, user))

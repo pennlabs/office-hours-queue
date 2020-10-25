@@ -44,7 +44,7 @@ from ohq.serializers import (
     QueueSerializer,
     SemesterSerializer,
     UserPrivateSerializer,
-    AnnouncementSerialiazer
+    AnnouncementSerializer
 )
 from ohq.sms import sendSMSVerification
 
@@ -474,7 +474,7 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
     """
 
     permission_classes = [AnnouncementPermission | IsSuperuser]
-    serializer_class = AnnouncementSerialiazer
+    serializer_class = AnnouncementSerializer
 
     def get_queryset(self):
         return Announcement.objects.filter(course=self.kwargs["course_pk"])
