@@ -5,6 +5,7 @@ import { Segment, Grid, Table, Loader, Pagination } from "semantic-ui-react";
 import {
     useQuestions,
     QuestionListResult,
+    SummaryOrderBy,
 } from "../../../hooks/data-fetching/questionsummary";
 import SummaryForm from "./SummaryForm";
 import { useCourse } from "../../../hooks/data-fetching/course";
@@ -54,7 +55,24 @@ const Summary = (props: SummaryProps) => {
                                 <Table.HeaderCell width={4}>
                                     Question
                                 </Table.HeaderCell>
-                                <Table.HeaderCell width={2}>
+                                <Table.HeaderCell
+                                    width={2}
+                                    sorted={
+                                        filters.orderBy ===
+                                        SummaryOrderBy.TimeAskedAsc
+                                            ? "ascending"
+                                            : "descending"
+                                    }
+                                    onClick={() => {
+                                        updateFilter({
+                                            orderBy:
+                                                filters.orderBy ===
+                                                SummaryOrderBy.TimeAskedAsc
+                                                    ? SummaryOrderBy.TimeAskedDesc
+                                                    : SummaryOrderBy.TimeAskedAsc,
+                                        });
+                                    }}
+                                >
                                     Time Asked
                                 </Table.HeaderCell>
                                 <Table.HeaderCell width={1}>
@@ -62,11 +80,10 @@ const Summary = (props: SummaryProps) => {
                                 </Table.HeaderCell>
                             </Table.Row>
                         </Table.Header>
-                        {loading && <Loader size="big" inverted />}
                         {data && data.results && (
                             <Table.Body>
                                 {data.results.map((qs) => (
-                                    <Table.Row>
+                                    <Table.Row key={qs.id}>
                                         <Table.Cell>
                                             {getFullName(qs.askedBy)}
                                         </Table.Cell>

@@ -13,7 +13,11 @@ code {
 }
 
 #__next {
-    height: 100%;
+    /* Grid components use negative margin of 1rem */
+    /* We can consider fixing them, since negative margins might not*/
+    /* necessarily be good practice, but it is really hard to get the*/
+    /* same behavior back so we do this as a "quick hack" */
+    height: calc(100% - 1rem);
     width: 100%;
     display: flex;
 }

@@ -4,6 +4,7 @@ import Alert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
 import InstructorCourses from "./InstructorCourses";
 import StudentCourses from "./StudentCourses";
+import Footer from "../../common/Footer";
 import { AuthUserContext } from "../../../context/auth";
 import { Course, Kind, UserMembership, mutateFunction } from "../../../types";
 import { useMemberships } from "../../../hooks/data-fetching/dashboard";
@@ -41,7 +42,10 @@ const Dashboard = () => {
     const [toastOpen, setToastOpen] = useState(false);
 
     return (
-        <Grid.Column width={13}>
+        <Grid.Column
+            width={13}
+            style={{ display: "flex", flexDirection: "column" }}
+        >
             {/* {props.user && (
                 <NewUserModal
                     open={newUserModalOpen}
@@ -133,6 +137,7 @@ const Dashboard = () => {
                     {toast.message}
                 </Alert>
             </Snackbar>
+            <Footer />
         </Grid.Column>
     );
 };

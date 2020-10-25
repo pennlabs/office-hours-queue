@@ -40,7 +40,7 @@ const QueuePage = (props: QueuePageProps) => {
                         play: MutableRefObject<() => void>
                     ) => {
                         return (
-                            <div style={{ marginTop: "-2.14rem" }}>
+                            <div>
                                 {staff && (
                                     <InstructorQueuePage
                                         courseId={course.id}

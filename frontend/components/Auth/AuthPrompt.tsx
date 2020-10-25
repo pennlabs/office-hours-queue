@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Grid, Button } from "semantic-ui-react";
 import { useRouter, NextRouter } from "next/router";
-import AboutModal from "../LandingPage/AboutModal";
+import AboutModal from "../common/AboutModal";
 import styles from "../../styles/landingpage.module.css";
 
 const AuthPrompt = (): JSX.Element => {
