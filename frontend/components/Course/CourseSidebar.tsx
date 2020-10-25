@@ -11,7 +11,6 @@ import {
 import { useRouter } from "next/router";
 import { prettifyRole } from "../../utils/enums";
 
-import AboutModal from "../common/AboutModal";
 import { AuthUserContext } from "../../context/auth";
 import { useLeadership, useStaff } from "../../hooks/data-fetching/course";
 import styles from "../../styles/landingpage.module.css";
@@ -41,7 +40,6 @@ const CourseSidebar = (props: CourseSidebarProps) => {
         textOverflow: "ellipsis",
         overflow: "hidden",
     };
-    const [showAboutModal, setShowAboutModal] = useState(false);
 
     const router = useRouter();
 
@@ -145,10 +143,6 @@ const CourseSidebar = (props: CourseSidebarProps) => {
                     <p>Feedback</p>
                 </a>
             </div>
-            <AboutModal
-                open={showAboutModal}
-                closeFunc={() => setShowAboutModal(false)}
-            />
         </Grid.Column>
     );
 };
