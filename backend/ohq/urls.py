@@ -2,6 +2,7 @@ from django.urls import path
 from rest_framework_nested import routers
 
 from ohq.views import (
+    AnnouncementViewSet,
     CourseViewSet,
     MassInviteView,
     MembershipInviteViewSet,
@@ -12,7 +13,6 @@ from ohq.views import (
     ResendNotificationView,
     SemesterViewSet,
     UserView,
-    AnnouncementViewSet
 )
 
 

@@ -8,13 +8,13 @@ from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.test import APIClient
 
-from ohq.models import Course, Membership, Question, Queue, Semester, Announcement
+from ohq.models import Announcement, Course, Membership, Question, Queue, Semester
 from ohq.serializers import (
+    AnnouncementSerializer,
     CourseCreateSerializer,
     MembershipSerializer,
     SemesterSerializer,
     UserPrivateSerializer,
-    AnnouncementSerializer
 )
 
 
@@ -358,6 +358,7 @@ class QuestionSerializerTestCase(TestCase):
         self.assertEqual(Question.STATUS_ASKED, self.question.status)
         mock_delay.assert_not_called()
 
+
 class AnnouncementSerializerTestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
@@ -373,21 +374,27 @@ class AnnouncementSerializerTestCase(TestCase):
             course=self.course, user=self.head_ta, kind=Membership.KIND_HEAD_TA
         )
         Membership.objects.create(course=self.course, user=self.ta, kind=Membership.KIND_TA)
-        self.announcement = Announcement.objects.create(course=self.course, author=self.head_ta, content="Original announcement")
+        self.announcement = Announcement.objects.create(
+            course=self.course, author=self.head_ta, content="Original announcement"
+        )
 
     def test_update_ta(self):
         """
-        Ensure TAs can update an Announcement.
+        Ensure TAs can update an Announcement and the author is updated
         """
         content = "New content"
         self.client.force_authenticate(user=self.ta)
         self.client.patch(
-            reverse("ohq:announcement-detail", args=[self.course.id, self.announcement.id]), {"content": content}
+            reverse("ohq:announcement-detail", args=[self.course.id, self.announcement.id]),
+            {"content": content},
         )
         self.announcement.refresh_from_db()
         self.assertTrue(self.announcement.author, self.ta)
 
     def test_create(self):
+        """
+        Ensure TAs can create an Announcement and the author matches
+        """
         self.client.force_authenticate(user=self.ta)
         self.client.post(
             reverse("ohq:announcement-list", args=[self.course.id]), {"content": "New announcement"}

@@ -6,7 +6,7 @@ from django.urls import reverse
 from parameterized import parameterized
 from rest_framework.test import APIClient
 
-from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester, Announcement
+from ohq.models import Announcement, Course, Membership, MembershipInvite, Question, Queue, Semester
 
 
 User = get_user_model()
@@ -758,10 +758,13 @@ class MassInviteTestCase(TestCase):
             {"emails": "test@example.com,test2@example.com", "kind": Membership.KIND_STUDENT},
         )
 
+
 class AnnouncementTestCase(TestCase):
     def setUp(self):
         setUp(self)
-        self.announcement = Announcement.objects.create(course=self.course, author=self.professor, content="Original announcement")
+        self.announcement = Announcement.objects.create(
+            course=self.course, author=self.professor, content="Original announcement"
+        )
 
         # Expected results
         self.expected = {
@@ -820,9 +823,7 @@ class AnnouncementTestCase(TestCase):
             "create",
             "post",
             reverse("ohq:announcement-list", args=[self.course.id]),
-            {
-                "content": content
-            },
+            {"content": content},
         )
 
     @parameterized.expand(users, name_func=get_test_name)

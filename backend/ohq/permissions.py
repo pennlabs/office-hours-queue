@@ -326,6 +326,7 @@ class MassInvitePermission(permissions.BasePermission):
 
         return membership.is_leadership
 
+
 class AnnouncementPermission(permissions.BasePermission):
     """
     TAs+ can create/update/delete announcements
@@ -351,4 +352,3 @@ class AnnouncementPermission(permissions.BasePermission):
 
         # TAs+ can create, modify, and delete announcements
         return membership.is_ta
-

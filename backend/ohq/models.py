@@ -241,6 +241,7 @@ class Question(models.Model):
 
     should_send_up_soon_notification = models.BooleanField(default=False)
 
+
 class Announcement(models.Model):
     """
     TA announcement within a class

@@ -1,6 +1,15 @@
 from django.contrib import admin
 
-from ohq.models import Course, Membership, MembershipInvite, Profile, Question, Queue, Semester, Announcement
+from ohq.models import (
+    Announcement,
+    Course,
+    Membership,
+    MembershipInvite,
+    Profile,
+    Question,
+    Queue,
+    Semester,
+)
 
 
 admin.site.register(Course)

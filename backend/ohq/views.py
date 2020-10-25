@@ -20,9 +20,10 @@ from rest_framework.views import APIView
 
 from ohq.filters import QuestionSearchFilter
 from ohq.invite import parse_and_send_invites
-from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester, Announcement
+from ohq.models import Announcement, Course, Membership, MembershipInvite, Question, Queue, Semester
 from ohq.pagination import QuestionSearchPagination
 from ohq.permissions import (
+    AnnouncementPermission,
     CoursePermission,
     IsSuperuser,
     MassInvitePermission,
@@ -31,10 +32,10 @@ from ohq.permissions import (
     QuestionPermission,
     QuestionSearchPermission,
     QueuePermission,
-    AnnouncementPermission
 )
 from ohq.schemas import MassInviteSchema
 from ohq.serializers import (
+    AnnouncementSerializer,
     CourseCreateSerializer,
     CourseSerializer,
     MembershipInviteSerializer,
@@ -44,7 +45,6 @@ from ohq.serializers import (
     QueueSerializer,
     SemesterSerializer,
     UserPrivateSerializer,
-    AnnouncementSerializer
 )
 from ohq.sms import sendSMSVerification
 
@@ -449,6 +449,7 @@ class MassInviteView(APIView):
             },
             status=201,
         )
+
 
 class AnnouncementViewSet(viewsets.ModelViewSet):
     """
