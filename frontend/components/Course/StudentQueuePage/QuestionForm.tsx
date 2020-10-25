@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Segment, Form, Header, Button } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 
-import { isValidURL } from "../../../utils";
+import { isValidZoomURL } from "../../../utils";
 import { createQuestion } from "../../../hooks/data-fetching/course";
 import { Course, Question, Queue } from "../../../types";
 import { logException } from "../../../utils/sentry";
@@ -46,7 +46,7 @@ const QuestionForm = (props: QuestionFormProps) => {
                 (course.requireVideoChatUrlOnQuestions && !input.videoChatUrl)
         );
         if (input.videoChatUrl) {
-            setValidURL(isValidURL(input.videoChatUrl));
+            setValidURL(isValidZoomURL(input.videoChatUrl));
             if (course.videoChatEnabled && input.videoChatUrl === "") {
                 setValidURL(true);
             }
