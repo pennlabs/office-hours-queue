@@ -10,7 +10,6 @@ from rest_framework.test import APIClient
 
 from ohq.models import Announcement, Course, Membership, Question, Queue, Semester
 from ohq.serializers import (
-    AnnouncementSerializer,
     CourseCreateSerializer,
     MembershipSerializer,
     SemesterSerializer,
