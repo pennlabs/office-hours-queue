@@ -67,9 +67,10 @@ class generateWaitTimesTestCase(TestCase):
         """
 
         Question.objects.all().delete()
+        first_time = self.open_queue.estimated_wait_time
         calculate_wait_times()
         self.open_queue.refresh_from_db()
-        self.assertEqual(0, self.open_queue.estimated_wait_time)
+        self.assertEqual(first_time, self.open_queue.estimated_wait_time)
 
     def test_open_queue_with_questions(self):
         """
