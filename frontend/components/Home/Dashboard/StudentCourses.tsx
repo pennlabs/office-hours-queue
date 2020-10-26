@@ -12,12 +12,6 @@ interface StudentCoursesProps {
     memberships: UserMembership[];
     mutate: mutateFunction<UserMembership[]>;
 }
-
-enum ToastType {
-    COURSE_ADDED = "Added",
-    COURSE_LEFT = "Left",
-}
-
 const StudentCourses = (props: StudentCoursesProps) => {
     const { mutate, memberships } = props;
     /* STATE */
@@ -35,15 +29,6 @@ const StudentCourses = (props: StudentCoursesProps) => {
         UserMembership | undefined
     >(undefined);
 
-    const updateToast = (toastType: ToastType, { message, success }: Toast) => {
-        toast.success = success;
-        toast.message = success
-            ? `${toastType} ${message}!`
-            : "There was an error!";
-        setToast(toast);
-        setToastOpen(true);
-    };
-
     return (
         <>
             <Grid.Row padded="true">
@@ -52,17 +37,19 @@ const StudentCourses = (props: StudentCoursesProps) => {
                     leaveMembership={leaveMembership}
                     closeFunc={() => setOpenLeave(false)}
                     mutate={mutate}
-                    toastFunc={(leaveToast: Toast) =>
-                        updateToast(ToastType.COURSE_LEFT, leaveToast)
-                    }
+                    toastFunc={(newToast: Toast) => {
+                        setToast(newToast);
+                        setToastOpen(true);
+                    }}
                 />
                 <ModalAddStudentCourse
                     open={open}
                     closeFunc={() => setOpen(false)}
                     mutate={mutate}
-                    toastFunc={(addToast: Toast) =>
-                        updateToast(ToastType.COURSE_ADDED, addToast)
-                    }
+                    toastFunc={(newToast: Toast) => {
+                        setToast(newToast);
+                        setToastOpen(true);
+                    }}
                 />
                 {memberships.map(
                     (membership) =>

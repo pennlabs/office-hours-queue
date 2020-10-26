@@ -33,10 +33,10 @@ const ModalAddStudentCourse = (props: ModalAddStudentCourseProps) => {
                 return joinCourse(id);
             });
             await Promise.all(joinCoursesPromise);
-            toastFunc({ message: "course", success: true });
+            toastFunc({ message: "Added course!", success: true });
         } catch (e) {
             logException(e);
-            toastFunc({ message: "Something went wrong", success: false });
+            toastFunc({ message: "Something went wrong!", success: false });
         }
         setLoading(false);
         mutate();

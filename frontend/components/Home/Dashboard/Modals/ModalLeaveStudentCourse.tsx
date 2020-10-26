@@ -11,7 +11,6 @@ interface ModalLeaveStudentCourseProps {
     mutate: mutateFunction<UserMembership[]>;
     toastFunc: (toast: Toast) => void;
 }
-
 const ModalLeaveStudentCourse = (props: ModalLeaveStudentCourseProps) => {
     const { open, leaveMembership, closeFunc, mutate, toastFunc } = props;
 
@@ -22,12 +21,12 @@ const ModalLeaveStudentCourse = (props: ModalLeaveStudentCourseProps) => {
                 `${leaveMembership?.id}`
             );
             toastFunc({
-                message: `${leaveMembership?.course.department} ${leaveMembership?.course.courseCode}`,
+                message: `Left ${leaveMembership?.course.department} ${leaveMembership?.course.courseCode}!`,
                 success: true,
             });
         } catch (e) {
             logException(e);
-            toastFunc({ message: "Something went wrong", success: false });
+            toastFunc({ message: "Something went wrong!", success: false });
         }
         mutate();
         closeFunc();
