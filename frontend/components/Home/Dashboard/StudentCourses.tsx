@@ -13,30 +13,35 @@ interface StudentCoursesProps {
     mutate: mutateFunction<UserMembership[]>;
 }
 
+enum ToastType {
+    COURSE_ADDED = "Added",
+    COURSE_LEFT = "Left",
+}
+
 const StudentCourses = (props: StudentCoursesProps) => {
     const { mutate, memberships } = props;
     /* STATE */
     const [open, setOpen] = useState(false);
-    const [addToastOpen, setAddToastOpen] = useState(false); // opening snackbar
+
+    // shared toast that displays message for either leaving or adding a course
+    const [toastOpen, setToastOpen] = useState(false);
+    const [toast, setToast] = useState<Toast>({
+        success: true,
+        message: "",
+    });
 
     const [openLeave, setOpenLeave] = useState(false);
     const [leaveMembership, setLeaveMembership] = useState<
         UserMembership | undefined
     >(undefined);
 
-    const [leaveToastOpen, setLeaveToastOpen] = useState(false);
-    const [leaveToast, setLeaveToast] = useState<Toast>({
-        success: true,
-        message: "",
-    });
-
-    const updateLeaveToast = ({ message, success }: Toast) => {
-        leaveToast.success = success;
-        leaveToast.message = success
-            ? `Left ${message}!`
+    const updateToast = (toastType: ToastType, { message, success }: Toast) => {
+        toast.success = success;
+        toast.message = success
+            ? `${toastType} ${message}!`
             : "There was an error!";
-        setLeaveToast(leaveToast);
-        setLeaveToastOpen(true);
+        setToast(toast);
+        setToastOpen(true);
     };
 
     return (
@@ -47,13 +52,17 @@ const StudentCourses = (props: StudentCoursesProps) => {
                     leaveMembership={leaveMembership}
                     closeFunc={() => setOpenLeave(false)}
                     mutate={mutate}
-                    toastFunc={updateLeaveToast}
+                    toastFunc={(leaveToast: Toast) =>
+                        updateToast(ToastType.COURSE_LEFT, leaveToast)
+                    }
                 />
                 <ModalAddStudentCourse
                     open={open}
                     closeFunc={() => setOpen(false)}
                     mutate={mutate}
-                    successFunc={setAddToastOpen}
+                    toastFunc={(addToast: Toast) =>
+                        updateToast(ToastType.COURSE_ADDED, addToast)
+                    }
                 />
                 {memberships.map(
                     (membership) =>
@@ -76,28 +85,15 @@ const StudentCourses = (props: StudentCoursesProps) => {
             </Grid.Row>
 
             <Snackbar
-                open={leaveToastOpen}
+                open={toastOpen}
                 autoHideDuration={2000}
-                onClose={() => setLeaveToastOpen(false)}
+                onClose={() => setToastOpen(false)}
             >
                 <Alert
-                    severity={leaveToast.success ? "success" : "error"}
-                    onClose={() => setLeaveToastOpen(false)}
+                    severity={toast.success ? "success" : "error"}
+                    onClose={() => setToastOpen(false)}
                 >
-                    <span>{leaveToast.message}</span>
-                </Alert>
-            </Snackbar>
-
-            <Snackbar
-                open={addToastOpen}
-                autoHideDuration={2000}
-                onClose={() => setAddToastOpen(false)}
-            >
-                <Alert
-                    severity="success"
-                    onClose={() => setAddToastOpen(false)}
-                >
-                    Course added!
+                    <span>{toast.message}</span>
                 </Alert>
             </Snackbar>
         </>

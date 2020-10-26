@@ -2,16 +2,17 @@ import React, { useState } from "react";
 import { Modal, Button } from "semantic-ui-react";
 import AddStudentForm from "../Forms/AddStudentForm";
 import { joinCourse } from "../../../../hooks/data-fetching/dashboard";
-import { mutateFunction, UserMembership } from "../../../../types";
+import { mutateFunction, Toast, UserMembership } from "../../../../types";
+import { logException } from "../../../../utils/sentry";
 
 interface ModalAddStudentCourseProps {
     open: boolean;
     closeFunc: () => void;
     mutate: mutateFunction<UserMembership[]>;
-    successFunc: React.Dispatch<React.SetStateAction<boolean>>;
+    toastFunc: (toast: Toast) => void;
 }
 const ModalAddStudentCourse = (props: ModalAddStudentCourseProps) => {
-    const { open, closeFunc, mutate, successFunc } = props;
+    const { open, closeFunc, mutate, toastFunc } = props;
     const [loading, setLoading] = useState(false);
     const [input, setInput] = useState({ courseIds: [] });
     const [disabled, setDisabled] = useState(true);
@@ -27,14 +28,19 @@ const ModalAddStudentCourse = (props: ModalAddStudentCourseProps) => {
             return;
         }
         setLoading(true);
-        const joinCoursesPromise = input.courseIds.map((id) => {
-            return joinCourse(id);
-        });
-        await Promise.all(joinCoursesPromise);
+        try {
+            const joinCoursesPromise = input.courseIds.map((id) => {
+                return joinCourse(id);
+            });
+            await Promise.all(joinCoursesPromise);
+            toastFunc({ message: "course", success: true });
+        } catch (e) {
+            logException(e);
+            toastFunc({ message: "Something went wrong", success: false });
+        }
         setLoading(false);
         mutate();
         closeFunc();
-        successFunc(true); // trigger snackbar
     };
 
     return (
