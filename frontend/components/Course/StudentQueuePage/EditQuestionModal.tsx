@@ -3,7 +3,7 @@ import { Modal, Form, Button } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import { Course, Question } from "../../../types";
 import { logException } from "../../../utils/sentry";
-import { isValidZoomURL } from "../../../utils";
+import { isValidVideoChatURL } from "../../../utils";
 
 interface EditQuestionModalProps {
     course: Course;
@@ -32,7 +32,8 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
         return (
             input.text &&
             (!course.requireVideoChatUrlOnQuestions ||
-                (input.videoChatUrl && isValidZoomURL(input.videoChatUrl))) &&
+                (input.videoChatUrl &&
+                    isValidVideoChatURL(input.videoChatUrl))) &&
             (question.text !== input.text ||
                 JSON.stringify(question.tags) !== JSON.stringify(input.tags) ||
                 question.videoChatUrl !== input.videoChatUrl)

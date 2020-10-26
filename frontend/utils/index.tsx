@@ -1,3 +1,4 @@
+import { ALLOWED_LINKS } from "../constants";
 import { Membership, Kind, User } from "../types";
 
 export function isValidEmail(email: string) {
@@ -5,12 +6,15 @@ export function isValidEmail(email: string) {
     return pattern.test(email);
 }
 
-export function isValidZoomURL(url: string) {
+export function isValidVideoChatURL(url: string) {
     try {
         const urlObject = new URL(url);
-        return (
-            urlObject.hostname === "zoom.us" ||
-            urlObject.hostname.endsWith(".zoom.us")
+        return ALLOWED_LINKS.reduce(
+            (acc: boolean, link: string) =>
+                acc ||
+                urlObject.hostname === link ||
+                urlObject.hostname.endsWith(`.${link}`),
+            false
         );
     } catch (e) {
         return false;
