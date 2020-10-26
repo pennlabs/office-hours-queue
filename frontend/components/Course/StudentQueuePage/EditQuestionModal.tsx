@@ -32,7 +32,8 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
         return (
             input.text &&
             (!course.requireVideoChatUrlOnQuestions ||
-                (input.videoChatUrl && isValidVideoChatURL(input.videoChatUrl))) &&
+                (input.videoChatUrl &&
+                    isValidVideoChatURL(input.videoChatUrl))) &&
             (question.text !== input.text ||
                 JSON.stringify(question.tags) !== JSON.stringify(input.tags) ||
                 question.videoChatUrl !== input.videoChatUrl)
