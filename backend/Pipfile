@@ -41,6 +41,7 @@ channels-redis = "*"
 uvicorn = {extras = ["standard"],version = "*"}
 gunicorn = "*"
 drf-renderer-xlsx = "*"
+psycopg2-binary = "*"
 
 [requires]
 python_version = "3.7"
