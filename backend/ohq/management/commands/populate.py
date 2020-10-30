@@ -5,7 +5,6 @@ from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
-from options.models import Option
 
 from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester
 
@@ -41,7 +40,7 @@ courses = [
                 ]
             },
         ],
-        "semester": {"year": 2020, "term": Semester.TERM_SUMMER},
+        "semester": {'year':2020, 'term': Semester.TERM_FALL},
         "archived": False,
         "invite_only": False,
         "video_chat_enabled": False,
@@ -74,8 +73,8 @@ courses = [
                     },
                 ]
             },
-        ] 
-        "semester": {"year": 2020, "term": Semester.TERM_FALL},
+        ], 
+        "semester": {'year':2020, 'term': Semester.TERM_SUMMER},
         "archived": False,
         "invite_only": False,
         "video_chat_enabled": False,
@@ -102,7 +101,7 @@ class Command(BaseCommand):
             for field in custom_fields:
                 if field in partial:
                     del partial[field]
-
+            partial['semester'], _ = Semester.objects.get_or_create(year=partial['semester']['year'], term=partial['semester']['term'])
             course, _ = Course.objects.get_or_create(course_code=info["course_code"], defaults=partial)
 
 
