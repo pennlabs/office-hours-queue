@@ -17,12 +17,12 @@ courses = [
     {
         "course_code": "199",
         "department": "CIS",
-        "course_title": "Kevin's Leg",
-        "description": "Examining the wonders of Kevin's beautiful leg.",
+        "course_title": "Kevin's Kevin",
+        "description": "Examining the wonders of Kevin.",
         "queues": [
             {
-                "name": "Leg-related Questions",
-                "description": "Have a question about Kevin's leg? Ask here!",
+                "name": "Kevin-related Questions",
+                "description": "Have a question about Kevin? Ask here!",
                 "archived": False,
                 "estimated_wait_time": 100,
                 "active": True,
@@ -102,7 +102,17 @@ class Command(BaseCommand):
                 if field in partial:
                     del partial[field]
             partial['semester'], _ = Semester.objects.get_or_create(year=partial['semester']['year'], term=partial['semester']['term'])
-            course, _ = Course.objects.get_or_create(course_code=info["course_code"], defaults=partial)
+
+            newCourse, _ = Course.objects.get_or_create(course_code=info["course_code"], defaults=partial)
+
+            for q in info['queues']:
+                queue, _ = Queue.objects.get_or_create(name=q['name'], description=q['description'], course=newCourse, archived=q['archived'],
+                                                        estimated_wait_time=q['estimated_wait_time'], active=q['active'])
+
+                # for ques in q['questions']:
+                #     question, _ = Question.objects.get_or_create()
+            
+            # add questions
 
 
 
