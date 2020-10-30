@@ -5,6 +5,7 @@ import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import RejectQuestionModal from "./RejectQuestionModal";
 import { AuthUserContext } from "../../../context/auth";
 import { Question, QuestionStatus, User } from "../../../types";
+import MessageQuestionModal from "./MessageQuestionModal";
 
 export const fullName = (user: User) => `${user.firstName} ${user.lastName}`;
 
@@ -23,6 +24,7 @@ const QuestionCard = (props: QuestionCardProps) => {
     }
 
     const [open, setOpen] = useState(false);
+    const [messageModalOpen, setMessageModalOpen] = useState(false);
     const timeString = (date, isLong) => {
         return new Date(date).toLocaleString(
             "en-US",
@@ -65,6 +67,12 @@ const QuestionCard = (props: QuestionCardProps) => {
                 open={open}
                 question={question}
                 closeFunc={triggerModal}
+                mutate={mutateQuestion}
+            />
+            <MessageQuestionModal
+                open={messageModalOpen}
+                question={question}
+                closeFunc={() => setMessageModalOpen(false)}
                 mutate={mutateQuestion}
             />
             <Segment attached="top" color="blue" clearing>
@@ -238,6 +246,17 @@ const QuestionCard = (props: QuestionCardProps) => {
                                             />
                                         </a>
                                     )}
+                                {question.timeResponseStarted && (
+                                    <Button
+                                        compact
+                                        size="mini"
+                                        color="blue"
+                                        content="Message"
+                                        onClick={() =>
+                                            setMessageModalOpen(true)
+                                        }
+                                    />
+                                )}
                             </Header>
                         </Grid.Column>
                         <Grid.Column

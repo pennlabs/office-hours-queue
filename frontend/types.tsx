@@ -91,6 +91,9 @@ export interface Question {
     timeResponseStarted?: string;
     timeRespondedTo?: string;
     shouldSendUpSoonNotification: boolean;
+    note: string;
+    resolvedNote: boolean;
+
     tags?: string[];
     // this is a marker field for subscribe requests
     // it should never have a value
