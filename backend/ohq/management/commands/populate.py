@@ -8,10 +8,11 @@ from django.utils import timezone
 
 from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester
 
-#assign question a user at the end + responded to by user
+# assign question a user at the end + responded to by user
 # members field for course
-# asked_by and responded_to_by for question
+# responded_to_by for question
 
+now = timezone.now()
 
 courses = [
     {
@@ -32,9 +33,9 @@ courses = [
                         "text": "How many joints does Kevin's leg have?",
                         "video_chat_url": "https://upenn.zoom.us/j/adsjfasdkjfaqiowdjf308220740182aldskjf",
                         "status": Question.STATUS_ACTIVE,
-                        "time_asked": datetime.datetime.now() - datetime.timedelta(minutes=48),
-                        "time_response_started": datetime.datetime.now() - datetime.timedelta(minutes=30),
-                        "time_responded_to": datetime.datetime.now() - datetime.timedelta(minutes=10),
+                        "time_asked": now - datetime.timedelta(minutes=48),
+                        "time_response_started": now - datetime.timedelta(minutes=30),
+                        "time_responded_to": now - datetime.timedelta(minutes=10),
                         "should_send_up_soon_notification": True,
                     },
                 ]
@@ -65,9 +66,9 @@ courses = [
                         "text": "How do I code coverage, almight Davis?",
                         "video_chat_url": "https://upenn.zoom.us/j/adsjfasdkjfaqiowdskjf",
                         "status": Question.STATUS_REJECTED,
-                        "time_asked": datetime.datetime.now() - datetime.timedelta(minutes=121),
-                        "time_response_started": datetime.datetime.now() - datetime.timedelta(minutes=12),
-                        "time_responded_to": datetime.datetime.now() - datetime.timedelta(minutes=12),
+                        "time_asked": now - datetime.timedelta(minutes=121),
+                        "time_response_started": now - datetime.timedelta(minutes=12),
+                        "time_responded_to": now - datetime.timedelta(minutes=12),
                         "rejected_reason": "NOT_SPECIFIC",
                         "should_send_up_soon_notification": False,
                     },
@@ -90,6 +91,38 @@ class Command(BaseCommand):
         # not sure if this line is neccessary / works
         if Course.objects.filter(course_title="Example Queues for OHQ").exists():
             raise CommandError("You probably do not want to run this script in production!")
+        
+        # DON'T FORGET TO CREATE THE USER PROFILE
+        # create users
+        count = 0
+        schools = ["seas", "nursing", "wharton", "sas"]
+        users = [
+            "Benjamin Franklin",
+            "George Washington",
+            "John Adams",
+            "Thomas Jefferson",
+            "James Madison",
+            "James Monroe",
+            "John Quincy Adams",
+            "Andrew Jackson",
+        ]
+        user_objs = []
+        for user in users:
+            first, last = user.split(" ", 1)
+            last = last.replace(" ", "")
+            username = "{}{}".format(first[0], last).lower()
+            email = "{}@{}.upenn.edu".format(username, schools[count % len(schools)])
+            count += 1
+            User = get_user_model()
+            if User.objects.filter(username=username).exists():
+                user_objs.append(User.objects.get(username=username))
+            else:
+                obj = User.objects.create_user(username, email, "test")
+                obj.first_name = first
+                obj.last_name = last
+                obj.is_staff = True
+                obj.save()
+                user_objs.append(obj)
 
         # create courses
         for info in courses:
@@ -101,19 +134,26 @@ class Command(BaseCommand):
             for field in custom_fields:
                 if field in partial:
                     del partial[field]
+
             partial['semester'], _ = Semester.objects.get_or_create(year=partial['semester']['year'], term=partial['semester']['term'])
 
             newCourse, _ = Course.objects.get_or_create(course_code=info["course_code"], defaults=partial)
 
             for q in info['queues']:
-                queue, _ = Queue.objects.get_or_create(name=q['name'], description=q['description'], course=newCourse, archived=q['archived'],
+                newQueue, _ = Queue.objects.get_or_create(name=q['name'], description=q['description'], course=newCourse, archived=q['archived'],
                                                         estimated_wait_time=q['estimated_wait_time'], active=q['active'])
 
-                # for ques in q['questions']:
-                #     question, _ = Question.objects.get_or_create()
+                for ques in q['questions']:
+                    newQuestion, _ = Question.objects.get_or_create(text=ques['text'], queue=newQueue, video_chat_url=ques['video_chat_url'], status=ques['status'], 
+                                                                    time_asked=ques['time_asked'], asked_by=user_objs[1], time_response_started=ques['time_response_started'], 
+                                                                    time_responded_to=ques['time_responded_to'], 
+                                                                    should_send_up_soon_notification=ques['should_send_up_soon_notification'])
             
-            # add questions
+                    # for question, we skipped responded_to_by, and account for rejected (check the status before creating new question ?)
 
+                    # edit asked by
+
+                    # add self for question model?
 
 
 
