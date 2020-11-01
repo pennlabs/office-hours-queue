@@ -1,5 +1,12 @@
-import React, { useContext, MutableRefObject } from "react";
-import { Grid, Segment, Header, Icon, ButtonProps } from "semantic-ui-react";
+import React, { useContext, useState, MutableRefObject } from "react";
+import {
+    Grid,
+    Segment,
+    Header,
+    Icon,
+    ButtonProps,
+    Message,
+} from "semantic-ui-react";
 import CourseSidebar from "./CourseSidebar";
 
 import { AuthUserContext } from "../../context/auth";
@@ -20,6 +27,7 @@ interface CourseProps {
 const CourseWrapper = ({ render, ...props }: CourseProps) => {
     const { course: rawCourse, leadership } = props;
     const [course, , ,] = useCourse(rawCourse.id, rawCourse);
+    const [surveyDisp, setSurveyDisp] = useState(true);
     const { user: initialUser } = useContext(AuthUserContext);
     if (!initialUser) {
         throw new Error(
@@ -58,6 +66,19 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                                 </Header>
                             </Segment>
                         </Grid.Column>
+
+                        {staff && surveyDisp && (
+                            <Grid.Column>
+                                <div style={{ padding: "0.8rem" }}>
+                                    <Message
+                                        onDismiss={() => setSurveyDisp(false)}
+                                        size="mini"
+                                        header="Do you have a second?"
+                                        content="Help us improve OHQ by filling in this survey"
+                                    />
+                                </div>
+                            </Grid.Column>
+                        )}
 
                         <Grid.Column>
                             <Segment basic>
