@@ -48,7 +48,7 @@ const CourseCard = (props: CourseCardProps) => {
                             }}
                         >
                             {`${course.department} ${course.courseCode}`}
-                            {membership.kind === Kind.STUDENT ? (
+                            {membership.kind === Kind.STUDENT && (
                                 <Dropdown
                                     icon={
                                         <Icon
@@ -69,7 +69,7 @@ const CourseCard = (props: CourseCardProps) => {
                                         </Dropdown.Item>
                                     </Dropdown.Menu>
                                 </Dropdown>
-                            ) : undefined}
+                            )}
                             <Header.Subheader
                                 style={{
                                     whiteSpace: "nowrap",

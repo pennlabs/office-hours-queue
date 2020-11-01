@@ -6,7 +6,7 @@ import { logException } from "../../../../utils/sentry";
 
 interface ModalLeaveStudentCourseProps {
     open: boolean;
-    leaveMembership?: UserMembership;
+    leaveMembership: UserMembership;
     closeFunc: () => void;
     mutate: mutateFunction<UserMembership[]>;
     toastFunc: (toast: Toast) => void;
@@ -17,11 +17,11 @@ const ModalLeaveStudentCourse = (props: ModalLeaveStudentCourseProps) => {
     const leaveFunc = async () => {
         try {
             await leaveCourse(
-                `${leaveMembership?.course.id}`,
-                `${leaveMembership?.id}`
+                `${leaveMembership.course.id}`,
+                `${leaveMembership.id}`
             );
             toastFunc({
-                message: `Left ${leaveMembership?.course.department} ${leaveMembership?.course.courseCode}!`,
+                message: `Left ${leaveMembership.course.department} ${leaveMembership.course.courseCode}!`,
                 success: true,
             });
         } catch (e) {
@@ -32,7 +32,7 @@ const ModalLeaveStudentCourse = (props: ModalLeaveStudentCourseProps) => {
         closeFunc();
     };
 
-    return leaveMembership ? (
+    return (
         <Modal size="mini" open={open}>
             <Modal.Header>Leave Course</Modal.Header>
             <Modal.Content>{`Are you sure you want to leave ${leaveMembership.course.department} ${leaveMembership.course.courseCode}?`}</Modal.Content>
@@ -41,8 +41,6 @@ const ModalLeaveStudentCourse = (props: ModalLeaveStudentCourseProps) => {
                 <Button negative content="Leave" onClick={leaveFunc} />
             </Modal.Actions>
         </Modal>
-    ) : (
-        <></>
     );
 };
 

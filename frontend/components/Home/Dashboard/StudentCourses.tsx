@@ -32,7 +32,7 @@ const StudentCourses = (props: StudentCoursesProps) => {
     return (
         <>
             <Grid.Row padded="true">
-                <ModalLeaveStudentCourse
+                {leaveMembership && <ModalLeaveStudentCourse
                     open={openLeave}
                     leaveMembership={leaveMembership}
                     closeFunc={() => setOpenLeave(false)}
@@ -41,7 +41,7 @@ const StudentCourses = (props: StudentCoursesProps) => {
                         setToast(newToast);
                         setToastOpen(true);
                     }}
-                />
+                />}
                 <ModalAddStudentCourse
                     open={open}
                     closeFunc={() => setOpen(false)}
