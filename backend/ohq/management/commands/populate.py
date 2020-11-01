@@ -8,10 +8,6 @@ from django.utils import timezone
 
 from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester
 
-# assign question a user at the end + responded to by user
-# members field for course
-# responded_to_by for question
-
 now = timezone.now()
 
 courses = [
@@ -92,7 +88,15 @@ class Command(BaseCommand):
         if Course.objects.filter(course_title="Example Queues for OHQ").exists():
             raise CommandError("You probably do not want to run this script in production!")
         
-        # DON'T FORGET TO CREATE THE USER PROFILE
+        # tell them we have a rando / course
+        # DON'T FORGET TO CREATE THE USER PROFILE & MEMBERSHIP INVITE
+        # create one as a superuser
+        # ask what "last active" means for membership
+        # tjefferson & jmadison & jzhang password is armaan123
+        # __self__ for question ?
+        # members in courses? add the members there too?
+        # professors can join their own class as student ? doesn't show up as instructor courses
+
         # create users
         count = 0
         schools = ["seas", "nursing", "wharton", "sas"]
@@ -105,6 +109,9 @@ class Command(BaseCommand):
             "James Monroe",
             "John Quincy Adams",
             "Andrew Jackson",
+            "Kevin Chen",
+            "Justin Zhang",
+            "Armaan Davis"
         ]
         user_objs = []
         for user in users:
@@ -123,8 +130,10 @@ class Command(BaseCommand):
                 obj.is_staff = True
                 obj.save()
                 user_objs.append(obj)
+        
 
         # create courses
+        newCount = 0
         for info in courses:
             partial = dict(info)
             custom_fields = [
@@ -138,23 +147,56 @@ class Command(BaseCommand):
             partial['semester'], _ = Semester.objects.get_or_create(year=partial['semester']['year'], term=partial['semester']['term'])
 
             newCourse, _ = Course.objects.get_or_create(course_code=info["course_code"], defaults=partial)
+ 
+            professorMembership, _ = Membership.objects.get_or_create(course=newCourse, user=user_objs[newCount%len(user_objs)], kind=Membership.KIND_PROFESSOR)
+            newCount += 1
 
+            headTAList = []
+            for i in range(2):
+                headTAMembership, _ = Membership.objects.get_or_create(course=newCourse, user=user_objs[(newCount)%len(user_objs)], kind=Membership.KIND_HEAD_TA)
+                headTAList.append(headTAMembership)
+                newCount += 1
+
+            regularTAList = []
+            for i in range(2):
+                regularTAMembership, _ = Membership.objects.get_or_create(course=newCourse, user=user_objs[(newCount)%len(user_objs)], kind=Membership.KIND_TA)
+                regularTAList.append(regularTAMembership)
+                newCount += 1
+
+            totalTAList = headTAList + regularTAList
+
+            studentList = []
+            for i in range (4):
+                studentMembership, _ = Membership.objects.get_or_create(course=newCourse, user=user_objs[(newCount)%len(user_objs)], kind=Membership.KIND_STUDENT)
+                studentList.append(studentMembership)
+                newCount += 1
+            
             for q in info['queues']:
                 newQueue, _ = Queue.objects.get_or_create(name=q['name'], description=q['description'], course=newCourse, archived=q['archived'],
                                                         estimated_wait_time=q['estimated_wait_time'], active=q['active'])
-
+                
+                respondedToCount = 0
+                askedByCount = 0
                 for ques in q['questions']:
+                    
                     newQuestion, _ = Question.objects.get_or_create(text=ques['text'], queue=newQueue, video_chat_url=ques['video_chat_url'], status=ques['status'], 
-                                                                    time_asked=ques['time_asked'], asked_by=user_objs[1], time_response_started=ques['time_response_started'], 
-                                                                    time_responded_to=ques['time_responded_to'], 
+                                                                    time_asked=ques['time_asked'], asked_by=studentList[askedByCount%len(studentList)].user, 
                                                                     should_send_up_soon_notification=ques['should_send_up_soon_notification'])
-            
-                    # for question, we skipped responded_to_by, and account for rejected (check the status before creating new question ?)
 
-                    # edit asked by
+                    askedByCount += 1
 
-                    # add self for question model?
+                    if ques['status'] in [Question.STATUS_REJECTED, Question.STATUS_ANSWERED, Question.STATUS_ACTIVE]:
+                        newQuestion.time_response_started = ques['time_response_started']
+                        newQuestion.responded_to_by = totalTAList[respondedToCount%len(totalTAList)].user
+                        respondedToCount += 1
 
+                    if ques['status'] == Question.STATUS_REJECTED:
+                        newQuestion.rejected_reason = ques['rejected_reason']
+
+                    if ques['status'] in [Question.STATUS_ANSWERED, Question.STATUS_REJECTED]:
+                        newQuestion.time_responsded_to = ques['time_responded_to']
+
+                    newQuestion.save()
 
 
 
