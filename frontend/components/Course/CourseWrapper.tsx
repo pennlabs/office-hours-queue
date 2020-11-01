@@ -106,6 +106,7 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                                                 >
                                                     this survey
                                                 </a>
+                                                !
                                             </>
                                         }
                                     />
