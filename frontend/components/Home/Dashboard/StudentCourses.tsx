@@ -32,16 +32,18 @@ const StudentCourses = (props: StudentCoursesProps) => {
     return (
         <>
             <Grid.Row padded="true">
-                {leaveMembership && <ModalLeaveStudentCourse
-                    open={openLeave}
-                    leaveMembership={leaveMembership}
-                    closeFunc={() => setOpenLeave(false)}
-                    mutate={mutate}
-                    toastFunc={(newToast: Toast) => {
-                        setToast(newToast);
-                        setToastOpen(true);
-                    }}
-                />}
+                {leaveMembership && (
+                    <ModalLeaveStudentCourse
+                        open={openLeave}
+                        leaveMembership={leaveMembership}
+                        closeFunc={() => setOpenLeave(false)}
+                        mutate={mutate}
+                        toastFunc={(newToast: Toast) => {
+                            setToast(newToast);
+                            setToastOpen(true);
+                        }}
+                    />
+                )}
                 <ModalAddStudentCourse
                     open={open}
                     closeFunc={() => setOpen(false)}
