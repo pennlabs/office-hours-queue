@@ -1,5 +1,17 @@
-import React, { useContext, MutableRefObject } from "react";
-import { Grid, Segment, Header, Icon, ButtonProps } from "semantic-ui-react";
+import React, {
+    useContext,
+    useEffect,
+    useState,
+    MutableRefObject,
+} from "react";
+import {
+    Grid,
+    Segment,
+    Header,
+    Icon,
+    ButtonProps,
+    Message,
+} from "semantic-ui-react";
 import CourseSidebar from "./CourseSidebar";
 
 import { AuthUserContext } from "../../context/auth";
@@ -17,9 +29,20 @@ interface CourseProps {
     course: CourseType;
     leadership: Membership[];
 }
+
+const ANALYTICS_SURVEY_SHOWN_LS_TOKEN = "__instructor_analytics_survey_shown";
+
 const CourseWrapper = ({ render, ...props }: CourseProps) => {
     const { course: rawCourse, leadership } = props;
     const [course, , ,] = useCourse(rawCourse.id, rawCourse);
+    const [surveyDisp, setSurveyDisp] = useState(false);
+
+    useEffect(() => {
+        const state = localStorage.getItem(ANALYTICS_SURVEY_SHOWN_LS_TOKEN);
+        const toDisp = state !== "true";
+        setSurveyDisp(toDisp);
+    }, []);
+
     const { user: initialUser } = useContext(AuthUserContext);
     if (!initialUser) {
         throw new Error(
@@ -58,6 +81,37 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                                 </Header>
                             </Segment>
                         </Grid.Column>
+
+                        {staff && surveyDisp && (
+                            <Grid.Column>
+                                <div style={{ padding: "0.8rem" }}>
+                                    <Message
+                                        onDismiss={() => {
+                                            setSurveyDisp(false);
+                                            localStorage.setItem(
+                                                ANALYTICS_SURVEY_SHOWN_LS_TOKEN,
+                                                "true"
+                                            );
+                                        }}
+                                        size="mini"
+                                        header="Want to see your stats?"
+                                        content={
+                                            <>
+                                                Help us build OHQ Analytics by
+                                                filling out{" "}
+                                                <a
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    href="https://airtable.com/shrzhy6mxzLmjF1JD"
+                                                >
+                                                    this survey
+                                                </a>
+                                            </>
+                                        }
+                                    />
+                                </div>
+                            </Grid.Column>
+                        )}
 
                         <Grid.Column>
                             <Segment basic>
