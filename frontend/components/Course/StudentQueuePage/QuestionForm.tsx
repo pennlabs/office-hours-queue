@@ -114,6 +114,10 @@ const QuestionForm = (props: QuestionFormProps) => {
                                 name="videoChatUrl"
                                 placeholder="Sample URL: https://zoom.us/j/123456789?pwd=abcdefg"
                                 onChange={handleInputChange}
+                                error={
+                                    !validURL &&
+                                    "Please enter a valid video link!"
+                                }
                             />
                         </Form.Field>
                     )}
