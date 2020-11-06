@@ -115,9 +115,8 @@ const QuestionForm = (props: QuestionFormProps) => {
                                 placeholder="Sample URL: https://zoom.us/j/123456789?pwd=abcdefg"
                                 onChange={handleInputChange}
                                 error={
-                                    !validURL
-                                        ? "Please enter a valid video link!"
-                                        : null
+                                    !validURL &&
+                                    "Please enter a valid video link!"
                                 }
                             />
                         </Form.Field>
