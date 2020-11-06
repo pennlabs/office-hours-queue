@@ -1,8 +1,6 @@
 import datetime
 
-import requests
 from django.contrib.auth import get_user_model
-from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 
@@ -28,7 +26,7 @@ courses = [
                 "questions": [
                     {
                         "text": "How many joints does Kevin's leg have?",
-                        "video_chat_url": "https://upenn.zoom.us/j/adsjfasdkjfaqiowdjf308220740182aldskjf",
+                        "video_chat_url": "https://upenn.zoom.us/j/jfawdjf308220740182aldskjf",
                         "status": Question.STATUS_ACTIVE,
                         "time_asked": now - datetime.timedelta(minutes=48),
                         "time_response_started": now - datetime.timedelta(minutes=30),
@@ -58,7 +56,7 @@ courses = [
                 "questions": [
                     {
                         "text": "How do I code coverage, almight Davis?",
-                        "video_chat_url": "https://upenn.zoom.us/j/adsjfasdkjfaqiowdskjf",
+                        "video_chat_url": "https://upenn.zoom.us/j/adkjfaqiowdskjf",
                         "status": Question.STATUS_REJECTED,
                         "time_asked": now - datetime.timedelta(minutes=121),
                         "time_response_started": now - datetime.timedelta(minutes=12),
@@ -91,7 +89,7 @@ courses = [
         "course_code": "700",
         "department": "WH",
         "course_title": "Snake City",
-        "description": "Free internships at Goldman Sachs. Don't like Goldman? We've got Morgan Stanley too.",
+        "description": "Free internships at Goldman Sachs. We've got Morgan Stanley too.",
         "queues": [
             {
                 "name": "Goldman Sachs Questions",
@@ -233,7 +231,7 @@ courses = [
         "course_code": "500",
         "department": "OLD",
         "course_title": "Class of 1930",
-        "description": "Class of 1930 Graduates Only!!! Likely to be archived",
+        "description": "Class of 1930 Graduates Only! Likely to be archived",
         "semester": {"year": 1930, "term": Semester.TERM_SPRING},
         "archived": True,
         "queues": [],
@@ -255,7 +253,8 @@ class Command(BaseCommand):
 
         # ask what "last active" means for membership, should we add that in for ying
 
-        # create 11 users (1 prof, 2 head TA's, 2 regular TA's, 4 students, 1 membership invite, and 1 not in the course)
+        # create 11 users
+        # (1 prof, 2 head TA's, 2 TA's, 4 students, 1 invites, and 1 not in the course)
         count = 0
         schools = ["seas", "nursing", "wharton", "sas"]
         users = [
