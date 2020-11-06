@@ -6,7 +6,8 @@ from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 
-from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester, Profile
+from ohq.models import Course, Membership, MembershipInvite, Profile, Question, Queue, Semester
+
 
 now = timezone.now()
 
@@ -24,8 +25,7 @@ courses = [
                 "archived": False,
                 "estimated_wait_time": 100,
                 "active": True,
-                "questions": 
-                [   
+                "questions": [
                     {
                         "text": "How many joints does Kevin's leg have?",
                         "video_chat_url": "https://upenn.zoom.us/j/adsjfasdkjfaqiowdjf308220740182aldskjf",
@@ -34,10 +34,10 @@ courses = [
                         "time_response_started": now - datetime.timedelta(minutes=30),
                         "should_send_up_soon_notification": True,
                     },
-                ]
+                ],
             },
         ],
-        "semester": {'year':2020, 'term': Semester.TERM_FALL},
+        "semester": {"year": 2020, "term": Semester.TERM_FALL},
         "archived": False,
         "invite_only": False,
         "video_chat_enabled": False,
@@ -55,8 +55,7 @@ courses = [
                 "archived": False,
                 "estimated_wait_time": 1,
                 "active": True,
-                "questions": 
-                [   
+                "questions": [
                     {
                         "text": "How do I code coverage, almight Davis?",
                         "video_chat_url": "https://upenn.zoom.us/j/adsjfasdkjfaqiowdskjf",
@@ -67,10 +66,10 @@ courses = [
                         "rejected_reason": "NOT_SPECIFIC",
                         "should_send_up_soon_notification": False,
                     },
-                ]
+                ],
             },
-        ], 
-        "semester": {'year':2020, 'term': Semester.TERM_SUMMER},
+        ],
+        "semester": {"year": 2020, "term": Semester.TERM_SUMMER},
         "archived": False,
         "invite_only": False,
         "video_chat_enabled": False,
@@ -82,7 +81,7 @@ courses = [
         "course_title": "The Crayola Perspective",
         "description": "Crayons! Markers! Learn to use these technical tools and gain new skills!",
         "queues": [],
-        "semester": {'year':2020, 'term': Semester.TERM_FALL},
+        "semester": {"year": 2020, "term": Semester.TERM_FALL},
         "archived": False,
         "invite_only": True,
         "video_chat_enabled": True,
@@ -100,15 +99,14 @@ courses = [
                 "archived": False,
                 "estimated_wait_time": 10,
                 "active": True,
-                "questions": 
-                [   
+                "questions": [
                     {
                         "text": "How snakey are Goldman people?",
                         "video_chat_url": "https://upenn.zoom.us/j/adadsf12313",
                         "status": Question.STATUS_ACTIVE,
                         "time_asked": now - datetime.timedelta(minutes=11),
                         "time_response_started": now - datetime.timedelta(minutes=5),
-                        "should_send_up_soon_notification": False
+                        "should_send_up_soon_notification": False,
                     },
                     {
                         "text": "Can I get the recruiter's email?",
@@ -126,7 +124,7 @@ courses = [
                         "time_responded_to": now - datetime.timedelta(minutes=1),
                         "should_send_up_soon_notification": False,
                     },
-                ]
+                ],
             },
             {
                 "name": "Morgan Stanley Questions",
@@ -134,7 +132,7 @@ courses = [
                 "archived": False,
                 "estimated_wait_time": 0,
                 "active": True,
-                "questions": []
+                "questions": [],
             },
             {
                 "name": "Questions for Rejects - Will always be closed",
@@ -142,10 +140,10 @@ courses = [
                 "archived": False,
                 "estimated_wait_time": 0,
                 "active": False,
-                "questions": []
+                "questions": [],
             },
-        ], 
-        "semester": {'year':2020, 'term': Semester.TERM_SUMMER},
+        ],
+        "semester": {"year": 2020, "term": Semester.TERM_SUMMER},
         "archived": False,
         "invite_only": False,
         "video_chat_enabled": False,
@@ -163,14 +161,13 @@ courses = [
                 "archived": False,
                 "estimated_wait_time": 20,
                 "active": True,
-                "questions": 
-                [   
+                "questions": [
                     {
                         "text": "How good are you guys?",
                         "video_chat_url": "https://upenn.zoom.us/j/adad13",
                         "status": Question.STATUS_WITHDRAWN,
                         "time_asked": now - datetime.timedelta(minutes=1),
-                        "should_send_up_soon_notification": False
+                        "should_send_up_soon_notification": False,
                     },
                     {
                         "text": "I needa go pee.",
@@ -190,7 +187,7 @@ courses = [
                         "time_response_started": now - datetime.timedelta(minutes=130),
                         "should_send_up_soon_notification": False,
                     },
-                ]
+                ],
             },
             {
                 "name": "Other Questions",
@@ -198,14 +195,13 @@ courses = [
                 "archived": False,
                 "estimated_wait_time": 30,
                 "active": True,
-                "questions": 
-                [   
+                "questions": [
                     {
                         "text": "Potatoes",
                         "video_chat_url": "https://upenn.zoom.us/j/ad123456sdfghd13",
                         "status": Question.STATUS_WITHDRAWN,
                         "time_asked": now - datetime.timedelta(minutes=1),
-                        "should_send_up_soon_notification": False
+                        "should_send_up_soon_notification": False,
                     },
                     {
                         "text": "How's life at the Labs?",
@@ -216,7 +212,7 @@ courses = [
                         "time_responded_to": now - datetime.timedelta(minutes=17),
                         "should_send_up_soon_notification": True,
                     },
-                ]
+                ],
             },
             {
                 "name": "We are archiving the bad vibes",
@@ -224,10 +220,10 @@ courses = [
                 "archived": True,
                 "estimated_wait_time": 0,
                 "active": False,
-                "questions": []
+                "questions": [],
             },
-        ], 
-        "semester": {'year':2020, 'term': Semester.TERM_SPRING},
+        ],
+        "semester": {"year": 2020, "term": Semester.TERM_SPRING},
         "archived": False,
         "invite_only": True,
         "video_chat_enabled": False,
@@ -238,7 +234,7 @@ courses = [
         "department": "OLD",
         "course_title": "Class of 1930",
         "description": "Class of 1930 Graduates Only!!! Likely to be archived",
-        "semester": {'year':1930, 'term': Semester.TERM_SPRING},
+        "semester": {"year": 1930, "term": Semester.TERM_SPRING},
         "archived": True,
         "queues": [],
         "invite_only": False,
@@ -247,24 +243,19 @@ courses = [
     },
 ]
 
+
 class Command(BaseCommand):
     help = "Populates the development environment with dummy data."
 
-    def handle (self, *args, **kwargs):
+    def handle(self, *args, **kwargs):
 
         # not sure if this line is neccessary / works
         if Course.objects.filter(course_title="Example Queues for OHQ").exists():
             raise CommandError("You probably do not want to run this script in production!")
-        
-        # ask what "last active" means for membership
-        # tell them we have a rando per course
-        # __self__ for question ?
-        # members in courses? add the members there too?
-        # professors can join their own class as student ? doesn't show up as instructor courses
-        # timezone now or specific time for tests ?
-        # include a delete function (sql clear)
 
-        # create 11 users
+        # ask what "last active" means for membership, should we add that in for ying
+
+        # create 11 users (1 prof, 2 head TA's, 2 regular TA's, 4 students, 1 membership invite, and 1 not in the course)
         count = 0
         schools = ["seas", "nursing", "wharton", "sas"]
         users = [
@@ -278,7 +269,7 @@ class Command(BaseCommand):
             "Andrew Jackson",
             "Kevin Chen",
             "Justin Zhang",
-            "Armaan Davis"
+            "Armaan Davis",
         ]
         user_objs = []
         for user in users:
@@ -297,45 +288,45 @@ class Command(BaseCommand):
                 obj.is_staff = True
                 obj.save()
                 user_objs.append(obj)
-        
+
         # create TJeff as superuser
         tjeff = user_objs[3]
         tjeff.is_superuser = True
-        tjeff.set_password('password')
+        tjeff.set_password("password")
         tjeff.is_staff = True
         tjeff.save()
 
         # create profiles for each user
         for i in range(len(user_objs)):
-            code = str(i) + 'code'
-            phone_number = '+1234567890' + str(i)[0]
-            if (i % 5 == 0):
+            code = str(i) + "code"
+            phone_number = "+1234567890" + str(i)[0]
+            if i % 5 == 0:
                 # create combo 1 - no sms verification, notifications not enabled
                 newProfile = Profile.objects.get(user=user_objs[i])
-                newProfile.phone_number=phone_number
-            if (i % 5 == 1):
+                newProfile.phone_number = phone_number
+            if i % 5 == 1:
                 # create combo 2 - sms verfication pending, notifications disabled
                 newProfile = Profile.objects.get(user=user_objs[i])
-                newProfile.sms_verification_code=code
-                newProfile.phone_number=phone_number
-            if (i % 5 == 2):
+                newProfile.sms_verification_code = code
+                newProfile.phone_number = phone_number
+            if i % 5 == 2:
                 # create combo 3 - sms verified and sms notifications off
                 newProfile = Profile.objects.get(user=user_objs[i])
-                newProfile.sms_verification_code=code 
-                newProfile.sms_verification_timestamp= timezone.now() - datetime.timedelta(minutes=i*10) 
-                newProfile.sms_verified=True
-                newProfile.phone_number=phone_number
-            if (i % 5 == 3):
+                newProfile.sms_verification_code = code
+                newProfile.sms_verification_timestamp = now - datetime.timedelta(minutes=i * 10)
+                newProfile.sms_verified = True
+                newProfile.phone_number = phone_number
+            if i % 5 == 3:
                 # create combo 4 - sms verfied and notifications on
                 newProfile = Profile.objects.get(user=user_objs[i])
-                newProfile.sms_verification_code=code
-                newProfile.sms_notifications_enabled=True
-                newProfile.sms_verification_timestamp= timezone.now() - datetime.timedelta(minutes=i*10)
-                newProfile.sms_verified=True
-                newProfile.phone_number=phone_number
+                newProfile.sms_verification_code = code
+                newProfile.sms_notifications_enabled = True
+                newProfile.sms_verification_timestamp = now - datetime.timedelta(minutes=i * 10)
+                newProfile.sms_verified = True
+                newProfile.phone_number = phone_number
 
             newProfile.save()
-            
+
         # create courses
         newCount = 0
         for info in courses:
@@ -348,74 +339,121 @@ class Command(BaseCommand):
                 if field in partial:
                     del partial[field]
 
-            partial['semester'], _ = Semester.objects.get_or_create(year=partial['semester']['year'], term=partial['semester']['term'])
+            partial["semester"], _ = Semester.objects.get_or_create(
+                year=partial["semester"]["year"], term=partial["semester"]["term"]
+            )
 
             # created the course with everything except for memberships and membership invites
-            newCourse, _ = Course.objects.get_or_create(course_code=info["course_code"], defaults=partial)
- 
+            newCourse, _ = Course.objects.get_or_create(
+                course_code=info["course_code"], defaults=partial
+            )
+
             # create 1 professor
-            professorMembership, _ = Membership.objects.get_or_create(course=newCourse, user=user_objs[newCount%len(user_objs)], kind=Membership.KIND_PROFESSOR)
+            professorMembership, _ = Membership.objects.get_or_create(
+                course=newCourse,
+                user=user_objs[newCount % len(user_objs)],
+                kind=Membership.KIND_PROFESSOR,
+            )
             newCount += 1
 
             # create 2 head TA
             # s
             headTAList = []
             for i in range(2):
-                headTAMembership, _ = Membership.objects.get_or_create(course=newCourse, user=user_objs[(newCount)%len(user_objs)], kind=Membership.KIND_HEAD_TA)
+
+                headTAMembership, _ = Membership.objects.get_or_create(
+                    course=newCourse,
+                    user=user_objs[(newCount) % len(user_objs)],
+                    kind=Membership.KIND_HEAD_TA,
+                )
                 headTAList.append(headTAMembership)
                 newCount += 1
+
+                if i == 1:
+                    headTAMembership.last_active = now
+                    headTAMembership.save()
 
             # create 2 regular TA's
             regularTAList = []
             for i in range(2):
-                regularTAMembership, _ = Membership.objects.get_or_create(course=newCourse, user=user_objs[(newCount)%len(user_objs)], kind=Membership.KIND_TA)
+                regularTAMembership, _ = Membership.objects.get_or_create(
+                    course=newCourse,
+                    user=user_objs[(newCount) % len(user_objs)],
+                    kind=Membership.KIND_TA,
+                )
                 regularTAList.append(regularTAMembership)
                 newCount += 1
+
+                if i == 1 or i == 3:
+                    regularTAMembership.last_active = now - datetime.timedelta(minutes=i)
+                    regularTAMembership.save()
 
             # list with head TA's and regular TA's
             totalTAList = headTAList + regularTAList
 
             # create 4 students
             studentList = []
-            for i in range (4):
-                studentMembership, _ = Membership.objects.get_or_create(course=newCourse, user=user_objs[(newCount)%len(user_objs)], kind=Membership.KIND_STUDENT)
+            for i in range(4):
+                studentMembership, _ = Membership.objects.get_or_create(
+                    course=newCourse,
+                    user=user_objs[(newCount) % len(user_objs)],
+                    kind=Membership.KIND_STUDENT,
+                )
                 studentList.append(studentMembership)
                 newCount += 1
-            
+
             # create an invite per course
-            membership_invite, _ = MembershipInvite.objects.get_or_create(email=user_objs[(newCount+1)%len(user_objs)].email, course=newCourse, 
-                                                                          kind=Membership.KIND_CHOICES[(newCount+1)%len(Membership.KIND_CHOICES)][0])
-            
+            membership_invite, _ = MembershipInvite.objects.get_or_create(
+                email=user_objs[(newCount + 1) % len(user_objs)].email,
+                course=newCourse,
+                kind=Membership.KIND_CHOICES[(newCount + 1) % len(Membership.KIND_CHOICES)][0],
+            )
+
             # create queues for each course
-            for q in info['queues']:
-                newQueue, _ = Queue.objects.get_or_create(name=q['name'], description=q['description'], course=newCourse, archived=q['archived'],
-                                                        estimated_wait_time=q['estimated_wait_time'], active=q['active'])
-                
+            for q in info["queues"]:
+                newQueue, _ = Queue.objects.get_or_create(
+                    name=q["name"],
+                    description=q["description"],
+                    course=newCourse,
+                    archived=q["archived"],
+                    estimated_wait_time=q["estimated_wait_time"],
+                    active=q["active"],
+                )
+
                 respondedToCount = 0
                 askedByCount = 0
 
                 # adding the questions to each queue
-                for ques in q['questions']:
-                    
-                    newQuestion, _ = Question.objects.get_or_create(text=ques['text'], queue=newQueue, video_chat_url=ques['video_chat_url'], status=ques['status'], 
-                                                                    time_asked=ques['time_asked'], asked_by=studentList[askedByCount%len(studentList)].user, 
-                                                                    should_send_up_soon_notification=ques['should_send_up_soon_notification'])
+                for ques in q["questions"]:
+
+                    newQuestion, _ = Question.objects.get_or_create(
+                        text=ques["text"],
+                        queue=newQueue,
+                        video_chat_url=ques["video_chat_url"],
+                        status=ques["status"],
+                        time_asked=ques["time_asked"],
+                        asked_by=studentList[askedByCount % len(studentList)].user,
+                        should_send_up_soon_notification=ques["should_send_up_soon_notification"],
+                    )
 
                     askedByCount += 1
 
                     # accounting for different question status
-                    if ques['status'] in [Question.STATUS_REJECTED, Question.STATUS_ANSWERED, Question.STATUS_ACTIVE]:
-                        newQuestion.time_response_started = ques['time_response_started']
-                        newQuestion.responded_to_by = totalTAList[respondedToCount%len(totalTAList)].user
+                    if ques["status"] in [
+                        Question.STATUS_REJECTED,
+                        Question.STATUS_ANSWERED,
+                        Question.STATUS_ACTIVE,
+                    ]:
+                        newQuestion.time_response_started = ques["time_response_started"]
+                        newQuestion.responded_to_by = totalTAList[
+                            respondedToCount % len(totalTAList)
+                        ].user
                         respondedToCount += 1
 
-                    if ques['status'] == Question.STATUS_REJECTED:
-                        newQuestion.rejected_reason = ques['rejected_reason']
+                    if ques["status"] == Question.STATUS_REJECTED:
+                        newQuestion.rejected_reason = ques["rejected_reason"]
 
-                    if ques['status'] in [Question.STATUS_ANSWERED, Question.STATUS_REJECTED]:
-                        newQuestion.time_responded_to = ques['time_responded_to']
+                    if ques["status"] in [Question.STATUS_ANSWERED, Question.STATUS_REJECTED]:
+                        newQuestion.time_responded_to = ques["time_responded_to"]
 
                     newQuestion.save()
-
-
-
