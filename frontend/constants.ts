@@ -4,6 +4,7 @@ export const STUDENT_QUESTION_POS_POLL_INTERVAL = 10000;
 export const ALLOWED_LINKS = [
     "zoom.us",
     "zoom.com",
+    "zoom.com.cn",
     "bluejeans.com",
     "meet.google.com",
     "whereby.com",
