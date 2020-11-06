@@ -13,7 +13,7 @@ export function isValidVideoChatURL(url: string) {
             (acc: boolean, link: string) =>
                 acc ||
                 urlObject.hostname === link ||
-                urlObject.hostname.endsWith(`.${link}`),
+                urlObject.hostname.includes(link),
             false
         );
     } catch (e) {
