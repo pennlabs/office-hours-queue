@@ -30,9 +30,7 @@ const QuestionForm = (props: QuestionFormProps) => {
     const charLimit: number = 250;
     const [charCount, setCharCount] = useState(0);
     const [disabled, setDisabled] = useState(true);
-    const [validURL, setValidURL] = useState(
-        !course.requireVideoChatUrlOnQuestions
-    );
+    const [validURL, setValidURL] = useState(true);
     const [createPending, setCreatePending] = useState(false);
 
     const handleInputChange = (e, { name, value }) => {
