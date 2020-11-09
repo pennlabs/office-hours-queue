@@ -27,7 +27,14 @@ interface QueuePageProps extends CoursePageProps {
 const QueuePage = (props: QueuePageProps) => {
     const { course, leadership, queues, questionmap } = props;
     return (
-        <WebsocketProvider url="/api/ws/subscribe/">
+        <WebsocketProvider
+            url="/api/ws/subscribe/"
+            findOrigin={
+                process.env.NODE_ENV === "development"
+                    ? () => "ws://localhost:8000"
+                    : undefined
+            }
+        >
             <Head>
                 <title>{`OHQ | ${course.department} ${course.courseCode}`}</title>
             </Head>
