@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Grid, Segment, Header, Menu, Divider } from "semantic-ui-react";
 
-import General from "./General";
+import InstructorGuide from "./InstructorGuide";
 
 export default function Guide() {
-    const [tab, setTab] = useState("general");
+    const [tab, setTab] = useState("instructors");
 
     const handleClick = (e, { name }) => setTab(name);
 
@@ -39,7 +39,7 @@ export default function Guide() {
                 </Menu>
             </Grid.Row>
             <Grid.Row style={{ marginTop: "2rem" }}>
-                {tab === "general" && <General />}
+                {tab === "instructors" && <InstructorGuide />}
             </Grid.Row>
         </Grid.Column>
     );
