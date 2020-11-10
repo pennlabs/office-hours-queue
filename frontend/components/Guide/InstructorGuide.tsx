@@ -1,5 +1,5 @@
 import React from "react";
-import { Segment, Divider, List } from "semantic-ui-react";
+import { Segment, List } from "semantic-ui-react";
 
 import {
     CreateCourse,
@@ -64,6 +64,10 @@ export default function InstructorGuide() {
             <HoldOHBody />
             <AnalyticsBody />
             <SettingsBody />
+            <p>
+                Have any lingering questions? Please email us at contact@ohq.io
+                - we&apos;re happy to help!
+            </p>
         </>
     );
 }

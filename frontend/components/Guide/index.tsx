@@ -1,10 +1,16 @@
 import React, { useState } from "react";
-import { Grid, Segment, Header, Menu, Divider } from "semantic-ui-react";
+import { Grid, Header, Menu } from "semantic-ui-react";
 
 import InstructorGuide from "./InstructorGuide";
+import StudentGuide from "./StudentGuide";
+
+enum Page {
+    Instructor = "Instructor",
+    Student = "Student",
+}
 
 export default function Guide() {
-    const [tab, setTab] = useState("instructors");
+    const [tab, setTab] = useState(Page.Instructor);
 
     const handleClick = (e, { name }) => setTab(name);
 
@@ -16,30 +22,24 @@ export default function Guide() {
                 </Header>
                 <Menu>
                     <Menu.Item
-                        name="general"
-                        active={tab === "general"}
-                        onClick={handleClick}
-                    >
-                        General
-                    </Menu.Item>
-                    <Menu.Item
-                        name="students"
-                        active={tab === "students"}
-                        onClick={handleClick}
-                    >
-                        For Students
-                    </Menu.Item>
-                    <Menu.Item
-                        name="instructors"
-                        active={tab === "instructors"}
+                        name={Page.Instructor}
+                        active={tab === Page.Instructor}
                         onClick={handleClick}
                     >
                         For Instructors
                     </Menu.Item>
+                    <Menu.Item
+                        name={Page.Student}
+                        active={tab === Page.Student}
+                        onClick={handleClick}
+                    >
+                        For Students
+                    </Menu.Item>
                 </Menu>
             </Grid.Row>
             <Grid.Row style={{ marginTop: "2rem" }}>
-                {tab === "instructors" && <InstructorGuide />}
+                {tab === Page.Instructor && <InstructorGuide />}
+                {tab === Page.Student && <StudentGuide />}
             </Grid.Row>
         </Grid.Column>
     );
