@@ -1,7 +1,14 @@
 import React from "react";
 import { Segment, Divider, List } from "semantic-ui-react";
 
-import { CreateCourse, InviteMembers } from "./InstructorGuideContent";
+import {
+    CreateCourse,
+    InviteMembers,
+    CreateQueue,
+    HoldOfficeHours,
+    Analytics,
+    Settings,
+} from "./InstructorGuideContent";
 import { useSection } from "./utils";
 
 export default function InstructorGuide() {
@@ -13,6 +20,18 @@ export default function InstructorGuide() {
         "Invite Students and Instructors",
         InviteMembers
     );
+    const [CreateQueueHeader, CreateQueueBody] = useSection(
+        "Create a Queue",
+        CreateQueue
+    );
+    const [HoldOHHeader, HoldOHBody] = useSection(
+        "Hold Office Hours",
+        HoldOfficeHours
+    );
+
+    const [AnalyticsHeader, AnalyticsBody] = useSection("Analytics", Analytics);
+
+    const [SettingsHeader, SettingsBody] = useSection("Settings", Settings);
 
     return (
         <>
@@ -32,11 +51,19 @@ export default function InstructorGuide() {
                 <List bulleted>
                     <CreateCourseHeader />
                     <InviteMembersHeader />
+                    <CreateQueueHeader />
+                    <HoldOHHeader />
+                    <AnalyticsHeader />
+                    <SettingsHeader />
                 </List>
             </Segment>
 
             <CreateCourseBody />
             <InviteMembersBody />
+            <CreateQueueBody />
+            <HoldOHBody />
+            <AnalyticsBody />
+            <SettingsBody />
         </>
     );
 }

@@ -15,11 +15,15 @@ export function useSection(
 
     const Header = () => {
         return (
-            <List.Item
-                as="a"
-                onClick={() => ref.current && ref.current.scrollIntoView(true)}
-            >
-                {title}
+            <List.Item>
+                <a
+                    role="button"
+                    onClick={() =>
+                        ref.current && ref.current.scrollIntoView(true)
+                    }
+                >
+                    {title}
+                </a>
             </List.Item>
         );
     };
