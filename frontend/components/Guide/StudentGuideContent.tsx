@@ -135,12 +135,12 @@ export const WhileInQueue = ({ ref }) => (
                 </List.Item>
                 <List.Item>
                     To edit your question, you can click the green
-                    "quot;Edit"quot; button and update your question. You
+                    &quot;Edit&quot; button and update your question. You
                     won&apos;t lose your place in line!
                 </List.Item>
                 <List.Item>
                     To delete your question, click on the red
-                    "quot;Withdraw"quot; button. You&apos;ll be automatically
+                    &quot;Withdraw&quot; button. You&apos;ll be automatically
                     removed from the queue.
                 </List.Item>
                 <CenteredImage
