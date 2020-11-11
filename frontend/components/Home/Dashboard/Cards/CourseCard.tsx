@@ -14,10 +14,6 @@ const CourseCard = (props: CourseCardProps) => {
     const { course } = membership;
     const [hover, setHover] = useState(false);
 
-    const path = {
-        pathname: `/courses/${course.id}`,
-    };
-
     const handleLeave = () => {
         if (setLeaveMembership && setOpenLeave) {
             setLeaveMembership(membership);
@@ -27,7 +23,7 @@ const CourseCard = (props: CourseCardProps) => {
 
     return (
         <Segment basic>
-            <Link href={path}>
+            <Link href="/courses/[course]" as={`/courses/${course.id}`}>
                 <Segment.Group
                     style={{
                         cursor: "pointer",
