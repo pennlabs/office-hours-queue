@@ -1,5 +1,6 @@
 import datetime
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
@@ -247,11 +248,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
 
-        # not sure if this line is neccessary / works
-        if Course.objects.filter(course_title="Example Queues for OHQ").exists():
+        if not settings.DEBUG:
             raise CommandError("You probably do not want to run this script in production!")
-
-        # ask what "last active" means for membership, should we add that in for ying
 
         # create 11 users
         # (1 prof, 2 head TA's, 2 TA's, 4 students, 1 invites, and 1 not in the course)
@@ -355,8 +353,7 @@ class Command(BaseCommand):
             )
             newCount += 1
 
-            # create 2 head TA
-            # s
+            # create 2 head TAs
             headTAList = []
             for i in range(2):
 
@@ -369,7 +366,7 @@ class Command(BaseCommand):
                 newCount += 1
 
                 if i == 1:
-                    headTAMembership.last_active = now
+                    headTAMembership.last_active = now - datetime.timedelta(minutes=2)
                     headTAMembership.save()
 
             # create 2 regular TA's
