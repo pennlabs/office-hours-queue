@@ -1,20 +1,17 @@
 import useSWR from "swr";
 import { parsePhoneNumberFromString } from "libphonenumber-js/max";
+import { useResource } from "@pennlabs/rest-hooks";
 import { User } from "../../types";
 import { doApiRequest } from "../../utils/fetch";
 
-export function useAccountInfo(
-    initialUser
-): [
-    User,
-    any,
-    boolean,
-    (data?: any, shouldRevalidate?: boolean) => Promise<any>
-] {
-    const { data, error, isValidating, mutate } = useSWR("/accounts/me/", {
+export function useAccountInfo(initialUser?: User) {
+    const { data, error, isValidating, mutate } = useResource("/accounts/me/", {
         initialData: initialUser,
     });
-    return [data, error, isValidating, mutate];
+    if (data) {
+        return { data, error, isValidating, mutate: () => mutate() };
+    }
+    throw new Error("Could not get user account info");
 }
 
 export async function validateSMS(code) {
