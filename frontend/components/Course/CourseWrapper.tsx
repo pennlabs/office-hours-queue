@@ -4,12 +4,13 @@ import CourseSidebar from "./CourseSidebar";
 
 import { AuthUserContext } from "../../context/auth";
 import { useCourse, useStaff } from "../../hooks/data-fetching/course";
-import { Course as CourseType, Membership } from "../../types";
+import { Course as CourseType, Membership, Tag } from "../../types";
 
 interface CourseProps {
     render: (staff: boolean) => JSX.Element;
     course: CourseType;
     leadership: Membership[];
+    tags: Tag[];
 }
 const CourseWrapper = ({ render, ...props }: CourseProps) => {
     const { course: rawCourse, leadership } = props;

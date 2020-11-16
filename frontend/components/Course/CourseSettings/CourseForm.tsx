@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./CourseForm.module.css";
 
 import { Form, Button, Modal } from "semantic-ui-react";
@@ -6,13 +6,21 @@ import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 import AsyncSelect from "react-select/async";
 import { useRouter } from "next/router";
-import { Course, mutateResourceFunction, Semester } from "../../../types";
-import { getSemesters } from "../../../hooks/data-fetching/course";
+import { Course, mutateResourceFunction, Semester, Tag } from "../../../types";
+import { getSemesters, createTag, deleteTag, getTags } from "../../../hooks/data-fetching/course";
 import { logException } from "../../../utils/sentry";
+import CreatableSelect from 'react-select/creatable';
 
 interface CourseFormProps {
     course: Course;
-    mutate: mutateResourceFunction<Course>;
+    tags: Tag[];
+    mutateCourse: mutateResourceFunction<Course>;
+    mutateTags: mutateResourceFunction<Tag[]>;
+}
+
+interface TagLabel {
+    value: string;
+    label: string;
 }
 
 const videoChatNum = (course) => {
@@ -22,7 +30,7 @@ const videoChatNum = (course) => {
 };
 
 const CourseForm = (props: CourseFormProps) => {
-    const { course, mutate } = props;
+    const { course, tags, mutateCourse } = props;
     const router = useRouter();
     const [loading, setLoading] = useState(false);
 
@@ -35,6 +43,14 @@ const CourseForm = (props: CourseFormProps) => {
         courseTitle: course.courseTitle,
         semester: course.semester,
     });
+
+    const [oldTags, setOldTags] = useState({});
+    const [deletedTags, setDeletedTags] = useState<Tag[]>([]);
+    const [addedTags, setAddedTags] = useState<string[]>([]);
+    const [tagLabels, setTagLabels] = useState<TagLabel[]>([]);
+
+    const tagOptions = [{value: "logistics", label: "logistics"}, {value: "final", label: "final"}];
+
     const [check, setCheck] = useState(videoChatNum(course));
     const [success, setSuccess] = useState(false);
     const [disabled, setDisabled] = useState(true);
@@ -91,7 +107,14 @@ const CourseForm = (props: CourseFormProps) => {
     const onSubmit = async () => {
         try {
             setLoading(true);
-            await mutate(input);
+            await mutateCourse(input);
+
+            addedTags.forEach((tag) => {
+                createTag(course.id, tag);
+            });
+            deletedTags.forEach((tag) => {
+                deleteTag(course.id, tag.id);
+            });
             // await updateCourse(course.id, input);
             // await mutate();
             setLoading(false);
@@ -107,7 +130,7 @@ const CourseForm = (props: CourseFormProps) => {
     const onArchived = async () => {
         try {
             setLoading(true);
-            await mutate({ archived: true });
+            await mutateCourse({ archived: true });
             // await updateCourse(course.id, { archived: true });
             // await mutate();
             setLoading(false);
@@ -137,6 +160,65 @@ const CourseForm = (props: CourseFormProps) => {
                 };
             });
     };
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const loadedTags: Tag[] = await getTags(course.id);
+            var buildMap = {};
+
+            loadedTags.forEach((loadedTag) => {
+                buildMap[loadedTag.name] = loadedTag.id;
+            });
+            setOldTags(buildMap);
+                
+            setTagLabels(loadedTags.map((tag) => {
+                return {
+                    label: tag.name,
+                    value: tag.name,
+                };
+            }));
+        }
+
+        fetchData();
+    }, [tags]);
+
+    const handleCreateTag = async (inputValue: string) => {
+        if (!(inputValue in oldTags)) {
+            setAddedTags([...addedTags, inputValue]);
+        } else {
+            setDeletedTags(deletedTags.filter((tag) => {
+                return tag.name !== inputValue;
+            }));
+        }
+
+        setTagLabels([...tagLabels, {label: inputValue, value: inputValue}]);
+    };
+
+    const handleTagChange = (_, event) => {
+        if (event.action === "remove-value") {
+            const text = event.removedValue.label;
+
+            if (text in oldTags) {
+                setDeletedTags([...deletedTags, {name: text, id: oldTags[text]}]);
+            } else {
+                setAddedTags(addedTags.filter((tag) => {
+                    return tag !== text;
+                }));
+            }
+
+            setTagLabels(tagLabels.filter((tagLabel) => {
+                return tagLabel.label !== text;
+            }));
+        } else if (event.action === "clear") {
+            setTagLabels([]);
+        } else if (event.action === "select-option") {
+            handleCreateTag(event.option.label)
+        }
+    };
+
+    useEffect(() => {
+        setDisabled(addedTags.length === 0 && deletedTags.length === 0);
+    }, [addedTags, deletedTags]);
 
     return (
         <Form>
@@ -188,6 +270,22 @@ const CourseForm = (props: CourseFormProps) => {
                             value: id.value,
                         })
                     }
+                />
+            </Form.Field>
+            <Form.Field>
+                <label htmlFor="tags-select">Tags</label>
+                <CreatableSelect
+                    id="tags-select"
+                    name="tags"
+                    disabled={loading}
+                    isClearable
+                    isMulti
+                    cacheOptions
+                    options={tagOptions}
+                    value={tagLabels}
+                    placeholder="Type a tag and press enter..."
+                    onCreateOption={handleCreateTag}
+                    onChange={handleTagChange}
                 />
             </Form.Field>
             <Form.Field required>

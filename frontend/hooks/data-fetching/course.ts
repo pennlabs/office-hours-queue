@@ -15,6 +15,7 @@ import {
     Question,
     Queue,
     Semester,
+    Tag,
     User,
     QuestionStatus,
 } from "../../types";
@@ -29,6 +30,9 @@ import {
 
 export const useCourse = (courseId: number, initialCourse: Course) =>
     useResource(`/courses/${courseId}/`, initialCourse);
+
+export const useTags = (courseId: number, initialTags: Tag[]) =>
+    useResource(`/courses/${courseId}/tags/`, initialTags);
 
 export const useMembers = (courseId: number, initialData: Membership[]) =>
     useResourceList(
@@ -105,6 +109,29 @@ export async function sendMassInvites(
 
 export async function getSemesters(): Promise<Semester[]> {
     return doApiRequest("/semesters/")
+        .then((res) => res.json())
+        .catch((_) => []);
+}
+
+export async function createTag(courseId: number, name: string): Promise<Tag> {
+    const payload = { name };
+
+    return doApiRequest(`/courses/${courseId}/tags/`, {
+        method: "POST",
+        body: payload,
+    })
+        .then((res) => res.json())
+        .catch((_) => null);
+}
+
+export async function deleteTag(courseId: number, tagId: number) {
+    await doApiRequest(`/courses/${courseId}/tags/${tagId}/`, {
+        method: "DELETE",
+    });
+}
+
+export async function getTags(courseId: number): Promise<Tag[]> {
+    return doApiRequest(`/courses/${courseId}/tags/`)
         .then((res) => res.json())
         .catch((_) => []);
 }

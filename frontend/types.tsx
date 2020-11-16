@@ -104,6 +104,11 @@ export interface Semester {
     pretty: string;
 }
 
+export interface Tag {
+    id: number;
+    name: string;
+}
+
 export interface QuestionMap {
     [queueId: number]: Question[];
 }
@@ -135,4 +140,5 @@ export interface Toast {
 export interface CoursePageProps {
     course: Course;
     leadership: Membership[];
+    tags: Tag[];
 }

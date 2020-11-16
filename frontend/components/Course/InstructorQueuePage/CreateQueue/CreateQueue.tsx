@@ -82,15 +82,15 @@ const CreateQueue = (props: CreateQueueProps) => {
                             <label>Tags</label>
                             <CreatableSelect
                                 components={{ DropdownIndicator: null }}
-                                inputValue={tagsInputValue}
+                                // inputValue={tagsInputValue}
                                 isClearable
                                 isMulti
                                 menuIsOpen={false}
-                                onChange={handleTagChange}
-                                onInputChange={handleTagsInputChange}
-                                onKeyDown={handleTagsKeyDown}
+                                // onChange={handleTagChange}
+                                // onInputChange={handleTagsInputChange}
+                                // onKeyDown={handleTagsKeyDown}
                                 placeholder="Type a tag and press enter..."
-                                value={tags}
+                                // value={tags}
                             />
                         </Form.Field> */}
                         <Button
