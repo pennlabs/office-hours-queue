@@ -6,10 +6,15 @@ import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 import AsyncSelect from "react-select/async";
 import { useRouter } from "next/router";
+import CreatableSelect from "react-select/creatable";
 import { Course, mutateResourceFunction, Semester, Tag } from "../../../types";
-import { getSemesters, createTag, deleteTag, getTags } from "../../../hooks/data-fetching/course";
+import {
+    getSemesters,
+    createTag,
+    deleteTag,
+    getTags,
+} from "../../../hooks/data-fetching/course";
 import { logException } from "../../../utils/sentry";
-import CreatableSelect from 'react-select/creatable';
 
 interface CourseFormProps {
     course: Course;
@@ -30,7 +35,7 @@ const videoChatNum = (course) => {
 };
 
 const CourseForm = (props: CourseFormProps) => {
-    const { course, tags, mutateCourse } = props;
+    const { course, tags, mutateCourse, mutateTags } = props;
     const router = useRouter();
     const [loading, setLoading] = useState(false);
 
@@ -49,7 +54,10 @@ const CourseForm = (props: CourseFormProps) => {
     const [addedTags, setAddedTags] = useState<string[]>([]);
     const [tagLabels, setTagLabels] = useState<TagLabel[]>([]);
 
-    const tagOptions = [{value: "logistics", label: "logistics"}, {value: "final", label: "final"}];
+    const tagOptions = [
+        { value: "logistics", label: "logistics" },
+        { value: "final", label: "final" },
+    ];
 
     const [check, setCheck] = useState(videoChatNum(course));
     const [success, setSuccess] = useState(false);
@@ -164,20 +172,22 @@ const CourseForm = (props: CourseFormProps) => {
     useEffect(() => {
         const fetchData = async () => {
             const loadedTags: Tag[] = await getTags(course.id);
-            var buildMap = {};
+            const buildMap = {};
 
             loadedTags.forEach((loadedTag) => {
                 buildMap[loadedTag.name] = loadedTag.id;
             });
             setOldTags(buildMap);
-                
-            setTagLabels(loadedTags.map((tag) => {
-                return {
-                    label: tag.name,
-                    value: tag.name,
-                };
-            }));
-        }
+
+            setTagLabels(
+                loadedTags.map((tag) => {
+                    return {
+                        label: tag.name,
+                        value: tag.name,
+                    };
+                })
+            );
+        };
 
         fetchData();
     }, [tags]);
@@ -186,12 +196,14 @@ const CourseForm = (props: CourseFormProps) => {
         if (!(inputValue in oldTags)) {
             setAddedTags([...addedTags, inputValue]);
         } else {
-            setDeletedTags(deletedTags.filter((tag) => {
-                return tag.name !== inputValue;
-            }));
+            setDeletedTags(
+                deletedTags.filter((tag) => {
+                    return tag.name !== inputValue;
+                })
+            );
         }
 
-        setTagLabels([...tagLabels, {label: inputValue, value: inputValue}]);
+        setTagLabels([...tagLabels, { label: inputValue, value: inputValue }]);
     };
 
     const handleTagChange = (_, event) => {
@@ -199,20 +211,27 @@ const CourseForm = (props: CourseFormProps) => {
             const text = event.removedValue.label;
 
             if (text in oldTags) {
-                setDeletedTags([...deletedTags, {name: text, id: oldTags[text]}]);
+                setDeletedTags([
+                    ...deletedTags,
+                    { name: text, id: oldTags[text] },
+                ]);
             } else {
-                setAddedTags(addedTags.filter((tag) => {
-                    return tag !== text;
-                }));
+                setAddedTags(
+                    addedTags.filter((tag) => {
+                        return tag !== text;
+                    })
+                );
             }
 
-            setTagLabels(tagLabels.filter((tagLabel) => {
-                return tagLabel.label !== text;
-            }));
+            setTagLabels(
+                tagLabels.filter((tagLabel) => {
+                    return tagLabel.label !== text;
+                })
+            );
         } else if (event.action === "clear") {
             setTagLabels([]);
         } else if (event.action === "select-option") {
-            handleCreateTag(event.option.label)
+            handleCreateTag(event.option.label);
         }
     };
 
