@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, MutableRefObject } from "react";
 import { Segment, Header, Button, Popup, Icon, Grid } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import EditQuestionModal from "./EditQuestionModal";
 import DeleteQuestionModal from "./DeleteQuestionModal";
-import { Question, Course, Queue } from "../../../types";
+import { Question, Course, Queue, QuestionStatus } from "../../../types";
 import {
     useQuestionPosition,
     finishQuestion,
@@ -18,6 +18,7 @@ interface QuestionCardProps {
     mutate: mutateResourceListFunction<Question>;
     lastQuestionsMutate: mutateResourceListFunction<Question>;
     toastFunc: (success: string | null, error: any) => void;
+    play: MutableRefObject<() => void>;
 }
 const QuestionCard = (props: QuestionCardProps) => {
     const {
@@ -28,6 +29,7 @@ const QuestionCard = (props: QuestionCardProps) => {
         toastFunc,
         queueMutate,
         lastQuestionsMutate,
+        play,
     } = props;
     const [positionData, , , ,] = useQuestionPosition(
         course.id,
@@ -44,6 +46,12 @@ const QuestionCard = (props: QuestionCardProps) => {
             minute: "numeric",
         });
     };
+
+    useEffect(() => {
+        if (question.status === QuestionStatus.ACTIVE) {
+            play.current();
+        }
+    }, [question.status, play]);
 
     const markQuestionAsAnswered = async () => {
         try {

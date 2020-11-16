@@ -1,5 +1,6 @@
-import React, { useContext, useState } from "react";
-import { Grid } from "semantic-ui-react";
+import React, { useContext, useState, MutableRefObject } from "react";
+import { Grid, Message } from "semantic-ui-react";
+import { WSContext } from "@pennlabs/rest-live-hooks";
 import Alert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
 import InstructorQueues from "./InstructorQueues";
@@ -13,6 +14,7 @@ interface InstructorQueuePageProps {
     courseId: number;
     queues: Queue[];
     questionmap: QuestionMap;
+    play: MutableRefObject<() => void>;
 }
 
 enum PageStateEnum {
@@ -37,7 +39,7 @@ interface CreateState {
 type PageState = QueueState | SettingsState | CreateState;
 
 const InstructorQueuePage = (props: InstructorQueuePageProps) => {
-    const { courseId, queues: rawQueues, questionmap } = props;
+    const { courseId, queues: rawQueues, questionmap, play } = props;
 
     /* STATE */
     const { user: initialUser } = useContext(AuthUserContext);
@@ -46,6 +48,7 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
             "Invariant broken: withAuth must be used with component"
         );
     }
+    const { isConnected } = useContext(WSContext);
 
     const [leader, , , ,] = useStaff(courseId, initialUser);
 
@@ -70,53 +73,63 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
     };
 
     return (
-        <Grid stackable>
-            {pageState.kind === PageStateEnum.QUEUES && queues && (
-                <InstructorQueues
-                    courseId={courseId}
-                    queues={queues}
-                    questionmap={questionmap}
-                    editFunc={onQueueSettings}
-                    createFunc={() => {
-                        setPageState({ kind: PageStateEnum.CREATE });
-                    }}
-                    mutate={mutate}
-                    leader={leader}
-                />
+        <>
+            {!isConnected && (
+                <div style={{ paddingTop: "1rem" }}>
+                    <Message warning>
+                        You are not currently connected to OHQ. Reconnecting...
+                    </Message>
+                </div>
             )}
-            {pageState.kind === PageStateEnum.SETTINGS && (
-                <Grid.Row>
-                    <QueueSettings
-                        queue={getQueue(pageState.queueID)}
-                        mutate={mutate}
-                        backFunc={() =>
-                            setPageState({ kind: PageStateEnum.QUEUES })
-                        }
-                    />
-                </Grid.Row>
-            )}
-            {pageState.kind === PageStateEnum.CREATE && (
-                <Grid.Row>
-                    <CreateQueue
+            <Grid stackable>
+                {pageState.kind === PageStateEnum.QUEUES && queues && (
+                    <InstructorQueues
                         courseId={courseId}
+                        queues={queues}
+                        questionmap={questionmap}
+                        editFunc={onQueueSettings}
+                        createFunc={() => {
+                            setPageState({ kind: PageStateEnum.CREATE });
+                        }}
                         mutate={mutate}
-                        successFunc={() => setSuccess(true)}
-                        backFunc={() =>
-                            setPageState({ kind: PageStateEnum.QUEUES })
-                        }
+                        leader={leader}
+                        play={play}
                     />
-                </Grid.Row>
-            )}
-            <Snackbar
-                open={success}
-                autoHideDuration={6000}
-                onClose={() => setSuccess(false)}
-            >
-                <Alert severity="success" onClose={() => setSuccess(false)}>
-                    <span>Queue successfully created</span>
-                </Alert>
-            </Snackbar>
-        </Grid>
+                )}
+                {pageState.kind === PageStateEnum.SETTINGS && (
+                    <Grid.Row>
+                        <QueueSettings
+                            queue={getQueue(pageState.queueID)}
+                            mutate={mutate}
+                            backFunc={() =>
+                                setPageState({ kind: PageStateEnum.QUEUES })
+                            }
+                        />
+                    </Grid.Row>
+                )}
+                {pageState.kind === PageStateEnum.CREATE && (
+                    <Grid.Row>
+                        <CreateQueue
+                            courseId={courseId}
+                            mutate={mutate}
+                            successFunc={() => setSuccess(true)}
+                            backFunc={() =>
+                                setPageState({ kind: PageStateEnum.QUEUES })
+                            }
+                        />
+                    </Grid.Row>
+                )}
+                <Snackbar
+                    open={success}
+                    autoHideDuration={6000}
+                    onClose={() => setSuccess(false)}
+                >
+                    <Alert severity="success" onClose={() => setSuccess(false)}>
+                        <span>Queue successfully created</span>
+                    </Alert>
+                </Snackbar>
+            </Grid>
+        </>
     );
 };
 

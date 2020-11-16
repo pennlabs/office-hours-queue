@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, MutableRefObject } from "react";
 import {
     Segment,
     Label,
@@ -26,10 +26,11 @@ interface StudentQueueProps {
     queue: Queue;
     queueMutate: mutateResourceListFunction<Queue>;
     questions: Question[];
+    play: MutableRefObject<() => void>;
 }
 
 const StudentQueue = (props: StudentQueueProps) => {
-    const { course, queue, queueMutate, questions: rawQuestions } = props;
+    const { course, queue, queueMutate, questions: rawQuestions, play } = props;
     const [toast, setToast] = useState({ message: "", success: true });
     const [toastOpen, setToastOpen] = useState(false);
 
@@ -38,10 +39,10 @@ const StudentQueue = (props: StudentQueueProps) => {
         queue.id,
         rawQuestions
     );
-    const {
-        data: lastQuestions,
-        mutate: mutateLastQuestions,
-    } = useLastQuestions(course.id, queue.id);
+    const [lastQuestions, , , mutateLastQuestions] = useLastQuestions(
+        course.id,
+        queue.id
+    );
 
     if (!questions) {
         return (
@@ -120,6 +121,7 @@ const StudentQueue = (props: StudentQueueProps) => {
                         lastQuestionsMutate={mutateLastQuestions}
                         mutate={mutateQuestions}
                         toastFunc={updateToast}
+                        play={play}
                     />
                 )}
                 {!queue.active && questions.length === 0 && (

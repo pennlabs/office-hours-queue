@@ -1,4 +1,4 @@
-import React from "react";
+import React, { MutableRefObject } from "react";
 import { Grid, Segment, Icon, Message } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Queue from "./Queue";
@@ -12,6 +12,7 @@ interface InstructorQueuesProps {
     mutate: mutateResourceListFunction<QueueType>;
     editFunc: (n: number) => void;
     createFunc: () => void;
+    play: MutableRefObject<() => void>;
 }
 const InstructorQueues = (props: InstructorQueuesProps) => {
     const {
@@ -22,6 +23,7 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
         createFunc,
         mutate,
         editFunc,
+        play,
     } = props;
 
     const numActive = () => {
@@ -46,6 +48,7 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
                                         leader={leader}
                                         mutate={mutate}
                                         editFunc={() => editFunc(queue.id)}
+                                        play={play}
                                     />
                                 </Grid.Column>
                             )
