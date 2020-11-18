@@ -65,6 +65,9 @@ const CreateCourseForm = (props: CreateCourseFormProps) => {
                 <AsyncSelect
                     id="select-sem"
                     name="semester"
+                    styles={{
+                        menu: (styles) => ({ ...styles, zIndex: 10 }),
+                    }}
                     cacheOptions
                     defaultOptions
                     loadOptions={semesterOptions}
