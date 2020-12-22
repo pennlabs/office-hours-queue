@@ -240,3 +240,48 @@ class Question(models.Model):
     rejected_reason = models.CharField(max_length=255, blank=True, null=True)
 
     should_send_up_soon_notification = models.BooleanField(default=False)
+
+# class QueueStatistics(models.Model):
+#     """
+#     Statistics related to a queue
+#     """
+
+#     METRIC_AVG_WAIT = "AVG_WAIT"
+#     METRIC_NUM_ANSWERED = "NUM_ANSWERED"
+#     METRIC_STUDENTS_HELPED = "STUDENT_HELPED"
+#     METRIC_CHOICES = [
+#         (METRIC_AVG_WAIT, "Average wait-time"),
+#         (METRIC_NUM_ANSWERED, "Number of questions answered per week"),
+#         (METRIC_STUDENTS_HELPED, "Students helped per week")
+#     ]
+
+#     # for heatmap - there is def a better way to do this
+#     CLASSIFICATION_MONDAY_0_4 = "MONDAY_0_4"
+#     CLASSIFICATION_CHOICES = [
+#         (CLASSIFICATION_MONDAY_0_4, "Monday 12AM - 4AM")
+#     ]
+
+#     queue = models.ForeignKey(Queue, on_delete=models.CASCADE)
+#     metric = models.CharField(max_length=256, choices=METRIC_CHOICES)
+#     classification = models.CharField(max_length=256, choices=CLASSIFICATION_CHOICES, blank=True, null=True) # used for heatmap date/time
+#     value = models.DecimalField(max_digits=16, decimal_places=8)
+#     date = models.DateTimeField(blank=True, null=True) # for weekly stats, just set this to the Sunday
+
+#     class Meta:
+#         constraints = [models.UniqueConstraint(fields=["queue", "metric", "classification", "date"], name="unique_statistic")]
+    
+#     def name_to_pretty(self):
+#         return [pretty for raw, pretty in QueueStatistics.METRIC_CHOICES if raw == self.metric][0]
+
+#     def classification_to_pretty(self):
+#         pretty_lst = [pretty for raw, pretty in QueueStatistics.CLASSIFICATION_CHOICES if raw == self.classification]
+#         if len(pretty_lst):
+#             return pretty_lst[0]
+#         else:
+#             return ""
+
+#     def __str__(self):
+#         string = f"${self.queue}: {self.name_to_pretty()}"
+#         if (self.classification_to_pretty() != ""):
+#             string += self.classification_to_pretty()
+#         return string
