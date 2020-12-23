@@ -427,10 +427,11 @@ class Command(BaseCommand):
                         queue=newQueue,
                         video_chat_url=ques["video_chat_url"],
                         status=ques["status"],
-                        time_asked=ques["time_asked"],
                         asked_by=studentList[askedByCount % len(studentList)].user,
                         should_send_up_soon_notification=ques["should_send_up_soon_notification"],
                     )
+
+                    newQuestion.time_asked = ques['time_asked'] # prevent auto now add from changing the time
 
                     askedByCount += 1
 
