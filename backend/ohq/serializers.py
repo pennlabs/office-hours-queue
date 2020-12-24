@@ -5,7 +5,16 @@ from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 from rest_live.decorators import subscribable
 
-from ohq.models import Course, Membership, MembershipInvite, Profile, Question, Queue, Semester
+from ohq.models import (
+    Course,
+    Membership,
+    MembershipInvite,
+    Profile,
+    Question,
+    Queue,
+    QueueStatistic,
+    Semester,
+)
 from ohq.permissions import has_permission_for_question
 from ohq.sms import sendSMSVerification
 from ohq.tasks import sendUpNextNotificationTask
@@ -338,3 +347,11 @@ class UserPrivateSerializer(serializers.ModelSerializer):
 
             profile.save()
         return super().update(instance, validated_data)
+
+
+class QueueStatisticSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QueueStatistic
+        fields = ("metric", "classification", "value", "date")
+        # make everything read-only, stats are only updated through commands
+        read_only_fields = ("metric", "classification", "value", "date")

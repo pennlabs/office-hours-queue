@@ -6,12 +6,9 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ohq', '0005_auto_20201221_2055'),
+        ("ohq", "0005_auto_20201221_2055"),
     ]
 
     operations = [
-        migrations.RenameModel(
-            old_name='QueueStatistics',
-            new_name='QueueStatistic',
-        ),
+        migrations.RenameModel(old_name="QueueStatistics", new_name="QueueStatistic",),
     ]

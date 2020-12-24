@@ -8,6 +8,7 @@ from ohq.views import (
     MembershipViewSet,
     QuestionSearchView,
     QuestionViewSet,
+    QueueStatisticViewSet,
     QueueViewSet,
     ResendNotificationView,
     SemesterViewSet,
@@ -28,6 +29,7 @@ course_router.register("invites", MembershipInviteViewSet, basename="invite")
 
 queue_router = routers.NestedSimpleRouter(course_router, "queues", lookup="queue")
 queue_router.register("questions", QuestionViewSet, basename="question")
+queue_router.register("statistics", QueueStatisticViewSet, basename="statistic")
 
 additional_urls = [
     path("accounts/me/", UserView.as_view(), name="me"),

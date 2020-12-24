@@ -247,6 +247,7 @@ class QueueStatistic(models.Model):
     Statistics related to a queue
     """
 
+    # add new metrics/statistics
     METRIC_AVG_WAIT = "AVG_WAIT"
     METRIC_NUM_ANSWERED = "NUM_ANSWERED"
     METRIC_STUDENTS_HELPED = "STUDENT_HELPED"
@@ -266,9 +267,7 @@ class QueueStatistic(models.Model):
         max_length=256, choices=CLASSIFICATION_CHOICES, blank=True, null=True
     )  # used for heatmap date/time
     value = models.DecimalField(max_digits=16, decimal_places=8)
-    date = models.DateTimeField(
-        blank=True, null=True
-    )  # for weekly stats, just set this to the Sunday
+    date = models.DateField(blank=True, null=True)  # for weekly stats, just set this to the Sunday
 
     class Meta:
         constraints = [

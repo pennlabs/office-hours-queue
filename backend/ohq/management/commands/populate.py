@@ -431,7 +431,9 @@ class Command(BaseCommand):
                         should_send_up_soon_notification=ques["should_send_up_soon_notification"],
                     )
 
-                    newQuestion.time_asked = ques['time_asked'] # prevent auto now add from changing the time
+                    newQuestion.time_asked = ques[
+                        "time_asked"
+                    ]  # prevent auto now add from changing the time
 
                     askedByCount += 1
 

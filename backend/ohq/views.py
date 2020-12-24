@@ -11,16 +11,24 @@ from django_auto_prefetching import prefetch
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_renderer_xlsx.mixins import XLSXFileMixin
 from drf_renderer_xlsx.renderers import XLSXRenderer
-from rest_framework import filters, generics, viewsets
+from rest_framework import filters, generics, mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 
-from ohq.filters import QuestionSearchFilter
+from ohq.filters import QuestionSearchFilter, QueueStatisticFilter
 from ohq.invite import parse_and_send_invites
-from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester
+from ohq.models import (
+    Course,
+    Membership,
+    MembershipInvite,
+    Question,
+    Queue,
+    QueueStatistic,
+    Semester,
+)
 from ohq.pagination import QuestionSearchPagination
 from ohq.permissions import (
     CoursePermission,
@@ -31,6 +39,7 @@ from ohq.permissions import (
     QuestionPermission,
     QuestionSearchPermission,
     QueuePermission,
+    QueueStatisticPermission,
 )
 from ohq.schemas import MassInviteSchema
 from ohq.serializers import (
@@ -41,6 +50,7 @@ from ohq.serializers import (
     Profile,
     QuestionSerializer,
     QueueSerializer,
+    QueueStatisticSerializer,
     SemesterSerializer,
     UserPrivateSerializer,
 )
@@ -447,3 +457,20 @@ class MassInviteView(APIView):
             },
             status=201,
         )
+
+
+class QueueStatisticViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    list:
+    Return a list of statistics - multiple data points for list statistics and heatmap statistics and singleton 
+    for card statistics.
+    """
+
+    serializer_class = QueueStatisticSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = QueueStatisticFilter
+    permission_classes = [QueueStatisticPermission | IsSuperuser]
+
+    def get_queryset(self):
+        qs = QueueStatistic.objects.filter(queue=self.kwargs["queue_pk"])
+        return prefetch(qs, self.serializer_class)

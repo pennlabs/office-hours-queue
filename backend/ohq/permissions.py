@@ -1,7 +1,7 @@
 from django.db.models import Q
 from rest_framework import permissions
 
-from ohq.models import Course, Membership, Question
+from ohq.models import Course, Membership, Question, QueueStatistic
 
 
 # Hierarchy of permissions is usually:
@@ -325,3 +325,21 @@ class MassInvitePermission(permissions.BasePermission):
             return False
 
         return membership.is_leadership
+
+
+class QueueStatisticPermission(permissions.BasePermission):
+    """
+    Students+ can access queue related statistics
+    """
+
+    def has_permission(self, request, view):
+        # Anonymous users can't do anything
+        if not request.user.is_authenticated:
+            return False
+
+        membership = Membership.objects.filter(
+            course=view.kwargs["course_pk"], user=request.user
+        ).first()
+
+        # anyone who is a member of the class can see queue related statistics
+        return membership != None
