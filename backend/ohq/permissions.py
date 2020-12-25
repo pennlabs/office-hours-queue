@@ -1,7 +1,7 @@
 from django.db.models import Q
 from rest_framework import permissions
 
-from ohq.models import Course, Membership, Question, QueueStatistic
+from ohq.models import Course, Membership, Question
 
 
 # Hierarchy of permissions is usually:
@@ -342,4 +342,4 @@ class QueueStatisticPermission(permissions.BasePermission):
         ).first()
 
         # anyone who is a member of the class can see queue related statistics
-        return membership != None
+        return membership is not None

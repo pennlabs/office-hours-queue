@@ -462,8 +462,8 @@ class MassInviteView(APIView):
 class QueueStatisticViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
     list:
-    Return a list of statistics - multiple data points for list statistics and heatmap statistics and singleton 
-    for card statistics.
+    Return a list of statistics - multiple data points for list statistics and heatmap statistics
+    and singleton for card statistics.
     """
 
     serializer_class = QueueStatisticSerializer
