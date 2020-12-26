@@ -264,24 +264,25 @@ class QueueStatistic(models.Model):
     ]
 
     # for specific days during the week - used for heatmap and graphs where day is x-axis
-    DAY_SUNDAY = 0
-    DAY_MONDAY = 1
-    DAY_TUESDAY = 2
-    DAY_WEDNESDAY = 3
-    DAY_THURSDAY = 4
-    DAY_FRIDAY = 5
-    DAY_SATURDAY = 6
+    DAY_MONDAY = 0
+    DAY_TUESDAY = 1
+    DAY_WEDNESDAY = 2
+    DAY_THURSDAY = 3
+    DAY_FRIDAY = 4
+    DAY_SATURDAY = 5
+    DAY_SUNDAY = 6
     DAY_CHOICES = [
-        (DAY_SUNDAY, "Sunday"),
         (DAY_MONDAY, "Monday"),
         (DAY_TUESDAY, "Tuesday"),
         (DAY_WEDNESDAY, "Wednesday"),
         (DAY_THURSDAY, "Thursday"),
         (DAY_FRIDAY, "Friday"),
         (DAY_SATURDAY, "Saturday"),
+        (DAY_SUNDAY, "Sunday"),
     ]
 
     # used in heatmap - hopefully ints for time and day will make it easier to sort and group
+    TIME_RANGE_INTERVAL = 4
     TIME_0_4 = 0
     TIME_4_8 = 4
     TIME_8_12 = 8
@@ -338,21 +339,7 @@ class QueueStatistic(models.Model):
     def __str__(self):
         string = f"{self.queue}: {self.name_to_pretty()}"
         if self.day_to_pretty() != "":
-            string += self.day_to_pretty()
+            string += " " + self.day_to_pretty()
         if self.time_range_to_pretty() != "":
-            string += self.time_range_to_pretty()
+            string += " " + self.time_range_to_pretty()
         return string
-
-
-# class QueuePersonalStatistic(models.Model):
-#     """
-#     Personal statistic on the queue level
-#     """
-
-#     queue = models.ForeignKey(Queue, on_delete=models.CASCADE)
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     metric = models.CharField(max_length=256, choices=METRIC_CHOICES)
-#     classification = models.CharField(
-#         max_length=256, choices=CLASSIFICATION_CHOICES, blank=True, null=True
-#     )  # used for heatmap date/time
-#     value = models.DecimalField(max_digits=16, decimal_places=8)

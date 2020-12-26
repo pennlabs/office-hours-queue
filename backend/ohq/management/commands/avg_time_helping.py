@@ -6,7 +6,7 @@ from ohq.models import Question, Queue, QueueStatistic
 
 
 class Command(BaseCommand):
-    help = "Calculates the average time helping students"
+    help = "Calculates the average time helping students for the current week"
 
     def handle(self, *args, **kwargs):
         queues = Queue.objects.filter(archived=False)

@@ -11,6 +11,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         queues = Queue.objects.filter(archived=False)
 
+        # assuming the cron job will run daily at midnight, we only need to add yesterday
         today = timezone.datetime.today().date()
         yesterday = today - timezone.timedelta(days=1)
 
