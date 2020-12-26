@@ -21,8 +21,10 @@ const MessageQuestionModal = (props: MessageQuestionModalProps) => {
             <Modal.Header>Quick Message</Modal.Header>
             <Modal.Content>
                 <Modal.Description>
-                    You are about to message the following question from
-                    <b>{` ${fullName(question.askedBy)}`}</b>:<br />
+                    You are about to message{" "}
+                    <b>{` ${fullName(question.askedBy)}`}</b> about the
+                    following question:
+                    <br />
                     <Segment
                         inverted
                         color="blue"
@@ -42,7 +44,7 @@ const MessageQuestionModal = (props: MessageQuestionModalProps) => {
                                     }
                                 }}
                                 value={message}
-                                placeholder="Please add additional explanation"
+                                placeholder="Message"
                             />
                         </Form.Field>
                     </Form>
@@ -51,10 +53,10 @@ const MessageQuestionModal = (props: MessageQuestionModalProps) => {
             <Modal.Actions>
                 <Button content="Cancel" onClick={closeFunc} />
                 <Button
-                    content="Reject"
+                    content="Send"
                     disabled={message.length === 0}
                     loading={false}
-                    color="red"
+                    color="green"
                     onClick={() => {
                         mutate(question.id, {
                             note: message,

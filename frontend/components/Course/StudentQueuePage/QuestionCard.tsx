@@ -1,5 +1,13 @@
 import React, { useState, useEffect, MutableRefObject } from "react";
-import { Segment, Header, Button, Popup, Icon, Grid } from "semantic-ui-react";
+import {
+    Segment,
+    Header,
+    Button,
+    Popup,
+    Icon,
+    Grid,
+    Message,
+} from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import EditQuestionModal from "./EditQuestionModal";
 import DeleteQuestionModal from "./DeleteQuestionModal";
@@ -109,6 +117,17 @@ const QuestionCard = (props: QuestionCardProps) => {
             </Segment>
             <Segment attached tertiary={question.timeResponseStarted !== null}>
                 {question.text}
+                {question.note && (
+                    <>
+                        <br />
+                        <Message info>
+                            <Message.Header style={{ fontSize: "1rem" }}>
+                                An instructor has messaged you:
+                            </Message.Header>
+                            {question.note}
+                        </Message>
+                    </>
+                )}
             </Segment>
             <Segment attached="bottom" secondary>
                 <Grid>
