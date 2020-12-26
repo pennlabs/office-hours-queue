@@ -301,8 +301,12 @@ class QueueStatistic(models.Model):
     metric = models.CharField(max_length=256, choices=METRIC_CHOICES)
     value = models.DecimalField(max_digits=16, decimal_places=8)
 
-    day = models.IntegerField(choices=DAY_CHOICES, blank=True, null=True)  # used for statistics grouped by weekday
-    time_range = models.IntegerField(choices=TIME_RANGE_CHOICES, blank=True, null=True) # used for heatmap
+    day = models.IntegerField(
+        choices=DAY_CHOICES, blank=True, null=True
+    )  # used for statistics grouped by weekday
+    time_range = models.IntegerField(
+        choices=TIME_RANGE_CHOICES, blank=True, null=True
+    )  # used for heatmap
     date = models.DateField(blank=True, null=True)  # for weekly stats, just set this to the Sunday
 
     class Meta:
@@ -316,21 +320,15 @@ class QueueStatistic(models.Model):
         return [pretty for raw, pretty in QueueStatistic.METRIC_CHOICES if raw == self.metric][0]
 
     def day_to_pretty(self):
-        pretty_lst = [
-            pretty
-            for raw, pretty in QueueStatistic.DAY_CHOICES
-            if raw == self.day
-        ]
+        pretty_lst = [pretty for raw, pretty in QueueStatistic.DAY_CHOICES if raw == self.day]
         if len(pretty_lst):
             return pretty_lst[0]
         else:
             return ""
-    
+
     def time_range_to_pretty(self):
         pretty_lst = [
-            pretty
-            for raw, pretty in QueueStatistic.TIME_RANGE_CHOICES
-            if raw == self.time_range
+            pretty for raw, pretty in QueueStatistic.TIME_RANGE_CHOICES if raw == self.time_range
         ]
         if len(pretty_lst):
             return pretty_lst[0]
