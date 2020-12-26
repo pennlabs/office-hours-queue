@@ -19,7 +19,7 @@ class Command(BaseCommand):
                 Question.objects.filter(
                     queue=queue,
                     status=Question.STATUS_ANSWERED,
-                    time_responded_to__range=[last_sunday, next_sunday],
+                    time_responded_to__date__range=[last_sunday, next_sunday],
                 )
                 .distinct("asked_by")
                 .count()

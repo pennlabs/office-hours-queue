@@ -1,11 +1,12 @@
 from django.core.management.base import BaseCommand
+from django.db.models import Avg, F
 from django.utils import timezone
 
 from ohq.models import Question, Queue, QueueStatistic
 
 
 class Command(BaseCommand):
-    help = "Calculates the number of questions answered this week for each queue"
+    help = "Calculates the average time helping students"
 
     def handle(self, *args, **kwargs):
         queues = Queue.objects.filter(archived=False)
@@ -15,15 +16,17 @@ class Command(BaseCommand):
         next_sunday = last_sunday + timezone.timedelta(days=7)
 
         for queue in queues:
-            num_questions = Question.objects.filter(
+            avg = Question.objects.filter(
                 queue=queue,
                 status=Question.STATUS_ANSWERED,
                 time_responded_to__date__range=[last_sunday, next_sunday],
-            ).count()
+            ).aggregate(avg_time=Avg(F("time_responded_to") - F("time_response_started")))
+
+            duration = avg["avg_time"]
 
             QueueStatistic.objects.update_or_create(
                 queue=queue,
-                metric=QueueStatistic.METRIC_NUM_ANSWERED,
+                metric=QueueStatistic.METRIC_AVG_TIME_HELPING,
                 date=last_sunday,
-                defaults={"value": num_questions},
+                defaults={"value": duration.seconds if duration else 0},
             )

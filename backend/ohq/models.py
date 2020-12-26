@@ -248,42 +248,89 @@ class QueueStatistic(models.Model):
     """
 
     # add new metrics/statistics
+    METRIC_HEATMAP_WAIT = "HEATMAP_AVG_WAIT"
     METRIC_AVG_WAIT = "AVG_WAIT"
     METRIC_NUM_ANSWERED = "NUM_ANSWERED"
-    METRIC_STUDENTS_HELPED = "STUDENT_HELPED"
+    METRIC_STUDENTS_HELPED = "STUDENTS_HELPED"
+    METRIC_AVG_TIME_HELPING = "AVG_TIME_HELPING"
+    METRIC_LIST_WAIT_TIME_DAYS = "LIST_WAIT_TIME_DAYS"
     METRIC_CHOICES = [
+        (METRIC_HEATMAP_WAIT, "Average wait-time heatmap"),
         (METRIC_AVG_WAIT, "Average wait-time"),
         (METRIC_NUM_ANSWERED, "Number of questions answered per week"),
         (METRIC_STUDENTS_HELPED, "Students helped per week"),
+        (METRIC_AVG_TIME_HELPING, "Average time helping students"),
+        (METRIC_LIST_WAIT_TIME_DAYS, "List of wait times per day"),
     ]
 
-    # for heatmap - there is def a better way to do this
-    CLASSIFICATION_MONDAY_0_4 = "MONDAY_0_4"
-    CLASSIFICATION_CHOICES = [(CLASSIFICATION_MONDAY_0_4, "Monday 12AM - 4AM")]
+    # for specific days during the week - used for heatmap and graphs where day is x-axis
+    DAY_SUNDAY = 0
+    DAY_MONDAY = 1
+    DAY_TUESDAY = 2
+    DAY_WEDNESDAY = 3
+    DAY_THURSDAY = 4
+    DAY_FRIDAY = 5
+    DAY_SATURDAY = 6
+    DAY_CHOICES = [
+        (DAY_SUNDAY, "Sunday"),
+        (DAY_MONDAY, "Monday"),
+        (DAY_TUESDAY, "Tuesday"),
+        (DAY_WEDNESDAY, "Wednesday"),
+        (DAY_THURSDAY, "Thursday"),
+        (DAY_FRIDAY, "Friday"),
+        (DAY_SATURDAY, "Saturday"),
+    ]
+
+    # used in heatmap - hopefully ints for time and day will make it easier to sort and group
+    TIME_0_4 = 0
+    TIME_4_8 = 4
+    TIME_8_12 = 8
+    TIME_12_16 = 12
+    TIME_16_20 = 16
+    TIME_20_24 = 20
+    TIME_RANGE_CHOICES = [
+        (TIME_0_4, "12AM-4AM"),
+        (TIME_4_8, "4AM-8AM"),
+        (TIME_8_12, "8AM-12PM"),
+        (TIME_12_16, "12PM-4PM"),
+        (TIME_16_20, "4PM-8PM"),
+        (TIME_20_24, "8PM-12AM"),
+    ]
 
     queue = models.ForeignKey(Queue, on_delete=models.CASCADE)
     metric = models.CharField(max_length=256, choices=METRIC_CHOICES)
-    classification = models.CharField(
-        max_length=256, choices=CLASSIFICATION_CHOICES, blank=True, null=True
-    )  # used for heatmap date/time
     value = models.DecimalField(max_digits=16, decimal_places=8)
+
+    day = models.IntegerField(choices=DAY_CHOICES, blank=True, null=True)  # used for statistics grouped by weekday
+    time_range = models.IntegerField(choices=TIME_RANGE_CHOICES, blank=True, null=True) # used for heatmap
     date = models.DateField(blank=True, null=True)  # for weekly stats, just set this to the Sunday
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["queue", "metric", "classification", "date"], name="unique_statistic"
+                fields=["queue", "metric", "day", "time_range", "date"], name="unique_statistic"
             )
         ]
 
     def name_to_pretty(self):
         return [pretty for raw, pretty in QueueStatistic.METRIC_CHOICES if raw == self.metric][0]
 
-    def classification_to_pretty(self):
+    def day_to_pretty(self):
         pretty_lst = [
             pretty
-            for raw, pretty in QueueStatistic.CLASSIFICATION_CHOICES
-            if raw == self.classification
+            for raw, pretty in QueueStatistic.DAY_CHOICES
+            if raw == self.day
+        ]
+        if len(pretty_lst):
+            return pretty_lst[0]
+        else:
+            return ""
+    
+    def time_range_to_pretty(self):
+        pretty_lst = [
+            pretty
+            for raw, pretty in QueueStatistic.TIME_RANGE_CHOICES
+            if raw == self.time_range
         ]
         if len(pretty_lst):
             return pretty_lst[0]
@@ -292,6 +339,22 @@ class QueueStatistic(models.Model):
 
     def __str__(self):
         string = f"{self.queue}: {self.name_to_pretty()}"
-        if self.classification_to_pretty() != "":
-            string += self.classification_to_pretty()
+        if self.day_to_pretty() != "":
+            string += self.day_to_pretty()
+        if self.time_range_to_pretty() != "":
+            string += self.time_range_to_pretty()
         return string
+
+
+# class QueuePersonalStatistic(models.Model):
+#     """
+#     Personal statistic on the queue level
+#     """
+
+#     queue = models.ForeignKey(Queue, on_delete=models.CASCADE)
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     metric = models.CharField(max_length=256, choices=METRIC_CHOICES)
+#     classification = models.CharField(
+#         max_length=256, choices=CLASSIFICATION_CHOICES, blank=True, null=True
+#     )  # used for heatmap date/time
+#     value = models.DecimalField(max_digits=16, decimal_places=8)

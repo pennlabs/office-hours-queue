@@ -352,6 +352,6 @@ class UserPrivateSerializer(serializers.ModelSerializer):
 class QueueStatisticSerializer(serializers.ModelSerializer):
     class Meta:
         model = QueueStatistic
-        fields = ("metric", "classification", "value", "date")
+        fields = ("metric", "day", "time_range", "value", "date")
         # make everything read-only, stats are only updated through commands
-        read_only_fields = ("metric", "classification", "value", "date")
+        read_only_fields = ("metric", "day", "time_range", "value", "date")

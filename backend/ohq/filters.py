@@ -26,4 +26,4 @@ class QuestionSearchFilter(filters.FilterSet):
 class QueueStatisticFilter(filters.FilterSet):
     class Meta:
         model = QueueStatistic
-        fields = ["metric", "classification", "date"]
+        fields = ["metric", "date"]

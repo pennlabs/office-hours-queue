@@ -6,25 +6,24 @@ from ohq.models import Question, Queue, QueueStatistic
 
 
 class Command(BaseCommand):
-    help = "Calculates average wait time for queues this week and puts them in queue statistics"
+    help = "Calculates the average wait time for queues yesterday"
 
     def handle(self, *args, **kwargs):
         queues = Queue.objects.filter(archived=False)
 
         today = timezone.datetime.today().date()
-        last_sunday = today - timezone.timedelta(days=(today.weekday() + 1) % 7)
-        next_sunday = last_sunday + timezone.timedelta(days=7)
+        yesterday = today - timezone.timedelta(days=1)
 
         for queue in queues:
             avg = Question.objects.filter(
-                queue=queue, time_response_started__date__range=[last_sunday, next_sunday]
+                queue=queue, time_response_started__date=yesterday
             ).aggregate(avg_wait=Avg(F("time_response_started") - F("time_asked")))
 
             wait = avg["avg_wait"]
 
             QueueStatistic.objects.update_or_create(
                 queue=queue,
-                metric=QueueStatistic.METRIC_AVG_WAIT,
-                date=last_sunday,
+                metric=QueueStatistic.METRIC_LIST_WAIT_TIME_DAYS,
+                date=yesterday,
                 defaults={"value": wait.seconds if wait else 0},
             )
