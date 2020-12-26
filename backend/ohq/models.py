@@ -302,13 +302,9 @@ class QueueStatistic(models.Model):
     metric = models.CharField(max_length=256, choices=METRIC_CHOICES)
     value = models.DecimalField(max_digits=16, decimal_places=8)
 
-    day = models.IntegerField(
-        choices=DAY_CHOICES, blank=True, null=True
-    )  # used for statistics grouped by weekday
-    time_range = models.IntegerField(
-        choices=TIME_RANGE_CHOICES, blank=True, null=True
-    )  # used for heatmap
-    date = models.DateField(blank=True, null=True)  # for weekly stats, just set this to the Sunday
+    day = models.IntegerField(choices=DAY_CHOICES, blank=True, null=True)
+    time_range = models.IntegerField(choices=TIME_RANGE_CHOICES, blank=True, null=True)
+    date = models.DateField(blank=True, null=True)  # for weekly stats, set to the Sunday of week
 
     class Meta:
         constraints = [
