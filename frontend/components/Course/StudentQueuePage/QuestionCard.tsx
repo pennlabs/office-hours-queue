@@ -61,6 +61,10 @@ const QuestionCard = (props: QuestionCardProps) => {
         }
     }, [question.status, play]);
 
+    useEffect(() => {
+        play.current();
+    }, [question.note, play]);
+
     const markQuestionAsAnswered = async () => {
         try {
             await finishQuestion(course.id, queue.id, question.id);
