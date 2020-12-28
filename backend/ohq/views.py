@@ -472,5 +472,6 @@ class QueueStatisticViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = [QueueStatisticPermission | IsSuperuser]
 
     def get_queryset(self):
+        # might need to change qs if students shouldn't be able to see all queue statistics
         qs = QueueStatistic.objects.filter(queue=self.kwargs["queue_pk"])
         return prefetch(qs, self.serializer_class)

@@ -10,8 +10,8 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         queues = Queue.objects.filter(archived=False)
 
-        today = timezone.datetime.today().date()
-        last_sunday = today - timezone.timedelta(days=(today.weekday() + 1) % 7)
+        yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
+        last_sunday = yesterday - timezone.timedelta(days=(yesterday.weekday() + 1) % 7)
         next_sunday = last_sunday + timezone.timedelta(days=7)
 
         for queue in queues:

@@ -249,6 +249,7 @@ class QueueStatistic(models.Model):
 
     # add new metrics/statistics
     METRIC_HEATMAP_WAIT = "HEATMAP_AVG_WAIT"
+    METRIC_HEATMAP_QUESTIONS_PER_TA = "HEATMAP_QUESTIONS_PER_TA"
     METRIC_AVG_WAIT = "AVG_WAIT"
     METRIC_NUM_ANSWERED = "NUM_ANSWERED"
     METRIC_STUDENTS_HELPED = "STUDENTS_HELPED"
@@ -256,6 +257,7 @@ class QueueStatistic(models.Model):
     METRIC_LIST_WAIT_TIME_DAYS = "LIST_WAIT_TIME_DAYS"
     METRIC_CHOICES = [
         (METRIC_HEATMAP_WAIT, "Average wait-time heatmap"),
+        (METRIC_HEATMAP_QUESTIONS_PER_TA, "Questions per TA heatmap"),
         (METRIC_AVG_WAIT, "Average wait-time"),
         (METRIC_NUM_ANSWERED, "Number of questions answered per week"),
         (METRIC_STUDENTS_HELPED, "Students helped per week"),
@@ -313,7 +315,7 @@ class QueueStatistic(models.Model):
             )
         ]
 
-    def name_to_pretty(self):
+    def metric_to_pretty(self):
         return [pretty for raw, pretty in QueueStatistic.METRIC_CHOICES if raw == self.metric][0]
 
     def day_to_pretty(self):
@@ -333,7 +335,7 @@ class QueueStatistic(models.Model):
             return ""
 
     def __str__(self):
-        string = f"{self.queue}: {self.name_to_pretty()}"
+        string = f"{self.queue}: {self.metric_to_pretty()}"
         if self.day_to_pretty() != "":
             string += " " + self.day_to_pretty()
         if self.time_range_to_pretty() != "":

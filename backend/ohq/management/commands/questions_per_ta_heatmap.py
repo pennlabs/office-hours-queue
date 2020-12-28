@@ -1,12 +1,11 @@
 from django.core.management.base import BaseCommand
-from django.db.models import Avg, F
 from django.utils import timezone
 
 from ohq.models import Question, Queue, QueueStatistic
 
 
 class Command(BaseCommand):
-    help = "Recalculate the average wait-time heatmap statistics for yesterday's weekday"
+    help = "Recalculate the questions per TA heatmap statistics for yesterday's weekday"
 
     def handle(self, *args, **kwargs):
         queues = Queue.objects.filter(archived=False)
@@ -27,16 +26,19 @@ class Command(BaseCommand):
                 range_start = time_interval[0]
                 range_end = range_start + QueueStatistic.TIME_RANGE_INTERVAL
 
-                interval_avg = prev_weekday_questions.filter(
+                questions = prev_weekday_questions.filter(
                     time_response_started__hour__range=[range_start, range_end]
-                ).aggregate(avg_wait=Avg(F("time_response_started") - F("time_asked")))
+                )
 
-                interval_avg_wait = interval_avg["avg_wait"]
+                num_questions = questions.count()
+                num_tas = questions.distinct("responded_to_by").count()
+
+                statistic = num_questions / num_tas if num_tas else num_questions
 
                 QueueStatistic.objects.update_or_create(
                     queue=queue,
-                    metric=QueueStatistic.METRIC_HEATMAP_WAIT,
+                    metric=QueueStatistic.METRIC_HEATMAP_QUESTIONS_PER_TA,
                     day=yesterday_weekday,
                     time_range=range_start,
-                    defaults={"value": interval_avg_wait.seconds if interval_avg_wait else 0},
+                    defaults={"value": statistic},
                 )

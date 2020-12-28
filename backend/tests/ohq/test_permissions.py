@@ -757,3 +757,31 @@ class MassInviteTestCase(TestCase):
             reverse("ohq:mass-invite", args=[self.course.id]),
             {"emails": "test@example.com,test2@example.com", "kind": Membership.KIND_STUDENT},
         )
+
+
+class QueueStatisticTestCase(TestCase):
+    def setUp(self):
+        setUp(self)
+        self.queue = Queue.objects.create(name="Queue", course=self.course)
+
+        # Expected results
+        self.expected = {
+            "list": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 200,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+        }
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_list(self, user):
+        test(
+            self,
+            user,
+            "list",
+            "get",
+            reverse("ohq:queue-statistic-list", args=[self.course.id, self.queue.id]),
+        )
