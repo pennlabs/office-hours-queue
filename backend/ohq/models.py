@@ -312,7 +312,7 @@ class QueueStatistic(models.Model):
             return ""
 
     def hour_to_pretty(self):
-        if self.hour != None:
+        if self.hour is not None:
             return f"{self.hour}:00 - {self.hour + 1}:00"
         else:
             return ""
