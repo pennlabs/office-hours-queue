@@ -17,7 +17,7 @@ class Command(BaseCommand):
 
         for queue in queues:
             avg = Question.objects.filter(
-                queue=queue, time_response_started__date=yesterday
+                queue=queue, time_asked__date=yesterday, time_response_started__isnull=False
             ).aggregate(avg_wait=Avg(F("time_response_started") - F("time_asked")))
 
             wait = avg["avg_wait"]

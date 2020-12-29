@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.dispatch import receiver
 from email_tools.emails import send_email
@@ -283,35 +284,20 @@ class QueueStatistic(models.Model):
         (DAY_SUNDAY, "Sunday"),
     ]
 
-    # used in heatmap - hopefully ints for time and day will make it easier to sort and group
-    TIME_RANGE_INTERVAL = 4
-    TIME_0_4 = 0
-    TIME_4_8 = 4
-    TIME_8_12 = 8
-    TIME_12_16 = 12
-    TIME_16_20 = 16
-    TIME_20_24 = 20
-    TIME_RANGE_CHOICES = [
-        (TIME_0_4, "12AM-4AM"),
-        (TIME_4_8, "4AM-8AM"),
-        (TIME_8_12, "8AM-12PM"),
-        (TIME_12_16, "12PM-4PM"),
-        (TIME_16_20, "4PM-8PM"),
-        (TIME_20_24, "8PM-12AM"),
-    ]
-
     queue = models.ForeignKey(Queue, on_delete=models.CASCADE)
     metric = models.CharField(max_length=256, choices=METRIC_CHOICES)
     value = models.DecimalField(max_digits=16, decimal_places=8)
 
     day = models.IntegerField(choices=DAY_CHOICES, blank=True, null=True)
-    time_range = models.IntegerField(choices=TIME_RANGE_CHOICES, blank=True, null=True)
+    hour = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(23)], blank=True, null=True
+    )
     date = models.DateField(blank=True, null=True)  # for weekly stats, set to the Sunday of week
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["queue", "metric", "day", "time_range", "date"], name="unique_statistic"
+                fields=["queue", "metric", "day", "hour", "date"], name="unique_statistic"
             )
         ]
 
@@ -325,12 +311,9 @@ class QueueStatistic(models.Model):
         else:
             return ""
 
-    def time_range_to_pretty(self):
-        pretty_lst = [
-            pretty for raw, pretty in QueueStatistic.TIME_RANGE_CHOICES if raw == self.time_range
-        ]
-        if len(pretty_lst):
-            return pretty_lst[0]
+    def hour_to_pretty(self):
+        if self.hour != None:
+            return f"{self.hour}:00 - {self.hour + 1}:00"
         else:
             return ""
 
@@ -338,6 +321,6 @@ class QueueStatistic(models.Model):
         string = f"{self.queue}: {self.metric_to_pretty()}"
         if self.day_to_pretty() != "":
             string += " " + self.day_to_pretty()
-        if self.time_range_to_pretty() != "":
-            string += " " + self.time_range_to_pretty()
+        if self.hour_to_pretty() != "":
+            string += " " + self.hour_to_pretty()
         return string

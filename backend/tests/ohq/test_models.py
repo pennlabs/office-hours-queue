@@ -148,7 +148,7 @@ class QueueStatisticTestCase(TestCase):
             metric=QueueStatistic.METRIC_HEATMAP_WAIT,
             value=100.00,
             day=QueueStatistic.DAY_MONDAY,
-            time_range=QueueStatistic.TIME_0_4,
+            hour=0,
         )
         today = timezone.datetime.today().date()
         self.avg_time_helping_queue_statistic = QueueStatistic.objects.create(
@@ -163,7 +163,7 @@ class QueueStatisticTestCase(TestCase):
             str(self.heatmap_queue_statistic),
             f"{self.queue}: {self.heatmap_queue_statistic.get_metric_display()} "
             f"{self.heatmap_queue_statistic.get_day_display()} "
-            f"{self.heatmap_queue_statistic.get_time_range_display()}",
+            f"{self.heatmap_queue_statistic.hour}:00 - {self.heatmap_queue_statistic.hour+1}:00",
         )
         self.assertEqual(
             str(self.avg_time_helping_queue_statistic),

@@ -19,7 +19,8 @@ class Command(BaseCommand):
             avg = Question.objects.filter(
                 queue=queue,
                 status=Question.STATUS_ANSWERED,
-                time_responded_to__date__range=[last_sunday, next_sunday],
+                time_response_started__date__range=[last_sunday, next_sunday],
+                time_responded_to__isnull=False,
             ).aggregate(avg_time=Avg(F("time_responded_to") - F("time_response_started")))
 
             duration = avg["avg_time"]
