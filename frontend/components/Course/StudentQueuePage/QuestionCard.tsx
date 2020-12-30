@@ -130,13 +130,6 @@ const QuestionCard = (props: QuestionCardProps) => {
                             </Message.Header>
                             <Message.Content>
                                 <p>{question.note}</p>
-                                <Button
-                                    compact
-                                    size="mini"
-                                    color="blue"
-                                    content="Resolve"
-                                    onClick={() => setOpenEdit(true)}
-                                />
                             </Message.Content>
                         </Message>
                     </>

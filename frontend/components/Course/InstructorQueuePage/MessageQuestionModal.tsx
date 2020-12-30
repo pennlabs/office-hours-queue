@@ -59,6 +59,7 @@ const MessageQuestionModal = (props: MessageQuestionModalProps) => {
                     color="green"
                     onClick={() => {
                         mutate(question.id, {
+                            status: QuestionStatus.ASKED,
                             note: message,
                         });
                         closeFunc();

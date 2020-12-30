@@ -248,38 +248,36 @@ const QuestionCard = (props: QuestionCardProps) => {
                                         />
                                     </a>
                                 )}
-                            {question.timeResponseStarted &&
-                                (!question.resolvedNote ? (
-                                    <Message info>
-                                        <Message.Header
-                                            style={{ fontSize: "1rem" }}
-                                        >
-                                            Message sent:
-                                        </Message.Header>
-                                        <Message.Content>
-                                            <p>{question.note}</p>
-                                            <Button
-                                                compact
-                                                size="mini"
-                                                color="blue"
-                                                content="Resend"
-                                                onClick={() =>
-                                                    setMessageModalOpen(true)
-                                                }
-                                            />
-                                        </Message.Content>
-                                    </Message>
-                                ) : (
-                                    <Button
-                                        compact
-                                        size="mini"
-                                        color="blue"
-                                        content="Message"
-                                        onClick={() =>
-                                            setMessageModalOpen(true)
-                                        }
-                                    />
-                                ))}
+                            {!question.resolvedNote && (
+                                <Message info>
+                                    <Message.Header
+                                        style={{ fontSize: "1rem" }}
+                                    >
+                                        Awaiting response to sent message:
+                                    </Message.Header>
+                                    <Message.Content>
+                                        <p>{question.note}</p>
+                                        <Button
+                                            compact
+                                            size="mini"
+                                            color="blue"
+                                            content="Resend"
+                                            onClick={() =>
+                                                setMessageModalOpen(true)
+                                            }
+                                        />
+                                    </Message.Content>
+                                </Message>
+                            )}
+                            {question.timeResponseStarted && (
+                                <Button
+                                    compact
+                                    size="mini"
+                                    color="blue"
+                                    content="Message"
+                                    onClick={() => setMessageModalOpen(true)}
+                                />
+                            )}
                         </Grid.Column>
                         <Grid.Column
                             width={5}
