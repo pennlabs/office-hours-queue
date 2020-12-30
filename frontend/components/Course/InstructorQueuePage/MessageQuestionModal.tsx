@@ -22,8 +22,8 @@ const MessageQuestionModal = (props: MessageQuestionModalProps) => {
             <Modal.Content>
                 <Modal.Description>
                     You are about to message{" "}
-                    <b>{` ${fullName(question.askedBy)}`}</b> about the
-                    following question:
+                    <b>{` ${fullName(question.askedBy)}`}</b> about their
+                    question:
                     <br />
                     <Segment
                         inverted
@@ -60,7 +60,6 @@ const MessageQuestionModal = (props: MessageQuestionModalProps) => {
                     onClick={() => {
                         mutate(question.id, {
                             note: message,
-                            status: QuestionStatus.ASKED,
                         });
                         closeFunc();
                     }}
