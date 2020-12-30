@@ -121,14 +121,27 @@ const QuestionCard = (props: QuestionCardProps) => {
             </Segment>
             <Segment attached tertiary={question.timeResponseStarted !== null}>
                 {question.text}
-                {question.note && (
+                {question.note && !question.resolvedNote && (
                     <>
                         <br />
                         <Message info>
                             <Message.Header style={{ fontSize: "1rem" }}>
                                 An instructor has messaged you:
                             </Message.Header>
-                            {question.note}
+                            <Message.Content>
+                                <p>{question.note}</p>
+                                <Button
+                                    compact
+                                    size="mini"
+                                    color="blue"
+                                    content="Mark as Resolved"
+                                    onClick={() =>
+                                        mutate(question.id, {
+                                            resolvedNote: true,
+                                        })
+                                    }
+                                />
+                            </Message.Content>
                         </Message>
                     </>
                 )}
