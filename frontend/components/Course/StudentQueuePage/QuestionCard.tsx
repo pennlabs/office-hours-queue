@@ -134,12 +134,8 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     compact
                                     size="mini"
                                     color="blue"
-                                    content="Mark as Resolved"
-                                    onClick={() =>
-                                        mutate(question.id, {
-                                            resolvedNote: true,
-                                        })
-                                    }
+                                    content="Resolve"
+                                    onClick={() => setOpenEdit(true)}
                                 />
                             </Message.Content>
                         </Message>
