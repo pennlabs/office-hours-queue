@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Segment, Form, Header, Button } from "semantic-ui-react";
 import Select from "react-select";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
-
-import { isValidURL } from "../../../utils";
+import { isValidURL, isValidVideoChatURL } from "../../../utils";
 import { createQuestion, getTags } from "../../../hooks/data-fetching/course";
 import { Course, Question, Queue, Tag, TagLabel } from "../../../types";
 import { logException } from "../../../utils/sentry";
@@ -31,9 +30,7 @@ const QuestionForm = (props: QuestionFormProps) => {
     const charLimit: number = 250;
     const [charCount, setCharCount] = useState(0);
     const [disabled, setDisabled] = useState(true);
-    const [validURL, setValidURL] = useState(
-        !course.requireVideoChatUrlOnQuestions
-    );
+    const [validURL, setValidURL] = useState(true);
     const [createPending, setCreatePending] = useState(false);
 
     const [tagOptions, setTagOptions] = useState<TagLabel[]>([]);
@@ -50,7 +47,7 @@ const QuestionForm = (props: QuestionFormProps) => {
                 (course.requireVideoChatUrlOnQuestions && !input.videoChatUrl)
         );
         if (input.videoChatUrl) {
-            setValidURL(isValidURL(input.videoChatUrl));
+            setValidURL(isValidVideoChatURL(input.videoChatUrl));
             if (course.videoChatEnabled && input.videoChatUrl === "") {
                 setValidURL(true);
             }
@@ -151,6 +148,10 @@ const QuestionForm = (props: QuestionFormProps) => {
                                 name="videoChatUrl"
                                 placeholder="Sample URL: https://zoom.us/j/123456789?pwd=abcdefg"
                                 onChange={handleInputChange}
+                                error={
+                                    !validURL &&
+                                    "Please enter a valid video link!"
+                                }
                             />
                         </Form.Field>
                     )}

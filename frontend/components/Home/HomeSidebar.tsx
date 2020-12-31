@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import SignOutButton from "../SignOut";
 import styles from "../../styles/landingpage.module.css";
-import AboutModal from "../LandingPage/AboutModal";
+import AboutModal from "../common/AboutModal";
 
 const Sidebar = () => {
     const router = useRouter();
@@ -46,6 +46,18 @@ const Sidebar = () => {
                         active={router.pathname === "/settings"}
                         color="blue"
                         href="/settings"
+                    />
+                    <Menu.Item
+                        style={{
+                            whiteSpace: "nowrap",
+                            textOverflow: "ellipsis",
+                            overflow: "hidden",
+                        }}
+                        name="FAQ"
+                        icon="question circle"
+                        active={router.pathname === "/faq"}
+                        color="blue"
+                        href="/faq"
                     />
                     <SignOutButton />
                 </Menu>

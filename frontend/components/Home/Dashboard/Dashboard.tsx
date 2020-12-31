@@ -4,6 +4,7 @@ import Alert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
 import InstructorCourses from "./InstructorCourses";
 import StudentCourses from "./StudentCourses";
+import Footer from "../../common/Footer";
 import { AuthUserContext } from "../../../context/auth";
 import { Course, Kind, UserMembership, mutateFunction } from "../../../types";
 import { useMemberships } from "../../../hooks/data-fetching/dashboard";
@@ -20,15 +21,13 @@ const Dashboard = () => {
         mutateFunction<UserMembership[]>
     ] = useMemberships(initalUser);
 
-    const getCourses = (isStudent: boolean): Course[] => {
-        return memberships
-            .filter((membership) => {
-                return (
-                    (isStudent && membership.kind === Kind.STUDENT) ||
-                    (!isStudent && membership.kind !== Kind.STUDENT)
-                );
-            })
-            .map((membership) => membership.course);
+    const getMemberships = (isStudent: boolean): UserMembership[] => {
+        return memberships.filter((membership) => {
+            return (
+                (isStudent && membership.kind === Kind.STUDENT) ||
+                (!isStudent && membership.kind !== Kind.STUDENT)
+            );
+        });
     };
 
     const canCreateCourse: boolean =
@@ -38,12 +37,15 @@ const Dashboard = () => {
 
     /* STATE */
     // const [newUserModalOpen, setNewUserModalOpen] = useState(props.newUser);
-    const hasInstructorCourses = getCourses(false).length > 0;
+    const hasInstructorCourses = getMemberships(false).length > 0;
     const [toast] = useState({ message: "", success: true });
     const [toastOpen, setToastOpen] = useState(false);
 
     return (
-        <Grid.Column width={13}>
+        <Grid.Column
+            width={13}
+            style={{ display: "flex", flexDirection: "column" }}
+        >
             {/* {props.user && (
                 <NewUserModal
                     open={newUserModalOpen}
@@ -98,7 +100,7 @@ const Dashboard = () => {
                         </Grid>
                     ) : ( */}
                     <StudentCourses
-                        courses={getCourses(true)}
+                        memberships={getMemberships(true)}
                         mutate={mutate}
                     />
                     {/* )} */}
@@ -115,7 +117,7 @@ const Dashboard = () => {
                                 </Segment>
                             </Grid.Row>
                             <InstructorCourses
-                                courses={getCourses(false)}
+                                memberships={getMemberships(false)}
                                 mutate={mutate}
                                 canCreateCourse={canCreateCourse}
                             />
@@ -135,6 +137,7 @@ const Dashboard = () => {
                     {toast.message}
                 </Alert>
             </Snackbar>
+            <Footer />
         </Grid.Column>
     );
 };
