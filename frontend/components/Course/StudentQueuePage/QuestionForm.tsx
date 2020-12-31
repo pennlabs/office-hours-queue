@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Segment, Form, Header, Button } from "semantic-ui-react";
 import Select from "react-select";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
-import { isValidURL, isValidVideoChatURL } from "../../../utils";
+import { isValidVideoChatURL } from "../../../utils";
 import { createQuestion, getTags } from "../../../hooks/data-fetching/course";
 import { Course, Question, Queue, Tag, TagLabel } from "../../../types";
 import { logException } from "../../../utils/sentry";
