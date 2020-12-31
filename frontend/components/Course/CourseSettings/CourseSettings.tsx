@@ -1,23 +1,20 @@
 import React from "react";
 import { Segment, Header, Grid } from "semantic-ui-react";
 import CourseForm from "./CourseForm";
-import { Course, Tag } from "../../../types";
-import { useCourse, useTags } from "../../../hooks/data-fetching/course";
+import { Course } from "../../../types";
+import { useCourse } from "../../../hooks/data-fetching/course";
 
 interface CourseSettingsProps {
     course: Course;
-    tags: Tag[];
 }
 
 const CourseSettings = (props: CourseSettingsProps) => {
-    const { course: rawCourse, tags: rawTags } = props;
+    const { course: rawCourse } = props;
     const [courseData, , , mutateCourse] = useCourse(rawCourse.id, rawCourse);
-    const [tagsData, , , mutateTags] = useTags(rawCourse.id, rawTags);
 
     // courseData is non null because initialData is provided
     // and the key stays the same
     const course = courseData!;
-    const tags = tagsData!;
 
     return (
         <div>
@@ -28,12 +25,7 @@ const CourseSettings = (props: CourseSettingsProps) => {
             </Grid.Row>
             <Grid.Row>
                 <Segment basic>
-                    <CourseForm
-                        course={course}
-                        tags={tags}
-                        mutateCourse={mutateCourse}
-                        mutateTags={mutateTags}
-                    />
+                    <CourseForm course={course} mutateCourse={mutateCourse} />
                 </Segment>
             </Grid.Row>
         </div>

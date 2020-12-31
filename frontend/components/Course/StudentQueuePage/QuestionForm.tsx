@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Segment, Form, Header, Button } from "semantic-ui-react";
+import Select from "react-select";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 
 import { isValidURL } from "../../../utils";
-import { createQuestion } from "../../../hooks/data-fetching/course";
-import { Course, Question, Queue } from "../../../types";
+import { createQuestion, getTags } from "../../../hooks/data-fetching/course";
+import { Course, Question, Queue, Tag, TagLabel } from "../../../types";
 import { logException } from "../../../utils/sentry";
 
 interface QuestionFormProps {
@@ -17,7 +18,7 @@ interface QuestionFormProps {
 
 interface QuestionFormState {
     text: string;
-    tags: string[];
+    tags: Tag[];
     videoChatUrl?: string;
 }
 
@@ -34,6 +35,9 @@ const QuestionForm = (props: QuestionFormProps) => {
         !course.requireVideoChatUrlOnQuestions
     );
     const [createPending, setCreatePending] = useState(false);
+
+    const [tagOptions, setTagOptions] = useState<TagLabel[]>([]);
+    const [tagLabels, setTagLabels] = useState<TagLabel[]>([]);
 
     const handleInputChange = (e, { name, value }) => {
         if (name === "text" && value.length > charLimit) return;
@@ -53,15 +57,48 @@ const QuestionForm = (props: QuestionFormProps) => {
         }
     };
 
-    // const getDropdownOptions = (tags) => {
-    //     return tags.map((tag) => {
-    //         return {
-    //             key: tag,
-    //             value: tag,
-    //             text: tag,
-    //         };
-    //     });
-    // };
+    useEffect(() => {
+        const fetchData = async () => {
+            const loadedTags: Tag[] = await getTags(course.id);
+
+            setTagOptions(
+                loadedTags.map((tag) => {
+                    return {
+                        label: tag.name,
+                        value: tag.name,
+                    };
+                })
+            );
+        };
+
+        fetchData();
+    }, [course]);
+
+    const handleTagChange = (_, event) => {
+        if (event.action === "remove-value") {
+            const text = event.removedValue.label;
+
+            setTagLabels(
+                tagLabels.filter((tagLabel) => {
+                    return tagLabel.label !== text;
+                })
+            );
+
+            input.tags = input.tags.filter((tag) => {
+                return tag.name !== text;
+            });
+            setInput(input);
+        } else if (event.action === "clear") {
+            setTagLabels([]);
+        } else if (event.action === "select-option") {
+            setTagLabels([
+                ...tagLabels,
+                { label: event.option.label, value: event.option.label },
+            ]);
+
+            input.tags = [...input.tags, { name: event.option.label }];
+        }
+    };
 
     const onSubmit = async () => {
         setCreatePending(true);
@@ -117,21 +154,21 @@ const QuestionForm = (props: QuestionFormProps) => {
                             />
                         </Form.Field>
                     )}
-                    {/* TODO: tags */}
-                    {/* {course.tags && course.tags.length > 0 && (
+                    {tagOptions && tagOptions.length > 0 && (
                         <Form.Field>
-                            <label>Tags</label>
-                            <Form.Dropdown
-                                multiple
-                                selection
+                            <label htmlFor="form-question">Tags</label>
+                            <Select
                                 name="tags"
+                                disabled={createPending}
+                                isClearable
+                                isMulti
                                 placeholder="Select tags"
-                                disabled={loading}
-                                onChange={handleInputChange}
-                                options={getDropdownOptions(course.tags)}
+                                value={tagLabels}
+                                onChange={handleTagChange}
+                                options={tagOptions}
                             />
                         </Form.Field>
-                    )} */}
+                    )}
                 </Form>
             </Segment>
             <Segment attached="bottom">

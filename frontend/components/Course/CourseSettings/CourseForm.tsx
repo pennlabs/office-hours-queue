@@ -7,7 +7,13 @@ import Alert from "@material-ui/lab/Alert";
 import AsyncSelect from "react-select/async";
 import { useRouter } from "next/router";
 import CreatableSelect from "react-select/creatable";
-import { Course, mutateResourceFunction, Semester, Tag } from "../../../types";
+import {
+    Course,
+    mutateResourceFunction,
+    Semester,
+    Tag,
+    TagLabel,
+} from "../../../types";
 import {
     getSemesters,
     createTag,
@@ -18,14 +24,7 @@ import { logException } from "../../../utils/sentry";
 
 interface CourseFormProps {
     course: Course;
-    tags: Tag[];
     mutateCourse: mutateResourceFunction<Course>;
-    mutateTags: mutateResourceFunction<Tag[]>;
-}
-
-interface TagLabel {
-    value: string;
-    label: string;
 }
 
 const videoChatNum = (course) => {
@@ -35,7 +34,7 @@ const videoChatNum = (course) => {
 };
 
 const CourseForm = (props: CourseFormProps) => {
-    const { course, tags, mutateCourse, mutateTags } = props;
+    const { course, mutateCourse } = props;
     const router = useRouter();
     const [loading, setLoading] = useState(false);
 
@@ -54,7 +53,7 @@ const CourseForm = (props: CourseFormProps) => {
     const [addedTags, setAddedTags] = useState<string[]>([]);
     const [tagLabels, setTagLabels] = useState<TagLabel[]>([]);
 
-    const tagOptions = [
+    const tagOptions: TagLabel[] = [
         { value: "logistics", label: "logistics" },
         { value: "final", label: "final" },
     ];
@@ -121,7 +120,7 @@ const CourseForm = (props: CourseFormProps) => {
                 createTag(course.id, tag);
             });
             deletedTags.forEach((tag) => {
-                deleteTag(course.id, tag.id);
+                deleteTag(course.id, tag.id!);
             });
             // await updateCourse(course.id, input);
             // await mutate();
@@ -190,7 +189,7 @@ const CourseForm = (props: CourseFormProps) => {
         };
 
         fetchData();
-    }, [tags]);
+    }, [course]);
 
     const handleCreateTag = async (inputValue: string) => {
         if (!(inputValue in oldTags)) {

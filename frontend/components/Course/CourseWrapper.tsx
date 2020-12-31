@@ -6,7 +6,7 @@ import { AuthUserContext } from "../../context/auth";
 import { useCourse, useStaff } from "../../hooks/data-fetching/course";
 import * as bellAudio from "./InstructorQueuePage/notification.mp3";
 import { usePlayer } from "../../hooks/player";
-import { Course as CourseType, Membership, Tag } from "../../types";
+import { Course as CourseType, Membership } from "../../types";
 
 interface CourseProps {
     render: (
@@ -15,7 +15,6 @@ interface CourseProps {
     ) => JSX.Element;
     course: CourseType;
     leadership: Membership[];
-    tags: Tag[];
 }
 const CourseWrapper = ({ render, ...props }: CourseProps) => {
     const { course: rawCourse, leadership } = props;

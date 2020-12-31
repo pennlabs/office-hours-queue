@@ -179,17 +179,22 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     trigger={
                                         <span>
                                             {question.tags
-                                                .map((tag) => ` ${tag}`)
+                                                .map((tag) => ` ${tag.name}`)
                                                 .toString()}
                                         </span>
                                     }
                                     content={question.tags
-                                        .map((tag) => ` ${tag}`)
+                                        .map((tag) => ` ${tag.name}`)
                                         .toString()}
                                     basic
                                     inverted
                                     position="bottom left"
                                 />
+                            )}
+                            {(!question.tags || question.tags.length === 0) && (
+                                <span style={{ paddingLeft: "8px" }}>
+                                    <i>No Tags</i>
+                                </span>
                             )}
                         </Grid.Column>
                     </Grid.Row>

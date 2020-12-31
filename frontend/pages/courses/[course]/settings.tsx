@@ -9,11 +9,11 @@ import { withProtectPage } from "../../../utils/protectpage";
 import { doMultipleSuccessRequests } from "../../../utils/fetch";
 import { isLeadershipRole } from "../../../utils/enums";
 import CourseSettings from "../../../components/Course/CourseSettings/CourseSettings";
-import { CoursePageProps, Course, Membership, Tag } from "../../../types";
+import { CoursePageProps, Course, Membership } from "../../../types";
 import nextRedirect from "../../../utils/redirect";
 
 const SettingsPage = (props: CoursePageProps) => {
-    const { course, leadership, tags } = props;
+    const { course, leadership } = props;
     return (
         <>
             <Head>
@@ -23,9 +23,8 @@ const SettingsPage = (props: CoursePageProps) => {
                 <CourseWrapper
                     course={course}
                     leadership={leadership}
-                    tags={tags}
                     render={() => {
-                        return <CourseSettings course={course} tags={tags} />;
+                        return <CourseSettings course={course} />;
                     }}
                 />
             </Grid>
@@ -43,16 +42,14 @@ SettingsPage.getInitialProps = async (
 
     let course: Course;
     let leadership: Membership[];
-    let tags: Tag[];
 
     const response = await doMultipleSuccessRequests([
         { path: `/courses/${query.course}/`, data },
         { path: `/courses/${query.course}/members/`, data },
-        { path: `/courses/${query.course}/tags/`, data },
     ]);
 
     if (response.success) {
-        [course, leadership, tags] = response.data;
+        [course, leadership] = response.data;
     } else {
         nextRedirect(context, () => true, "/404");
         throw new Error("Next should redirect: unreachable");
@@ -61,7 +58,6 @@ SettingsPage.getInitialProps = async (
     return {
         course,
         leadership: leadership.filter((m) => isLeadershipRole(m.kind)),
-        tags,
     };
 };
 

@@ -272,12 +272,12 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     trigger={
                                         <span>
                                             {question.tags
-                                                .map((tag) => ` ${tag}`)
+                                                .map((tag) => ` ${tag.name}`)
                                                 .toString()}
                                         </span>
                                     }
                                     content={question.tags
-                                        .map((tag) => ` ${tag}`)
+                                        .map((tag) => ` ${tag.name}`)
                                         .toString()}
                                     basic
                                     inverted

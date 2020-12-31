@@ -91,7 +91,7 @@ export interface Question {
     timeResponseStarted?: string;
     timeRespondedTo?: string;
     shouldSendUpSoonNotification: boolean;
-    tags?: string[];
+    tags?: Tag[];
     // this is a marker field for subscribe requests
     // it should never have a value
     // eslint-disable-next-line
@@ -105,8 +105,13 @@ export interface Semester {
 }
 
 export interface Tag {
-    id: number;
+    id?: number;
     name: string;
+}
+
+export interface TagLabel {
+    value: string;
+    label: string;
 }
 
 export interface QuestionMap {
@@ -140,5 +145,4 @@ export interface Toast {
 export interface CoursePageProps {
     course: Course;
     leadership: Membership[];
-    tags: Tag[];
 }
