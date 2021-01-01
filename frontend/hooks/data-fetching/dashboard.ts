@@ -1,4 +1,5 @@
 import useSWR from "swr";
+import { useResource } from "@pennlabs/rest-hooks";
 import { Course, UserMembership, mutateFunction } from "../../types";
 import { doApiRequest } from "../../utils/fetch";
 
@@ -46,13 +47,11 @@ export async function createCourse(payload: any): Promise<void> {
     }
 }
 
-export function useMemberships(
-    initialUser
-): [UserMembership[], any, boolean, mutateFunction<UserMembership[]>] {
-    const { data, error, isValidating, mutate } = useSWR("/accounts/me/", {
+export function useMemberships(initialUser) {
+    const { data, error, isValidating, mutate } = useResource("/accounts/me/", {
         initialData: initialUser,
     });
     const memberships: UserMembership[] = data ? data.membershipSet : [];
 
-    return [memberships, error, isValidating, mutate];
+    return { memberships, error, isValidating, mutate };
 }

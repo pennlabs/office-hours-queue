@@ -6,7 +6,7 @@ import InstructorCourses from "./InstructorCourses";
 import StudentCourses from "./StudentCourses";
 import Footer from "../../common/Footer";
 import { AuthUserContext } from "../../../context/auth";
-import { Course, Kind, UserMembership, mutateFunction } from "../../../types";
+import { Kind, UserMembership } from "../../../types";
 import { useMemberships } from "../../../hooks/data-fetching/dashboard";
 import { isLeadershipRole } from "../../../utils/enums";
 
@@ -14,12 +14,7 @@ import { isLeadershipRole } from "../../../utils/enums";
 const Dashboard = () => {
     const { user: initalUser } = useContext(AuthUserContext);
 
-    const [memberships, , , mutate]: [
-        UserMembership[],
-        any,
-        boolean,
-        mutateFunction<UserMembership[]>
-    ] = useMemberships(initalUser);
+    const { memberships, mutate } = useMemberships(initalUser);
 
     const getMemberships = (isStudent: boolean): UserMembership[] => {
         return memberships.filter((membership) => {
