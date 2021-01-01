@@ -168,6 +168,7 @@ class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
 
     permission_classes = [QuestionPermission | IsSuperuser]
     serializer_class = QuestionSerializer
+    queryset = Question.objects.none()
 
     def get_queryset(self):
         qs = Question.objects.filter(
