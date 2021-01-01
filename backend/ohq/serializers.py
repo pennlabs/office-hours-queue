@@ -5,7 +5,6 @@ from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 
 from ohq.models import Course, Membership, MembershipInvite, Profile, Question, Queue, Semester
-from ohq.permissions import has_permission_for_question
 from ohq.sms import sendSMSVerification
 from ohq.tasks import sendUpNextNotificationTask
 
