@@ -8,7 +8,7 @@ from ohq.sms import sendUpNextNotification
 def sendUpNextNotificationTask(queue_id):
     """
     Send an SMS notification to the 3rd person in a queue if they have verified their phone number
-    and the queue was at least 4 people long when they joined it.
+    and the queue was at least 4  people long when they joined it.
     """
 
     questions = Question.objects.filter(queue=queue_id, status=Question.STATUS_ASKED).order_by(
