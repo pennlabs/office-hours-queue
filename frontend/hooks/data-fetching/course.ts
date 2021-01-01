@@ -134,8 +134,10 @@ export const useQuestions = (
         (id) => `/api/courses/${courseId}/queues/${queueId}/questions/${id}/`,
         {
             model: "ohq.Question",
-            property: "queue_id",
-            value: queueId,
+            view_kwargs: {
+                course_pk: courseId,
+                queue_pk: queueId,
+            },
         },
         {
             initialData,
@@ -170,8 +172,11 @@ export const useQuestionPosition = (
         `/api/courses/${courseId}/queues/${queueId}/`,
         {
             model: "ohq.Queue",
-            property: "id",
-            value: queueId,
+            lookup_by: queueId,
+            view_kwargs: {
+                course_pk: courseId,
+                queue_pk: queueId,
+            },
         },
         { fetcher: newResourceFetcher }
     );
@@ -197,8 +202,10 @@ export const useLastQuestions = (courseId: number, queueId: number) => {
         (id) => `/api/courses/${courseId}/queues/${queueId}/questions/${id}/`,
         {
             model: "ohq.Question",
-            property: "queue_id",
-            value: queueId,
+            view_kwargs: {
+                course_pk: courseId,
+                queue_pk: queueId,
+            },
         },
         {
             fetcher: newResourceFetcher,

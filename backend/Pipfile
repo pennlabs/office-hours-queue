@@ -35,7 +35,7 @@ django-filter = "*"
 celery = "*"
 redis = "*"
 django-auto-prefetching = "*"
-django-rest-live = ">=0.2.2"
+django-rest-live = ">=0.4.0"
 channels = "*"
 channels-redis = "*"
 uvicorn = {extras = ["standard"],version = "*"}

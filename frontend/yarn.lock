@@ -1202,10 +1202,10 @@
   dependencies:
     swr ">=0.3.1"
 
-"@pennlabs/rest-live-hooks@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@pennlabs/rest-live-hooks/-/rest-live-hooks-1.1.0.tgz#006b75ba43fe01ef1690d9d3beda61c9c6efe9b3"
-  integrity sha512-/ReCGqhWZq57FKxzFbTWCcO3lx7hAgN6+9heYVim+t09dG9mZSadvsvyQtGx4F/vPEZneVUOb4VwOc8BRLic4g==
+"@pennlabs/rest-live-hooks@^2.0.0-alpha.0":
+  version "2.0.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@pennlabs/rest-live-hooks/-/rest-live-hooks-2.0.0-alpha.0.tgz#be43c42e4bfe73cc3dc4404450fc648006e88b88"
+  integrity sha512-peenvK/RtsUCNOHVXmP4dH9AH3CvKLx0U9kUW87aksGFQZ34Ahfwnownk2lMGc+oL8t4ZIVAOZYk8/oCxxCLNg==
   dependencies:
     "@pennlabs/rest-hooks" "^0.1.6"
     reconnecting-websocket "^4.4.0"

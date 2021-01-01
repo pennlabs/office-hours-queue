@@ -3,7 +3,6 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
-from rest_live.decorators import subscribable
 
 from ohq.models import Course, Membership, MembershipInvite, Profile, Question, Queue, Semester
 from ohq.permissions import has_permission_for_question
@@ -159,8 +158,6 @@ class QueueSerializer(CourseRouteMixin):
         return instance
 
 
-@subscribable("id", has_permission_for_question)
-@subscribable("queue_id", has_permission_for_question)
 class QuestionSerializer(QueueRouteMixin):
     asked_by = UserSerializer(read_only=True)
     responded_to_by = UserSerializer(read_only=True)

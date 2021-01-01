@@ -17,6 +17,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
+from rest_live.mixins import RealtimeMixin
 
 from ohq.filters import QuestionSearchFilter
 from ohq.invite import parse_and_send_invites
@@ -141,7 +142,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         return prefetch(qs, self.get_serializer_class())
 
 
-class QuestionViewSet(viewsets.ModelViewSet):
+class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
     """
     retrieve:
     Return a single question with all information fields present.

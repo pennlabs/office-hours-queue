@@ -1,5 +1,6 @@
 from django.urls import path
 from rest_framework_nested import routers
+from rest_live.routers import RealtimeRouter
 
 from ohq.views import (
     CourseViewSet,
@@ -28,6 +29,9 @@ course_router.register("invites", MembershipInviteViewSet, basename="invite")
 
 queue_router = routers.NestedSimpleRouter(course_router, "queues", lookup="queue")
 queue_router.register("questions", QuestionViewSet, basename="question")
+
+realtime_router = RealtimeRouter()
+realtime_router.register(QuestionViewSet)
 
 additional_urls = [
     path("accounts/me/", UserView.as_view(), name="me"),
