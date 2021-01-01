@@ -31,14 +31,14 @@ import {
 } from "../../constants";
 
 export const useCourse = (courseId: number, initialData: Course) =>
-    useResourceNew(`/courses/${courseId}/`, {
+    useResourceNew(`/api/courses/${courseId}/`, {
         initialData,
     });
 
 export const useMembers = (courseId: number, initialData: Membership[]) =>
     useResourceListNew(
-        `/courses/${courseId}/members/`,
-        (id) => `/courses/${courseId}/members/${id}/`,
+        `/api/courses/${courseId}/members/`,
+        (id) => `/api/courses/${courseId}/members/${id}/`,
         { initialData }
     );
 
@@ -47,14 +47,14 @@ export const useInvitedMembers = (
     initialData: MembershipInvite[]
 ) =>
     useResourceListNew(
-        `/courses/${courseId}/invites/`,
-        (id) => `/courses/${courseId}/invites/${id}/`,
+        `/api/courses/${courseId}/invites/`,
+        (id) => `/api/courses/${courseId}/invites/${id}/`,
         { initialData }
     );
 
 export function useStaff(courseId: number, initialUser: User) {
     const { data, error, isValidating, mutate } = useResourceNew(
-        "/accounts/me/",
+        "/api/accounts/me/",
         {
             initialData: initialUser,
         }
@@ -75,20 +75,17 @@ export function useStaff(courseId: number, initialUser: User) {
     return { leader, staff, error, isValidating, mutate };
 }
 
-export function useLeadership(
-    courseId: number,
-    initialData: Membership[]
-): [Membership[], any, boolean, mutateFunction<Membership[]>] {
+export function useLeadership(courseId: number, initialData: Membership[]) {
     const {
         data,
         error,
         isValidating,
         mutate,
-    } = useSWR(`/courses/${courseId}/members/`, { initialData });
+    } = useResourceNew(`/api/courses/${courseId}/members/`, { initialData });
     const leadership: Membership[] = (data || []).filter((mem) =>
         isLeadershipRole(mem.kind)
     );
-    return [leadership, error, isValidating, mutate];
+    return { leadership, error, isValidating, mutate };
 }
 
 export async function sendMassInvites(
@@ -181,17 +178,21 @@ export const useQuestionPosition = (
         { fetcher: newResourceFetcher }
     );
 
-    const [data, error, isValidating, mutate] = useResource(
+    const { data, error, isValidating, mutate } = useResourceNew(
         `/courses/${courseId}/queues/${queueId}/questions/${id}/position/`,
-        { position: -1 },
-        { refreshInterval: STUDENT_QUESTION_POS_POLL_INTERVAL }
+        {
+            initialData: {
+                position: -1,
+            },
+            refreshInterval: STUDENT_QUESTION_POS_POLL_INTERVAL,
+        }
     );
 
     const stringified = JSON.stringify(qdata);
     useEffect(() => {
         mutate();
     }, [stringified]);
-    return [data, error, isValidating, mutate];
+    return { data, error, isValidating, mutate };
 };
 
 // only student queues should use this, since it doesn't make
@@ -210,7 +211,7 @@ export const useLastQuestions = (courseId: number, queueId: number) => {
         }
     );
 
-    const [data, error, isValidating, mutate] = useResourceList(
+    const { data, error, isValidating, mutate } = useResourceListNew(
         `/courses/${courseId}/queues/${queueId}/questions/last/`,
         (id) => `/courses/${courseId}/queues/${queueId}/last/${id}/`
     );
@@ -222,7 +223,7 @@ export const useLastQuestions = (courseId: number, queueId: number) => {
         mutate(-1, null);
     }, [stringified]);
 
-    return [data, error, isValidating, mutate];
+    return { data, error, isValidating, mutate };
 };
 
 export async function clearQueue(courseId: number, queueId: number) {

@@ -5,9 +5,12 @@ import { User } from "../../types";
 import { doApiRequest } from "../../utils/fetch";
 
 export function useAccountInfo(initialUser?: User) {
-    const { data, error, isValidating, mutate } = useResource("/accounts/me/", {
-        initialData: initialUser,
-    });
+    const { data, error, isValidating, mutate } = useResource(
+        "/api/accounts/me/",
+        {
+            initialData: initialUser,
+        }
+    );
     if (data) {
         return { data, error, isValidating, mutate: () => mutate() };
     }

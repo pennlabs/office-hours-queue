@@ -23,7 +23,10 @@ interface CourseSidebarProps {
 }
 const CourseSidebar = (props: CourseSidebarProps) => {
     const { courseId, leadership: leadershipRaw } = props;
-    const [leadershipUnsorted, , , ,] = useLeadership(courseId, leadershipRaw);
+    const { leadership: leadershipUnsorted } = useLeadership(
+        courseId,
+        leadershipRaw
+    );
     const leadership = leadershipUnsorted.sort(leadershipSortFunc);
 
     const { user: initialUser } = useContext(AuthUserContext);
