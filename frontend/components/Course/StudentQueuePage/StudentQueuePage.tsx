@@ -14,7 +14,7 @@ interface StudentQueuePageProps {
 }
 const StudentQueuePage = (props: StudentQueuePageProps) => {
     const { course: rawCourse, queues: rawQueues, questionmap, play } = props;
-    const [course, , ,] = useCourse(rawCourse.id, rawCourse);
+    const { data: course } = useCourse(rawCourse.id, rawCourse);
     const { data: queues, mutate } = useQueues(course!.id, rawQueues);
 
     const { isConnected } = useContext(WSContext);

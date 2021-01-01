@@ -6,7 +6,8 @@ import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 import AsyncSelect from "react-select/async";
 import { useRouter } from "next/router";
-import { Course, mutateResourceFunction, Semester } from "../../../types";
+import { mutateResourceFunction } from "@pennlabs/rest-hooks/dist/types";
+import { Course, Semester } from "../../../types";
 import { getSemesters } from "../../../hooks/data-fetching/course";
 import { logException } from "../../../utils/sentry";
 

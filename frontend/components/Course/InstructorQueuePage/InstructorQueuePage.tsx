@@ -50,7 +50,7 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
     }
     const { isConnected } = useContext(WSContext);
 
-    const [leader, , , ,] = useStaff(courseId, initialUser);
+    const { leader } = useStaff(courseId, initialUser);
 
     const { data: queuesData, mutate } = useQueues(courseId, rawQueues);
 

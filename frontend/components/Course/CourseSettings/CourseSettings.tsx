@@ -10,7 +10,7 @@ interface CourseSettingsProps {
 
 const CourseSettings = (props: CourseSettingsProps) => {
     const { course: rawCourse } = props;
-    const [courseData, , , mutate] = useCourse(rawCourse.id, rawCourse);
+    const { data: courseData, mutate } = useCourse(rawCourse.id, rawCourse);
 
     // courseData is non null because initialData is provided
     // and the key stays the same

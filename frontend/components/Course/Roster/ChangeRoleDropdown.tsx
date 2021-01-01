@@ -1,7 +1,8 @@
 import React from "react";
 import { Dropdown, Popup } from "semantic-ui-react";
+import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import { staffRoleOptions } from "../../../utils/enums";
-import { Membership, mutateResourceListFunction } from "../../../types";
+import { Membership } from "../../../types";
 
 interface ChangeRoleDropdownProps {
     id: number;

@@ -5,7 +5,10 @@ import {
     useRealtimeResource,
 } from "@pennlabs/rest-live-hooks";
 // TODO: REMOVE THIS AS SOON AS WE REFACTOR
-import { useResourceList as useResourceListNew } from "@pennlabs/rest-hooks";
+import {
+    useResource as useResourceNew,
+    useResourceList as useResourceListNew,
+} from "@pennlabs/rest-hooks";
 import {
     Course,
     Kind,
@@ -27,33 +30,35 @@ import {
     STUDENT_QUESTION_POS_POLL_INTERVAL,
 } from "../../constants";
 
-export const useCourse = (courseId: number, initialCourse: Course) =>
-    useResource(`/courses/${courseId}/`, initialCourse);
+export const useCourse = (courseId: number, initialData: Course) =>
+    useResourceNew(`/courses/${courseId}/`, {
+        initialData,
+    });
 
 export const useMembers = (courseId: number, initialData: Membership[]) =>
-    useResourceList(
+    useResourceListNew(
         `/courses/${courseId}/members/`,
         (id) => `/courses/${courseId}/members/${id}/`,
-        initialData
+        { initialData }
     );
 
 export const useInvitedMembers = (
     courseId: number,
     initialData: MembershipInvite[]
 ) =>
-    useResourceList(
+    useResourceListNew(
         `/courses/${courseId}/invites/`,
         (id) => `/courses/${courseId}/invites/${id}/`,
-        initialData
+        { initialData }
     );
 
-export function useStaff(
-    courseId: number,
-    initialUser: User
-): [boolean, boolean, any, boolean, mutateFunction<User>] {
-    const { data, error, isValidating, mutate } = useSWR("/accounts/me/", {
-        initialData: initialUser,
-    });
+export function useStaff(courseId: number, initialUser: User) {
+    const { data, error, isValidating, mutate } = useResourceNew(
+        "/accounts/me/",
+        {
+            initialData: initialUser,
+        }
+    );
 
     // data cannot be null because key does not change and
     // initialData is provided
@@ -67,7 +72,7 @@ export function useStaff(
 
     const leader = isLeadershipRole(course.kind);
     const staff = course.kind !== Kind.STUDENT;
-    return [leader, staff, error, isValidating, mutate];
+    return { leader, staff, error, isValidating, mutate };
 }
 
 export function useLeadership(

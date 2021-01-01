@@ -34,7 +34,7 @@ const ANALYTICS_SURVEY_SHOWN_LS_TOKEN = "__instructor_analytics_survey_shown";
 
 const CourseWrapper = ({ render, ...props }: CourseProps) => {
     const { course: rawCourse, leadership } = props;
-    const [course, , ,] = useCourse(rawCourse.id, rawCourse);
+    const { data: course } = useCourse(rawCourse.id, rawCourse);
     const [surveyDisp, setSurveyDisp] = useState(false);
 
     useEffect(() => {
@@ -50,7 +50,7 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
         );
     }
 
-    const [, staff, , ,] = useStaff(rawCourse.id, initialUser);
+    const { staff } = useStaff(rawCourse.id, initialUser);
 
     const [notifs, setNotifs, play] = usePlayer(bellAudio);
 

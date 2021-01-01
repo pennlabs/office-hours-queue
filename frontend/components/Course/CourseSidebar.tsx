@@ -33,7 +33,7 @@ const CourseSidebar = (props: CourseSidebarProps) => {
         );
     }
 
-    const [leader, staff, , ,] = useStaff(courseId, initialUser);
+    const { leader, staff } = useStaff(courseId, initialUser);
 
     const noWrapStyle = {
         whiteSpace: "nowrap",
