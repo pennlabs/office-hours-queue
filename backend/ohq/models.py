@@ -240,6 +240,9 @@ class Question(models.Model):
     queue = models.ForeignKey(Queue, on_delete=models.CASCADE)
     video_chat_url = models.URLField(blank=True, null=True)
 
+    note = models.CharField(max_length=255, blank=True, null=True)
+    resolved_note = models.BooleanField(default=True)
+
     status = models.CharField(max_length=9, choices=STATUS_CHOICES, default=STATUS_ASKED)
 
     time_asked = models.DateTimeField(auto_now_add=True)

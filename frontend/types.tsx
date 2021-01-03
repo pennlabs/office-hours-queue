@@ -92,6 +92,10 @@ export interface Question {
     timeRespondedTo?: string;
     shouldSendUpSoonNotification: boolean;
     tags?: Tag[];
+    note: string;
+    resolvedNote: boolean;
+
+    tags?: string[];
     // this is a marker field for subscribe requests
     // it should never have a value
     // eslint-disable-next-line
