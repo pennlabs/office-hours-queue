@@ -630,3 +630,105 @@ class AverageQueueWaitTimeByDateTestCase(TestCase):
         ).value
 
         self.assertEqual(expected, actual)
+
+
+class QuestionsPerTAQueueHeatmapHistTestCase(TestCase):
+    def setUp(self):
+        semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
+        course = Course.objects.create(
+            course_code="000", department="TEST", course_title="Title", semester=semester
+        )
+        self.queue = Queue.objects.create(name="Queue", course=course)
+        ta1 = User.objects.create_user("ta1", "ta1@a.com", "ta1")
+        ta2 = User.objects.create_user("ta2", "ta2@a.com", "ta2")
+        student = User.objects.create_user("student", "student@a.com", "student")
+
+        self.num_tas_8 = 1
+        self.num_tas_17 = 2
+
+        yesterday = timezone.localtime() - timezone.timedelta(days=1)
+
+        self.ta_1_questions_8 = 3
+        for i in range(self.ta_1_questions_8):
+            yesterday_8 = yesterday.replace(hour=8, minute=0)
+            time_asked = (
+                yesterday_8
+                if i % 2 == 0
+                else yesterday_8 + timezone.timedelta(weeks=-1, minutes=30)
+            )
+            question = Question.objects.create(
+                text=f"Question {i}",
+                queue=self.queue,
+                asked_by=student,
+                responded_to_by=ta1,
+                time_response_started=time_asked + timezone.timedelta(minutes=10),
+                status=Question.STATUS_ACTIVE if i % 3 == 0 else Question.STATUS_ANSWERED,
+            )
+            question.time_asked = time_asked
+            question.save()
+
+        self.ta_1_questions_17 = 3
+        self.ta_2_questions_17 = 4
+        for i in range(self.ta_1_questions_17 + self.ta_2_questions_17):
+            yesterday_17 = yesterday.replace(hour=17, minute=0)
+            time_asked = (
+                yesterday_17
+                if i % 2 == 0
+                else yesterday_17 + timezone.timedelta(weeks=-1, minutes=59)
+            )
+            question = Question.objects.create(
+                text=f"Question {i}",
+                queue=self.queue,
+                asked_by=student,
+                responded_to_by=ta1 if i < self.ta_1_questions_17 else ta2,
+                time_response_started=time_asked + timezone.timedelta(minutes=10),
+                status=Question.STATUS_ACTIVE if i % 3 == 0 else Question.STATUS_ANSWERED,
+            )
+            question.time_asked = time_asked
+            question.save()
+
+        # create question that is two days old - not included
+        self.older_time_asked = yesterday_8 - timezone.timedelta(weeks=2, days=2)
+        self.older_time_asked.replace(hour=8, minute=0)
+        older = Question.objects.create(
+            text="Old question",
+            queue=self.queue,
+            asked_by=student,
+            responded_to_by=ta2,
+            time_response_started=self.older_time_asked + timezone.timedelta(minutes=5),
+            status=Question.STATUS_ACTIVE,
+        )
+        older.time_asked = self.older_time_asked
+        older.save()
+
+    def test_questions_per_ta_computation(self):
+        call_command("questions_per_ta_heatmap_hist")
+        yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
+        yesterday_weekday = yesterday.weekday()
+
+        expected_8 = self.ta_1_questions_8 / self.num_tas_8
+        actual_8 = QueueStatistic.objects.get(
+            queue=self.queue,
+            metric=QueueStatistic.METRIC_HEATMAP_QUESTIONS_PER_TA,
+            day=yesterday_weekday,
+            hour=8,
+        ).value
+        self.assertEqual(expected_8, actual_8)
+
+        expected_17 = (self.ta_1_questions_17 + self.ta_2_questions_17) / self.num_tas_17
+        actual_17 = QueueStatistic.objects.get(
+            queue=self.queue,
+            metric=QueueStatistic.METRIC_HEATMAP_QUESTIONS_PER_TA,
+            day=yesterday_weekday,
+            hour=17,
+        ).value
+        self.assertEqual(expected_17, actual_17)
+
+        expected_two_days_ago_8 = 1
+        actual_two_days_ago_8 = QueueStatistic.objects.get(
+            queue=self.queue,
+            metric=QueueStatistic.METRIC_HEATMAP_QUESTIONS_PER_TA,
+            day=self.older_time_asked.weekday(),
+            hour=8,
+        ).value
+        self.assertEqual(expected_two_days_ago_8, actual_two_days_ago_8)
