@@ -4,7 +4,7 @@ import Select from "react-select";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import { Course, Question, Tag, TagLabel } from "../../../types";
 import { logException } from "../../../utils/sentry";
-import { getTags } from "../../../hooks/data-fetching/course";
+import { useTags } from "../../../hooks/data-fetching/course";
 import { isValidVideoChatURL } from "../../../utils";
 
 interface EditQuestionModalProps {

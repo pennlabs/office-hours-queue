@@ -3,7 +3,7 @@ import { Segment, Form, Header, Button } from "semantic-ui-react";
 import Select from "react-select";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import { isValidVideoChatURL } from "../../../utils";
-import { createQuestion, getTags } from "../../../hooks/data-fetching/course";
+import { createQuestion, useTags } from "../../../hooks/data-fetching/course";
 import { Course, Question, Queue, Tag, TagLabel } from "../../../types";
 import { logException } from "../../../utils/sentry";
 
@@ -33,8 +33,14 @@ const QuestionForm = (props: QuestionFormProps) => {
     const [validURL, setValidURL] = useState(true);
     const [createPending, setCreatePending] = useState(false);
 
-    const [tagOptions, setTagOptions] = useState<TagLabel[]>([]);
-    const [tagLabels, setTagLabels] = useState<TagLabel[]>([]);
+    // BIG TODO: server fetch required information here
+    const { data: tags } = useTags(course.id, undefined);
+    const [tagOptions, setTagOptions] = useState<TagLabel[]>(
+        tags!.map((t) => ({ label: t.name, value: t.name }))
+    );
+    const [tagLabels, setTagLabels] = useState<TagLabel[]>(
+        tags!.map((t) => ({ label: t.name, value: t.name }))
+    );
 
     const handleInputChange = (e, { name, value }) => {
         if (name === "text" && value.length > charLimit) return;

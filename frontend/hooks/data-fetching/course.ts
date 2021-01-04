@@ -31,8 +31,16 @@ import {
 export const useCourse = (courseId: number, initialCourse: Course) =>
     useResource(`/courses/${courseId}/`, initialCourse);
 
-export const useTags = (courseId: number, initialTags: Tag[]) =>
-    useResource(`/courses/${courseId}/tags/`, initialTags);
+export const useTags = (courseId: number, initialData: Tag[]) =>
+    useResourceListNew(
+        `/api/courses/${courseId}/tags/`,
+        (id) => `/api/courses/${courseId}/tags/${id}`,
+        {
+            initialData,
+            fetcher: newResourceFetcher,
+            revalidateOnFocus: false,
+        }
+    );
 
 export const useMembers = (courseId: number, initialData: Membership[]) =>
     useResourceList(
@@ -122,18 +130,6 @@ export async function createTag(courseId: number, name: string): Promise<Tag> {
     })
         .then((res) => res.json())
         .catch((_) => null);
-}
-
-export async function deleteTag(courseId: number, tagId: number) {
-    await doApiRequest(`/courses/${courseId}/tags/${tagId}/`, {
-        method: "DELETE",
-    });
-}
-
-export async function getTags(courseId: number): Promise<Tag[]> {
-    return doApiRequest(`/courses/${courseId}/tags/`)
-        .then((res) => res.json())
-        .catch((_) => []);
 }
 
 function newResourceFetcher<R>(path, ...args): R | Promise<R> {
