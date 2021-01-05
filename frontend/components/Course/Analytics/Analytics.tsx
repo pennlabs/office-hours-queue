@@ -1,6 +1,12 @@
 import React, { useState } from "react";
-import { Segment, Header, Grid, Message } from "semantic-ui-react";
+import { Segment, Header, Grid, Message, Dropdown } from "semantic-ui-react";
+import { Course } from "../../../types";
 // import MyPieChart from "./MyPieChart";
+import Averages from "./Heatmaps/Averages";
+
+interface AnalyticsProps {
+    course: Course;
+}
 
 const Analytics = () => {
     // const data = {};
@@ -156,6 +162,8 @@ const Analytics = () => {
     //     }
     // }
 
+    // const {data: queues} = useQueues()
+
     return (
         <Grid.Row>
             <Grid.Row style={{ marginTop: "10px" }}>
@@ -166,6 +174,16 @@ const Analytics = () => {
                     warning
                 />
             </Grid.Row>
+            <Grid.Row>
+                <span>
+                    Show statistics for queue{" "}
+                    <Dropdown
+                        inline
+                        // options={}
+                    />
+                </span>
+            </Grid.Row>
+            <Averages />
             <Segment basic>
                 <Header as="h3">Questions by Type</Header>
                 {/* {pieChartData &&

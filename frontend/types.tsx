@@ -139,3 +139,38 @@ export interface CoursePageProps {
     course: Course;
     leadership: Membership[];
 }
+
+export enum Metric {
+    HEATMAP_WAIT = "HEATMAP_AVG_WAIT",
+    HEATMAP_QUESTIONS = "HEATMAP_QUESTIONS_PER_TA",
+    AVG_WAIT = "AVG_WAIT",
+    NUM_ANSWERED = "NUM_ANSWERED",
+    STUDENTS_HELPED = "STUDENTS_HELPED",
+    AVG_TIME_HELPING = "AVG_TIME_HELPING",
+    LIST_WAIT = "LIST_WAIT_TIME_DAYS",
+}
+
+interface AnalyticsDataElem {
+    metric: Metric;
+    day: number;
+    hour: number;
+    value: string;
+    date: string;
+}
+
+export type AnalyticsData = AnalyticsDataElem[];
+
+export interface HeatmapSeries {
+    name: string;
+    data: { x: number; y: number }[];
+}
+
+export enum DayOfWeek {
+    "Monday" = 0,
+    "Tuesday" = 1,
+    "Wednesday" = 2,
+    "Thursday" = 3,
+    "Friday" = 4,
+    "Saturday" = 5,
+    "Sunday" = 6,
+}
