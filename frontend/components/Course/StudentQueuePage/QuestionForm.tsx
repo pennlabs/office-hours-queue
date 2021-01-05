@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Segment, Form, Header, Button } from "semantic-ui-react";
 import Select from "react-select";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import { isValidVideoChatURL } from "../../../utils";
-import { createQuestion, useTags } from "../../../hooks/data-fetching/course";
-import { Course, Question, Queue, Tag, TagLabel } from "../../../types";
+import { createQuestion } from "../../../hooks/data-fetching/course";
+import { Course, Question, Queue, Tag } from "../../../types";
 import { logException } from "../../../utils/sentry";
 
 interface QuestionFormProps {
@@ -13,16 +13,17 @@ interface QuestionFormProps {
     queueMutate: mutateResourceListFunction<Queue>;
     mutate: mutateResourceListFunction<Question>;
     toastFunc: (success: string | null, error: any) => void;
+    tags: Tag[];
 }
 
 interface QuestionFormState {
     text: string;
-    tags: Tag[];
+    tags: { name: string }[];
     videoChatUrl?: string;
 }
 
 const QuestionForm = (props: QuestionFormProps) => {
-    const { course } = props;
+    const { course, tags } = props;
     const [input, setInput] = useState<QuestionFormState>({
         text: "",
         tags: [],
@@ -33,20 +34,11 @@ const QuestionForm = (props: QuestionFormProps) => {
     const [validURL, setValidURL] = useState(true);
     const [createPending, setCreatePending] = useState(false);
 
-    // BIG TODO: server fetch required information here
-    const { data: tags } = useTags(course.id, undefined);
-    const [tagOptions, setTagOptions] = useState<TagLabel[]>(
-        tags!.map((t) => ({ label: t.name, value: t.name }))
-    );
-    const [tagLabels, setTagLabels] = useState<TagLabel[]>(
-        tags!.map((t) => ({ label: t.name, value: t.name }))
-    );
-
     const handleInputChange = (e, { name, value }) => {
         if (name === "text" && value.length > charLimit) return;
         const nextValue = name === "videoChatUrl" ? value.trim() : value;
         input[name] = nextValue;
-        setInput(input);
+        setInput({ ...input });
         setCharCount(input.text.length);
         setDisabled(
             !input.text ||
@@ -60,46 +52,26 @@ const QuestionForm = (props: QuestionFormProps) => {
         }
     };
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const loadedTags: Tag[] = await getTags(course.id);
-
-            setTagOptions(
-                loadedTags.map((tag) => {
-                    return {
-                        label: tag.name,
-                        value: tag.name,
-                    };
-                })
-            );
-        };
-
-        fetchData();
-    }, [course]);
-
     const handleTagChange = (_, event) => {
         if (event.action === "remove-value") {
             const text = event.removedValue.label;
 
-            setTagLabels(
-                tagLabels.filter((tagLabel) => {
-                    return tagLabel.label !== text;
-                })
-            );
-
-            input.tags = input.tags.filter((tag) => {
-                return tag.name !== text;
+            setInput({
+                ...input,
+                tags: input.tags.filter((tagLabel) => {
+                    return tagLabel !== text;
+                }),
             });
-            setInput(input);
         } else if (event.action === "clear") {
-            setTagLabels([]);
+            setInput({
+                ...input,
+                tags: [],
+            });
         } else if (event.action === "select-option") {
-            setTagLabels([
-                ...tagLabels,
-                { label: event.option.label, value: event.option.label },
-            ]);
-
-            input.tags = [...input.tags, { name: event.option.label }];
+            setInput({
+                ...input,
+                tags: [...input.tags, { name: event.option.label }],
+            });
         }
     };
 
@@ -107,7 +79,6 @@ const QuestionForm = (props: QuestionFormProps) => {
         setCreatePending(true);
         try {
             await createQuestion(props.course.id, props.queueId, input);
-            // TODO: make arguments here optional?
             await props.mutate(-1, null);
             await props.queueMutate(-1, null);
             props.toastFunc("Question successfully added to queue", null);
@@ -161,7 +132,7 @@ const QuestionForm = (props: QuestionFormProps) => {
                             />
                         </Form.Field>
                     )}
-                    {tagOptions && tagOptions.length > 0 && (
+                    {tags && tags.length > 0 && (
                         <Form.Field>
                             <label htmlFor="form-question">Tags</label>
                             <Select
@@ -170,9 +141,15 @@ const QuestionForm = (props: QuestionFormProps) => {
                                 isClearable
                                 isMulti
                                 placeholder="Select tags"
-                                value={tagLabels}
+                                value={input.tags.map((s) => ({
+                                    label: s.name,
+                                    value: s.name,
+                                }))}
                                 onChange={handleTagChange}
-                                options={tagOptions}
+                                options={tags.map((t) => ({
+                                    label: t.name,
+                                    value: t.name,
+                                }))}
                             />
                         </Form.Field>
                     )}

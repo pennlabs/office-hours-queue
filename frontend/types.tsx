@@ -91,7 +91,7 @@ export interface Question {
     timeResponseStarted?: string;
     timeRespondedTo?: string;
     shouldSendUpSoonNotification: boolean;
-    tags?: Tag[];
+    tags: Tag[];
     note: string;
     resolvedNote: boolean;
     // this is a marker field for subscribe requests
@@ -142,5 +142,4 @@ export interface Toast {
 export interface CoursePageProps {
     course: Course;
     leadership: Membership[];
-    tags: Tag[];
 }

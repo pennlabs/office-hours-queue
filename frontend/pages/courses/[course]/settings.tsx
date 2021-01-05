@@ -12,7 +12,11 @@ import CourseSettings from "../../../components/Course/CourseSettings/CourseSett
 import { CoursePageProps, Course, Membership, Tag } from "../../../types";
 import nextRedirect from "../../../utils/redirect";
 
-const SettingsPage = (props: CoursePageProps) => {
+interface SettingsPageProps extends CoursePageProps {
+    tags: Tag[];
+}
+
+const SettingsPage = (props: SettingsPageProps) => {
     const { course, leadership, tags } = props;
     return (
         <>
@@ -34,7 +38,7 @@ const SettingsPage = (props: CoursePageProps) => {
 
 SettingsPage.getInitialProps = async (
     context: NextPageContext
-): Promise<CoursePageProps> => {
+): Promise<SettingsPageProps> => {
     const { query, req } = context;
     const data = {
         headers: req ? { cookie: req.headers.cookie } : undefined,

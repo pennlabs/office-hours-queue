@@ -253,7 +253,7 @@ export async function clearQueue(courseId: number, queueId: number) {
 export async function createQuestion(
     courseId: number,
     queueId: number,
-    payload: Partial<Question>
+    payload: Partial<Omit<Question, "tags"> & { tags: Partial<Tag>[] }>
 ): Promise<void> {
     const res = await doApiRequest(
         `/courses/${courseId}/queues/${queueId}/questions/`,

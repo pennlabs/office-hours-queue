@@ -12,6 +12,7 @@ import {
     CoursePageProps,
     Queue,
     Course,
+    Tag,
     Membership,
     Question,
     QuestionMap,
@@ -22,10 +23,11 @@ import StudentQueuePage from "../../../components/Course/StudentQueuePage/Studen
 interface QueuePageProps extends CoursePageProps {
     queues: Queue[];
     questionmap: QuestionMap;
+    tags: Tag[];
 }
 
 const QueuePage = (props: QueuePageProps) => {
-    const { course, leadership, queues, questionmap } = props;
+    const { course, leadership, queues, questionmap, tags } = props;
     return (
         <WebsocketProvider
             url="/api/ws/subscribe/"
@@ -62,6 +64,7 @@ const QueuePage = (props: QueuePageProps) => {
                                         queues={queues}
                                         questionmap={questionmap}
                                         play={play}
+                                        tags={tags}
                                     />
                                 )}
                             </div>
@@ -84,15 +87,17 @@ QueuePage.getInitialProps = async (
     let course: Course;
     let leadership: Membership[];
     let queues: Queue[];
+    let tags: Tag[];
 
     const response = await doMultipleSuccessRequests([
         { path: `/courses/${query.course}/`, data },
         { path: `/courses/${query.course}/members/`, data },
         { path: `/courses/${query.course}/queues/`, data },
+        { path: `/courses/${query.course}/tags/`, data },
     ]);
 
     if (response.success) {
-        [course, leadership, queues] = response.data;
+        [course, leadership, queues, tags] = response.data;
     } else {
         nextRedirect(context, () => true, "/404");
         // this will never hit
@@ -120,6 +125,7 @@ QueuePage.getInitialProps = async (
         leadership: leadership.filter((m) => isLeadershipRole(m.kind)),
         queues,
         questionmap,
+        tags,
     };
 };
 export default withAuth(QueuePage);
