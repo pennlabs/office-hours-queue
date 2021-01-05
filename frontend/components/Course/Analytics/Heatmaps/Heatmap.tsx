@@ -5,16 +5,25 @@ import { HeatmapSeries } from "../../../../types";
 interface HeatmapProps {
     series: HeatmapSeries[];
     chartTitle: string;
-    metricName: string;
 }
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-export default function Heatmap({
-    series,
-    chartTitle,
-    metricName,
-}: HeatmapProps) {
+const toDisplayHour = (hour: string) => {
+    const hourNum = Number(hour);
+    if (hourNum > 12) {
+        return `${hourNum - 12} PM`;
+    }
+    if (hourNum === 0) {
+        return "12 AM";
+    }
+    if (hourNum === 12) {
+        return "12 PM";
+    }
+    return `${hourNum} AM`;
+};
+
+export default function Heatmap({ series, chartTitle }: HeatmapProps) {
     const options = {
         dataLabels: {
             enabled: false,
@@ -42,28 +51,20 @@ export default function Heatmap({
         xaxis: {
             type: "category",
             labels: {
-                formatter: (hour: string) => {
-                    const hourNum = Number(hour);
-                    if (hourNum > 12) {
-                        return `${hourNum - 12} PM`;
-                    }
-                    if (hourNum === 0) {
-                        return "12 AM";
-                    }
-                    if (hourNum === 12) {
-                        return "12 PM";
-                    }
-                    return `${hourNum} AM`;
-                },
+                formatter: (hour: string) => toDisplayHour(hour),
             },
             title: {
-                // text: "Hour (EDT)",
-                // offsetY: 10,
+                text: "Hour (EDT)",
+                offsetY: 10,
             },
         },
     };
 
-    return (
+    console.log(series.length);
+
+    return series.length !== 0 ? (
         <Chart series={series} options={options} type="heatmap" height={350} />
+    ) : (
+        <div>No data available</div>
     );
 }

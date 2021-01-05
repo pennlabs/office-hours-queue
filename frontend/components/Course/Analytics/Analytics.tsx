@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React, { useState } from "react";
 import { Segment, Header, Grid, Message, Dropdown } from "semantic-ui-react";
 import { Course, Queue } from "../../../types";
@@ -185,29 +186,43 @@ const Analytics = ({ course, queues }: AnalyticsProps) => {
                     warning
                 />
             </Grid.Row>
-            <Segment basic>
-                <span>
-                    Show statistics for queue{" "}
-                    <Dropdown
-                        inline
-                        options={queueOptions}
-                        defaultValue={queueId}
-                        handleChange={(e, { value }) => setQueueId(value)}
-                    />
-                </span>
-            </Segment>
-            {queueId && <Averages courseId={course.id} queueId={queueId} />}
-            <Segment basic>
-                <Header as="h3">Questions by Type</Header>
-                {/* {pieChartData &&
-                    pieChartData.map((dataset) => {
-                        return <MyPieChart dataset={dataset} />;
-                    })} */}
-            </Segment>
-            <Segment basic>
-                <Header as="h3">Queue Traffic</Header>
-                {/* {lineChartData && <MyPieChart dataset={lineChartData} />} */}
-            </Segment>
+            {queueId ? (
+                <>
+                    <Segment basic>
+                        <span>
+                            Showing statistics for queue:{" "}
+                            <Dropdown
+                                inline
+                                options={queueOptions}
+                                defaultValue={queueId}
+                                onChange={(e, { value }) => {
+                                    setQueueId(value as number);
+                                }}
+                            />
+                        </span>
+                    </Segment>
+                    <Averages courseId={course.id} queueId={queueId} />
+                    <Segment basic>
+                        <Header as="h3">Questions by Type</Header>
+                        {/* {pieChartData &&
+                        pieChartData.map((dataset) => {
+                            return <MyPieChart dataset={dataset} />;
+                        })} */}
+                    </Segment>
+                    <Segment basic>
+                        <Header as="h3">Queue Traffic</Header>
+                        {/* {lineChartData && <MyPieChart dataset={lineChartData} />} */}
+                    </Segment>
+                </>
+            ) : (
+                <Segment basic>
+                    You have no queues. Navigate to the{" "}
+                    <Link href={`/courses/${course.id}`}>
+                        <a>queue page</a>
+                    </Link>{" "}
+                    to create one.
+                </Segment>
+            )}
         </Grid.Row>
     );
 };

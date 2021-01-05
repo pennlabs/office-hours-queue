@@ -10,7 +10,14 @@ interface AveragesProps {
 }
 
 export default function Averages({ courseId, queueId }: AveragesProps) {
-    const data = useHeatmapData(courseId, queueId, Metric.HEATMAP_QUESTIONS);
+    const {
+        data: questionsData,
+        isValidating: questionsValidating,
+    } = useHeatmapData(courseId, queueId, Metric.HEATMAP_QUESTIONS);
+    const {
+        data: waitTimesData,
+        isValidating: waitValidating,
+    } = useHeatmapData(courseId, queueId, Metric.HEATMAP_WAIT);
 
     return (
         <>
@@ -22,20 +29,37 @@ export default function Averages({ courseId, queueId }: AveragesProps) {
                         {
                             menuItem: "Questions per Instructor",
                             render: () => {
-                                return data ? (
-                                    <Heatmap
-                                        metricName="Questions per Instructor"
-                                        series={data}
-                                        chartTitle="Average Questions per Instructor by Hour and Weekday"
-                                    />
-                                ) : (
-                                    <div>Loading...</div>
-                                );
+                                if (questionsData) {
+                                    return (
+                                        <Heatmap
+                                            metricName="Questions per Instructor"
+                                            series={questionsData}
+                                            chartTitle="Average Number of Questions per Instructor by Hour and Day of Week"
+                                        />
+                                    );
+                                }
+                                if (questionsValidating) {
+                                    return <div>Loading...</div>;
+                                }
+                                return <div>Error loading data</div>;
                             },
                         },
                         {
-                            menuItem: "Wait Times",
-                            render: () => <div>queuehuehue</div>,
+                            menuItem: "Student Wait Times",
+                            render: () => {
+                                if (waitTimesData) {
+                                    return (
+                                        <Heatmap
+                                            metricName="Wait Times"
+                                            series={waitTimesData}
+                                            chartTitle="Average Student Wait Times by Hour and Day of Week"
+                                        />
+                                    );
+                                }
+                                if (waitValidating)
+                                    return <div>Loading...</div>;
+                                return <div>Error loading data</div>;
+                            },
                         },
                     ]}
                 />

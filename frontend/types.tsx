@@ -162,7 +162,7 @@ export type AnalyticsData = AnalyticsDataElem[];
 
 export interface HeatmapSeries {
     name: string;
-    data: { x: number; y: number }[];
+    data: { x: string; y: number }[];
 }
 
 export enum DayOfWeek {
