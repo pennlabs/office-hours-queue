@@ -56,6 +56,7 @@ const QueuePage = (props: QueuePageProps) => {
                                         queues={queues}
                                         questionmap={questionmap}
                                         play={play}
+                                        tags={tags}
                                     />
                                 )}
                                 {!staff && (

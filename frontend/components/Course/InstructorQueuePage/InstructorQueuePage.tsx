@@ -8,13 +8,14 @@ import QueueSettings from "./QueueSettings/QueueSettings";
 import CreateQueue from "./CreateQueue/CreateQueue";
 import { AuthUserContext } from "../../../context/auth";
 import { useQueues, useStaff } from "../../../hooks/data-fetching/course";
-import { Queue, QuestionMap } from "../../../types";
+import { Queue, QuestionMap, Tag } from "../../../types";
 
 interface InstructorQueuePageProps {
     courseId: number;
     queues: Queue[];
     questionmap: QuestionMap;
     play: MutableRefObject<() => void>;
+    tags: Tag[];
 }
 
 enum PageStateEnum {
@@ -39,7 +40,7 @@ interface CreateState {
 type PageState = QueueState | SettingsState | CreateState;
 
 const InstructorQueuePage = (props: InstructorQueuePageProps) => {
-    const { courseId, queues: rawQueues, questionmap, play } = props;
+    const { courseId, queues: rawQueues, questionmap, play, tags } = props;
 
     /* STATE */
     const { user: initialUser } = useContext(AuthUserContext);
@@ -94,6 +95,7 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
                         mutate={mutate}
                         leader={leader}
                         play={play}
+                        tags={tags}
                     />
                 )}
                 {pageState.kind === PageStateEnum.SETTINGS && (
