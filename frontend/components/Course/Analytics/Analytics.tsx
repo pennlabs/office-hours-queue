@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { Segment, Header, Grid, Message, Dropdown } from "semantic-ui-react";
-import { Course } from "../../../types";
+import { Course, Queue } from "../../../types";
 // import MyPieChart from "./MyPieChart";
 import Averages from "./Heatmaps/Averages";
 
 interface AnalyticsProps {
     course: Course;
+    queues: Queue[];
 }
 
-const Analytics = () => {
+const Analytics = ({ course, queues }: AnalyticsProps) => {
     // const data = {};
     // const [pieChartData, setPieChartData] = useState(null);
     // const [lineChartData, setLineChartData] = useState(null);
@@ -162,7 +163,17 @@ const Analytics = () => {
     //     }
     // }
 
-    // const {data: queues} = useQueues()
+    const [queueId, setQueueId] = useState<number | undefined>(
+        queues.length !== 0 ? queues[0].id : undefined
+    );
+
+    const queueOptions = queues.map((queue) => {
+        return {
+            key: queue.id,
+            value: queue.id,
+            text: queue.name,
+        };
+    });
 
     return (
         <Grid.Row>
@@ -174,16 +185,18 @@ const Analytics = () => {
                     warning
                 />
             </Grid.Row>
-            <Grid.Row>
+            <Segment basic>
                 <span>
                     Show statistics for queue{" "}
                     <Dropdown
                         inline
-                        // options={}
+                        options={queueOptions}
+                        defaultValue={queueId}
+                        handleChange={(e, { value }) => setQueueId(value)}
                     />
                 </span>
-            </Grid.Row>
-            <Averages />
+            </Segment>
+            {queueId && <Averages courseId={course.id} queueId={queueId} />}
             <Segment basic>
                 <Header as="h3">Questions by Type</Header>
                 {/* {pieChartData &&

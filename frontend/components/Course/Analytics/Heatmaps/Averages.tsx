@@ -4,8 +4,13 @@ import { useHeatmapData } from "../../../../hooks/data-fetching/analytics";
 import { Metric } from "../../../../types";
 import Heatmap from "./Heatmap";
 
-export default function Averages() {
-    const data = useHeatmapData(2, 4, Metric.HEATMAP_QUESTIONS);
+interface AveragesProps {
+    courseId: number;
+    queueId: number;
+}
+
+export default function Averages({ courseId, queueId }: AveragesProps) {
+    const data = useHeatmapData(courseId, queueId, Metric.HEATMAP_QUESTIONS);
 
     return (
         <>
