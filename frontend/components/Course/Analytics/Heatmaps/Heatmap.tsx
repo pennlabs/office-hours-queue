@@ -28,7 +28,7 @@ export default function Heatmap({ series, chartTitle }: HeatmapProps) {
         dataLabels: {
             enabled: false,
         },
-        colors: ["#008FFB"],
+        colors: ["#4285f5"],
         title: {
             text: chartTitle,
         },
@@ -51,16 +51,20 @@ export default function Heatmap({ series, chartTitle }: HeatmapProps) {
         xaxis: {
             type: "category",
             labels: {
-                formatter: (hour: string) => toDisplayHour(hour),
+                formatter: toDisplayHour,
             },
             title: {
                 text: "Hour (EDT)",
                 offsetY: 10,
             },
         },
+        responsive: [
+            {
+                breakpoint: 600,
+                options: {},
+            },
+        ],
     };
-
-    console.log(series.length);
 
     return series.length !== 0 ? (
         <Chart series={series} options={options} type="heatmap" height={350} />

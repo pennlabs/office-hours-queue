@@ -216,11 +216,11 @@ const Analytics = ({ course, queues }: AnalyticsProps) => {
                 </>
             ) : (
                 <Segment basic>
-                    You have no queues. Navigate to the{" "}
+                    You have no queues. Create a queue on the{" "}
                     <Link href={`/courses/${course.id}`}>
                         <a>queue page</a>
                     </Link>{" "}
-                    to create one.
+                    to see analytics.
                 </Segment>
             )}
         </Grid.Row>

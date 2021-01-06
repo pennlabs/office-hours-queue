@@ -32,7 +32,6 @@ export default function Averages({ courseId, queueId }: AveragesProps) {
                                 if (questionsData) {
                                     return (
                                         <Heatmap
-                                            metricName="Questions per Instructor"
                                             series={questionsData}
                                             chartTitle="Average Number of Questions per Instructor by Hour and Day of Week"
                                         />
@@ -50,7 +49,6 @@ export default function Averages({ courseId, queueId }: AveragesProps) {
                                 if (waitTimesData) {
                                     return (
                                         <Heatmap
-                                            metricName="Wait Times"
                                             series={waitTimesData}
                                             chartTitle="Average Student Wait Times by Hour and Day of Week"
                                         />
