@@ -325,3 +325,41 @@ class MassInvitePermission(permissions.BasePermission):
             return False
 
         return membership.is_leadership
+
+
+class TagPermission(permissions.BasePermission):
+    """
+    Head TAs+ should be able to create, modify and delete a tag.
+    Students+ can get or list tags.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        membership = Membership.objects.get(course=view.kwargs["course_pk"], user=request.user)
+
+        # Students+ can get a single tag
+        if view.action == "retrieve":
+            return True
+
+        # Head TAs+ can make changes
+        if view.action in ["destroy", "partial_update", "update"]:
+            return membership.is_leadership
+
+    def has_permission(self, request, view):
+        # Anonymous users can't do anything
+        if not request.user.is_authenticated:
+            return False
+
+        membership = Membership.objects.filter(
+            course=view.kwargs["course_pk"], user=request.user
+        ).first()
+
+        # Non-Students can't do anything
+        if membership is None:
+            return False
+
+        if view.action in ["list", "retrieve"]:
+            return True
+
+        # Head TAs+ can make changes
+        if view.action in ["create", "destroy", "update", "partial_update"]:
+            return membership.is_leadership

@@ -11,7 +11,7 @@ import {
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import EditQuestionModal from "./EditQuestionModal";
 import DeleteQuestionModal from "./DeleteQuestionModal";
-import { Question, Course, Queue, QuestionStatus } from "../../../types";
+import { Question, Course, Queue, QuestionStatus, Tag } from "../../../types";
 import {
     useQuestionPosition,
     finishQuestion,
@@ -27,6 +27,7 @@ interface QuestionCardProps {
     lastQuestionsMutate: mutateResourceListFunction<Question>;
     toastFunc: (success: string | null, error: any) => void;
     play: MutableRefObject<() => void>;
+    tags: Tag[];
 }
 const QuestionCard = (props: QuestionCardProps) => {
     const {
@@ -38,6 +39,7 @@ const QuestionCard = (props: QuestionCardProps) => {
         queueMutate,
         lastQuestionsMutate,
         play,
+        tags,
     } = props;
     const [positionData, , , ,] = useQuestionPosition(
         course.id,
@@ -83,6 +85,7 @@ const QuestionCard = (props: QuestionCardProps) => {
                 setOpen={setOpenEdit}
                 toastFunc={toastFunc}
                 mutate={mutate}
+                tags={tags}
             />
             <DeleteQuestionModal
                 open={openDelete}
@@ -204,17 +207,22 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     trigger={
                                         <span>
                                             {question.tags
-                                                .map((tag) => ` ${tag}`)
+                                                .map((tag) => ` ${tag.name}`)
                                                 .toString()}
                                         </span>
                                     }
                                     content={question.tags
-                                        .map((tag) => ` ${tag}`)
+                                        .map((tag) => ` ${tag.name}`)
                                         .toString()}
                                     basic
                                     inverted
                                     position="bottom left"
                                 />
+                            )}
+                            {(!question.tags || question.tags.length === 0) && (
+                                <span style={{ paddingLeft: "8px" }}>
+                                    <i>No Tags</i>
+                                </span>
                             )}
                         </Grid.Column>
                     </Grid.Row>

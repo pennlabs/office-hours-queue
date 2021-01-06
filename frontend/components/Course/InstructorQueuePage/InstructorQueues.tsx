@@ -2,7 +2,7 @@ import React, { MutableRefObject } from "react";
 import { Grid, Segment, Icon, Message } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Queue from "./Queue";
-import { Queue as QueueType, QuestionMap } from "../../../types";
+import { Queue as QueueType, QuestionMap, Tag } from "../../../types";
 
 interface InstructorQueuesProps {
     courseId: number;
@@ -13,6 +13,7 @@ interface InstructorQueuesProps {
     editFunc: (n: number) => void;
     createFunc: () => void;
     play: MutableRefObject<() => void>;
+    tags: Tag[];
 }
 const InstructorQueues = (props: InstructorQueuesProps) => {
     const {
@@ -24,6 +25,7 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
         mutate,
         editFunc,
         play,
+        tags,
     } = props;
 
     const numActive = () => {
@@ -49,6 +51,7 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
                                         mutate={mutate}
                                         editFunc={() => editFunc(queue.id)}
                                         play={play}
+                                        tags={tags}
                                     />
                                 </Grid.Column>
                             )

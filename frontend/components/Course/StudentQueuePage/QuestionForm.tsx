@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Segment, Form, Header, Button } from "semantic-ui-react";
+import Select from "react-select";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
-
 import { isValidVideoChatURL } from "../../../utils";
 import { createQuestion } from "../../../hooks/data-fetching/course";
-import { Course, Question, Queue } from "../../../types";
+import { Course, Question, Queue, Tag } from "../../../types";
 import { logException } from "../../../utils/sentry";
 
 interface QuestionFormProps {
@@ -13,16 +13,17 @@ interface QuestionFormProps {
     queueMutate: mutateResourceListFunction<Queue>;
     mutate: mutateResourceListFunction<Question>;
     toastFunc: (success: string | null, error: any) => void;
+    tags: Tag[];
 }
 
 interface QuestionFormState {
     text: string;
-    tags: string[];
+    tags: { name: string }[];
     videoChatUrl?: string;
 }
 
 const QuestionForm = (props: QuestionFormProps) => {
-    const { course } = props;
+    const { course, tags } = props;
     const [input, setInput] = useState<QuestionFormState>({
         text: "",
         tags: [],
@@ -37,7 +38,7 @@ const QuestionForm = (props: QuestionFormProps) => {
         if (name === "text" && value.length > charLimit) return;
         const nextValue = name === "videoChatUrl" ? value.trim() : value;
         input[name] = nextValue;
-        setInput(input);
+        setInput({ ...input });
         setCharCount(input.text.length);
         setDisabled(
             !input.text ||
@@ -51,21 +52,33 @@ const QuestionForm = (props: QuestionFormProps) => {
         }
     };
 
-    // const getDropdownOptions = (tags) => {
-    //     return tags.map((tag) => {
-    //         return {
-    //             key: tag,
-    //             value: tag,
-    //             text: tag,
-    //         };
-    //     });
-    // };
+    const handleTagChange = (_, event) => {
+        if (event.action === "remove-value") {
+            const text = event.removedValue.label;
+
+            setInput({
+                ...input,
+                tags: input.tags.filter((tagLabel) => {
+                    return tagLabel !== text;
+                }),
+            });
+        } else if (event.action === "clear") {
+            setInput({
+                ...input,
+                tags: [],
+            });
+        } else if (event.action === "select-option") {
+            setInput({
+                ...input,
+                tags: [...input.tags, { name: event.option.label }],
+            });
+        }
+    };
 
     const onSubmit = async () => {
         setCreatePending(true);
         try {
             await createQuestion(props.course.id, props.queueId, input);
-            // TODO: make arguments here optional?
             await props.mutate(-1, null);
             await props.queueMutate(-1, null);
             props.toastFunc("Question successfully added to queue", null);
@@ -119,21 +132,27 @@ const QuestionForm = (props: QuestionFormProps) => {
                             />
                         </Form.Field>
                     )}
-                    {/* TODO: tags */}
-                    {/* {course.tags && course.tags.length > 0 && (
+                    {tags && tags.length > 0 && (
                         <Form.Field>
-                            <label>Tags</label>
-                            <Form.Dropdown
-                                multiple
-                                selection
+                            <label htmlFor="form-question">Tags</label>
+                            <Select
                                 name="tags"
+                                disabled={createPending}
+                                isClearable
+                                isMulti
                                 placeholder="Select tags"
-                                disabled={loading}
-                                onChange={handleInputChange}
-                                options={getDropdownOptions(course.tags)}
+                                value={input.tags.map((s) => ({
+                                    label: s.name,
+                                    value: s.name,
+                                }))}
+                                onChange={handleTagChange}
+                                options={tags.map((t) => ({
+                                    label: t.name,
+                                    value: t.name,
+                                }))}
                             />
                         </Form.Field>
-                    )} */}
+                    )}
                 </Form>
             </Segment>
             <Segment attached="bottom">
