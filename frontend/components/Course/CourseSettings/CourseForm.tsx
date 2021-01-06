@@ -45,6 +45,8 @@ const CourseForm = (props: CourseFormProps) => {
 
     useEffect(() => {
         setOldTags(toTagMap(tags!));
+        setAddedTags([]);
+        setDeletedTags([]);
     }, [tags]);
 
     const [input, setInput] = useState({
