@@ -14,7 +14,7 @@ import Alert from "@material-ui/lab/Alert";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import QuestionForm from "./QuestionForm";
 import QuestionCard from "./QuestionCard";
-import { Queue, Course, Question } from "../../../types";
+import { Queue, Course, Question, Tag } from "../../../types";
 import {
     useQuestions,
     useLastQuestions,
@@ -27,10 +27,18 @@ interface StudentQueueProps {
     queueMutate: mutateResourceListFunction<Queue>;
     questions: Question[];
     play: MutableRefObject<() => void>;
+    tags: Tag[];
 }
 
 const StudentQueue = (props: StudentQueueProps) => {
-    const { course, queue, queueMutate, questions: rawQuestions, play } = props;
+    const {
+        course,
+        queue,
+        queueMutate,
+        questions: rawQuestions,
+        play,
+        tags,
+    } = props;
     const [toast, setToast] = useState({ message: "", success: true });
     const [toastOpen, setToastOpen] = useState(false);
 
@@ -122,6 +130,7 @@ const StudentQueue = (props: StudentQueueProps) => {
                         mutate={mutateQuestions}
                         toastFunc={updateToast}
                         play={play}
+                        tags={tags}
                     />
                 )}
                 {!queue.active && questions.length === 0 && (
@@ -140,6 +149,7 @@ const StudentQueue = (props: StudentQueueProps) => {
                         queueMutate={queueMutate}
                         mutate={mutateQuestions}
                         toastFunc={updateToast}
+                        tags={tags}
                     />
                 )}
                 {lastQuestions && lastQuestions.length !== 0 && (

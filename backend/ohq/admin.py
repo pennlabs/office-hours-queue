@@ -9,6 +9,7 @@ from ohq.models import (
     Question,
     Queue,
     Semester,
+    Tag,
 )
 
 
@@ -20,3 +21,4 @@ admin.site.register(Question)
 admin.site.register(Queue)
 admin.site.register(Semester)
 admin.site.register(Announcement)
+admin.site.register(Tag)

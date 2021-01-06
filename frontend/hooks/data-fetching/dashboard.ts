@@ -19,6 +19,22 @@ export async function joinCourse(courseId: string): Promise<void> {
     }
 }
 
+export async function leaveCourse(
+    courseId: string,
+    membershipId: string
+): Promise<void> {
+    const res = await doApiRequest(
+        `/courses/${courseId}/members/${membershipId}/`,
+        {
+            method: "DELETE",
+        }
+    );
+
+    if (!res.ok) {
+        throw new Error("Unable to leave course");
+    }
+}
+
 export async function createCourse(payload: any): Promise<void> {
     const res = await doApiRequest("/courses/", {
         method: "POST",

@@ -46,7 +46,8 @@ const AddStudentForm = (props: AddStudentFormProps) => {
                             value:
                                 items === null
                                     ? []
-                                    : items.map((item) => item.value),
+                                    : // sound because of previous check
+                                      items!.map((item) => item.value),
                         });
                     }}
                 />

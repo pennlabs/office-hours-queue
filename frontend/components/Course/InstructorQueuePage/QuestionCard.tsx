@@ -1,10 +1,19 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Button, Grid, Header, Icon, Popup, Segment } from "semantic-ui-react";
+import {
+    Button,
+    Grid,
+    Header,
+    Icon,
+    Message,
+    Popup,
+    Segment,
+} from "semantic-ui-react";
 import moment from "moment";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import RejectQuestionModal from "./RejectQuestionModal";
 import { AuthUserContext } from "../../../context/auth";
 import { Question, QuestionStatus, User } from "../../../types";
+import MessageQuestionModal from "./MessageQuestionModal";
 
 export const fullName = (user: User) => `${user.firstName} ${user.lastName}`;
 
@@ -23,6 +32,7 @@ const QuestionCard = (props: QuestionCardProps) => {
     }
 
     const [open, setOpen] = useState(false);
+    const [messageModalOpen, setMessageModalOpen] = useState(false);
     const timeString = (date, isLong) => {
         return new Date(date).toLocaleString(
             "en-US",
@@ -65,6 +75,12 @@ const QuestionCard = (props: QuestionCardProps) => {
                 open={open}
                 question={question}
                 closeFunc={triggerModal}
+                mutate={mutateQuestion}
+            />
+            <MessageQuestionModal
+                open={messageModalOpen}
+                question={question}
+                closeFunc={() => setMessageModalOpen(false)}
                 mutate={mutateQuestion}
             />
             <Segment attached="top" color="blue" clearing>
@@ -147,98 +163,121 @@ const QuestionCard = (props: QuestionCardProps) => {
                 <Grid>
                     <Grid.Row columns="equal">
                         <Grid.Column textAlign="left">
-                            <Header as="h5">
-                                {!question.timeResponseStarted && (
-                                    <Header.Content>
-                                        <Button
-                                            compact
-                                            size="mini"
-                                            color="red"
-                                            content="Reject"
-                                            disabled={isLoading()}
-                                            onClick={triggerModal}
-                                        />
-                                        <Button
-                                            compact
-                                            size="mini"
-                                            color="green"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            href={
-                                                question.videoChatUrl
-                                                    ? question.videoChatUrl
-                                                    : null
-                                            }
-                                            icon={
-                                                question.videoChatUrl
-                                                    ? "video"
-                                                    : null
-                                            }
-                                            content="Answer"
-                                            onClick={onAnswer}
-                                            disabled={isLoading()}
-                                            loading={false}
-                                        />
-                                    </Header.Content>
+                            {!question.timeResponseStarted && (
+                                <>
+                                    <Button
+                                        compact
+                                        size="mini"
+                                        color="red"
+                                        content="Reject"
+                                        disabled={isLoading()}
+                                        onClick={triggerModal}
+                                    />
+                                    <Button
+                                        compact
+                                        size="mini"
+                                        color="green"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        href={
+                                            question.videoChatUrl
+                                                ? question.videoChatUrl
+                                                : null
+                                        }
+                                        icon={
+                                            question.videoChatUrl
+                                                ? "video"
+                                                : null
+                                        }
+                                        content="Answer"
+                                        onClick={onAnswer}
+                                        disabled={isLoading()}
+                                        loading={false}
+                                    />
+                                </>
+                            )}
+                            {/* if response started, then some user responded */}
+                            {question.timeResponseStarted &&
+                                question.respondedToBy!.username ===
+                                    user.username && (
+                                    <Button
+                                        compact
+                                        size="mini"
+                                        color="red"
+                                        content="Undo"
+                                        disabled={isLoading()}
+                                        onClick={onUndo}
+                                        loading={false}
+                                    />
                                 )}
-                                {/* if response started, then some user responded */}
-                                {question.timeResponseStarted &&
-                                    question.respondedToBy!.username ===
-                                        user.username && (
-                                        <Header.Content>
-                                            <Button
-                                                compact
-                                                size="mini"
-                                                color="red"
-                                                content="Undo"
-                                                disabled={isLoading()}
-                                                onClick={onUndo}
-                                                loading={false}
-                                            />
-                                        </Header.Content>
-                                    )}
-                                {/* if response started, then some user responded */}
-                                {question.timeResponseStarted &&
-                                    question.respondedToBy!.username ===
-                                        user.username && (
-                                        <Header.Content>
-                                            <Button
-                                                compact
-                                                size="mini"
-                                                color="green"
-                                                content="Finish"
-                                                disabled={isLoading()}
-                                                onClick={onFinish}
-                                                loading={false}
-                                            />
-                                        </Header.Content>
-                                    )}
-                                {question.timeResponseStarted &&
-                                    question.videoChatUrl && (
-                                        <a
-                                            href={question.videoChatUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
-                                            <Button
-                                                compact
-                                                size="mini"
-                                                color="blue"
-                                                content={
-                                                    // if responseStarted, then someone responded
-                                                    question.respondedToBy!
-                                                        .username ===
-                                                    user.username
-                                                        ? "Rejoin Call"
-                                                        : `Join Call (with ${fullName(
-                                                              question.respondedToBy!
-                                                          )})`
-                                                }
-                                                disabled={isLoading()}
-                                            />
-                                        </a>
-                                    )}
-                            </Header>
+                            {/* if response started, then some user responded */}
+                            {question.timeResponseStarted &&
+                                question.respondedToBy!.username ===
+                                    user.username && (
+                                    <Button
+                                        compact
+                                        size="mini"
+                                        color="green"
+                                        content="Finish"
+                                        disabled={isLoading()}
+                                        onClick={onFinish}
+                                        loading={false}
+                                    />
+                                )}
+                            {question.timeResponseStarted &&
+                                question.videoChatUrl && (
+                                    <a
+                                        href={question.videoChatUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <Button
+                                            compact
+                                            size="mini"
+                                            color="blue"
+                                            content={
+                                                // if responseStarted, then someone responded
+                                                question.respondedToBy!
+                                                    .username === user.username
+                                                    ? "Rejoin Call"
+                                                    : `Join Call (with ${fullName(
+                                                          question.respondedToBy!
+                                                      )})`
+                                            }
+                                            disabled={isLoading()}
+                                        />
+                                    </a>
+                                )}
+                            {!question.resolvedNote && (
+                                <Message info>
+                                    <Message.Header
+                                        style={{ fontSize: "1rem" }}
+                                    >
+                                        Awaiting response to sent message:
+                                    </Message.Header>
+                                    <Message.Content>
+                                        <p>{question.note}</p>
+                                        <Button
+                                            compact
+                                            size="mini"
+                                            color="blue"
+                                            content="Resend"
+                                            onClick={() =>
+                                                setMessageModalOpen(true)
+                                            }
+                                        />
+                                    </Message.Content>
+                                </Message>
+                            )}
+                            {question.timeResponseStarted && (
+                                <Button
+                                    compact
+                                    size="mini"
+                                    color="blue"
+                                    content="Message"
+                                    onClick={() => setMessageModalOpen(true)}
+                                />
+                            )}
                         </Grid.Column>
                         <Grid.Column
                             width={5}
@@ -272,12 +311,12 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     trigger={
                                         <span>
                                             {question.tags
-                                                .map((tag) => ` ${tag}`)
+                                                .map((tag) => ` ${tag.name}`)
                                                 .toString()}
                                         </span>
                                     }
                                     content={question.tags
-                                        .map((tag) => ` ${tag}`)
+                                        .map((tag) => ` ${tag.name}`)
                                         .toString()}
                                     basic
                                     inverted

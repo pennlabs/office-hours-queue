@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from phonenumber_field.serializerfields import PhoneNumberField
@@ -14,6 +15,7 @@ from ohq.models import (
     Question,
     Queue,
     Semester,
+    Tag,
 )
 from ohq.permissions import has_permission_for_question
 from ohq.sms import sendSMSVerification
@@ -168,11 +170,18 @@ class QueueSerializer(CourseRouteMixin):
         return instance
 
 
+class TagSerializer(CourseRouteMixin):
+    class Meta:
+        model = Tag
+        fields = ("id", "name")
+
+
 @subscribable("id", has_permission_for_question)
 @subscribable("queue_id", has_permission_for_question)
 class QuestionSerializer(QueueRouteMixin):
     asked_by = UserSerializer(read_only=True)
     responded_to_by = UserSerializer(read_only=True)
+    tags = TagSerializer(many=True)
 
     class Meta:
         model = Question
@@ -188,6 +197,9 @@ class QuestionSerializer(QueueRouteMixin):
             "responded_to_by",
             "rejected_reason",
             "should_send_up_soon_notification",
+            "tags",
+            "note",
+            "resolved_note",
         )
         read_only_fields = (
             "time_asked",
@@ -196,6 +208,7 @@ class QuestionSerializer(QueueRouteMixin):
             "time_responded_to",
             "responded_to_by",
             "should_send_up_soon_notification",
+            "resolved_note",
         )
 
     def update(self, instance, validated_data):
@@ -230,10 +243,9 @@ class QuestionSerializer(QueueRouteMixin):
                 elif status == Question.STATUS_ASKED:
                     instance.responded_to_by = None
                     instance.time_response_started = None
-            else:  # User is updating a field other than the status
-                raise serializers.ValidationError(
-                    detail={"detail": "TAs can only change a question's status"}
-                )
+            if "note" in validated_data:
+                instance.note = validated_data["note"]
+                instance.resolved_note = False
         else:  # User is a student
             if "status" in validated_data:
                 status = validated_data["status"]
@@ -251,11 +263,23 @@ class QuestionSerializer(QueueRouteMixin):
                 instance.text = validated_data["text"]
             if "video_chat_url" in validated_data:
                 instance.video_chat_url = validated_data["video_chat_url"]
+            if "tags" in validated_data:
+                instance.tags.clear()
+                for tag_data in validated_data.pop("tags"):
+                    try:
+                        tag = Tag.objects.get(**tag_data)
+                        instance.tags.add(tag)
+                    except ObjectDoesNotExist:
+                        continue
+            # If a student modifies a question, discard any note added by a TA and mark as resolved
+            instance.note = ""
+            instance.resolved_note = True
 
         instance.save()
         return instance
 
     def create(self, validated_data):
+        tags = validated_data.pop("tags")
         queue = Queue.objects.get(pk=self.context["view"].kwargs["queue_pk"])
         questions_ahead = Question.objects.filter(
             queue=queue, status=Question.STATUS_ASKED, time_asked__lt=timezone.now()
@@ -263,6 +287,15 @@ class QuestionSerializer(QueueRouteMixin):
         validated_data["should_send_up_soon_notification"] = questions_ahead >= 4
         validated_data["status"] = Question.STATUS_ASKED
         validated_data["asked_by"] = self.context["request"].user
+        question = super().create(validated_data)
+        for tag_data in tags:
+            try:
+                tag = Tag.objects.get(**tag_data)
+                question.tags.add(tag)
+            except ObjectDoesNotExist:
+                continue
+        return question
+        validated_data["note"] = ""
         return super().create(validated_data)
 
 

@@ -21,15 +21,13 @@ const Dashboard = () => {
         mutateFunction<UserMembership[]>
     ] = useMemberships(initalUser);
 
-    const getCourses = (isStudent: boolean): Course[] => {
-        return memberships
-            .filter((membership) => {
-                return (
-                    (isStudent && membership.kind === Kind.STUDENT) ||
-                    (!isStudent && membership.kind !== Kind.STUDENT)
-                );
-            })
-            .map((membership) => membership.course);
+    const getMemberships = (isStudent: boolean): UserMembership[] => {
+        return memberships.filter((membership) => {
+            return (
+                (isStudent && membership.kind === Kind.STUDENT) ||
+                (!isStudent && membership.kind !== Kind.STUDENT)
+            );
+        });
     };
 
     const canCreateCourse: boolean =
@@ -39,7 +37,7 @@ const Dashboard = () => {
 
     /* STATE */
     // const [newUserModalOpen, setNewUserModalOpen] = useState(props.newUser);
-    const hasInstructorCourses = getCourses(false).length > 0;
+    const hasInstructorCourses = getMemberships(false).length > 0;
     const [toast] = useState({ message: "", success: true });
     const [toastOpen, setToastOpen] = useState(false);
 
@@ -102,7 +100,7 @@ const Dashboard = () => {
                         </Grid>
                     ) : ( */}
                     <StudentCourses
-                        courses={getCourses(true)}
+                        memberships={getMemberships(true)}
                         mutate={mutate}
                     />
                     {/* )} */}
@@ -119,7 +117,7 @@ const Dashboard = () => {
                                 </Segment>
                             </Grid.Row>
                             <InstructorCourses
-                                courses={getCourses(false)}
+                                memberships={getMemberships(false)}
                                 mutate={mutate}
                                 canCreateCourse={canCreateCourse}
                             />

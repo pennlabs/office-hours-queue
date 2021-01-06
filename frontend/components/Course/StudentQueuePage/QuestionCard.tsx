@@ -1,9 +1,17 @@
 import React, { useState, useEffect, MutableRefObject } from "react";
-import { Segment, Header, Button, Popup, Icon, Grid } from "semantic-ui-react";
+import {
+    Segment,
+    Header,
+    Button,
+    Popup,
+    Icon,
+    Grid,
+    Message,
+} from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import EditQuestionModal from "./EditQuestionModal";
 import DeleteQuestionModal from "./DeleteQuestionModal";
-import { Question, Course, Queue, QuestionStatus } from "../../../types";
+import { Question, Course, Queue, QuestionStatus, Tag } from "../../../types";
 import {
     useQuestionPosition,
     finishQuestion,
@@ -19,6 +27,7 @@ interface QuestionCardProps {
     lastQuestionsMutate: mutateResourceListFunction<Question>;
     toastFunc: (success: string | null, error: any) => void;
     play: MutableRefObject<() => void>;
+    tags: Tag[];
 }
 const QuestionCard = (props: QuestionCardProps) => {
     const {
@@ -30,6 +39,7 @@ const QuestionCard = (props: QuestionCardProps) => {
         queueMutate,
         lastQuestionsMutate,
         play,
+        tags,
     } = props;
     const [positionData, , , ,] = useQuestionPosition(
         course.id,
@@ -53,6 +63,10 @@ const QuestionCard = (props: QuestionCardProps) => {
         }
     }, [question.status, play]);
 
+    useEffect(() => {
+        play.current();
+    }, [question.note, play]);
+
     const markQuestionAsAnswered = async () => {
         try {
             await finishQuestion(course.id, queue.id, question.id);
@@ -71,6 +85,7 @@ const QuestionCard = (props: QuestionCardProps) => {
                 setOpen={setOpenEdit}
                 toastFunc={toastFunc}
                 mutate={mutate}
+                tags={tags}
             />
             <DeleteQuestionModal
                 open={openDelete}
@@ -109,6 +124,19 @@ const QuestionCard = (props: QuestionCardProps) => {
             </Segment>
             <Segment attached tertiary={question.timeResponseStarted !== null}>
                 {question.text}
+                {question.note && !question.resolvedNote && (
+                    <>
+                        <br />
+                        <Message info>
+                            <Message.Header style={{ fontSize: "1rem" }}>
+                                An instructor has messaged you:
+                            </Message.Header>
+                            <Message.Content>
+                                <p>{question.note}</p>
+                            </Message.Content>
+                        </Message>
+                    </>
+                )}
             </Segment>
             <Segment attached="bottom" secondary>
                 <Grid>
@@ -179,17 +207,22 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     trigger={
                                         <span>
                                             {question.tags
-                                                .map((tag) => ` ${tag}`)
+                                                .map((tag) => ` ${tag.name}`)
                                                 .toString()}
                                         </span>
                                     }
                                     content={question.tags
-                                        .map((tag) => ` ${tag}`)
+                                        .map((tag) => ` ${tag.name}`)
                                         .toString()}
                                     basic
                                     inverted
                                     position="bottom left"
                                 />
+                            )}
+                            {(!question.tags || question.tags.length === 0) && (
+                                <span style={{ paddingLeft: "8px" }}>
+                                    <i>No Tags</i>
+                                </span>
                             )}
                         </Grid.Column>
                     </Grid.Row>
