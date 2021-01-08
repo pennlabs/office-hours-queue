@@ -114,7 +114,7 @@ export interface Tag {
 export interface Announcement {
     id: number;
     content: string;
-    author: string;
+    author: BaseUser;
     timeUpdated: string;
 }
 

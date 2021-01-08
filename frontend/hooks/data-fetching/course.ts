@@ -259,6 +259,19 @@ export const useAnnouncements = (
         }
     );
 
+export async function createAnnouncement(
+    courseId: number,
+    payload: { content: string }
+) {
+    const res = await doApiRequest(`/courses/${courseId}/announcements/`, {
+        method: "POST",
+        body: payload,
+    });
+    if (!res.ok) {
+        throw new Error("Unable to create announcement");
+    }
+}
+
 export async function clearQueue(courseId: number, queueId: number) {
     await doApiRequest(`/courses/${courseId}/queues/${queueId}/clear/`, {
         method: "POST",
