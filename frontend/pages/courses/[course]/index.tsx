@@ -9,6 +9,7 @@ import { doMultipleSuccessRequests, doApiRequest } from "../../../utils/fetch";
 import { isLeadershipRole } from "../../../utils/enums";
 import nextRedirect from "../../../utils/redirect";
 import {
+    Announcement,
     CoursePageProps,
     Queue,
     Course,
@@ -24,10 +25,18 @@ interface QueuePageProps extends CoursePageProps {
     queues: Queue[];
     questionmap: QuestionMap;
     tags: Tag[];
+    announcements: Announcement[];
 }
 
 const QueuePage = (props: QueuePageProps) => {
-    const { course, leadership, queues, questionmap, tags } = props;
+    const {
+        course,
+        leadership,
+        queues,
+        questionmap,
+        tags,
+        announcements,
+    } = props;
     return (
         <WebsocketProvider
             url="/api/ws/subscribe/"
@@ -44,6 +53,7 @@ const QueuePage = (props: QueuePageProps) => {
                 <CourseWrapper
                     course={course}
                     leadership={leadership}
+                    announcements={announcements}
                     render={(
                         staff: boolean,
                         play: MutableRefObject<() => void>
@@ -89,16 +99,18 @@ QueuePage.getInitialProps = async (
     let leadership: Membership[];
     let queues: Queue[];
     let tags: Tag[];
+    let announcements: Announcement[];
 
     const response = await doMultipleSuccessRequests([
         { path: `/courses/${query.course}/`, data },
         { path: `/courses/${query.course}/members/`, data },
         { path: `/courses/${query.course}/queues/`, data },
         { path: `/courses/${query.course}/tags/`, data },
+        { path: `/courses/${query.course}/announcements`, data },
     ]);
 
     if (response.success) {
-        [course, leadership, queues, tags] = response.data;
+        [course, leadership, queues, tags, announcements] = response.data;
     } else {
         nextRedirect(context, () => true, "/404");
         // this will never hit
@@ -127,6 +139,7 @@ QueuePage.getInitialProps = async (
         queues,
         questionmap,
         tags,
+        announcements,
     };
 };
 export default withAuth(QueuePage);
