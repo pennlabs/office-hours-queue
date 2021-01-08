@@ -387,6 +387,8 @@ class AnnouncementSerializer(CourseRouteMixin):
     Serializer for announcements
     """
 
+    author = UserSerializer(read_only=True)
+
     class Meta:
         model = Announcement
         fields = ("id", "content", "author", "time_updated")
