@@ -201,7 +201,8 @@ class QuestionSerializerTestCase(TestCase):
     def test_create(self, mock_delay):
         self.client.force_authenticate(user=self.student2)
         self.client.post(
-            reverse("ohq:question-list", args=[self.course.id, self.queue.id]), {"text": "Help me"}
+            reverse("ohq:question-list", args=[self.course.id, self.queue.id]),
+            {"text": "Help me", "tags": []},
         )
         self.assertEqual(2, Question.objects.all().count())
         question = Question.objects.all().order_by("time_asked")[1]
@@ -224,6 +225,24 @@ class QuestionSerializerTestCase(TestCase):
         self.question.refresh_from_db()
         self.assertEqual(text, self.question.text)
         self.assertEqual(url, self.question.video_chat_url)
+        mock_delay.assert_not_called()
+
+    def test_student_update_note(self, mock_delay):
+        """
+        Ensure a note is removed when a student modifies their question.
+        """
+
+        self.question.note = "Make changes"
+        self.question.resolved_note = False
+        self.question.save()
+        self.client.force_authenticate(user=self.student)
+        self.client.patch(
+            reverse("ohq:question-detail", args=[self.course.id, self.queue.id, self.question.id]),
+            {"text": "different"},
+        )
+        self.question.refresh_from_db()
+        self.assertTrue(self.question.resolved_note)
+        self.assertEqual(self.question.note, "")
         mock_delay.assert_not_called()
 
     def test_student_withdraw(self, mock_delay):
@@ -283,6 +302,16 @@ class QuestionSerializerTestCase(TestCase):
         self.question.refresh_from_db()
         self.assertEqual(Question.STATUS_ACTIVE, self.question.status)
         self.assertEqual(self.ta, self.question.responded_to_by)
+        # Add a note to the question
+        note = "Invalid zoom link"
+        self.client.patch(
+            reverse("ohq:question-detail", args=[self.course.id, self.queue.id, self.question.id]),
+            {"note": note},
+        )
+        self.question.refresh_from_db()
+        self.assertFalse(self.question.resolved_note)
+        self.assertEqual(self.question.note, note)
+
         # Undo and put user back in queue
         self.client.patch(
             reverse("ohq:question-detail", args=[self.course.id, self.queue.id, self.question.id]),
@@ -337,7 +366,7 @@ class QuestionSerializerTestCase(TestCase):
             reverse("ohq:question-detail", args=[self.course.id, self.queue.id, self.question.id]),
             {"text": "Different"},
         )
-        self.assertEqual(400, response.status_code)
+        self.assertEqual(200, response.status_code)
         self.question.refresh_from_db()
         self.assertEqual(self.question_text, self.question.text)
         mock_delay.assert_not_called()
