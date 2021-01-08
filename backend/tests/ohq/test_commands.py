@@ -702,7 +702,7 @@ class QuestionsPerTAQueueHeatmapHistTestCase(TestCase):
         older.save()
 
     def test_questions_per_ta_computation(self):
-        call_command("questions_per_ta_heatmap_hist")
+        call_command("questions_per_ta_heatmap", "--hist")
         yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
         yesterday_weekday = yesterday.weekday()
 
