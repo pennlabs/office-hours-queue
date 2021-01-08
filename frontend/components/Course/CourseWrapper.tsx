@@ -13,14 +13,13 @@ import {
     Message,
 } from "semantic-ui-react";
 import CourseSidebar from "./CourseSidebar";
-import Announcements from "./Announcements";
 
 import { AuthUserContext } from "../../context/auth";
 import { useCourse, useStaff } from "../../hooks/data-fetching/course";
 import * as bellAudio from "./InstructorQueuePage/notification.mp3";
 import Footer from "../common/Footer";
 import { usePlayer } from "../../hooks/player";
-import { Announcement, Course as CourseType, Membership } from "../../types";
+import { Course as CourseType, Membership } from "../../types";
 
 interface CourseProps {
     render: (
@@ -29,7 +28,6 @@ interface CourseProps {
     ) => JSX.Element;
     course: CourseType;
     leadership: Membership[];
-    announcements: Announcement[];
 }
 
 const ANALYTICS_SURVEY_SHOWN_LS_TOKEN = "__instructor_analytics_survey_shown";
@@ -156,11 +154,6 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                         </Grid.Column>
                     </Grid>
                 )}
-                <Announcements
-                    initialAnnouncements={announcements}
-                    courseId={course.id}
-                    staff={staff}
-                />
                 {render(staff, play)}
                 <Footer />
             </Grid.Column>

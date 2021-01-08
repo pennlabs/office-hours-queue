@@ -4,11 +4,12 @@ import { WSContext } from "@pennlabs/rest-live-hooks";
 import Alert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
 import InstructorQueues from "./InstructorQueues";
+import Announcements from "../Announcements";
 import QueueSettings from "./QueueSettings/QueueSettings";
 import CreateQueue from "./CreateQueue/CreateQueue";
 import { AuthUserContext } from "../../../context/auth";
 import { useQueues, useStaff } from "../../../hooks/data-fetching/course";
-import { Queue, QuestionMap, Tag } from "../../../types";
+import { Announcement, Queue, QuestionMap, Tag } from "../../../types";
 
 interface InstructorQueuePageProps {
     courseId: number;
@@ -16,6 +17,7 @@ interface InstructorQueuePageProps {
     questionmap: QuestionMap;
     play: MutableRefObject<() => void>;
     tags: Tag[];
+    announcements: Announcement[];
 }
 
 enum PageStateEnum {
@@ -40,7 +42,14 @@ interface CreateState {
 type PageState = QueueState | SettingsState | CreateState;
 
 const InstructorQueuePage = (props: InstructorQueuePageProps) => {
-    const { courseId, queues: rawQueues, questionmap, play, tags } = props;
+    const {
+        courseId,
+        queues: rawQueues,
+        questionmap,
+        play,
+        tags,
+        announcements,
+    } = props;
 
     /* STATE */
     const { user: initialUser } = useContext(AuthUserContext);
@@ -75,6 +84,11 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
 
     return (
         <>
+            <Announcements
+                initialAnnouncements={announcements}
+                courseId={courseId}
+                staff={true}
+            />
             {!isConnected && (
                 <div style={{ paddingTop: "1rem" }}>
                     <Message warning>

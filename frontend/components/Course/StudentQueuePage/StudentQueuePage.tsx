@@ -2,13 +2,14 @@ import React, { useContext, MutableRefObject } from "react";
 import { Grid, Message } from "semantic-ui-react";
 import { WSContext } from "@pennlabs/rest-live-hooks";
 import StudentQueues from "./StudentQueues";
+import Announcements from "../Announcements";
 
 import {
     useQueues,
     useCourse,
     useTags,
 } from "../../../hooks/data-fetching/course";
-import { Course, Queue, QuestionMap, Tag } from "../../../types";
+import { Announcement, Course, Queue, QuestionMap, Tag } from "../../../types";
 
 interface StudentQueuePageProps {
     course: Course;
@@ -16,6 +17,7 @@ interface StudentQueuePageProps {
     questionmap: QuestionMap;
     play: MutableRefObject<() => void>;
     tags: Tag[];
+    announcements: Announcement[];
 }
 const StudentQueuePage = (props: StudentQueuePageProps) => {
     const {
@@ -24,6 +26,7 @@ const StudentQueuePage = (props: StudentQueuePageProps) => {
         questionmap,
         play,
         tags: rawTags,
+        announcements,
     } = props;
     const [course, , ,] = useCourse(rawCourse.id, rawCourse);
     const { data: queues, mutate } = useQueues(course!.id, rawQueues);
@@ -40,6 +43,11 @@ const StudentQueuePage = (props: StudentQueuePageProps) => {
                     </Message>
                 </div>
             )}
+            <Announcements
+                initialAnnouncements={announcements}
+                courseId={course!.id}
+                staff={false}
+            />
             <Grid stackable>
                 <StudentQueues
                     // course, queues, tags are non-null because

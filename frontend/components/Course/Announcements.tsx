@@ -7,7 +7,6 @@ import {
     Message,
     Icon,
     Button,
-    Container,
 } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import { Announcement } from "../../types";
@@ -269,17 +268,19 @@ export default function Announcements(props: AnnouncementsProps) {
                         <Icon name="dropdown" />
                         Active Announcements
                     </Accordion.Title>
-                    <Button
-                        style={{
-                            position: "absolute",
-                            right: "0.8rem",
-                            top: "0.5rem",
-                        }}
-                        onClick={() => setNewState(true)}
-                        primary
-                    >
-                        Create New
-                    </Button>
+                    {staff && (
+                        <Button
+                            style={{
+                                position: "absolute",
+                                right: "0.8rem",
+                                top: "0.5rem",
+                            }}
+                            onClick={() => setNewState(true)}
+                            primary
+                        >
+                            Create New
+                        </Button>
+                    )}
                     <Accordion.Content active={open}>
                         {announcements!.map((a) => (
                             <AnnouncementMessage
@@ -290,6 +291,11 @@ export default function Announcements(props: AnnouncementsProps) {
                                 staff={staff}
                             />
                         ))}
+                        {announcements!.length === 0 && (
+                            <p style={{ textAlign: "center" }}>
+                                Nothing to see here
+                            </p>
+                        )}
                     </Accordion.Content>
                 </Accordion>
             </div>

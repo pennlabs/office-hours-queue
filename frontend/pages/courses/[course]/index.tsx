@@ -53,7 +53,6 @@ const QueuePage = (props: QueuePageProps) => {
                 <CourseWrapper
                     course={course}
                     leadership={leadership}
-                    announcements={announcements}
                     render={(
                         staff: boolean,
                         play: MutableRefObject<() => void>
@@ -62,6 +61,7 @@ const QueuePage = (props: QueuePageProps) => {
                             <div>
                                 {staff && (
                                     <InstructorQueuePage
+                                        announcements={announcements}
                                         courseId={course.id}
                                         queues={queues}
                                         questionmap={questionmap}
@@ -71,6 +71,7 @@ const QueuePage = (props: QueuePageProps) => {
                                 )}
                                 {!staff && (
                                     <StudentQueuePage
+                                        announcements={announcements}
                                         course={course}
                                         queues={queues}
                                         questionmap={questionmap}
