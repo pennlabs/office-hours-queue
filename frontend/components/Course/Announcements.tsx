@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
     Accordion,
     Dropdown,
@@ -9,7 +9,8 @@ import {
     Button,
 } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
-import { Announcement } from "../../types";
+import { Announcement, BaseUser } from "../../types";
+import { AuthUserContext } from "../../context/auth";
 import {
     useAnnouncements,
     createAnnouncement,
@@ -84,8 +85,15 @@ const EditAnnouncementModal = ({
                     </Form.Field>
                 </Form>
             </Modal.Content>
-            <Modal.Actions>
-                <Button onClick={() => setModalState({ isOpen: false })}>
+            <Modal.Actions style={{ display: "flex", alignItems: "center" }}>
+                <span style={{ color: "#666666", fontSize: "0.8rem" }}>
+                    Last modified{" "}
+                    {new Date(announcement.timeUpdated).toLocaleString("en-us")}
+                </span>
+                <Button
+                    style={{ marginLeft: "auto" }}
+                    onClick={() => setModalState({ isOpen: false })}
+                >
                     Cancel
                 </Button>
                 <Button
@@ -208,22 +216,51 @@ const AnnouncementMessage = ({
                     </Dropdown>
                 )}
                 <Icon name="comment alternate outline" />
-                <Message.Content>
+                <Message.Content style={{ paddingBottom: "1rem" }}>
                     <Message.Header>{`From ${announcement.author.firstName}`}</Message.Header>
                     {announcement.content}
+                    <br />
+                    <p style={{ color: "#666666" }}>
+                        Posted{" "}
+                        {new Date(announcement.timeUpdated).toLocaleString(
+                            "en-us"
+                        )}
+                    </p>
                 </Message.Content>
             </Message>
         </>
     );
 };
 
+const calcNumUnread = (
+    announcements: Announcement[],
+    latestRead: Date,
+    user: BaseUser
+) => {
+    let unread = 0;
+    announcements!.forEach((a) => {
+        const date = new Date(a.timeUpdated);
+        if (date > latestRead && a.author.username !== user.username) {
+            unread += 1;
+        }
+    });
+    return unread;
+};
+
 export default function Announcements(props: AnnouncementsProps) {
     const { courseId, initialAnnouncements, staff } = props;
-
+    const { user } = useContext(AuthUserContext);
     const { data: announcements, mutate } = useAnnouncements(
         courseId,
         initialAnnouncements
     );
+    const [numUnread, setNumUnread] = useState(announcements!.length);
+    const [latestRead, setLatestRead] = useState<Date>(new Date(0));
+
+    useEffect(() => {
+        setNumUnread(calcNumUnread(announcements!, latestRead, user!));
+    }, [announcements, latestRead]);
+
     const [open, setOpen] = useState(false);
     const [newState, setNewState] = useState<boolean>(false);
     const [deleteState, setDeleteState] = useState<ModalState>({
@@ -263,10 +300,21 @@ export default function Announcements(props: AnnouncementsProps) {
                             alignItems: "center",
                         }}
                         active={open}
-                        onClick={() => setOpen(!open)}
+                        onClick={() => {
+                            setOpen(!open);
+                            let newDate = latestRead;
+                            announcements!.forEach((a) => {
+                                const date = new Date(a.timeUpdated);
+                                if (date > newDate) {
+                                    newDate = date;
+                                }
+                            });
+                            setLatestRead(newDate);
+                        }}
                     >
                         <Icon name="dropdown" />
-                        Active Announcements
+                        {announcements!.length} Active Announcements (
+                        {numUnread} Unread)
                     </Accordion.Title>
                     {staff && (
                         <Button
