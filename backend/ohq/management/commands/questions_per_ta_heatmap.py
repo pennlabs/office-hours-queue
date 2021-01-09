@@ -48,7 +48,7 @@ class Command(BaseCommand):
         else:
             queues = Queue.objects.filter(archived=False)
 
-            # assuming the cron job runs daily at midnight, we only need to update yesterday's weekday
+            # assuming the cron job runs at midnight, we only need to update yesterday's weekday
             yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
             weekdays = [yesterday.weekday()]
 
