@@ -87,6 +87,7 @@ const EditAnnouncementModal = ({
             </Modal.Content>
             <Modal.Actions style={{ display: "flex", alignItems: "center" }}>
                 <span style={{ color: "#666666", fontSize: "0.8rem" }}>
+                    <Icon name="history" />
                     Last modified{" "}
                     {new Date(announcement.timeUpdated).toLocaleString("en-us")}
                 </span>
@@ -200,6 +201,7 @@ const AnnouncementMessage = ({
                                     });
                                 }}
                             >
+                                <Icon name="edit outline" />
                                 Edit
                             </Dropdown.Item>
                             <Dropdown.Item
@@ -210,6 +212,7 @@ const AnnouncementMessage = ({
                                     })
                                 }
                             >
+                                <Icon name="trash alternate" />
                                 Delete
                             </Dropdown.Item>
                         </Dropdown.Menu>
@@ -326,6 +329,7 @@ export default function Announcements(props: AnnouncementsProps) {
                             onClick={() => setNewState(true)}
                             primary
                         >
+                            <Icon name="plus" />
                             Create New
                         </Button>
                     )}
