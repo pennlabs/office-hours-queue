@@ -146,12 +146,15 @@ class AverageQueueWaitTimeTestCase(TestCase):
             q3.save()
 
         # create question that isn't in the current week
+        self.old_wait_time = 120
         q4 = Question.objects.create(
             text="Old question",
             queue=self.queue,
             asked_by=student,
             responded_to_by=ta,
-            time_response_started=yesterday,
+            time_response_started=yesterday
+            - timezone.timedelta(weeks=2)
+            + timezone.timedelta(seconds=self.old_wait_time),
             status=Question.STATUS_ACTIVE,
         )
         q4.time_asked = yesterday - timezone.timedelta(weeks=2)
@@ -168,6 +171,16 @@ class AverageQueueWaitTimeTestCase(TestCase):
         ).value
 
         self.assertEqual(expected, actual)
+
+        call_command("avg_queue_wait", "--hist")
+        expected_old = self.old_wait_time
+
+        old_sunday = last_sunday - timezone.timedelta(weeks=2)
+        actual_old = QueueStatistic.objects.get(
+            queue=self.queue, metric=QueueStatistic.METRIC_AVG_WAIT, date=old_sunday
+        ).value
+
+        self.assertEqual(expected_old, actual_old)
 
 
 class AverageQueueTimeHelpingTestCase(TestCase):
@@ -197,13 +210,16 @@ class AverageQueueTimeHelpingTestCase(TestCase):
             question.save()
 
         # create question that isn't in the current week
+        self.old_question_time_helped = 1234
         old_question = Question.objects.create(
             text="Old question",
             queue=self.queue,
             asked_by=student,
             responded_to_by=ta,
             time_response_started=yesterday - timezone.timedelta(weeks=2),
-            time_responded_to=yesterday - timezone.timedelta(weeks=1),
+            time_responded_to=yesterday
+            - timezone.timedelta(weeks=2)
+            + timezone.timedelta(seconds=self.old_question_time_helped),
             status=Question.STATUS_ANSWERED,
         )
         old_question.time_asked = yesterday - timezone.timedelta(weeks=2)
@@ -233,6 +249,16 @@ class AverageQueueTimeHelpingTestCase(TestCase):
         ).value
 
         self.assertEqual(expected, actual)
+
+        call_command("avg_time_helping", "--hist")
+        expected_old = self.old_question_time_helped
+        actual_old = QueueStatistic.objects.get(
+            queue=self.queue,
+            metric=QueueStatistic.METRIC_AVG_TIME_HELPING,
+            date=last_sunday - timezone.timedelta(weeks=2),
+        ).value
+
+        self.assertEqual(expected_old, actual_old)
 
 
 class AverageQueueWaitHeatmapTestCase(TestCase):
@@ -287,16 +313,18 @@ class AverageQueueWaitHeatmapTestCase(TestCase):
             question.save()
 
         # create question that is two days old - not included
-        older = Question.objects.create(
+        self.older_wait_time = 321
+        self.older = Question.objects.create(
             text="Old question",
             queue=self.queue,
             asked_by=student,
             responded_to_by=ta,
-            time_response_started=yesterday_9,
+            time_response_started=yesterday_9
+            - timezone.timedelta(weeks=2, days=2, seconds=-self.older_wait_time),
             status=Question.STATUS_ACTIVE,
         )
-        older.time_asked = yesterday_9 - timezone.timedelta(weeks=2, days=2)
-        older.save()
+        self.older.time_asked = yesterday_9 - timezone.timedelta(weeks=2, days=2)
+        self.older.save()
 
     def test_avg_queue_wait_computation(self):
         call_command("avg_wait_heatmap")
@@ -329,6 +357,17 @@ class AverageQueueWaitHeatmapTestCase(TestCase):
             hour=8,
         ).value
         self.assertEqual(expected_8, actual_8)
+
+        call_command("avg_wait_heatmap", "--hist")
+
+        expected_older = self.older_wait_time
+        actual_older = QueueStatistic.objects.get(
+            queue=self.queue,
+            metric=QueueStatistic.METRIC_HEATMAP_WAIT,
+            day=self.older.time_asked.weekday(),
+            hour=self.older.time_asked.hour,
+        ).value
+        self.assertEqual(expected_older, actual_older)
 
 
 class NumberQuestionsAnsweredQueueTestCase(TestCase):
@@ -702,7 +741,7 @@ class QuestionsPerTAQueueHeatmapHistTestCase(TestCase):
         older.save()
 
     def test_questions_per_ta_computation(self):
-        call_command("questions_per_ta_heatmap", "--hist")
+        call_command("questions_per_ta_heatmap")
         yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
         yesterday_weekday = yesterday.weekday()
 
@@ -724,11 +763,13 @@ class QuestionsPerTAQueueHeatmapHistTestCase(TestCase):
         ).value
         self.assertEqual(expected_17, actual_17)
 
+        call_command("questions_per_ta_heatmap", "--hist")
+
         expected_two_days_ago_8 = 1
         actual_two_days_ago_8 = QueueStatistic.objects.get(
             queue=self.queue,
             metric=QueueStatistic.METRIC_HEATMAP_QUESTIONS_PER_TA,
             day=self.older_time_asked.weekday(),
-            hour=8,
+            hour=self.older_time_asked.hour,
         ).value
         self.assertEqual(expected_two_days_ago_8, actual_two_days_ago_8)
