@@ -1,6 +1,5 @@
+from ohq.management.commands.queue_heatmap_stat import HeatmapCommand
 from ohq.models import Question, QueueStatistic
-
-from .queue_heatmap_stat import HeatmapCommand
 
 
 class Command(HeatmapCommand):

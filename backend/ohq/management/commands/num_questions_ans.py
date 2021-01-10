@@ -1,6 +1,5 @@
+from ohq.management.commands.queue_weekly_stat import WeeklyCommand
 from ohq.models import Question, QueueStatistic
-
-from .queue_weekly_stat import WeeklyCommand
 
 
 class Command(WeeklyCommand):

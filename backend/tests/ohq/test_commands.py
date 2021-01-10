@@ -711,3 +711,5 @@ class AverageQueueWaitTimeByDateTestCase(TestCase):
             metric=QueueStatistic.METRIC_LIST_WAIT_TIME_DAYS,
             date=yesterday - timezone.timedelta(days=2),
         ).value
+
+        self.assertEqual(expected_old, actual_old)

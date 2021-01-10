@@ -3,7 +3,7 @@ import abc
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from ohq.models import Question, Queue, QueueStatistic
+from ohq.models import Queue
 
 
 class HeatmapCommand(BaseCommand):
