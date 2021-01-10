@@ -1,3 +1,5 @@
+import abc
+
 from django.core.management.base import BaseCommand
 from django.db.models import Avg, F
 from django.utils import timezone
@@ -5,14 +7,22 @@ from django.utils import timezone
 from ohq.models import Question, Queue, QueueStatistic
 
 
-class Command(BaseCommand):
-    help = "Calculates the average wait time for queues each day"
+class WeeklyCommand(BaseCommand):
+    __metaclass__ = abc.ABCMeta
 
     def add_arguments(self, parser):
         parser.add_argument("--hist", action="store_true", help="Calculate all historic statistics")
 
+    @abc.abstractmethod
+    def perform_computation(self, queue, prev_sunday, coming_sunday):
+        """
+        Given questions in a queue, calculate the statistic for the weekly range
+        """
+
     def calculate_statistics(self, queues, earliest_date):
         yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
+        last_sunday = yesterday - timezone.timedelta(days=(yesterday.weekday() + 1) % 7)
+        next_sunday = last_sunday + timezone.timedelta(days=7)
 
         for queue in queues:
             queue_questions = Question.objects.filter(queue=queue)
@@ -28,21 +38,13 @@ class Command(BaseCommand):
                     else yesterday
                 )
 
-            while iter_date <= yesterday:
-                avg = queue_questions.filter(
-                    time_asked__date=iter_date, time_response_started__isnull=False
-                ).aggregate(avg_wait=Avg(F("time_response_started") - F("time_asked")))
+            while iter_date < next_sunday:
+                prev_sunday = iter_date - timezone.timedelta(days=(iter_date.weekday() + 1) % 7)
+                coming_sunday = prev_sunday + timezone.timedelta(days=7)
 
-                wait = avg["avg_wait"]
+                self.perform_computation(queue, prev_sunday, coming_sunday)
 
-                QueueStatistic.objects.update_or_create(
-                    queue=queue,
-                    metric=QueueStatistic.METRIC_LIST_WAIT_TIME_DAYS,
-                    date=iter_date,
-                    defaults={"value": wait.seconds if wait else 0},
-                )
-
-                iter_date += timezone.timedelta(days=1)
+                iter_date += timezone.timedelta(days=7)
 
     def handle(self, *args, **kwargs):
         if kwargs["hist"]:

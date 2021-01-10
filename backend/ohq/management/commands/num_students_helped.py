@@ -1,33 +1,27 @@
-from django.core.management.base import BaseCommand
-from django.utils import timezone
+from django.db.models import Avg, F
 
-from ohq.models import Question, Queue, QueueStatistic
+from ohq.models import Question, QueueStatistic
+
+from .queue_weekly_stat import WeeklyCommand
 
 
-class Command(BaseCommand):
-    help = "Calculates the number of students helped this week for each queue"
+class Command(WeeklyCommand):
+    help = "Calculates the number of students helped weekly for each queue"
 
-    def handle(self, *args, **kwargs):
-        queues = Queue.objects.filter(archived=False)
-
-        yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
-        last_sunday = yesterday - timezone.timedelta(days=(yesterday.weekday() + 1) % 7)
-        next_sunday = last_sunday + timezone.timedelta(days=7)
-
-        for queue in queues:
-            num_students = (
-                Question.objects.filter(
-                    queue=queue,
-                    status=Question.STATUS_ANSWERED,
-                    time_responded_to__date__range=[last_sunday, next_sunday],
-                )
-                .distinct("asked_by")
-                .count()
-            )
-
-            QueueStatistic.objects.update_or_create(
+    def perform_computation(self, queue, prev_sunday, coming_sunday):
+        num_students = (
+            Question.objects.filter(
                 queue=queue,
-                metric=QueueStatistic.METRIC_STUDENTS_HELPED,
-                date=last_sunday,
-                defaults={"value": num_students},
+                status=Question.STATUS_ANSWERED,
+                time_responded_to__date__range=[prev_sunday, coming_sunday],
             )
+            .distinct("asked_by")
+            .count()
+        )
+
+        QueueStatistic.objects.update_or_create(
+            queue=queue,
+            metric=QueueStatistic.METRIC_STUDENTS_HELPED,
+            date=prev_sunday,
+            defaults={"value": num_students},
+        )
