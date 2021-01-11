@@ -47,6 +47,7 @@ const StudentQueuePage = (props: StudentQueuePageProps) => {
                 initialAnnouncements={announcements}
                 courseId={course!.id}
                 staff={false}
+                play={play}
             />
             <Grid stackable>
                 <StudentQueues

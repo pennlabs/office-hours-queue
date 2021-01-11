@@ -88,6 +88,7 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
                 initialAnnouncements={announcements}
                 courseId={courseId}
                 staff={true}
+                play={play}
             />
             {!isConnected && (
                 <div style={{ paddingTop: "1rem" }}>

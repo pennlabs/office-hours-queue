@@ -1,4 +1,9 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, {
+    useState,
+    useEffect,
+    useContext,
+    MutableRefObject,
+} from "react";
 import {
     Accordion,
     Dropdown,
@@ -20,6 +25,7 @@ interface AnnouncementsProps {
     courseId: number;
     initialAnnouncements: Announcement[];
     staff: boolean;
+    play: MutableRefObject<() => void>;
 }
 
 interface ModalProps {
@@ -251,7 +257,7 @@ const calcNumUnread = (
 };
 
 export default function Announcements(props: AnnouncementsProps) {
-    const { courseId, initialAnnouncements, staff } = props;
+    const { courseId, initialAnnouncements, staff, play } = props;
     const { user } = useContext(AuthUserContext);
     const { data: announcements, mutate } = useAnnouncements(
         courseId,
@@ -261,8 +267,12 @@ export default function Announcements(props: AnnouncementsProps) {
     const [latestRead, setLatestRead] = useState<Date>(new Date(0));
 
     useEffect(() => {
-        setNumUnread(calcNumUnread(announcements!, latestRead, user!));
-    }, [announcements, latestRead]);
+        const unread = calcNumUnread(announcements!, latestRead, user!);
+        setNumUnread(unread);
+        if (!staff && unread > 0) {
+            play.current();
+        }
+    }, [announcements, latestRead, play, staff, user]);
 
     const [open, setOpen] = useState(false);
     const [newState, setNewState] = useState<boolean>(false);
