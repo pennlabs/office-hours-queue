@@ -2,6 +2,7 @@ from django.urls import path
 from rest_framework_nested import routers
 
 from ohq.views import (
+    AnnouncementViewSet,
     CourseViewSet,
     MassInviteView,
     MembershipInviteViewSet,
@@ -26,6 +27,7 @@ course_router = routers.NestedSimpleRouter(router, "courses", lookup="course")
 course_router.register("queues", QueueViewSet, basename="queue")
 course_router.register("members", MembershipViewSet, basename="member")
 course_router.register("invites", MembershipInviteViewSet, basename="invite")
+course_router.register("announcements", AnnouncementViewSet, basename="announcement")
 course_router.register("tags", TagViewSet, basename="tag")
 
 queue_router = routers.NestedSimpleRouter(course_router, "queues", lookup="queue")

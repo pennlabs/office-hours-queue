@@ -111,6 +111,13 @@ export interface Tag {
     name: string;
 }
 
+export interface Announcement {
+    id: number;
+    content: string;
+    author: BaseUser;
+    timeUpdated: string;
+}
+
 export interface QuestionMap {
     [queueId: number]: Question[];
 }

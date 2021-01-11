@@ -7,6 +7,7 @@ import {
 // TODO: REMOVE THIS AS SOON AS WE REFACTOR
 import { useResourceList as useResourceListNew } from "@pennlabs/rest-hooks";
 import {
+    Announcement,
     Course,
     Kind,
     Membership,
@@ -26,6 +27,7 @@ import {
     QUEUE_STATUS_POLL_INTERVAL,
     STAFF_QUESTION_POLL_INTERVAL,
     STUDENT_QUESTION_POS_POLL_INTERVAL,
+    ANNOUNCEMENTS_POLL_INTERVAL,
 } from "../../constants";
 
 export const useCourse = (courseId: number, initialCourse: Course) =>
@@ -242,6 +244,33 @@ export const useLastQuestions = (courseId: number, queueId: number) => {
 
     return [data, error, isValidating, mutate];
 };
+
+export const useAnnouncements = (
+    courseId: number,
+    initialData: Announcement[]
+) =>
+    useResourceListNew(
+        `/api/courses/${courseId}/announcements/`,
+        (id) => `/api/courses/${courseId}/announcements/${id}/`,
+        {
+            initialData,
+            fetcher: newResourceFetcher,
+            refreshInterval: ANNOUNCEMENTS_POLL_INTERVAL,
+        }
+    );
+
+export async function createAnnouncement(
+    courseId: number,
+    payload: { content: string }
+) {
+    const res = await doApiRequest(`/courses/${courseId}/announcements/`, {
+        method: "POST",
+        body: payload,
+    });
+    if (!res.ok) {
+        throw new Error("Unable to create announcement");
+    }
+}
 
 export async function clearQueue(courseId: number, queueId: number) {
     await doApiRequest(`/courses/${courseId}/queues/${queueId}/clear/`, {

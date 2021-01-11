@@ -327,6 +327,33 @@ class MassInvitePermission(permissions.BasePermission):
         return membership.is_leadership
 
 
+class AnnouncementPermission(permissions.BasePermission):
+    """
+    TAs+ can create/update/delete announcements
+    Students can get/list announcements
+    """
+
+    def has_permission(self, request, view):
+        # Anonymous users can't do anything
+        if not request.user.is_authenticated:
+            return False
+
+        membership = Membership.objects.filter(
+            course=view.kwargs["course_pk"], user=request.user
+        ).first()
+
+        # Non-Students can't do anything
+        if membership is None:
+            return False
+
+        # Students+ can get/list announcements
+        if view.action in ["list", "retrieve"]:
+            return True
+
+        # TAs+ can create, modify, and delete announcements
+        return membership.is_ta
+
+
 class TagPermission(permissions.BasePermission):
     """
     Head TAs+ should be able to create, modify and delete a tag.
