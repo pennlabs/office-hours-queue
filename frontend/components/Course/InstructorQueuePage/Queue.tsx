@@ -104,7 +104,7 @@ const Queue = (props: QueueProps) => {
     };
 
     return queue && questions ? (
-        <Segment basic>
+        <>
             <ClearQueueModal
                 courseId={courseId}
                 queueId={queueId}
@@ -212,7 +212,7 @@ const Queue = (props: QueueProps) => {
                     active={active}
                 />
             </Grid.Row>
-        </Segment>
+        </>
     ) : null;
 };
 
