@@ -46,7 +46,7 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
                                         courseId={courseId}
                                         key={queue.id}
                                         queue={queue}
-                                        questions={questionmap[queue.id]}
+                                        questions={questionmap[queue.id] || []}
                                         leader={leader}
                                         mutate={mutate}
                                         editFunc={() => editFunc(queue.id)}
