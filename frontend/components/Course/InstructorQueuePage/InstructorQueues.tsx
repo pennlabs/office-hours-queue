@@ -65,13 +65,22 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
                             />
                         ))}
 
-                        <Menu.Item
-                            style={{ textAlign: "center", marginTop: "auto" }}
-                        >
-                            <Button size="tiny" primary onClick={createFunc}>
-                                Add Queue
-                            </Button>
-                        </Menu.Item>
+                        {leader && (
+                            <Menu.Item
+                                style={{
+                                    textAlign: "center",
+                                    marginTop: "auto",
+                                }}
+                            >
+                                <Button
+                                    size="tiny"
+                                    primary
+                                    onClick={createFunc}
+                                >
+                                    Add Queue
+                                </Button>
+                            </Menu.Item>
+                        )}
                     </Menu>
                 </Grid.Column>
                 <Grid.Column stretched width={13}>
