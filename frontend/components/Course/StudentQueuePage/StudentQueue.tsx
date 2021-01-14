@@ -79,79 +79,101 @@ const StudentQueue = (props: StudentQueueProps) => {
     };
 
     return (
-        <Segment basic>
+        <>
             <Header as="h3">
                 {queue.name}
                 <Header.Subheader>{queue.description}</Header.Subheader>
             </Header>
-            {(queue.active || queue.questionsAsked) && (
-                <Label
-                    content={`${queue.questionsAsked || 0} user${
-                        queue.questionsAsked === 1 ? "" : "s"
-                    } in queue`}
-                    color="blue"
-                    icon="users"
-                />
-            )}
-            {(queue.active || queue.questionsActive) && (
-                <Label
-                    content={`${queue.questionsActive || 0} user${
-                        queue.questionsActive === 1 ? "" : "s"
-                    } currently being helped`}
-                    icon="user"
-                />
-            )}
+            <Grid>
+                {(queue.active ||
+                    queue.questionsActive ||
+                    queue.questionsAsked) && (
+                    <Grid.Row columns="equal">
+                        <Grid.Column only="computer mobile">
+                            {(queue.active || queue.questionsAsked) && (
+                                <Label
+                                    content={`${
+                                        queue.questionsAsked || 0
+                                    } user${
+                                        queue.questionsAsked === 1 ? "" : "s"
+                                    } in queue`}
+                                    color="blue"
+                                    icon="users"
+                                />
+                            )}
+                            {(queue.active || queue.questionsActive) && (
+                                <Label
+                                    content={`${
+                                        queue.questionsActive || 0
+                                    } user${
+                                        queue.questionsActive === 1 ? "" : "s"
+                                    } currently being helped`}
+                                    icon="user"
+                                />
+                            )}
 
-            {(queue.active || queue.questionsAsked) &&
-                queue.estimatedWaitTime !== -1 && (
-                    <Label
-                        content={`${queue.estimatedWaitTime} min${
-                            queue.estimatedWaitTime === 1 ? "" : "s"
-                        }`}
-                        color="blue"
-                        icon="clock"
-                    />
+                            {(queue.active || queue.questionsAsked) &&
+                                queue.estimatedWaitTime !== -1 && (
+                                    <Label
+                                        content={`${
+                                            queue.estimatedWaitTime
+                                        } min${
+                                            queue.estimatedWaitTime === 1
+                                                ? ""
+                                                : "s"
+                                        }`}
+                                        color="blue"
+                                        icon="clock"
+                                    />
+                                )}
+                            {queue.active && (
+                                <Label
+                                    content={`${
+                                        queue.staffActive || 0
+                                    } staff active`}
+                                    icon={<Icon name="sync" loading={true} />}
+                                />
+                            )}
+                        </Grid.Column>
+                    </Grid.Row>
                 )}
-            {queue.active && (
-                <Label
-                    content={`${queue.staffActive || 0} staff active`}
-                    icon={<Icon name="sync" loading={true} />}
-                />
-            )}
-            <Grid.Row>
-                {questions.length !== 0 && (
-                    <QuestionCard
-                        // TODO: this is probably safe but feels wrong
-                        question={questions[0]}
-                        course={course}
-                        queue={queue}
-                        queueMutate={queueMutate}
-                        lastQuestionsMutate={mutateLastQuestions}
-                        mutate={mutateQuestions}
-                        toastFunc={updateToast}
-                        play={play}
-                        tags={tags}
-                    />
-                )}
-                {!queue.active && questions.length === 0 && (
-                    <Message
-                        style={{ marginTop: "10px" }}
-                        header="Queue Closed"
-                        error
-                        icon="calendar times outline"
-                        content="This queue is currently closed. Contact course staff if you think this is an error."
-                    />
-                )}
-                {queue.active && questions.length === 0 && (
-                    <QuestionForm
-                        course={course}
-                        queueId={queue.id}
-                        queueMutate={queueMutate}
-                        mutate={mutateQuestions}
-                        toastFunc={updateToast}
-                        tags={tags}
-                    />
-                )}
+
+                <Grid.Row columns={1}>
+                    <Grid.Column>
+                        {questions.length !== 0 && (
+                            <QuestionCard
+                                // TODO: this is probably safe but feels wrong
+                                question={questions[0]}
+                                course={course}
+                                queue={queue}
+                                queueMutate={queueMutate}
+                                lastQuestionsMutate={mutateLastQuestions}
+                                mutate={mutateQuestions}
+                                toastFunc={updateToast}
+                                play={play}
+                                tags={tags}
+                            />
+                        )}
+                        {!queue.active && questions.length === 0 && (
+                            <Message
+                                header="Queue Closed"
+                                error
+                                icon="calendar times outline"
+                                content="This queue is currently closed. Contact course staff if you think this is an error."
+                            />
+                        )}
+                        {queue.active && questions.length === 0 && (
+                            <QuestionForm
+                                course={course}
+                                queueId={queue.id}
+                                queueMutate={queueMutate}
+                                mutate={mutateQuestions}
+                                toastFunc={updateToast}
+                                tags={tags}
+                            />
+                        )}
+                    </Grid.Column>
+                </Grid.Row>
                 {lastQuestions && lastQuestions.length !== 0 && (
                     <Grid.Row columns={1}>
                         <Grid.Column>
@@ -159,7 +181,7 @@ const StudentQueue = (props: StudentQueueProps) => {
                         </Grid.Column>
                     </Grid.Row>
                 )}
-            </Grid.Row>
+            </Grid>
             <Snackbar
                 open={toastOpen}
                 autoHideDuration={6000}
@@ -172,7 +194,7 @@ const StudentQueue = (props: StudentQueueProps) => {
                     <span>{toast.message}</span>
                 </Alert>
             </Snackbar>
-        </Segment>
+        </>
     );
 };
 

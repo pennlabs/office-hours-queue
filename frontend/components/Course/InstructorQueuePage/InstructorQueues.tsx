@@ -48,7 +48,7 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
     return (
         queues && (
             <Grid.Row style={{ marginTop: "2rem" }} columns={2}>
-                <Grid.Column width={4}>
+                <Grid.Column width={3}>
                     <Menu
                         fluid
                         vertical
@@ -68,40 +68,36 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
                         <Menu.Item
                             style={{ textAlign: "center", marginTop: "auto" }}
                         >
-                            <Button primary onClick={createFunc}>
+                            <Button size="tiny" primary onClick={createFunc}>
                                 Add Queue
                             </Button>
                         </Menu.Item>
                     </Menu>
                 </Grid.Column>
-                <Grid.Column stretched width={12}>
-                    <Grid.Column>
-                        {currQueue && (
-                            <Queue
-                                courseId={courseId}
-                                key={currQueue.id}
-                                queue={currQueue}
-                                questions={questionmap[currQueue.id] || []}
-                                leader={leader}
-                                mutate={mutate}
-                                editFunc={() => editFunc(currQueue.id)}
-                                play={play}
-                                tags={tags}
-                            />
-                        )}
+                <Grid.Column stretched width={13}>
+                    {currQueue && (
+                        <Queue
+                            courseId={courseId}
+                            key={currQueue.id}
+                            queue={currQueue}
+                            questions={questionmap[currQueue.id] || []}
+                            leader={leader}
+                            mutate={mutate}
+                            editFunc={() => editFunc(currQueue.id)}
+                            play={play}
+                            tags={tags}
+                        />
+                    )}
 
-                        {!currQueue && (
-                            <Message info icon>
-                                <Icon name="lightbulb outline" />
-                                <Message.Content>
-                                    <Message.Header>
-                                        Create a Queue
-                                    </Message.Header>
-                                    Create a queue to get started!
-                                </Message.Content>
-                            </Message>
-                        )}
-                    </Grid.Column>
+                    {!currQueue && (
+                        <Message info icon>
+                            <Icon name="lightbulb outline" />
+                            <Message.Content>
+                                <Message.Header>Create a Queue</Message.Header>
+                                Create a queue to get started!
+                            </Message.Content>
+                        </Message>
+                    )}
                 </Grid.Column>
             </Grid.Row>
         )

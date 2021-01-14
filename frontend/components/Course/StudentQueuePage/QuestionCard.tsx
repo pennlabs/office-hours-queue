@@ -77,7 +77,7 @@ const QuestionCard = (props: QuestionCardProps) => {
     };
 
     return (
-        <div style={{ marginTop: "10px" }}>
+        <div>
             <EditQuestionModal
                 open={openEdit}
                 course={course}

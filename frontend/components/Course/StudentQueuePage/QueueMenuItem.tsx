@@ -28,7 +28,7 @@ export const QueueMenuItem = (props: QueuMenuItemProps) => {
         >
             <Label color="teal">
                 {
-                    questions!.filter((q) => q.status !== QuestionStatus.ACTIVE)
+                    questions!.filter((q) => q.status === QuestionStatus.ACTIVE)
                         .length
                 }
             </Label>

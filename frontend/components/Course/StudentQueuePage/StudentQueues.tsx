@@ -1,8 +1,9 @@
-import React, { MutableRefObject } from "react";
-import { Segment, Grid, Message } from "semantic-ui-react";
+import React, { MutableRefObject, useState, useMemo } from "react";
+import { Grid, Message, Menu } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import StudentQueue from "./StudentQueue";
 import { Queue, Course, QuestionMap, Tag } from "../../../types";
+import { QueueMenuItem } from "./QueueMenuItem";
 
 interface StudentQueuesProps {
     queues: Queue[];
@@ -15,32 +16,60 @@ interface StudentQueuesProps {
 const StudentQueues = (props: StudentQueuesProps) => {
     const { queues, course, queueMutate, questionmap, play, tags } = props;
 
+    const dispQueues = queues.filter((q) => !q.archived);
+    const [selQueue, setSelQueue] = useState<number | undefined>(
+        dispQueues.find((q) => !q.archived)?.id
+    );
+    const currQueue = useMemo(() => {
+        return dispQueues.find((q) => q.id === selQueue);
+    }, [selQueue, dispQueues]);
+
     return (
         <>
             {queues && (
-                <Grid.Row columns="equal">
-                    {queues.length !== 0 &&
-                        queues.map((queue) => (
-                            <Grid.Column key={`column${queue.id}`}>
+                <Grid.Row style={{ marginTop: "2rem" }} columns={2}>
+                    {currQueue && (
+                        <>
+                            <Grid.Column width={3}>
+                                <Menu
+                                    fluid
+                                    vertical
+                                    style={{
+                                        display: "flex",
+                                        minHeight: "20rem",
+                                    }}
+                                >
+                                    {dispQueues.map((q) => (
+                                        <QueueMenuItem
+                                            key={q.id}
+                                            queue={q}
+                                            courseId={course.id}
+                                            initialQuestions={questionmap[q.id]}
+                                            active={selQueue === q.id}
+                                            setActiveQueue={setSelQueue}
+                                        />
+                                    ))}
+                                </Menu>
+                            </Grid.Column>
+                            <Grid.Column stretched width={13}>
                                 <StudentQueue
-                                    key={queue.id}
+                                    key={currQueue.id}
                                     course={course}
-                                    queue={queue}
+                                    queue={currQueue}
                                     tags={tags}
                                     queueMutate={queueMutate}
-                                    questions={questionmap[queue.id]}
+                                    questions={questionmap[currQueue.id] || []}
                                     play={play}
                                 />
                             </Grid.Column>
-                        ))}
-                    {queues.length === 0 && (
-                        <Grid.Column>
-                            <Segment basic>
-                                <Message info>
-                                    <Message.Header>No Queues</Message.Header>
-                                    This course currently has no queues!
-                                </Message>
-                            </Segment>
+                        </>
+                    )}
+                    {!currQueue && (
+                        <Grid.Column width={16}>
+                            <Message info>
+                                <Message.Header>No Queues</Message.Header>
+                                This course currently has no queues!
+                            </Message>
                         </Grid.Column>
                     )}
                 </Grid.Row>
