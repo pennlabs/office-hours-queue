@@ -48,7 +48,7 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
     return (
         queues && (
             <Grid.Row style={{ marginTop: "2rem" }} columns={2}>
-                <Grid.Column width={3}>
+                <Grid.Column width={4}>
                     <Menu
                         fluid
                         vertical
@@ -83,7 +83,7 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
                         )}
                     </Menu>
                 </Grid.Column>
-                <Grid.Column stretched width={13}>
+                <Grid.Column stretched width={12}>
                     {currQueue && (
                         <Queue
                             courseId={courseId}

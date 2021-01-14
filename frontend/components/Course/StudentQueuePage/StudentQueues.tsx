@@ -30,7 +30,7 @@ const StudentQueues = (props: StudentQueuesProps) => {
                 <Grid.Row style={{ marginTop: "2rem" }} columns={2}>
                     {currQueue && (
                         <>
-                            <Grid.Column width={3}>
+                            <Grid.Column width={4}>
                                 <Menu
                                     fluid
                                     vertical
@@ -51,7 +51,7 @@ const StudentQueues = (props: StudentQueuesProps) => {
                                     ))}
                                 </Menu>
                             </Grid.Column>
-                            <Grid.Column stretched width={13}>
+                            <Grid.Column stretched width={12}>
                                 <StudentQueue
                                     key={currQueue.id}
                                     course={course}
