@@ -51,7 +51,7 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
     const handleInputChange = (e, { name, value }) => {
         if (name === "text" && value.length > charLimit) return;
         input[name] = value;
-        setInput(input);
+        setInput({ ...input });
         setCharCount(input.text.length);
     };
 
