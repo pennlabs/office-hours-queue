@@ -128,7 +128,8 @@ const QuestionCard = (props: QuestionCardProps) => {
                         <br />
                         <Message info>
                             <Message.Header style={{ fontSize: "1rem" }}>
-                                An instructor has messaged you:
+                                An instructor has messaged you <br />
+                                Please update your question:
                             </Message.Header>
                             <Message.Content>
                                 <p>{question.note}</p>

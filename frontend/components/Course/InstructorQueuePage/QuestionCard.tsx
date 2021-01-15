@@ -271,7 +271,10 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     <Message.Header
                                         style={{ fontSize: "1rem" }}
                                     >
-                                        Awaiting response to sent message:
+                                        Awaiting response to sent message <br />
+                                        This message will disappear when{" "}
+                                        {question.askedBy.firstName} updates
+                                        their question:
                                     </Message.Header>
                                     <Message.Content>
                                         <p>{question.note}</p>
