@@ -49,7 +49,7 @@ const CreateQueue = (props: CreateQueueProps) => {
     };
 
     return (
-        <Grid.Column width={13}>
+        <Grid.Column width={16}>
             <Grid.Row>
                 <Segment basic>
                     <Header as="h3">Create New Queue</Header>
