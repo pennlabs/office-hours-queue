@@ -82,3 +82,34 @@ class RegisterClassTestCase(TestCase):
         stdout_msg = course_msg + "\n" + prof_msg + "\n" + ta_msg + "\n"
 
         self.assertEqual(stdout_msg, out.getvalue())
+
+
+class ArchiveCourseTestCase(TestCase):
+    def setUp(self):
+        sems = [
+            (2020, Semester.TERM_FALL),
+            (2021, Semester.TERM_SPRING),
+            (2022, Semester.TERM_SPRING),
+        ]
+
+        for year, term in sems:
+            sem = Semester.objects.create(year=year, term=term)
+            Course.objects.create(
+                course_code="ABC", department="DEPT", course_title="Tests", semester=sem
+            )
+
+            if year == 2020:
+                Course.objects.create(
+                    course_code="DEF", department="DEPT", course_title="Tests", semester=sem
+                )
+
+    def test_archive_course(self):
+        out = StringIO()
+        self.assertEqual(len(Course.objects.filter(archived=False)), 4)
+        call_command("archive", Semester.TERM_FALL, 2020, stdout=out)
+        self.assertEqual(len(Course.objects.filter(archived=False)), 2)
+        call_command("archive", Semester.TERM_SPRING, 2021, stdout=out)
+        self.assertEqual(len(Course.objects.filter(archived=False)), 1)
+        lastCourse = Course.objects.filter(archived=False).first()
+        self.assertEqual(lastCourse.semester.year, 2022)
+        self.assertEqual(lastCourse.semester.term, Semester.TERM_SPRING)

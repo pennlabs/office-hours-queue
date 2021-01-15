@@ -16,14 +16,16 @@ const AddStudentForm = (props: AddStudentFormProps) => {
         }
         const courses: Course[] = await getCourses(inputValue);
 
-        return courses.map((course) => {
-            const suffix = course.isMember ? " - Already Enrolled" : "";
-            return {
-                label: `${course.department} ${course.courseCode} (${course.semesterPretty}): ${course.courseTitle}${suffix}`,
-                value: course.id,
-                disabled: course.isMember,
-            };
-        });
+        return courses
+            .filter((course) => !course.archived)
+            .map((course) => {
+                const suffix = course.isMember ? " - Already Enrolled" : "";
+                return {
+                    label: `${course.department} ${course.courseCode} (${course.semesterPretty}): ${course.courseTitle}${suffix}`,
+                    value: course.id,
+                    disabled: course.isMember,
+                };
+            });
     };
 
     return (
