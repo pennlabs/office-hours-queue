@@ -58,14 +58,13 @@ const QuestionCard = (props: QuestionCardProps) => {
     };
 
     useEffect(() => {
-        if (question.status === QuestionStatus.ACTIVE) {
+        if (
+            question.status === QuestionStatus.ACTIVE ||
+            !question.resolvedNote
+        ) {
             play.current();
         }
-    }, [question.status, play]);
-
-    useEffect(() => {
-        play.current();
-    }, [question.note, play]);
+    }, [question.status, play, question.resolvedNote]);
 
     const markQuestionAsAnswered = async () => {
         try {
