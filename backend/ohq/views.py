@@ -147,7 +147,9 @@ class CourseViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         is_member = Membership.objects.filter(course=OuterRef("pk"), user=self.request.user)
         qs = (
-            Course.objects.filter(Q(invite_only=False) | Q(membership__user=self.request.user))
+            Course.objects.filter(
+                Q(invite_only=False) | Q(membership__user=self.request.user), archived=False
+            )
             .distinct()
             .annotate(is_member=Exists(is_member))
         )
