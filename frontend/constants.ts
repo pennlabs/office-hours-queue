@@ -11,5 +11,7 @@ export const ALLOWED_LINKS = [
     "whereby.com",
 ];
 
+export const ANALYTICS_SURVEY_SHOWN_LS_TOKEN =
+    "__instructor_analytics_survey_shown";
 export const SPRING_2021_TRANSITION_MESSAGE_TOKEN =
     "__spring_2021_transition_message_shown";
