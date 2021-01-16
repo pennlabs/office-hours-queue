@@ -36,7 +36,7 @@ const RosterPage = (props: RosterPageProps) => {
                     render={() => {
                         return (
                             <Roster
-                                courseId={course.id}
+                                course={course}
                                 memberships={memberships}
                                 invites={invites}
                             />

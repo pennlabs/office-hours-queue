@@ -64,7 +64,7 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
 
     return course ? (
         <>
-            <CourseSidebar courseId={course.id} leadership={leadership} />
+            <CourseSidebar course={course} leadership={leadership} />
             <Grid.Column
                 width={13}
                 style={{ display: "flex", flexDirection: "column" }}

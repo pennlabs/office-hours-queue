@@ -112,11 +112,19 @@ QueuePage.getInitialProps = async (
 
     if (response.success) {
         [course, leadership, queues, tags, announcements] = response.data;
+        if (course.archived) {
+            nextRedirect(
+                context,
+                () => true,
+                `/courses/${query.course}/roster`
+            );
+        }
     } else {
         nextRedirect(context, () => true, "/404");
         // this will never hit
         throw new Error("Next redirects: Unreachable");
     }
+
     // Generate a new questions object that's a map from queue id to a
     // list of questions in the queue. The API calls are wrapped in a
     // Promise.all to ensure those calls are made simultaneously
