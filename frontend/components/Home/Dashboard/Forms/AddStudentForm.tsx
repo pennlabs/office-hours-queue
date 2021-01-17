@@ -39,6 +39,11 @@ const AddStudentForm = (props: AddStudentFormProps) => {
                     cacheOptions
                     defaultOptions
                     loadOptions={promiseOptions}
+                    noOptionsMessage={({ inputValue }) =>
+                        inputValue.length === 0
+                            ? "Search for a course"
+                            : "No courses found"
+                    }
                     isMulti
                     placeholder="Search..."
                     isOptionDisabled={(option) => option.disabled}
