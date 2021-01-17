@@ -75,18 +75,6 @@ const QuestionCard = (props: QuestionCardProps) => {
         return () => clearInterval(interval);
     }, []);
 
-    const [resolved, setResolved] = useState(question.resolvedNote);
-    useEffect(() => {
-        if (!resolved && question.resolvedNote) {
-            play.current();
-            setResolved(true);
-        }
-
-        if (!question.resolvedNote) {
-            setResolved(false);
-        }
-    }, [play, resolved, question.resolvedNote]);
-
     return (
         <div style={{ marginTop: "10px" }}>
             <RejectQuestionModal

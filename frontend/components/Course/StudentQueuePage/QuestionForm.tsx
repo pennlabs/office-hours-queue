@@ -92,7 +92,7 @@ const QuestionForm = (props: QuestionFormProps) => {
 
     return (
         <div>
-            <Segment style={{ marginTop: "20px" }} attached="top" color="blue">
+            <Segment attached="top" color="blue">
                 <Header content="Ask a Question" />
             </Segment>
             <Segment attached secondary>

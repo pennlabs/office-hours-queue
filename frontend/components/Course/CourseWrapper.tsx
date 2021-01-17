@@ -49,7 +49,7 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                 style={{ display: "flex", flexDirection: "column" }}
             >
                 {course.department && (
-                    <Grid columns="equal">
+                    <Grid columns="equal" style={{ marginBottom: "-2rem" }}>
                         <Grid.Column>
                             <Segment basic>
                                 <Header as="h1">
@@ -101,7 +101,7 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                         </Grid.Column>
                     </Grid>
                 )}
-                {render(staff, play)}
+                <Segment basic>{render(staff, play)}</Segment>
                 <Footer />
             </Grid.Column>
         </>
