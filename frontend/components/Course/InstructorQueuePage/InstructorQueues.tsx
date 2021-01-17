@@ -45,16 +45,16 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
         dispQueues.find((q) => !q.archived)?.id
     );
 
-    useEffect(() => {
-        const q = dispQueues.find((currQ) => !currQ.archived);
-        if (q && !selQueue) {
-            setSelQueue(q.id);
-        }
-    }, [dispQueues, selQueue]);
-
     const currQueue = useMemo(() => {
         return dispQueues.find((q) => q.id === selQueue);
     }, [selQueue, dispQueues]);
+
+    useEffect(() => {
+        const q = dispQueues.find((currQ) => !currQ.archived);
+        if (q && !currQueue) {
+            setSelQueue(q.id);
+        }
+    }, [dispQueues, currQueue]);
 
     return (
         <Grid.Row style={{ marginTop: "2rem" }}>
@@ -70,6 +70,7 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
                                 <QueueMenuItem
                                     key={q.id}
                                     queue={q}
+                                    play={play}
                                     courseId={courseId}
                                     initialQuestions={questionmap[q.id]}
                                     active={selQueue === q.id}

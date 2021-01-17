@@ -1,4 +1,4 @@
-import React, { useState, useEffect, MutableRefObject } from "react";
+import React, { useState } from "react";
 import {
     Segment,
     Header,
@@ -26,7 +26,6 @@ interface QuestionCardProps {
     mutate: mutateResourceListFunction<Question>;
     lastQuestionsMutate: mutateResourceListFunction<Question>;
     toastFunc: (success: string | null, error: any) => void;
-    play: MutableRefObject<() => void>;
     tags: Tag[];
 }
 const QuestionCard = (props: QuestionCardProps) => {
@@ -38,7 +37,6 @@ const QuestionCard = (props: QuestionCardProps) => {
         toastFunc,
         queueMutate,
         lastQuestionsMutate,
-        play,
         tags,
     } = props;
     const [positionData, , , ,] = useQuestionPosition(
@@ -56,15 +54,6 @@ const QuestionCard = (props: QuestionCardProps) => {
             minute: "numeric",
         });
     };
-
-    useEffect(() => {
-        if (
-            question.status === QuestionStatus.ACTIVE ||
-            !question.resolvedNote
-        ) {
-            play.current();
-        }
-    }, [question.status, play, question.resolvedNote]);
 
     const markQuestionAsAnswered = async () => {
         try {

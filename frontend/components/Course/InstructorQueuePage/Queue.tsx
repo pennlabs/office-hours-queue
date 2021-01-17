@@ -1,10 +1,4 @@
-import React, {
-    useState,
-    useEffect,
-    useRef,
-    useMemo,
-    MutableRefObject,
-} from "react";
+import React, { useState, useEffect, useMemo, MutableRefObject } from "react";
 import { Header, Label, Grid, Segment, Button } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Select from "react-select";
@@ -59,29 +53,7 @@ const Queue = (props: QueueProps) => {
         [filteredTags, JSON.stringify(questions)]
     );
 
-    const latestAsked = useRef(
-        questions && questions[0]?.timeAsked
-            ? new Date(questions[0].timeAsked)
-            : new Date(0)
-    );
-
     const [clearModalOpen, setClearModalOpen] = useState(false);
-
-    useEffect(() => {
-        if (
-            questions &&
-            questions[0] &&
-            new Date(questions[questions.length - 1].timeAsked) >
-                latestAsked.current
-        ) {
-            latestAsked.current = new Date(
-                questions[questions.length - 1].timeAsked
-            );
-            play.current();
-        }
-        // questions is not stale because we check for deep equality
-        // eslint-disable-next-line
-    }, [JSON.stringify(questions), play]);
 
     const handleTagChange = (_, event) => {
         if (event.action === "select-option") {

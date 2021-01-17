@@ -47,6 +47,7 @@ const StudentQueues = (props: StudentQueuesProps) => {
                                             initialQuestions={questionmap[q.id]}
                                             active={selQueue === q.id}
                                             setActiveQueue={setSelQueue}
+                                            play={play}
                                         />
                                     ))}
                                 </Menu>
@@ -59,7 +60,6 @@ const StudentQueues = (props: StudentQueuesProps) => {
                                     tags={tags}
                                     queueMutate={queueMutate}
                                     questions={questionmap[currQueue.id] || []}
-                                    play={play}
                                 />
                             </Grid.Column>
                         </>
