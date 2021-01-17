@@ -146,6 +146,7 @@ export const useQueues = (courseId: number, initialData: Queue[]) =>
             initialData,
             fetcher: newResourceFetcher,
             refreshInterval: QUEUE_STATUS_POLL_INTERVAL,
+            refreshWhenHidden: true,
         }
     );
 
@@ -256,6 +257,7 @@ export const useAnnouncements = (
             initialData,
             fetcher: newResourceFetcher,
             refreshInterval: ANNOUNCEMENTS_POLL_INTERVAL,
+            refreshWhenHidden: true,
         }
     );
 

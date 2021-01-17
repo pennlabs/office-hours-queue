@@ -114,7 +114,7 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
                     />
                 )}
                 {pageState.kind === PageStateEnum.SETTINGS && (
-                    <Grid.Row>
+                    <Grid.Row style={{ marginTop: "1rem" }}>
                         <QueueSettings
                             queue={getQueue(pageState.queueID)}
                             mutate={mutate}
@@ -125,7 +125,7 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
                     </Grid.Row>
                 )}
                 {pageState.kind === PageStateEnum.CREATE && (
-                    <Grid.Row>
+                    <Grid.Row style={{ marginTop: "1rem" }}>
                         <CreateQueue
                             courseId={courseId}
                             mutate={mutate}

@@ -1,4 +1,4 @@
-import React, { MutableRefObject, useState, useMemo } from "react";
+import React, { MutableRefObject, useState, useMemo, useEffect } from "react";
 import {
     Grid,
     Segment,
@@ -37,54 +37,65 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
         tags,
     } = props;
 
-    const dispQueues = queues.filter((q) => !q.archived);
+    const dispQueues = useMemo(() => {
+        return queues.filter((q) => !q.archived);
+    }, [queues]);
+
     const [selQueue, setSelQueue] = useState<number | undefined>(
         dispQueues.find((q) => !q.archived)?.id
     );
+
+    useEffect(() => {
+        const q = dispQueues.find((currQ) => !currQ.archived);
+        if (q && !selQueue) {
+            setSelQueue(q.id);
+        }
+    }, [dispQueues, selQueue]);
+
     const currQueue = useMemo(() => {
         return dispQueues.find((q) => q.id === selQueue);
     }, [selQueue, dispQueues]);
 
     return (
-        queues && (
-            <Grid.Row style={{ marginTop: "2rem" }} columns={2}>
-                <Grid.Column width={4}>
-                    <Menu
-                        fluid
-                        vertical
-                        style={{ display: "flex", minHeight: "20rem" }}
-                    >
-                        {dispQueues.map((q) => (
-                            <QueueMenuItem
-                                key={q.id}
-                                queue={q}
-                                courseId={courseId}
-                                initialQuestions={questionmap[q.id]}
-                                active={selQueue === q.id}
-                                setActiveQueue={setSelQueue}
-                            />
-                        ))}
+        <Grid.Row style={{ marginTop: "2rem" }}>
+            {currQueue && (
+                <>
+                    <Grid.Column width={4}>
+                        <Menu
+                            fluid
+                            vertical
+                            style={{ display: "flex", minHeight: "20rem" }}
+                        >
+                            {dispQueues.map((q) => (
+                                <QueueMenuItem
+                                    key={q.id}
+                                    queue={q}
+                                    courseId={courseId}
+                                    initialQuestions={questionmap[q.id]}
+                                    active={selQueue === q.id}
+                                    setActiveQueue={setSelQueue}
+                                />
+                            ))}
 
-                        {leader && (
-                            <Menu.Item
-                                style={{
-                                    textAlign: "center",
-                                    marginTop: "auto",
-                                }}
-                            >
-                                <Button
-                                    size="tiny"
-                                    primary
-                                    onClick={createFunc}
+                            {leader && (
+                                <Menu.Item
+                                    style={{
+                                        textAlign: "center",
+                                        marginTop: "auto",
+                                    }}
                                 >
-                                    Add Queue
-                                </Button>
-                            </Menu.Item>
-                        )}
-                    </Menu>
-                </Grid.Column>
-                <Grid.Column stretched width={12}>
-                    {currQueue && (
+                                    <Button
+                                        size="tiny"
+                                        primary
+                                        onClick={createFunc}
+                                    >
+                                        Add Queue
+                                    </Button>
+                                </Menu.Item>
+                            )}
+                        </Menu>
+                    </Grid.Column>
+                    <Grid.Column stretched width={12}>
                         <Queue
                             courseId={courseId}
                             key={currQueue.id}
@@ -96,20 +107,40 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
                             play={play}
                             tags={tags}
                         />
-                    )}
-
-                    {!currQueue && (
-                        <Message info icon>
-                            <Icon name="lightbulb outline" />
-                            <Message.Content>
-                                <Message.Header>Create a Queue</Message.Header>
-                                Create a queue to get started!
-                            </Message.Content>
-                        </Message>
-                    )}
+                    </Grid.Column>
+                </>
+            )}
+            {!currQueue && leader && (
+                <Grid.Column width={16}>
+                    <Message info icon>
+                        <Icon name="lightbulb outline" />
+                        <Message.Content>
+                            <Message.Header>Create a Queue</Message.Header>
+                            <a
+                                role="button"
+                                onClick={createFunc}
+                                style={{ cursor: "pointer" }}
+                            >
+                                Create
+                            </a>{" "}
+                            a queue to get started!
+                        </Message.Content>
+                    </Message>
                 </Grid.Column>
-            </Grid.Row>
-        )
+            )}
+            {!currQueue && !leader && (
+                <Grid.Column width={16}>
+                    <Message info icon>
+                        <Icon name="lightbulb outline" />
+                        <Message.Content>
+                            <Message.Header>No Queues</Message.Header>
+                            This course currently has no queues! Ask the
+                            course&apos;s Head TA or Professor to create one.
+                        </Message.Content>
+                    </Message>
+                </Grid.Column>
+            )}
+        </Grid.Row>
     );
 };
 
