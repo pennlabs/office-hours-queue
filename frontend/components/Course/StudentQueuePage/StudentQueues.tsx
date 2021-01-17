@@ -1,4 +1,4 @@
-import React, { MutableRefObject, useState, useMemo } from "react";
+import React, { MutableRefObject, useState, useMemo, useEffect } from "react";
 import { Grid, Message, Menu } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import StudentQueue from "./StudentQueue";
@@ -23,6 +23,13 @@ const StudentQueues = (props: StudentQueuesProps) => {
     const currQueue = useMemo(() => {
         return dispQueues.find((q) => q.id === selQueue);
     }, [selQueue, dispQueues]);
+
+    useEffect(() => {
+        const q = dispQueues.find((currQ) => !currQ.archived);
+        if (q && !currQueue) {
+            setSelQueue(q.id);
+        }
+    }, [dispQueues, currQueue]);
 
     return (
         <>

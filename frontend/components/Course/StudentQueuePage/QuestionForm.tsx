@@ -59,7 +59,7 @@ const QuestionForm = (props: QuestionFormProps) => {
             setInput({
                 ...input,
                 tags: input.tags.filter((tagLabel) => {
-                    return tagLabel !== text;
+                    return tagLabel.name !== text;
                 }),
             });
         } else if (event.action === "clear") {
