@@ -15,14 +15,15 @@ import { AuthUserContext } from "../../context/auth";
 import { useLeadership, useStaff } from "../../hooks/data-fetching/course";
 import styles from "../../styles/landingpage.module.css";
 import { leadershipSortFunc } from "../../utils";
-import { Membership } from "../../types";
+import { Membership, Course } from "../../types";
 
 interface CourseSidebarProps {
-    courseId: number;
+    course: Course;
     leadership: Membership[];
 }
 const CourseSidebar = (props: CourseSidebarProps) => {
-    const { courseId, leadership: leadershipRaw } = props;
+    const { course, leadership: leadershipRaw } = props;
+    const courseId = course.id;
     const [leadershipUnsorted, , , ,] = useLeadership(courseId, leadershipRaw);
     const leadership = leadershipUnsorted.sort(leadershipSortFunc);
 
@@ -53,14 +54,16 @@ const CourseSidebar = (props: CourseSidebarProps) => {
                     style={{ marginTop: "10px" }}
                 />
                 <Menu vertical secondary fluid>
-                    <Menu.Item
-                        style={noWrapStyle}
-                        name="Queues"
-                        icon="hourglass one"
-                        href={`/courses/${courseId}`}
-                        active={router.pathname.endsWith("[course]")}
-                        color="blue"
-                    />
+                    {!course.archived && (
+                        <Menu.Item
+                            style={noWrapStyle}
+                            name="Queues"
+                            icon="hourglass one"
+                            href={`/courses/${courseId}`}
+                            active={router.pathname.endsWith("[course]")}
+                            color="blue"
+                        />
+                    )}
                     {staff && (
                         <Menu.Item
                             style={noWrapStyle}
@@ -91,7 +94,7 @@ const CourseSidebar = (props: CourseSidebarProps) => {
                             color="blue"
                         />
                     )}
-                    {leader && (
+                    {!course.archived && leader && (
                         <Menu.Item
                             style={noWrapStyle}
                             name="Course Settings"

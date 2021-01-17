@@ -210,6 +210,7 @@ const Queue = (props: QueueProps) => {
                     questions={filteredQuestions}
                     mutate={mutateQuestions}
                     active={active}
+                    play={play}
                 />
             </Grid.Row>
         </>

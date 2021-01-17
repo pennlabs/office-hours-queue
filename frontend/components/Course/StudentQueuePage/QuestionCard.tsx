@@ -58,14 +58,13 @@ const QuestionCard = (props: QuestionCardProps) => {
     };
 
     useEffect(() => {
-        if (question.status === QuestionStatus.ACTIVE) {
+        if (
+            question.status === QuestionStatus.ACTIVE ||
+            !question.resolvedNote
+        ) {
             play.current();
         }
-    }, [question.status, play]);
-
-    useEffect(() => {
-        play.current();
-    }, [question.note, play]);
+    }, [question.status, play, question.resolvedNote]);
 
     const markQuestionAsAnswered = async () => {
         try {
@@ -129,7 +128,8 @@ const QuestionCard = (props: QuestionCardProps) => {
                         <br />
                         <Message info>
                             <Message.Header style={{ fontSize: "1rem" }}>
-                                An instructor has messaged you:
+                                An instructor has messaged you, please update
+                                your question:
                             </Message.Header>
                             <Message.Content>
                                 <p>{question.note}</p>

@@ -56,6 +56,14 @@ SettingsPage.getInitialProps = async (
 
     if (response.success) {
         [course, leadership, tags] = response.data;
+
+        if (course.archived) {
+            nextRedirect(
+                context,
+                () => true,
+                `/courses/${query.course}/roster`
+            );
+        }
     } else {
         nextRedirect(context, () => true, "/404");
         throw new Error("Next should redirect: unreachable");
