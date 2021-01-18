@@ -242,11 +242,10 @@ class QuestionViewSet(viewsets.ModelViewSet):
         Create a new question and check if it follows the rate limit
         """
 
-        # NEED TO CHECK THE RATE LIMIT HERE
         queue = Queue.objects.get(id=self.kwargs["queue_pk"])
         if (
-            queue.rate_limit_length
-            and Question.objects.filter(queue=queue_pk, status=Question.STATUS_ASKED).count()
+            queue.rate_limit_length is not None
+            and Question.objects.filter(queue=queue, status=Question.STATUS_ASKED).count()
             >= queue.rate_limit_length
         ):
             num_questions_asked = Question.objects.filter(
@@ -254,8 +253,10 @@ class QuestionViewSet(viewsets.ModelViewSet):
                 asked_by=request.user,
                 time_asked__gte=timezone.now() - timedelta(minutes=queue.rate_limit_minutes),
             ).count()
-            if num_questions_asked > queue.rate_limit_questions:
+
+            if num_questions_asked >= queue.rate_limit_questions:
                 return Response({"detail": "rate limited"}, status=429)
+
         return super().create(request, *args, **kwargs)
 
 

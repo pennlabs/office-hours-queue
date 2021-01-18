@@ -8,7 +8,7 @@ from django.utils import timezone
 from djangorestframework_camel_case.util import camelize
 from rest_framework.test import APIClient
 
-from ohq.models import Course, Membership, MembershipInvite, Semester
+from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester
 from ohq.serializers import UserPrivateSerializer
 
 
@@ -93,3 +93,54 @@ class MassInviteTestCase(TestCase):
         content = json.loads(response.content)
         self.assertEqual(1, content["membersAdded"])
         self.assertEqual(1, content["invitesSent"])
+
+
+class QuestionViewTestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.semester = Semester.objects.create(year=2020, term=Semester.TERM_FALL)
+        self.course = Course.objects.create(
+            course_code="000", department="Test Class", semester=self.semester
+        )
+        self.queue = Queue.objects.create(
+            name="Queue",
+            course=self.course,
+            rate_limit_length=0,
+            rate_limit_minutes=20,
+            rate_limit_questions=1,
+        )
+        self.ta = User.objects.create(username="ta")
+        self.student = User.objects.create(username="student")
+        self.student2 = User.objects.create(username="student2")
+        Membership.objects.create(course=self.course, user=self.ta, kind=Membership.KIND_TA)
+        Membership.objects.create(
+            course=self.course, user=self.student, kind=Membership.KIND_STUDENT
+        )
+        Membership.objects.create(
+            course=self.course, user=self.student2, kind=Membership.KIND_STUDENT
+        )
+        self.question = Question.objects.create(
+            queue=self.queue, asked_by=self.student, text="Help me"
+        )
+
+    def test_rate_limit(self):
+        self.client.force_authenticate(user=self.student)
+        self.client.patch(
+            reverse("ohq:question-detail", args=[self.course.id, self.queue.id, self.question.id]),
+            {"status": Question.STATUS_ANSWERED},
+        )
+        self.assertEqual(1, Question.objects.all().count())
+
+        res = self.client.post(
+            reverse("ohq:question-list", args=[self.course.id, self.queue.id]),
+            {"text": "Should be rate limited", "tags": []},
+        )
+        self.assertEqual(429, res.status_code)
+        self.assertEqual(1, Question.objects.all().count())
+
+        self.client.force_authenticate(user=self.student2)
+        self.client.post(
+            reverse("ohq:question-list", args=[self.course.id, self.queue.id]),
+            {"text": "Shouldn't be rate limited", "tags": []},
+        )
+        self.assertEqual(2, Question.objects.all().count())
