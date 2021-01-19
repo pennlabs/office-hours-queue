@@ -109,6 +109,7 @@ class QuestionViewTestCase(TestCase):
             rate_limit_minutes=20,
             rate_limit_questions=1,
         )
+        self.no_limit_queue = Queue.objects.create(name="No Rate Limit Queue", course=self.course)
         self.ta = User.objects.create(username="ta")
         self.student = User.objects.create(username="student")
         self.student2 = User.objects.create(username="student2")
@@ -122,6 +123,17 @@ class QuestionViewTestCase(TestCase):
         self.question = Question.objects.create(
             queue=self.queue, asked_by=self.student, text="Help me"
         )
+        self.old_question = Question.objects.create(
+            queue=self.queue,
+            asked_by=self.student,
+            text="Help me",
+            time_responded_to=timezone.now(),
+            time_response_started=timezone.now(),
+            responded_to_by=self.ta,
+            status=Question.STATUS_ANSWERED,
+        )
+        self.old_question.time_asked = timezone.now() - timedelta(days=1)
+        self.old_question.save()
 
     def test_rate_limit(self):
         self.client.force_authenticate(user=self.student)
@@ -129,18 +141,28 @@ class QuestionViewTestCase(TestCase):
             reverse("ohq:question-detail", args=[self.course.id, self.queue.id, self.question.id]),
             {"status": Question.STATUS_ANSWERED},
         )
-        self.assertEqual(1, Question.objects.all().count())
+        self.assertEqual(2, Question.objects.all().count())
 
         res = self.client.post(
             reverse("ohq:question-list", args=[self.course.id, self.queue.id]),
             {"text": "Should be rate limited", "tags": []},
         )
         self.assertEqual(429, res.status_code)
-        self.assertEqual(1, Question.objects.all().count())
+        self.assertEqual(2, Question.objects.all().count())
+
+        res = self.client.get(
+            reverse("ohq:question-quota-count", args=[self.course.id, self.queue.id])
+        )
+        self.assertEqual(1, json.loads(res.content)["count"])
+
+        res = self.client.get(
+            reverse("ohq:question-quota-count", args=[self.course.id, self.no_limit_queue.id])
+        )
+        self.assertEqual(405, res.status_code)
 
         self.client.force_authenticate(user=self.student2)
         self.client.post(
             reverse("ohq:question-list", args=[self.course.id, self.queue.id]),
             {"text": "Shouldn't be rate limited", "tags": []},
         )
-        self.assertEqual(2, Question.objects.all().count())
+        self.assertEqual(3, Question.objects.all().count())

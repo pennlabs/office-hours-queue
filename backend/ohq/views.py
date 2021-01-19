@@ -259,6 +259,23 @@ class QuestionViewSet(viewsets.ModelViewSet):
 
         return super().create(request, *args, **kwargs)
 
+    @action(detail=False)
+    def quota_count(self, request, course_pk, queue_pk):
+        """
+        Get number of questions asked within rate limit period if it is set up for the queue
+        """
+
+        queue = Queue.objects.get(id=queue_pk)
+        if queue.rate_limit_length is not None:
+            count = Question.objects.filter(
+                queue=queue_pk,
+                asked_by=request.user,
+                time_asked__gte=timezone.now() - timedelta(minutes=queue.rate_limit_minutes),
+            ).count()
+            return Response({"count": count})
+        else:
+            return Response({"detail": "queue does not have rate limit"}, status=405)
+
 
 class QuestionSearchView(XLSXFileMixin, generics.ListAPIView):
     filter_backends = [DjangoFilterBackend]
