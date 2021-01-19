@@ -9,6 +9,7 @@ import {
     Icon,
 } from "semantic-ui-react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 import { prettifyRole } from "../../utils/enums";
 
 import { AuthUserContext } from "../../context/auth";
@@ -55,54 +56,75 @@ const CourseSidebar = (props: CourseSidebarProps) => {
                 />
                 <Menu vertical secondary fluid>
                     {!course.archived && (
-                        <Menu.Item
-                            style={noWrapStyle}
-                            name="Queues"
-                            icon="hourglass one"
-                            href={`/courses/${courseId}`}
-                            active={router.pathname.endsWith("[course]")}
-                            color="blue"
-                        />
+                        <Link
+                            href="/courses/[courseId]"
+                            as={`/courses/${courseId}`}
+                        >
+                            <Menu.Item
+                                style={noWrapStyle}
+                                name="Queues"
+                                icon="hourglass one"
+                                active={router.pathname.endsWith("[course]")}
+                                color="blue"
+                            />
+                        </Link>
                     )}
                     {staff && (
-                        <Menu.Item
-                            style={noWrapStyle}
-                            name="Roster"
-                            icon="users"
-                            href={`/courses/${courseId}/roster`}
-                            active={router.pathname.endsWith("roster")}
-                            color="blue"
-                        />
+                        <Link
+                            href="/courses/[courseId]/roster"
+                            as={`/courses/${courseId}/roster`}
+                        >
+                            <Menu.Item
+                                style={noWrapStyle}
+                                name="Roster"
+                                icon="users"
+                                active={router.pathname.endsWith("roster")}
+                                color="blue"
+                            />
+                        </Link>
                     )}
                     {staff && (
-                        <Menu.Item
-                            style={noWrapStyle}
-                            name="Analytics"
-                            icon="chart bar"
-                            href={`/courses/${courseId}/analytics`}
-                            active={router.pathname.endsWith("analytics")}
-                            color="blue"
-                        />
+                        <Link
+                            href="/courses/[courseId]/analytics"
+                            as={`/courses/${courseId}/analytics`}
+                        >
+                            <Menu.Item
+                                style={noWrapStyle}
+                                name="Analytics"
+                                icon="chart bar"
+                                active={router.pathname.endsWith("analytics")}
+                                color="blue"
+                            />
+                        </Link>
                     )}
                     {staff && (
-                        <Menu.Item
-                            style={noWrapStyle}
-                            name="Question Summary"
-                            icon="list ol"
-                            href={`/courses/${courseId}/summary`}
-                            active={router.pathname.endsWith("summary")}
-                            color="blue"
-                        />
+                        <Link
+                            href="/courses/[courseId]/summary"
+                            as={`/courses/${courseId}/summary`}
+                        >
+                            <Menu.Item
+                                style={noWrapStyle}
+                                name="Question Summary"
+                                icon="list ol"
+                                active={router.pathname.endsWith("summary")}
+                                color="blue"
+                            />
+                        </Link>
                     )}
                     {!course.archived && leader && (
-                        <Menu.Item
-                            style={noWrapStyle}
-                            name="Course Settings"
-                            icon="settings"
-                            href={`/courses/${courseId}/settings`}
-                            active={router.pathname.endsWith("settings")}
-                            color="blue"
-                        />
+                        <Link
+                            href="/courses/[courseId]/settings"
+                            as={`/courses/${courseId}/settings`}
+                        >
+                            <Menu.Item
+                                style={noWrapStyle}
+                                name="Course Settings"
+                                icon="settings"
+                                href={`/courses/${courseId}/settings`}
+                                active={router.pathname.endsWith("settings")}
+                                color="blue"
+                            />
+                        </Link>
                     )}
                 </Menu>
             </Segment>
