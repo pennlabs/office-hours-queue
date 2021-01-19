@@ -12,6 +12,21 @@ interface QueueFormProps {
     mutate: mutateResourceListFunction<Queue>;
     backFunc: () => void;
 }
+
+interface QueueFormInput {
+    name: string;
+    description: string;
+    queueId: number;
+    rateLimit:
+        | {
+              enabled: true;
+              rateLimitLength: number;
+              rateLimitQuestions: number;
+              rateLimitMinutes: number;
+          }
+        | { enabled: false };
+}
+
 const QueueForm = (props: QueueFormProps) => {
     const loading = false;
     /* STATE */
@@ -20,10 +35,21 @@ const QueueForm = (props: QueueFormProps) => {
     const [error, setError] = useState(false);
     const { queue } = props;
     const [open, setOpen] = useState(false);
-    const [input, setInput] = useState({
+    const [input, setInput] = useState<QueueFormInput>({
         name: queue.name,
         description: queue.description,
         queueId: queue.id,
+        rateLimit:
+            queue.rateLimitLength &&
+            queue.rateLimitMinutes &&
+            queue.rateLimitQuestions
+                ? {
+                      enabled: true,
+                      rateLimitLength: queue.rateLimitLength,
+                      rateLimitMinutes: queue.rateLimitMinutes,
+                      rateLimitQuestions: queue.rateLimitQuestions,
+                  }
+                : { enabled: false },
     });
     const [nameCharCount, setNameCharCount] = useState(input.name.length);
     const [descCharCount, setDescCharCount] = useState(
@@ -107,6 +133,45 @@ const QueueForm = (props: QueueFormProps) => {
                             {`Characters: ${descCharCount}/500`}
                         </div>
                     </Form.Field>
+                    <Form.Field>
+                        <Form.Checkbox
+                            name="rateLimitEnabled"
+                            defaultChecked={input.rateLimit.enabled}
+                            label="Enable queue rate-limiting"
+                        />
+                    </Form.Field>
+
+                    {input.rateLimit.enabled ||
+                        (true && (
+                            <Form.Group style={{ alignItems: "center" }}>
+                                <Form.Input
+                                    placeholder="3"
+                                    width={1}
+                                    type="number"
+                                    id="rate-questions"
+                                />
+                                <label htmlFor="rate-questions">
+                                    question(s) within{" "}
+                                </label>
+                                <Form.Input
+                                    placeholder="60"
+                                    width={1}
+                                    type="number"
+                                    id="rate-minutes"
+                                />
+                                <label htmlFor="rate-minutes">
+                                    minutes when queue has at least
+                                </label>
+                                <Form.Input
+                                    placeholder="10"
+                                    width={1}
+                                    type="number"
+                                    id="rate-length"
+                                />
+                                <label htmlFor="rate-length">questions</label>
+                            </Form.Group>
+                        ))}
+
                     <Button
                         color="blue"
                         type="submit"
