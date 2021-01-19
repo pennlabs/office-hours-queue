@@ -11,7 +11,10 @@ const ArchivedCourseCard = (props: ArchivedCourseCardProps) => {
     const [hover, setHover] = useState(false);
     return (
         <Segment basic>
-            <Link href={{ pathname: `/courses/${course.id}/roster` }}>
+            <Link
+                href="/courses/[course]/roster"
+                as={`/courses/${course.id}/roster`}
+            >
                 <Segment.Group
                     style={{ cursor: "pointer" }}
                     raised={hover}

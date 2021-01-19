@@ -27,7 +27,7 @@ const CourseCard = (props: CourseCardProps) => {
 
     return (
         <Segment basic>
-            <Link href="/courses/[courseId]" as={`/courses/${course.id}`}>
+            <Link href="/courses/[course]" as={`/courses/${course.id}`}>
                 <Segment.Group
                     style={{
                         cursor: "pointer",

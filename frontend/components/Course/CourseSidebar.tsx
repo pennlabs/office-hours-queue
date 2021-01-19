@@ -48,16 +48,17 @@ const CourseSidebar = (props: CourseSidebarProps) => {
     return (
         <Grid.Column width={3}>
             <Segment basic>
-                <Image
-                    src="../../../ohq.png"
-                    size="tiny"
-                    href="/"
-                    style={{ marginTop: "10px" }}
-                />
+                <Link href="/" as="/">
+                    <Image
+                        src="../../../ohq.png"
+                        size="tiny"
+                        style={{ marginTop: "10px", cursor: "pointer" }}
+                    />
+                </Link>
                 <Menu vertical secondary fluid>
                     {!course.archived && (
                         <Link
-                            href="/courses/[courseId]"
+                            href="/courses/[course]"
                             as={`/courses/${courseId}`}
                         >
                             <Menu.Item
@@ -71,7 +72,7 @@ const CourseSidebar = (props: CourseSidebarProps) => {
                     )}
                     {staff && (
                         <Link
-                            href="/courses/[courseId]/roster"
+                            href="/courses/[course]/roster"
                             as={`/courses/${courseId}/roster`}
                         >
                             <Menu.Item
@@ -85,7 +86,7 @@ const CourseSidebar = (props: CourseSidebarProps) => {
                     )}
                     {staff && (
                         <Link
-                            href="/courses/[courseId]/analytics"
+                            href="/courses/[course]/analytics"
                             as={`/courses/${courseId}/analytics`}
                         >
                             <Menu.Item
@@ -99,7 +100,7 @@ const CourseSidebar = (props: CourseSidebarProps) => {
                     )}
                     {staff && (
                         <Link
-                            href="/courses/[courseId]/summary"
+                            href="/courses/[course]/summary"
                             as={`/courses/${courseId}/summary`}
                         >
                             <Menu.Item
@@ -113,7 +114,7 @@ const CourseSidebar = (props: CourseSidebarProps) => {
                     )}
                     {!course.archived && leader && (
                         <Link
-                            href="/courses/[courseId]/settings"
+                            href="/courses/[course]/settings"
                             as={`/courses/${courseId}/settings`}
                         >
                             <Menu.Item
