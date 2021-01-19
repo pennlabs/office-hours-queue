@@ -107,7 +107,7 @@ QueuePage.getInitialProps = async (
         { path: `/courses/${query.course}/members/`, data },
         { path: `/courses/${query.course}/queues/`, data },
         { path: `/courses/${query.course}/tags/`, data },
-        { path: `/courses/${query.course}/announcements`, data },
+        { path: `/courses/${query.course}/announcements/`, data },
     ]);
 
     if (response.success) {
