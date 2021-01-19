@@ -8,7 +8,7 @@ from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.test import APIClient
 
-from ohq.models import Announcement, Course, Membership, Question, Queue, Semester
+from ohq.models import Announcement, Course, Membership, Question, Queue, Semester, Tag
 from ohq.serializers import (
     CourseCreateSerializer,
     MembershipSerializer,
@@ -182,10 +182,16 @@ class QuestionSerializerTestCase(TestCase):
         self.course = Course.objects.create(
             course_code="000", department="Penn Labs", semester=self.semester
         )
+        self.course2 = Course.objects.create(
+            course_code="001", department="Penn Labs", semester=self.semester
+        )
         self.queue = Queue.objects.create(name="Queue", course=self.course)
+        self.queue2 = Queue.objects.create(name="Queue", course=self.course2)
         self.ta = User.objects.create(username="ta")
         self.student = User.objects.create(username="student")
         self.student2 = User.objects.create(username="student2")
+        Tag.objects.create(course=self.course, name="Tag")
+        Tag.objects.create(course=self.course2, name="Tag")
         Membership.objects.create(course=self.course, user=self.ta, kind=Membership.KIND_TA)
         Membership.objects.create(
             course=self.course, user=self.student, kind=Membership.KIND_STUDENT
@@ -202,7 +208,7 @@ class QuestionSerializerTestCase(TestCase):
         self.client.force_authenticate(user=self.student2)
         self.client.post(
             reverse("ohq:question-list", args=[self.course.id, self.queue.id]),
-            {"text": "Help me", "tags": []},
+            {"text": "Help me", "tags": [{"name": "Tag"}]},
         )
         self.assertEqual(2, Question.objects.all().count())
         question = Question.objects.all().order_by("time_asked")[1]
@@ -220,7 +226,7 @@ class QuestionSerializerTestCase(TestCase):
         self.client.force_authenticate(user=self.student)
         self.client.patch(
             reverse("ohq:question-detail", args=[self.course.id, self.queue.id, self.question.id]),
-            {"text": text, "video_chat_url": url},
+            {"text": text, "video_chat_url": url, "tags": [{"name": "Tag"}]},
         )
         self.question.refresh_from_db()
         self.assertEqual(text, self.question.text)
