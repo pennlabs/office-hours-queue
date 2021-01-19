@@ -290,7 +290,7 @@ class QuestionSerializer(QueueRouteMixin):
         question = super().create(validated_data)
         for tag_data in tags:
             try:
-                tag = Tag.objects.get(**tag_data)
+                tag = Tag.objects.get(course=queue.course, **tag_data)
                 question.tags.add(tag)
             except ObjectDoesNotExist:
                 continue
