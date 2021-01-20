@@ -96,6 +96,11 @@ class MassInviteTestCase(TestCase):
 
 
 class QuestionViewTestCase(TestCase):
+    """
+    Tests for the Question ViewSet, especially when it comes to creating questions when the
+    queue has a quota and getting the number of questions asked within the quota period
+    """
+
     def setUp(self):
         self.client = APIClient()
         self.semester = Semester.objects.create(year=2020, term=Semester.TERM_FALL)
@@ -105,6 +110,7 @@ class QuestionViewTestCase(TestCase):
         self.queue = Queue.objects.create(
             name="Queue",
             course=self.course,
+            rate_limit_enabled=True,
             rate_limit_length=0,
             rate_limit_minutes=20,
             rate_limit_questions=1,
@@ -134,6 +140,15 @@ class QuestionViewTestCase(TestCase):
         )
         self.old_question.time_asked = timezone.now() - timedelta(days=1)
         self.old_question.save()
+        self.rejected_question = Question.objects.create(
+            queue=self.queue,
+            asked_by=self.student,
+            text="Help me",
+            time_responded_to=timezone.now(),
+            time_response_started=timezone.now(),
+            responded_to_by=self.ta,
+            status=Question.STATUS_REJECTED,
+        )
 
     def test_rate_limit(self):
         self.client.force_authenticate(user=self.student)
@@ -141,14 +156,14 @@ class QuestionViewTestCase(TestCase):
             reverse("ohq:question-detail", args=[self.course.id, self.queue.id, self.question.id]),
             {"status": Question.STATUS_ANSWERED},
         )
-        self.assertEqual(2, Question.objects.all().count())
+        self.assertEqual(3, Question.objects.all().count())
 
         res = self.client.post(
             reverse("ohq:question-list", args=[self.course.id, self.queue.id]),
             {"text": "Should be rate limited", "tags": []},
         )
         self.assertEqual(429, res.status_code)
-        self.assertEqual(2, Question.objects.all().count())
+        self.assertEqual(3, Question.objects.all().count())
 
         res = self.client.get(
             reverse("ohq:question-quota-count", args=[self.course.id, self.queue.id])
@@ -165,4 +180,4 @@ class QuestionViewTestCase(TestCase):
             reverse("ohq:question-list", args=[self.course.id, self.queue.id]),
             {"text": "Shouldn't be rate limited", "tags": []},
         )
-        self.assertEqual(3, Question.objects.all().count())
+        self.assertEqual(4, Question.objects.all().count())

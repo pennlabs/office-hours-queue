@@ -199,6 +199,7 @@ class Queue(models.Model):
 
     # particular user can ask rate_limit_questions in rate_limit_minutes if the queue length is
     # greater than rate_limit_length
+    rate_limit_enabled = models.BooleanField(default=False)
     rate_limit_length = models.IntegerField(blank=True, null=True)
     rate_limit_questions = models.IntegerField(blank=True, null=True)
     rate_limit_minutes = models.IntegerField(blank=True, null=True)

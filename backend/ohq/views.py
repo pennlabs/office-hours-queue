@@ -237,6 +237,21 @@ class QuestionViewSet(viewsets.ModelViewSet):
         membership.save()
         return super().list(request, *args, **kwargs)
 
+    def quota_count_helper(self, queue, user):
+        """
+        Helper to get the question counnt within the quota period for queues with quotas
+        """
+
+        return (
+            Question.objects.filter(
+                queue=queue,
+                asked_by=user,
+                time_asked__gte=timezone.now() - timedelta(minutes=queue.rate_limit_minutes),
+            )
+            .exclude(status__in=[Question.STATUS_REJECTED, Question.STATUS_WITHDRAWN])
+            .count()
+        )
+
     def create(self, request, *args, **kwargs):
         """
         Create a new question and check if it follows the rate limit
@@ -244,18 +259,14 @@ class QuestionViewSet(viewsets.ModelViewSet):
 
         queue = Queue.objects.get(id=self.kwargs["queue_pk"])
         if (
-            queue.rate_limit_length is not None
+            queue.rate_limit_enabled
             and Question.objects.filter(queue=queue, status=Question.STATUS_ASKED).count()
             >= queue.rate_limit_length
         ):
-            num_questions_asked = Question.objects.filter(
-                queue=queue,
-                asked_by=request.user,
-                time_asked__gte=timezone.now() - timedelta(minutes=queue.rate_limit_minutes),
-            ).count()
+            num_questions_asked = self.quota_count_helper(queue, request.user)
 
             if num_questions_asked >= queue.rate_limit_questions:
-                return Response({"detail": "rate limited"}, status=429)
+                return JsonResponse({"detail": "rate limited"}, status=429)
 
         return super().create(request, *args, **kwargs)
 
@@ -266,15 +277,11 @@ class QuestionViewSet(viewsets.ModelViewSet):
         """
 
         queue = Queue.objects.get(id=queue_pk)
-        if queue.rate_limit_length is not None:
-            count = Question.objects.filter(
-                queue=queue_pk,
-                asked_by=request.user,
-                time_asked__gte=timezone.now() - timedelta(minutes=queue.rate_limit_minutes),
-            ).count()
-            return Response({"count": count})
+        if queue.rate_limit_enabled:
+            count = self.quota_count_helper(queue, request.user)
+            return JsonResponse({"count": count})
         else:
-            return Response({"detail": "queue does not have rate limit"}, status=405)
+            return JsonResponse({"detail": "queue does not have rate limit"}, status=405)
 
 
 class QuestionSearchView(XLSXFileMixin, generics.ListAPIView):

@@ -407,6 +407,7 @@ class QuestionTestCase(TestCase):
         self.rate_limit_queue = Queue.objects.create(
             name="Rate Limit Queue",
             course=self.course,
+            rate_limit_enabled=True,
             rate_limit_length=2,
             rate_limit_minutes=10,
             rate_limit_questions=2,
