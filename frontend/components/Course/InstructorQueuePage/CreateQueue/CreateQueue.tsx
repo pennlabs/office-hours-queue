@@ -29,6 +29,15 @@ enum RateLimitFields {
     RATE_LIMIT_LENGTH = "rateLimitLength",
 }
 
+const castInt = (n: string): number | undefined => {
+    let casted: number | undefined = parseInt(n, 10);
+    if (casted === NaN) {
+        casted = undefined;
+    }
+
+    return casted;
+};
+
 const CreateQueue = (props: CreateQueueProps) => {
     const { courseId, backFunc, successFunc, mutate } = props;
     /* STATE */
@@ -47,9 +56,19 @@ const CreateQueue = (props: CreateQueueProps) => {
         if (input.rateLimitEnabled) {
             invalidInps =
                 invalidInps ||
-                !input.rateLimitLength ||
-                !input.rateLimitQuestions ||
-                !input.rateLimitMinutes;
+                input.rateLimitLength === undefined ||
+                (input.rateLimitLength !== undefined &&
+                    input.rateLimitLength < 0);
+            invalidInps =
+                invalidInps ||
+                input.rateLimitQuestions === undefined ||
+                (input.rateLimitQuestions !== undefined &&
+                    input.rateLimitQuestions <= 0);
+            invalidInps =
+                invalidInps ||
+                input.rateLimitMinutes === undefined ||
+                (input.rateLimitMinutes !== undefined &&
+                    input.rateLimitMinutes <= 0);
         }
         return invalidInps;
     }, [input]);
@@ -63,18 +82,18 @@ const CreateQueue = (props: CreateQueueProps) => {
     const handleInputChange = (e, { name, value }) => {
         input[name] = value;
         if (name === RateLimitFields.RATE_LIMIT_QUESTIONS) {
-            input[name] = parseInt(input[name], 10);
-            setValidQuestionRate(value > 0);
+            input[name] = castInt(input[name]);
+            setValidQuestionRate(input[name] > 0);
         }
 
         if (name === RateLimitFields.RATE_LIMIT_MINUTES) {
-            input[name] = parseInt(input[name], 10);
-            setValidMinsRate(value > 0);
+            input[name] = castInt(input[name]);
+            setValidMinsRate(input[name] > 0);
         }
 
         if (name === RateLimitFields.RATE_LIMIT_LENGTH) {
-            input[name] = parseInt(input[name], 10);
-            setValidLenRate(value >= 0);
+            input[name] = castInt(input[name]);
+            setValidLenRate(input[name] >= 0);
         }
         setInput({ ...input });
     };
@@ -178,7 +197,7 @@ const CreateQueue = (props: CreateQueueProps) => {
                                     onChange={handleInputChange}
                                     size="mini"
                                     type="number"
-                                    min="1"
+                                    min="0"
                                     id="rate-length"
                                     error={!validLenRate}
                                 />
