@@ -15,50 +15,53 @@ const Sidebar = () => {
     return (
         <Grid.Column width={3}>
             <Segment basic>
-                <Link href="/">
+                <Link href="/" as="/">
                     <Image
                         src="../../../ohq.png"
                         size="tiny"
-                        style={{ marginTop: "10px" }}
+                        style={{ marginTop: "10px", cursor: "pointer" }}
                     />
                 </Link>
                 <Menu vertical secondary fluid>
-                    <Menu.Item
-                        style={{
-                            whiteSpace: "nowrap",
-                            textOverflow: "ellipsis",
-                            overflow: "hidden",
-                        }}
-                        name="Dashboard"
-                        icon="dashboard"
-                        active={router.pathname === "/"}
-                        color="blue"
-                        href="/"
-                    />
-                    <Menu.Item
-                        style={{
-                            whiteSpace: "nowrap",
-                            textOverflow: "ellipsis",
-                            overflow: "hidden",
-                        }}
-                        name="Account Settings"
-                        icon="setting"
-                        active={router.pathname === "/settings"}
-                        color="blue"
-                        href="/settings"
-                    />
-                    <Menu.Item
-                        style={{
-                            whiteSpace: "nowrap",
-                            textOverflow: "ellipsis",
-                            overflow: "hidden",
-                        }}
-                        name="FAQ"
-                        icon="question circle"
-                        active={router.pathname === "/faq"}
-                        color="blue"
-                        href="/faq"
-                    />
+                    <Link href="/" as="/">
+                        <Menu.Item
+                            style={{
+                                whiteSpace: "nowrap",
+                                textOverflow: "ellipsis",
+                                overflow: "hidden",
+                            }}
+                            name="Dashboard"
+                            icon="dashboard"
+                            active={router.pathname === "/"}
+                            color="blue"
+                        />
+                    </Link>
+                    <Link href="/settings" as="/settings">
+                        <Menu.Item
+                            style={{
+                                whiteSpace: "nowrap",
+                                textOverflow: "ellipsis",
+                                overflow: "hidden",
+                            }}
+                            name="Account Settings"
+                            icon="setting"
+                            active={router.pathname === "/settings"}
+                            color="blue"
+                        />
+                    </Link>
+                    <Link href="/faq" as="/faq">
+                        <Menu.Item
+                            style={{
+                                whiteSpace: "nowrap",
+                                textOverflow: "ellipsis",
+                                overflow: "hidden",
+                            }}
+                            name="FAQ"
+                            icon="question circle"
+                            active={router.pathname === "/faq"}
+                            color="blue"
+                        />
+                    </Link>
                     <SignOutButton />
                 </Menu>
             </Segment>

@@ -12,6 +12,19 @@ interface QueueFormProps {
     mutate: mutateResourceListFunction<Queue>;
     backFunc: () => void;
 }
+
+interface QueueFormInput {
+    name: string;
+    description: string;
+    queueId: number;
+    rateLimit: {
+        enabled: boolean;
+        rateLimitLength?: number;
+        rateLimitQuestions?: number;
+        rateLimitMinutes?: number;
+    };
+}
+
 const QueueForm = (props: QueueFormProps) => {
     const loading = false;
     /* STATE */
@@ -20,11 +33,26 @@ const QueueForm = (props: QueueFormProps) => {
     const [error, setError] = useState(false);
     const { queue } = props;
     const [open, setOpen] = useState(false);
-    const [input, setInput] = useState({
+    const [input, setInput] = useState<QueueFormInput>({
         name: queue.name,
         description: queue.description,
         queueId: queue.id,
+        rateLimit:
+            queue.rateLimitLength &&
+            queue.rateLimitMinutes &&
+            queue.rateLimitQuestions
+                ? {
+                      enabled: true,
+                      rateLimitLength: queue.rateLimitLength,
+                      rateLimitMinutes: queue.rateLimitMinutes,
+                      rateLimitQuestions: queue.rateLimitQuestions,
+                  }
+                : { enabled: false },
     });
+    const [validQuestionRate, setValidQuestionRate] = useState(true);
+    const [validMinsRate, setValidMinsRate] = useState(true);
+    const [validLenRate, setValidLenRate] = useState(true);
+
     const [nameCharCount, setNameCharCount] = useState(input.name.length);
     const [descCharCount, setDescCharCount] = useState(
         input.description.length
@@ -35,7 +63,20 @@ const QueueForm = (props: QueueFormProps) => {
         if (name === "description" && value.length > 500) return;
         if (name === "name" && value.length > 100) return;
         input[name] = value;
-        setInput(input);
+
+        if (name === "rateLimitQuestions") {
+            setValidQuestionRate(value > 0);
+        }
+
+        if (name === "rateLimitMinutes") {
+            setValidMinsRate(value > 0);
+        }
+
+        if (name === "rateLimitLengt") {
+            setValidLenRate(value > 0);
+        }
+
+        setInput({ ...input });
         setDescCharCount(input.description.length);
         setNameCharCount(input.name.length);
         setDisabled(
@@ -50,7 +91,6 @@ const QueueForm = (props: QueueFormProps) => {
         try {
             await props.mutate(queue.id, input);
             setSuccess(true);
-            props.backFunc();
         } catch (e) {
             logException(e);
             setError(true);
@@ -75,7 +115,6 @@ const QueueForm = (props: QueueFormProps) => {
                             id="form-name"
                             defaultValue={input.name}
                             name="name"
-                            value={input.name}
                             disabled={loading}
                             onChange={handleInputChange}
                         />
@@ -94,7 +133,6 @@ const QueueForm = (props: QueueFormProps) => {
                             id="form-desc"
                             defaultValue={input.description}
                             name="description"
-                            value={input.description}
                             disabled={loading}
                             onChange={handleInputChange}
                         />
@@ -107,6 +145,68 @@ const QueueForm = (props: QueueFormProps) => {
                             {`Characters: ${descCharCount}/500`}
                         </div>
                     </Form.Field>
+                    <Form.Field>
+                        <Form.Checkbox
+                            name="rateLimitEnabled"
+                            defaultChecked={input.rateLimit.enabled}
+                            label="Enable queue rate-limiting"
+                            onChange={() =>
+                                setInput({
+                                    ...input,
+                                    rateLimit: {
+                                        ...input.rateLimit,
+                                        enabled: !input.rateLimit.enabled,
+                                    },
+                                })
+                            }
+                        />
+                    </Form.Field>
+
+                    {input.rateLimit.enabled && (
+                        <Form.Group style={{ alignItems: "center" }}>
+                            <Form.Input
+                                placeholder="3"
+                                name="rateLimitQuestions"
+                                onChange={handleInputChange}
+                                width={2}
+                                size="mini"
+                                type="number"
+                                min="1"
+                                id="rate-questions"
+                                error={!validQuestionRate}
+                            />
+                            <label htmlFor="rate-questions">
+                                question(s) within{" "}
+                            </label>
+                            <Form.Input
+                                placeholder="60"
+                                name="rateLimitMinutes"
+                                width={2}
+                                size="mini"
+                                onChange={handleInputChange}
+                                type="number"
+                                min="1"
+                                id="rate-minutes"
+                                error={!validMinsRate}
+                            />
+                            <label htmlFor="rate-minutes">
+                                minutes when queue has at least
+                            </label>
+                            <Form.Input
+                                placeholder="10"
+                                name="rateLimitLength"
+                                width={2}
+                                onChange={handleInputChange}
+                                size="mini"
+                                type="number"
+                                min="1"
+                                id="rate-length"
+                                error={!validLenRate}
+                            />
+                            <label htmlFor="rate-length">question(s)</label>
+                        </Form.Group>
+                    )}
+
                     <Button
                         color="blue"
                         type="submit"

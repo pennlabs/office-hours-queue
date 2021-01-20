@@ -68,6 +68,9 @@ export interface Queue {
     questionsActive: number;
     questionsAsked: number;
     staffActive: number;
+    rateLimitLength?: number;
+    rateLimitQuestions?: number;
+    rateLimitMinutes?: number;
 }
 
 // "ASKED" "WITHDRAWN" "ACTIVE" "REJECTED" "ANSWERED"
