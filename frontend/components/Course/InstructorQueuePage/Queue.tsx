@@ -146,7 +146,7 @@ const Queue = (props: QueueProps) => {
                 </Grid.Row>
                 {queue.rateLimitEnabled && (
                     <Grid.Row>
-                        <Segment basic>
+                        <Segment basic style={{ width: "100%" }}>
                             <Message>
                                 <Message.Header>
                                     A rate-limiting quota is set on this queue.

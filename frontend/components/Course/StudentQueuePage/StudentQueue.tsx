@@ -162,7 +162,7 @@ const StudentQueue = (props: StudentQueueProps) => {
                 )}
                 {queue.rateLimitEnabled && (
                     <Grid.Row>
-                        <Segment basic>
+                        <Segment basic style={{ width: "100%" }}>
                             <MessageQuota
                                 courseId={course.id}
                                 queueId={queue.id}
