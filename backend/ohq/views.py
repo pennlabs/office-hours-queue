@@ -283,9 +283,7 @@ class QuestionViewSet(viewsets.ModelViewSet):
                 >= queue.rate_limit_length
                 and count >= queue.rate_limit_questions
             ):
-                last_question = questions.order_by("-time_asked")[
-                    queue.rate_limit_questions - 1
-                ]
+                last_question = questions.order_by("-time_asked")[queue.rate_limit_questions - 1]
                 wait_time_mins = queue.rate_limit_minutes - int(
                     (timezone.now() - last_question.time_asked).total_seconds() // 60
                 )
