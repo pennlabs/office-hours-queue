@@ -33,12 +33,14 @@ interface StudentQueueProps {
 const MessageQuota = ({
     courseId,
     queueId,
+    queueLength,
     rateLimitQuestions,
     rateLimitMinutes,
     rateLimitLength,
 }: {
     courseId: number;
     queueId: number;
+    queueLength: number;
     rateLimitQuestions: number;
     rateLimitMinutes: number;
     rateLimitLength: number;
@@ -46,22 +48,22 @@ const MessageQuota = ({
     const { data } = useQueueQuota(courseId, queueId);
 
     return (
-        <Message>
+        <Message color={queueLength >= rateLimitLength ? "red" : "green"}>
             <Message.Header>
-                A rate-limiting quota is set on this queue.
+                {queueLength >= rateLimitLength ? "ACTIVE:" : "INACTIVE:"} A
+                rate-limiting quota is set on this queue.
             </Message.Header>
             <p>
-                {" "}
-                {`You can ask ${rateLimitQuestions} question(s) within ` +
-                    `${rateLimitMinutes} minute(s) when there are at least ` +
-                    `${rateLimitLength} student(s) in the queue`}
+                {`A quota of ${rateLimitQuestions} questions(s) per ${rateLimitMinutes} minutes(s) ` +
+                    `is enforced when there are at least ${rateLimitLength} student(s) in the queue.`}
+                {data && (
+                    <>
+                        <br />
+                        You have asked {data.count} question(s) in the past{" "}
+                        {rateLimitMinutes} minute(s)
+                    </>
+                )}
             </p>
-            {data && (
-                <p>
-                    You have asked {data.count} question(s) in the past{" "}
-                    {rateLimitMinutes} minute(s)
-                </p>
-            )}
         </Message>
     );
 };
@@ -166,6 +168,7 @@ const StudentQueue = (props: StudentQueueProps) => {
                             <MessageQuota
                                 courseId={course.id}
                                 queueId={queue.id}
+                                queueLength={queue.questionsAsked}
                                 rateLimitLength={queue.rateLimitLength}
                                 rateLimitMinutes={queue.rateLimitMinutes}
                                 rateLimitQuestions={queue.rateLimitQuestions}
