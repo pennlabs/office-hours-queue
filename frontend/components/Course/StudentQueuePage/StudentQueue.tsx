@@ -4,6 +4,7 @@ import {
     Header,
     Grid,
     Message,
+    Segment,
     Icon,
     Dimmer,
     Loader,
@@ -17,6 +18,7 @@ import { Queue, Course, Question, Tag } from "../../../types";
 import {
     useQuestions,
     useLastQuestions,
+    useQueueQuota,
 } from "../../../hooks/data-fetching/course";
 import LastQuestionCard from "./LastQuestionCard";
 
@@ -27,6 +29,42 @@ interface StudentQueueProps {
     questions: Question[];
     tags: Tag[];
 }
+
+const MessageQuota = ({
+    courseId,
+    queueId,
+    rateLimitQuestions,
+    rateLimitMinutes,
+    rateLimitLength,
+}: {
+    courseId: number;
+    queueId: number;
+    rateLimitQuestions: number;
+    rateLimitMinutes: number;
+    rateLimitLength: number;
+}) => {
+    const { data } = useQueueQuota(courseId, queueId);
+
+    return (
+        <Message>
+            <Message.Header>
+                A rate-limiting quota is set on this queue.
+            </Message.Header>
+            <p>
+                {" "}
+                {`You can ask ${rateLimitQuestions} question(s) within ` +
+                    `${rateLimitMinutes} minute(s) when there are at least ` +
+                    `${rateLimitLength} student(s) in the queue`}
+            </p>
+            {data && (
+                <p>
+                    You have asked {data.count} question(s) in the past{" "}
+                    {rateLimitMinutes} minute(s)
+                </p>
+            )}
+        </Message>
+    );
+};
 
 const StudentQueue = (props: StudentQueueProps) => {
     const { course, queue, queueMutate, questions: rawQuestions, tags } = props;
@@ -126,6 +164,19 @@ const StudentQueue = (props: StudentQueueProps) => {
                                 />
                             )}
                         </Grid.Column>
+                    </Grid.Row>
+                )}
+                {queue.rateLimitEnabled && (
+                    <Grid.Row>
+                        <Segment basic>
+                            <MessageQuota
+                                courseId={course.id}
+                                queueId={queue.id}
+                                rateLimitLength={queue.rateLimitLength}
+                                rateLimitMinutes={queue.rateLimitMinutes}
+                                rateLimitQuestions={queue.rateLimitQuestions}
+                            />
+                        </Segment>
                     </Grid.Row>
                 )}
 
