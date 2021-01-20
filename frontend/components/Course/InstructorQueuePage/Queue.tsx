@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useMemo, MutableRefObject } from "react";
-import { Header, Label, Grid, Segment, Button } from "semantic-ui-react";
+import {
+    Header,
+    Label,
+    Grid,
+    Message,
+    Button,
+    Segment,
+} from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Select from "react-select";
 import Questions from "./Questions";
@@ -137,6 +144,31 @@ const Queue = (props: QueueProps) => {
                         />
                     </Grid.Column>
                 </Grid.Row>
+                {queue.rateLimitEnabled && (
+                    <Grid.Row>
+                        <Segment basic>
+                            <Message>
+                                <Message.Header>
+                                    A rate-limiting quota is set on this queue.
+                                </Message.Header>
+                                {`A student can ask ${queue.rateLimitQuestions} question(s) within ${queue.rateLimitMinutes} minute(s) when there are at least ${queue.rateLimitLength} student(s) in the queue`}
+                            </Message>
+                        </Segment>
+                    </Grid.Row>
+                )}
+                {queue.questionsActive >= 8 && queue.rateLimitEnabled && (
+                    <Grid.Row>
+                        <Segment basic style={{ width: "100%" }}>
+                            <Message color="red">
+                                <Message.Header>
+                                    Too much traffic?
+                                </Message.Header>
+                                Ask your Head TA or professor to turn on
+                                rate-limiting quotas for this queue!
+                            </Message>
+                        </Segment>
+                    </Grid.Row>
+                )}
                 <Grid.Row>
                     <Grid.Column>
                         <Select
