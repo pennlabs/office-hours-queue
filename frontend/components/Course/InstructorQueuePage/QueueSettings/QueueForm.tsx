@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Form, Button, Modal } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Snackbar from "@material-ui/core/Snackbar";
@@ -17,37 +17,33 @@ interface QueueFormInput {
     name: string;
     description: string;
     queueId: number;
-    rateLimit: {
-        enabled: boolean;
-        rateLimitLength?: number;
-        rateLimitQuestions?: number;
-        rateLimitMinutes?: number;
-    };
+    rateLimitEnabled: boolean;
+    rateLimitLength?: number;
+    rateLimitQuestions?: number;
+    rateLimitMinutes?: number;
 }
 
 const QueueForm = (props: QueueFormProps) => {
-    const loading = false;
     /* STATE */
     const [success, setSuccess] = useState(false);
-    const [disabled, setDisabled] = useState(true);
     const [error, setError] = useState(false);
+    const [loading, setLoading] = useState(false);
     const { queue } = props;
     const [open, setOpen] = useState(false);
     const [input, setInput] = useState<QueueFormInput>({
         name: queue.name,
         description: queue.description,
         queueId: queue.id,
-        rateLimit:
-            queue.rateLimitLength &&
-            queue.rateLimitMinutes &&
-            queue.rateLimitQuestions
-                ? {
-                      enabled: true,
-                      rateLimitLength: queue.rateLimitLength,
-                      rateLimitMinutes: queue.rateLimitMinutes,
-                      rateLimitQuestions: queue.rateLimitQuestions,
-                  }
-                : { enabled: false },
+        rateLimitEnabled: queue.rateLimitEnabled,
+        rateLimitLength: queue.rateLimitEnabled
+            ? queue.rateLimitLength
+            : undefined,
+        rateLimitMinutes: queue.rateLimitEnabled
+            ? queue.rateLimitMinutes
+            : undefined,
+        rateLimitQuestions: queue.rateLimitEnabled
+            ? queue.rateLimitQuestions
+            : undefined,
     });
     const [validQuestionRate, setValidQuestionRate] = useState(true);
     const [validMinsRate, setValidMinsRate] = useState(true);
@@ -58,43 +54,70 @@ const QueueForm = (props: QueueFormProps) => {
         input.description.length
     );
 
+    const isDisabled = useMemo(() => {
+        let invalidInps = !input.name || !input.description;
+        if (input.rateLimitEnabled) {
+            invalidInps =
+                invalidInps ||
+                !input.rateLimitLength ||
+                !input.rateLimitQuestions ||
+                !input.rateLimitMinutes;
+        }
+
+        let isSame =
+            input.name === queue.name &&
+            input.description === queue.description;
+        if (input.rateLimitEnabled !== queue.rateLimitEnabled) {
+            isSame = false;
+        } else if (input.rateLimitEnabled && queue.rateLimitEnabled) {
+            isSame =
+                isSame &&
+                input.rateLimitLength === queue.rateLimitLength &&
+                input.rateLimitQuestions === queue.rateLimitQuestions &&
+                input.rateLimitMinutes === queue.rateLimitMinutes;
+        }
+        return invalidInps || isSame;
+        // Queue covers all our cases
+        // eslint-disable-next-line
+    }, [input, JSON.stringify(queue)]);
+
     /* HANDLER FUNCTIONS */
     const handleInputChange = (e, { name, value }) => {
         if (name === "description" && value.length > 500) return;
         if (name === "name" && value.length > 100) return;
+
         input[name] = value;
 
         if (name === "rateLimitQuestions") {
+            input[name] = parseInt(input[name], 10);
             setValidQuestionRate(value > 0);
         }
 
         if (name === "rateLimitMinutes") {
+            input[name] = parseInt(input[name], 10);
             setValidMinsRate(value > 0);
         }
 
         if (name === "rateLimitLengt") {
+            input[name] = parseInt(input[name], 10);
             setValidLenRate(value > 0);
         }
 
         setInput({ ...input });
         setDescCharCount(input.description.length);
         setNameCharCount(input.name.length);
-        setDisabled(
-            !input.name ||
-                !input.description ||
-                (input.name === queue.name &&
-                    input.description === queue.description)
-        );
     };
 
     const onSubmit = async () => {
         try {
+            setLoading(true);
             await props.mutate(queue.id, input);
             setSuccess(true);
         } catch (e) {
             logException(e);
             setError(true);
         }
+        setLoading(false);
     };
 
     const onArchived = async () => {
@@ -148,25 +171,23 @@ const QueueForm = (props: QueueFormProps) => {
                     <Form.Field>
                         <Form.Checkbox
                             name="rateLimitEnabled"
-                            defaultChecked={input.rateLimit.enabled}
+                            defaultChecked={input.rateLimitEnabled}
                             label="Enable queue rate-limiting"
                             onChange={() =>
                                 setInput({
                                     ...input,
-                                    rateLimit: {
-                                        ...input.rateLimit,
-                                        enabled: !input.rateLimit.enabled,
-                                    },
+                                    rateLimitEnabled: !input.rateLimitEnabled,
                                 })
                             }
                         />
                     </Form.Field>
 
-                    {input.rateLimit.enabled && (
+                    {input.rateLimitEnabled && (
                         <Form.Group style={{ alignItems: "center" }}>
                             <Form.Input
                                 placeholder="3"
                                 name="rateLimitQuestions"
+                                defaultValue={input.rateLimitQuestions}
                                 onChange={handleInputChange}
                                 width={2}
                                 size="mini"
@@ -181,6 +202,7 @@ const QueueForm = (props: QueueFormProps) => {
                             <Form.Input
                                 placeholder="60"
                                 name="rateLimitMinutes"
+                                defaultValue={input.rateLimitMinutes}
                                 width={2}
                                 size="mini"
                                 onChange={handleInputChange}
@@ -195,6 +217,7 @@ const QueueForm = (props: QueueFormProps) => {
                             <Form.Input
                                 placeholder="10"
                                 name="rateLimitLength"
+                                defaultValue={input.rateLimitLength}
                                 width={2}
                                 onChange={handleInputChange}
                                 size="mini"
@@ -210,7 +233,7 @@ const QueueForm = (props: QueueFormProps) => {
                     <Button
                         color="blue"
                         type="submit"
-                        disabled={disabled || loading}
+                        disabled={isDisabled || loading}
                         loading={loading}
                         onClick={onSubmit}
                     >
