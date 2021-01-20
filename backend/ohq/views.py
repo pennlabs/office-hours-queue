@@ -239,18 +239,14 @@ class QuestionViewSet(viewsets.ModelViewSet):
 
     def quota_count_helper(self, queue, user):
         """
-        Helper to get the question counnt within the quota period for queues with quotas
+        Helper to get the questions within the quota period for queues with quotas
         """
 
-        return (
-            Question.objects.filter(
-                queue=queue,
-                asked_by=user,
-                time_asked__gte=timezone.now() - timedelta(minutes=queue.rate_limit_minutes),
-            )
-            .exclude(status__in=[Question.STATUS_REJECTED, Question.STATUS_WITHDRAWN])
-            .count()
-        )
+        return Question.objects.filter(
+            queue=queue,
+            asked_by=user,
+            time_asked__gte=timezone.now() - timedelta(minutes=queue.rate_limit_minutes),
+        ).exclude(status__in=[Question.STATUS_REJECTED, Question.STATUS_WITHDRAWN])
 
     def create(self, request, *args, **kwargs):
         """
@@ -263,7 +259,7 @@ class QuestionViewSet(viewsets.ModelViewSet):
             and Question.objects.filter(queue=queue, status=Question.STATUS_ASKED).count()
             >= queue.rate_limit_length
         ):
-            num_questions_asked = self.quota_count_helper(queue, request.user)
+            num_questions_asked = self.quota_count_helper(queue, request.user).count()
 
             if num_questions_asked >= queue.rate_limit_questions:
                 return JsonResponse({"detail": "rate limited"}, status=429)
@@ -278,8 +274,23 @@ class QuestionViewSet(viewsets.ModelViewSet):
 
         queue = Queue.objects.get(id=queue_pk)
         if queue.rate_limit_enabled:
-            count = self.quota_count_helper(queue, request.user)
-            return JsonResponse({"count": count})
+            questions = self.quota_count_helper(queue, request.user)
+            count = questions.count()
+
+            wait_time_mins = 0
+            if (
+                Question.objects.filter(queue=queue, status=Question.STATUS_ASKED).count()
+                >= queue.rate_limit_length
+                and count >= queue.rate_limit_questions
+            ):
+                last_question = questions.order_by("-time_asked")[
+                    queue.rate_limit_questions - 1
+                ]
+                wait_time_mins = queue.rate_limit_minutes - int(
+                    (timezone.now() - last_question.time_asked).total_seconds() // 60
+                )
+
+            return JsonResponse({"count": count, "wait_time_mins": wait_time_mins})
         else:
             return JsonResponse({"detail": "queue does not have rate limit"}, status=405)
 
