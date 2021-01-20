@@ -23,6 +23,12 @@ interface QueueFormInput {
     rateLimitMinutes?: number;
 }
 
+enum RateLimitFields {
+    RATE_LIMIT_QUESTIONS = "rateLimitQuestions",
+    RATE_LIMIT_MINUTES = "rateLimitMinutes",
+    RATE_LIMIT_LENGTH = "rateLimitLength",
+}
+
 const QueueForm = (props: QueueFormProps) => {
     /* STATE */
     const [success, setSuccess] = useState(false);
@@ -87,20 +93,19 @@ const QueueForm = (props: QueueFormProps) => {
         if (name === "name" && value.length > 100) return;
 
         input[name] = value;
-
-        if (name === "rateLimitQuestions") {
+        if (name === RateLimitFields.RATE_LIMIT_QUESTIONS) {
             input[name] = parseInt(input[name], 10);
             setValidQuestionRate(value > 0);
         }
 
-        if (name === "rateLimitMinutes") {
+        if (name === RateLimitFields.RATE_LIMIT_MINUTES) {
             input[name] = parseInt(input[name], 10);
             setValidMinsRate(value > 0);
         }
 
-        if (name === "rateLimitLengt") {
+        if (name === RateLimitFields.RATE_LIMIT_LENGTH) {
             input[name] = parseInt(input[name], 10);
-            setValidLenRate(value > 0);
+            setValidLenRate(value >= 0);
         }
 
         setInput({ ...input });
@@ -186,7 +191,7 @@ const QueueForm = (props: QueueFormProps) => {
                         <Form.Group style={{ alignItems: "center" }}>
                             <Form.Input
                                 placeholder="3"
-                                name="rateLimitQuestions"
+                                name={RateLimitFields.RATE_LIMIT_QUESTIONS}
                                 defaultValue={input.rateLimitQuestions}
                                 onChange={handleInputChange}
                                 width={2}
@@ -201,7 +206,7 @@ const QueueForm = (props: QueueFormProps) => {
                             </label>
                             <Form.Input
                                 placeholder="60"
-                                name="rateLimitMinutes"
+                                name={RateLimitFields.RATE_LIMIT_MINUTES}
                                 defaultValue={input.rateLimitMinutes}
                                 width={2}
                                 size="mini"
@@ -216,7 +221,7 @@ const QueueForm = (props: QueueFormProps) => {
                             </label>
                             <Form.Input
                                 placeholder="10"
-                                name="rateLimitLength"
+                                name={RateLimitFields.RATE_LIMIT_LENGTH}
                                 defaultValue={input.rateLimitLength}
                                 width={2}
                                 onChange={handleInputChange}
