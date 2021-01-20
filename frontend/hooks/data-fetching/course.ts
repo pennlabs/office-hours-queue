@@ -31,6 +31,7 @@ import {
     STAFF_QUESTION_POLL_INTERVAL,
     STUDENT_QUESTION_POS_POLL_INTERVAL,
     ANNOUNCEMENTS_POLL_INTERVAL,
+    STUDENT_QUOTA_POLL_INTERVAL,
 } from "../../constants";
 
 export const useCourse = (courseId: number, initialCourse: Course) =>
@@ -171,6 +172,7 @@ export const useQueueQuota = (courseId: number, queueId: number) => {
         `/api/courses/${courseId}/queues/${queueId}/questions/quota_count/`,
         {
             fetcher: newResourceFetcher,
+            refreshInterval: STUDENT_QUOTA_POLL_INTERVAL,
         }
     );
 
@@ -329,7 +331,7 @@ export async function createQuestion(
     );
 
     if (!res.ok) {
-        throw new Error("Unable to create question");
+        throw res;
     }
 }
 

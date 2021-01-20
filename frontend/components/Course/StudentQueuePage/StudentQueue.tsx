@@ -96,15 +96,9 @@ const StudentQueue = (props: StudentQueueProps) => {
 
     const updateToast = (success: string | null, error) => {
         toast.success = success !== null;
-        toast.message = success || errorMessage(error);
+        toast.message = success || error;
         setToast(toast);
         setToastOpen(true);
-    };
-
-    const errorMessage = (error) => {
-        if (!error.message || error.message.split(",").length < 2)
-            return "There was an error!";
-        return error.message.split(":")[1];
     };
 
     return (
