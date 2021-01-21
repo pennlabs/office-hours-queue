@@ -115,16 +115,36 @@ class QuestionViewTestCase(TestCase):
             rate_limit_minutes=20,
             rate_limit_questions=1,
         )
+        self.queue2 = Queue.objects.create(
+            name="Queue2",
+            course=self.course,
+            rate_limit_enabled=True,
+            rate_limit_length=0,
+            rate_limit_minutes=15,
+            rate_limit_questions=2
+        )
+        self.queue3 = Queue.objects.create(
+            name="Queue3",
+            course=self.course,
+            rate_limit_enabled=True,
+            rate_limit_length=0,
+            rate_limit_minutes=15,
+            rate_limit_questions=2
+        )
         self.no_limit_queue = Queue.objects.create(name="No Rate Limit Queue", course=self.course)
         self.ta = User.objects.create(username="ta")
         self.student = User.objects.create(username="student")
         self.student2 = User.objects.create(username="student2")
+        self.student3 = User.objects.create(username="student3")
         Membership.objects.create(course=self.course, user=self.ta, kind=Membership.KIND_TA)
         Membership.objects.create(
             course=self.course, user=self.student, kind=Membership.KIND_STUDENT
         )
         Membership.objects.create(
             course=self.course, user=self.student2, kind=Membership.KIND_STUDENT
+        )
+        Membership.objects.create(
+            course=self.course, user=self.student3, kind=Membership.KIND_STUDENT
         )
         self.question = Question.objects.create(
             queue=self.queue, asked_by=self.student, text="Help me"
@@ -150,20 +170,39 @@ class QuestionViewTestCase(TestCase):
             status=Question.STATUS_REJECTED,
         )
 
+        self.prelimit_question = Question.objects.create(
+            queue=self.queue2, asked_by=self.student3, text="Help me"
+        )
+        self.prelimit_question1 = Question.objects.create(
+            queue=self.queue2, asked_by=self.student3, text="Help me"
+        )
+        self.prelimit_question2 = Question.objects.create(
+            queue=self.queue2, asked_by=self.student3, text="Help me"
+        )
+
+        self.prelimit_question1.time_asked = timezone.now() - timedelta(minutes=3)
+        self.prelimit_question2.time_asked = timezone.now() - timedelta(minutes=6)
+        self.prelimit_question1.save()
+        self.prelimit_question2.save()
+
+        Question.objects.create(
+            queue=self.queue3, asked_by=self.student3, text="Help me"
+        )
+
     def test_rate_limit(self):
         self.client.force_authenticate(user=self.student)
         self.client.patch(
             reverse("ohq:question-detail", args=[self.course.id, self.queue.id, self.question.id]),
             {"status": Question.STATUS_ANSWERED},
         )
-        self.assertEqual(3, Question.objects.all().count())
+        self.assertEqual(7, Question.objects.all().count())
 
         res = self.client.post(
             reverse("ohq:question-list", args=[self.course.id, self.queue.id]),
             {"text": "Should be rate limited", "tags": []},
         )
         self.assertEqual(429, res.status_code)
-        self.assertEqual(3, Question.objects.all().count())
+        self.assertEqual(7, Question.objects.all().count())
 
         res = self.client.get(
             reverse("ohq:question-quota-count", args=[self.course.id, self.queue.id])
@@ -180,4 +219,15 @@ class QuestionViewTestCase(TestCase):
             reverse("ohq:question-list", args=[self.course.id, self.queue.id]),
             {"text": "Shouldn't be rate limited", "tags": []},
         )
-        self.assertEqual(4, Question.objects.all().count())
+        self.assertEqual(8, Question.objects.all().count())
+
+        self.client.force_authenticate(user=self.student3)
+        res = self.client.get(
+            reverse("ohq:question-quota-count", args=[self.course.id, self.queue2.id])
+        )
+        self.assertEqual(12, json.loads(res.content)["wait_time_mins"])
+
+        res = self.client.get(
+            reverse("ohq:question-quota-count", args=[self.course.id, self.queue3.id])
+        )
+        self.assertEqual(0, json.loads(res.content)["wait_time_mins"])

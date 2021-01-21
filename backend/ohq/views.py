@@ -1,4 +1,5 @@
 import re
+import math
 from datetime import timedelta
 
 from django.contrib.auth import get_user_model
@@ -284,9 +285,11 @@ class QuestionViewSet(viewsets.ModelViewSet):
                 and count >= queue.rate_limit_questions
             ):
                 last_question = questions.order_by("-time_asked")[queue.rate_limit_questions - 1]
-                wait_time_mins = queue.rate_limit_minutes - int(
-                    (timezone.now() - last_question.time_asked).total_seconds() // 60
+                wait_time_secs = (
+                    queue.rate_limit_minutes * 60
+                    - (timezone.now() - last_question.time_asked).total_seconds()
                 )
+                wait_time_mins = math.ceil(wait_time_secs / 60)
 
             return JsonResponse({"count": count, "wait_time_mins": wait_time_mins})
         else:
