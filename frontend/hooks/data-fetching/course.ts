@@ -154,6 +154,7 @@ export const useQueues = (courseId: number, initialData: Queue[]) =>
         }
     );
 
+// NOTE: Only call this when queue has rate limiting turned on
 export const useQueueQuota = (courseId: number, queueId: number) => {
     const { data: qdata } = useRealtimeResourceList<Question, "queue_id">(
         `/api/courses/${courseId}/queues/${queueId}/questions/`,
@@ -168,13 +169,15 @@ export const useQueueQuota = (courseId: number, queueId: number) => {
         }
     );
 
-    const { data, mutate } = useResourceNew<{ count: number }>(
-        `/api/courses/${courseId}/queues/${queueId}/questions/quota_count/`,
-        {
-            fetcher: newResourceFetcher,
-            refreshInterval: STUDENT_QUOTA_POLL_INTERVAL,
-        }
-    );
+    const { data, mutate } = useResourceNew<{
+        count: number;
+        // Lint tradeoff between python and JS
+        // eslint-disable-next-line
+        wait_time_mins: number;
+    }>(`/api/courses/${courseId}/queues/${queueId}/questions/quota_count/`, {
+        fetcher: newResourceFetcher,
+        refreshInterval: STUDENT_QUOTA_POLL_INTERVAL,
+    });
 
     const stringified = JSON.stringify(qdata);
 

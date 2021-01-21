@@ -153,7 +153,7 @@ const Queue = (props: QueueProps) => {
                                 </Message.Header>
                                 <p>
                                     {`A quota of ${queue.rateLimitQuestions} questions(s) per ${queue.rateLimitMinutes} minutes(s) ` +
-                                        `is enforced when there are at least ${queue.rateLimitLength} student(s) in the queue.`}
+                                        `per student is enforced when there are at least ${queue.rateLimitLength} student(s) in the queue.`}
                                 </p>
                             </Message>
                         </Segment>

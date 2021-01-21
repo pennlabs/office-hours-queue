@@ -31,7 +31,7 @@ enum RateLimitFields {
 
 const castInt = (n: string): number | undefined => {
     let casted: number | undefined = parseInt(n, 10);
-    if (casted === NaN) {
+    if (isNaN(casted)) {
         casted = undefined;
     }
 
@@ -237,7 +237,7 @@ const QueueForm = (props: QueueFormProps) => {
                                 error={!validMinsRate}
                             />
                             <label htmlFor="rate-minutes">
-                                minutes when queue has at least
+                                minutes per student when queue has at least
                             </label>
                             <Form.Input
                                 placeholder="10"

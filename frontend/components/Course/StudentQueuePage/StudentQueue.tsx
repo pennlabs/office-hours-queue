@@ -54,18 +54,32 @@ const MessageQuota = ({
                 rate-limiting quota is set on this queue.
             </Message.Header>
             <p>
-                {`A quota of ${rateLimitQuestions} questions(s) per ${rateLimitMinutes} minutes(s) ` +
-                    `is enforced when there are at least ${rateLimitLength} student(s) in the queue.`}
+                {`The quota will activate when there are at least ${rateLimitLength} student(s) in the queue. ` +
+                    `When activated, the quota will allow you to ask up to ${rateLimitQuestions} question(s) per ${rateLimitMinutes} minute(s)`}
                 {data && (
                     <>
                         <br />
-                        You have asked {data.count} question(s) in the past{" "}
-                        {rateLimitMinutes} minute(s)
+                        <br />
+                        {`You have asked ${data.count} question(s) in the past ${rateLimitMinutes} minute(s). `}
+                        {data.wait_time_mins !== 0 && (
+                            <>
+                                You will be able to ask a new question in{" "}
+                                <b>{data.wait_time_mins}</b> minutes.
+                            </>
+                        )}
                     </>
                 )}
             </p>
         </Message>
     );
+};
+
+const QuestionFormGuard: React.FunctionComponent<{
+    courseId: number;
+    queueId: number;
+}> = ({ children, courseId, queueId }) => {
+    const { data } = useQueueQuota(courseId, queueId);
+    return !data || data.wait_time_mins === 0 ? <>{children}</> : null;
 };
 
 const StudentQueue = (props: StudentQueueProps) => {
@@ -200,16 +214,35 @@ const StudentQueue = (props: StudentQueueProps) => {
                                 content="This queue is currently closed. Contact course staff if you think this is an error."
                             />
                         )}
-                        {queue.active && questions.length === 0 && (
-                            <QuestionForm
-                                course={course}
-                                queueId={queue.id}
-                                queueMutate={queueMutate}
-                                mutate={mutateQuestions}
-                                toastFunc={updateToast}
-                                tags={tags}
-                            />
-                        )}
+                        {queue.active &&
+                            questions.length === 0 &&
+                            !queue.rateLimitEnabled && (
+                                <QuestionForm
+                                    course={course}
+                                    queueId={queue.id}
+                                    queueMutate={queueMutate}
+                                    mutate={mutateQuestions}
+                                    toastFunc={updateToast}
+                                    tags={tags}
+                                />
+                            )}
+                        {queue.active &&
+                            questions.length === 0 &&
+                            queue.rateLimitEnabled && (
+                                <QuestionFormGuard
+                                    courseId={course.id}
+                                    queueId={queue.id}
+                                >
+                                    <QuestionForm
+                                        course={course}
+                                        queueId={queue.id}
+                                        queueMutate={queueMutate}
+                                        mutate={mutateQuestions}
+                                        toastFunc={updateToast}
+                                        tags={tags}
+                                    />
+                                </QuestionFormGuard>
+                            )}
                     </Grid.Column>
                 </Grid.Row>
                 {lastQuestions && lastQuestions.length !== 0 && (
