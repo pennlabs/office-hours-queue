@@ -121,7 +121,7 @@ class QuestionViewTestCase(TestCase):
             rate_limit_enabled=True,
             rate_limit_length=0,
             rate_limit_minutes=15,
-            rate_limit_questions=2
+            rate_limit_questions=2,
         )
         self.queue3 = Queue.objects.create(
             name="Queue3",
@@ -129,7 +129,7 @@ class QuestionViewTestCase(TestCase):
             rate_limit_enabled=True,
             rate_limit_length=0,
             rate_limit_minutes=15,
-            rate_limit_questions=2
+            rate_limit_questions=2,
         )
         self.no_limit_queue = Queue.objects.create(name="No Rate Limit Queue", course=self.course)
         self.ta = User.objects.create(username="ta")
@@ -185,9 +185,7 @@ class QuestionViewTestCase(TestCase):
         self.prelimit_question1.save()
         self.prelimit_question2.save()
 
-        Question.objects.create(
-            queue=self.queue3, asked_by=self.student3, text="Help me"
-        )
+        Question.objects.create(queue=self.queue3, asked_by=self.student3, text="Help me")
 
     def test_rate_limit(self):
         self.client.force_authenticate(user=self.student)
