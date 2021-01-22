@@ -38,14 +38,17 @@ const Dashboard = () => {
         });
     };
 
+    const isFaculty = initalUser?.groups.includes("platform_faculty") || false;
+
     const canCreateCourse: boolean =
         memberships.findIndex((membership) =>
             isLeadershipRole(membership.kind)
-        ) !== -1;
+        ) !== -1 || isFaculty;
 
     /* STATE */
     // const [newUserModalOpen, setNewUserModalOpen] = useState(props.newUser);
-    const hasInstructorCourses = getMemberships(false).length > 0;
+    const showInstructorCourses =
+        getMemberships(false).length > 0 || canCreateCourse;
     const [toast] = useState({ message: "", success: true });
     const [toastOpen, setToastOpen] = useState(false);
 
@@ -99,7 +102,7 @@ const Dashboard = () => {
                     />
                     {/* )} */}
                     {/* {!props.loading && */}
-                    {hasInstructorCourses && (
+                    {showInstructorCourses && (
                         <>
                             <Grid.Row>
                                 <Segment basic padded>

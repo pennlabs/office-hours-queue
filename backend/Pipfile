@@ -35,7 +35,7 @@ django-filter = "*"
 celery = "*"
 redis = "*"
 django-auto-prefetching = "*"
-django-rest-live = ">=0.2.2"
+django-rest-live = "==0.3.0"
 channels = "*"
 channels-redis = "*"
 uvicorn = {extras = ["standard"],version = "*"}
@@ -43,4 +43,4 @@ gunicorn = "*"
 drf-renderer-xlsx = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3"
