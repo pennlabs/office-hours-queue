@@ -37,7 +37,7 @@ celery = "*"
 redis = "*"
 django-auto-prefetching = "*"
 django-rest-live = "==0.3.0"
-channels = "*"
+channels = "<3"
 channels-redis = "*"
 uvicorn = {extras = ["standard"],version = "*"}
 gunicorn = "*"
