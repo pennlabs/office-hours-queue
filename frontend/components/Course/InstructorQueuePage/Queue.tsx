@@ -1,12 +1,5 @@
 import React, { useState, useEffect, useMemo, MutableRefObject } from "react";
-import {
-    Header,
-    Label,
-    Grid,
-    Message,
-    Button,
-    Segment,
-} from "semantic-ui-react";
+import { Header, Label, Grid, Message, Button } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Select from "react-select";
 import Questions from "./Questions";
@@ -146,7 +139,7 @@ const Queue = (props: QueueProps) => {
                 </Grid.Row>
                 {queue.rateLimitEnabled && (
                     <Grid.Row>
-                        <Segment basic style={{ width: "100%" }}>
+                        <Grid.Column>
                             <Message>
                                 <Message.Header>
                                     A rate-limiting quota is set on this queue.
@@ -156,12 +149,12 @@ const Queue = (props: QueueProps) => {
                                         `per student is enforced when there are at least ${queue.rateLimitLength} student(s) in the queue.`}
                                 </p>
                             </Message>
-                        </Segment>
+                        </Grid.Column>
                     </Grid.Row>
                 )}
                 {queue.questionsActive >= 8 && queue.rateLimitEnabled && (
                     <Grid.Row>
-                        <Segment basic style={{ width: "100%" }}>
+                        <Grid.Column>
                             <Message color="red">
                                 <Message.Header>
                                     Too much traffic?
@@ -169,7 +162,7 @@ const Queue = (props: QueueProps) => {
                                 Ask your Head TA or professor to turn on
                                 rate-limiting quotas for this queue!
                             </Message>
-                        </Segment>
+                        </Grid.Column>
                     </Grid.Row>
                 )}
                 <Grid.Row>
@@ -191,10 +184,8 @@ const Queue = (props: QueueProps) => {
                         />
                     </Grid.Column>
                 </Grid.Row>
-            </Grid>
-            <Grid style={{ marginTop: "-5px" }}>
-                <Grid.Row columns="equal">
-                    {!active && questions.length > 0 && (
+                {!active && questions.length > 0 && (
+                    <Grid.Row columns="equal">
                         <Grid.Column
                             textAlign="right"
                             floated="right"
@@ -209,17 +200,19 @@ const Queue = (props: QueueProps) => {
                                 onClick={() => setClearModalOpen(true)}
                             />
                         </Grid.Column>
-                    )}
+                    </Grid.Row>
+                )}
+                <Grid.Row>
+                    <Grid.Column>
+                        <Questions
+                            questions={filteredQuestions}
+                            mutate={mutateQuestions}
+                            active={active}
+                            play={play}
+                        />
+                    </Grid.Column>
                 </Grid.Row>
             </Grid>
-            <Grid.Row columns={1}>
-                <Questions
-                    questions={filteredQuestions}
-                    mutate={mutateQuestions}
-                    active={active}
-                    play={play}
-                />
-            </Grid.Row>
         </>
     ) : null;
 };
