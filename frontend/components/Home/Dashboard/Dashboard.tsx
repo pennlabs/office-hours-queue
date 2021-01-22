@@ -13,7 +13,10 @@ import { SPRING_2021_TRANSITION_MESSAGE_TOKEN } from "../../../constants";
 
 // TODO: try to readd new user stuff, rip out loading stuff
 const Dashboard = () => {
-    const { user: initalUser } = useContext(AuthUserContext);
+    const { user: initialUser } = useContext(AuthUserContext);
+    if (initialUser === undefined) {
+        throw new Error("Must be logged-in");
+    }
     const [messageDisp, setMessageDisp] = useState(false);
     useEffect(() => {
         const state = localStorage.getItem(
@@ -27,7 +30,7 @@ const Dashboard = () => {
         any,
         boolean,
         mutateFunction<UserMembership[]>
-    ] = useMemberships(initalUser);
+    ] = useMemberships(initialUser);
 
     const getMemberships = (isStudent: boolean): UserMembership[] => {
         return memberships.filter((membership) => {
@@ -38,7 +41,7 @@ const Dashboard = () => {
         });
     };
 
-    const isFaculty = initalUser?.groups.includes("platform_faculty") || false;
+    const isFaculty = initialUser.groups.includes("platform_faculty");
 
     const canCreateCourse: boolean =
         memberships.findIndex((membership) =>
@@ -100,8 +103,6 @@ const Dashboard = () => {
                         memberships={getMemberships(true)}
                         mutate={mutate}
                     />
-                    {/* )} */}
-                    {/* {!props.loading && */}
                     {showInstructorCourses && (
                         <>
                             <Grid.Row>
