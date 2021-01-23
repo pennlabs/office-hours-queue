@@ -4,6 +4,7 @@ import {
     Header,
     Grid,
     Message,
+    Segment,
     Icon,
     Dimmer,
     Loader,
@@ -17,6 +18,7 @@ import { Queue, Course, Question, Tag } from "../../../types";
 import {
     useQuestions,
     useLastQuestions,
+    useQueueQuota,
 } from "../../../hooks/data-fetching/course";
 import LastQuestionCard from "./LastQuestionCard";
 
@@ -27,6 +29,58 @@ interface StudentQueueProps {
     questions: Question[];
     tags: Tag[];
 }
+
+const MessageQuota = ({
+    courseId,
+    queueId,
+    queueLength,
+    rateLimitQuestions,
+    rateLimitMinutes,
+    rateLimitLength,
+}: {
+    courseId: number;
+    queueId: number;
+    queueLength: number;
+    rateLimitQuestions: number;
+    rateLimitMinutes: number;
+    rateLimitLength: number;
+}) => {
+    const { data } = useQueueQuota(courseId, queueId);
+
+    return (
+        <Message color={queueLength >= rateLimitLength ? "red" : "green"}>
+            <Message.Header>
+                {queueLength >= rateLimitLength ? "ACTIVE:" : "INACTIVE:"} A
+                rate-limiting quota is set on this queue.
+            </Message.Header>
+            <p>
+                {`The quota will activate when there are at least ${rateLimitLength} student(s) in the queue. ` +
+                    `When activated, the quota will allow you to ask up to ${rateLimitQuestions} question(s) per ${rateLimitMinutes} minute(s)`}
+                {data && (
+                    <>
+                        <br />
+                        <br />
+                        {`You have asked ${data.count} question(s) in the past ${rateLimitMinutes} minute(s). `}
+                        {data.wait_time_mins !== 0 && (
+                            <>
+                                You will be able to ask a new question in{" "}
+                                <b>{data.wait_time_mins}</b> minutes.
+                            </>
+                        )}
+                    </>
+                )}
+            </p>
+        </Message>
+    );
+};
+
+const QuestionFormGuard: React.FunctionComponent<{
+    courseId: number;
+    queueId: number;
+}> = ({ children, courseId, queueId }) => {
+    const { data } = useQueueQuota(courseId, queueId);
+    return !data || data.wait_time_mins === 0 ? <>{children}</> : null;
+};
 
 const StudentQueue = (props: StudentQueueProps) => {
     const { course, queue, queueMutate, questions: rawQuestions, tags } = props;
@@ -58,15 +112,9 @@ const StudentQueue = (props: StudentQueueProps) => {
 
     const updateToast = (success: string | null, error) => {
         toast.success = success !== null;
-        toast.message = success || errorMessage(error);
+        toast.message = success || error;
         setToast(toast);
         setToastOpen(true);
-    };
-
-    const errorMessage = (error) => {
-        if (!error.message || error.message.split(",").length < 2)
-            return "There was an error!";
-        return error.message.split(":")[1];
     };
 
     return (
@@ -128,6 +176,20 @@ const StudentQueue = (props: StudentQueueProps) => {
                         </Grid.Column>
                     </Grid.Row>
                 )}
+                {queue.rateLimitEnabled && (
+                    <Grid.Row>
+                        <Segment basic style={{ width: "100%" }}>
+                            <MessageQuota
+                                courseId={course.id}
+                                queueId={queue.id}
+                                queueLength={queue.questionsAsked}
+                                rateLimitLength={queue.rateLimitLength}
+                                rateLimitMinutes={queue.rateLimitMinutes}
+                                rateLimitQuestions={queue.rateLimitQuestions}
+                            />
+                        </Segment>
+                    </Grid.Row>
+                )}
 
                 <Grid.Row columns={1}>
                     <Grid.Column>
@@ -152,16 +214,35 @@ const StudentQueue = (props: StudentQueueProps) => {
                                 content="This queue is currently closed. Contact course staff if you think this is an error."
                             />
                         )}
-                        {queue.active && questions.length === 0 && (
-                            <QuestionForm
-                                course={course}
-                                queueId={queue.id}
-                                queueMutate={queueMutate}
-                                mutate={mutateQuestions}
-                                toastFunc={updateToast}
-                                tags={tags}
-                            />
-                        )}
+                        {queue.active &&
+                            questions.length === 0 &&
+                            !queue.rateLimitEnabled && (
+                                <QuestionForm
+                                    course={course}
+                                    queueId={queue.id}
+                                    queueMutate={queueMutate}
+                                    mutate={mutateQuestions}
+                                    toastFunc={updateToast}
+                                    tags={tags}
+                                />
+                            )}
+                        {queue.active &&
+                            questions.length === 0 &&
+                            queue.rateLimitEnabled && (
+                                <QuestionFormGuard
+                                    courseId={course.id}
+                                    queueId={queue.id}
+                                >
+                                    <QuestionForm
+                                        course={course}
+                                        queueId={queue.id}
+                                        queueMutate={queueMutate}
+                                        mutate={mutateQuestions}
+                                        toastFunc={updateToast}
+                                        tags={tags}
+                                    />
+                                </QuestionFormGuard>
+                            )}
                     </Grid.Column>
                 </Grid.Row>
                 {lastQuestions && lastQuestions.length !== 0 && (

@@ -58,7 +58,7 @@ export interface User extends BaseUser {
     groups: string[];
 }
 
-export interface Queue {
+export interface BaseQueue {
     id: number;
     course: number;
     name: string;
@@ -70,6 +70,15 @@ export interface Queue {
     questionsAsked: number;
     staffActive: number;
 }
+
+export type Queue =
+    | (BaseQueue & { rateLimitEnabled: false })
+    | (BaseQueue & {
+          rateLimitEnabled: true;
+          rateLimitLength: number;
+          rateLimitQuestions: number;
+          rateLimitMinutes: number;
+      });
 
 // "ASKED" "WITHDRAWN" "ACTIVE" "REJECTED" "ANSWERED"
 export enum QuestionStatus {

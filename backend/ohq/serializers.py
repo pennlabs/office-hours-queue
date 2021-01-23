@@ -148,6 +148,10 @@ class QueueSerializer(CourseRouteMixin):
             "questions_active",
             "questions_asked",
             "staff_active",
+            "rate_limit_enabled",
+            "rate_limit_length",
+            "rate_limit_questions",
+            "rate_limit_minutes",
         )
         read_only_fields = ("estimated_wait_time",)
 

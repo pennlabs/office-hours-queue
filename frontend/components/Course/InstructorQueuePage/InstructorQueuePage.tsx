@@ -28,11 +28,12 @@ enum PageStateEnum {
 
 interface QueueState {
     kind: PageStateEnum.QUEUES;
+    queueId?: number;
 }
 
 interface SettingsState {
     kind: PageStateEnum.SETTINGS;
-    queueID: number;
+    queueId: number;
 }
 
 interface CreateState {
@@ -75,7 +76,7 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
 
     /* HANDLER FUNCTIONS */
     const onQueueSettings = (id: number) => {
-        setPageState({ kind: PageStateEnum.SETTINGS, queueID: id });
+        setPageState({ kind: PageStateEnum.SETTINGS, queueId: id });
     };
 
     const getQueue = (id: number) => {
@@ -100,6 +101,7 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
             <Grid stackable>
                 {pageState.kind === PageStateEnum.QUEUES && queues && (
                     <InstructorQueues
+                        suggestedQueueId={pageState.queueId}
                         courseId={courseId}
                         queues={queues}
                         questionmap={questionmap}
@@ -116,10 +118,13 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
                 {pageState.kind === PageStateEnum.SETTINGS && (
                     <Grid.Row style={{ marginTop: "1rem" }}>
                         <QueueSettings
-                            queue={getQueue(pageState.queueID)}
+                            queue={getQueue(pageState.queueId)}
                             mutate={mutate}
                             backFunc={() =>
-                                setPageState({ kind: PageStateEnum.QUEUES })
+                                setPageState({
+                                    kind: PageStateEnum.QUEUES,
+                                    queueId: pageState.queueId,
+                                })
                             }
                         />
                     </Grid.Row>
