@@ -336,10 +336,20 @@ class UserPrivateSerializer(serializers.ModelSerializer):
 
     profile = ProfileSerializer(read_only=False, required=False)
     membership_set = MembershipPrivateSerializer(many=True, read_only=True)
+    groups = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = get_user_model()
-        fields = ("id", "first_name", "last_name", "email", "username", "profile", "membership_set")
+        fields = (
+            "id",
+            "first_name",
+            "last_name",
+            "email",
+            "username",
+            "profile",
+            "membership_set",
+            "groups",
+        )
 
     def update(self, instance, validated_data):
         if "profile" in validated_data:

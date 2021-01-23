@@ -55,6 +55,7 @@ export interface User extends BaseUser {
     id: number;
     profile: Profile;
     membershipSet: UserMembership[];
+    groups: string[];
 }
 
 export interface BaseQueue {
