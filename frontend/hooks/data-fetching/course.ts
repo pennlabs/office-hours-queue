@@ -5,7 +5,10 @@ import {
     useRealtimeResource,
 } from "@pennlabs/rest-live-hooks";
 // TODO: REMOVE THIS AS SOON AS WE REFACTOR
-import { useResourceList as useResourceListNew } from "@pennlabs/rest-hooks";
+import {
+    useResourceList as useResourceListNew,
+    useResource as useResourceNew,
+} from "@pennlabs/rest-hooks";
 import {
     Announcement,
     Course,
@@ -28,6 +31,7 @@ import {
     STAFF_QUESTION_POLL_INTERVAL,
     STUDENT_QUESTION_POS_POLL_INTERVAL,
     ANNOUNCEMENTS_POLL_INTERVAL,
+    STUDENT_QUOTA_POLL_INTERVAL,
 } from "../../constants";
 
 export const useCourse = (courseId: number, initialCourse: Course) =>
@@ -36,7 +40,7 @@ export const useCourse = (courseId: number, initialCourse: Course) =>
 export const useTags = (courseId: number, initialData: Tag[]) =>
     useResourceListNew(
         `/api/courses/${courseId}/tags/`,
-        (id) => `/api/courses/${courseId}/tags/${id}`,
+        (id) => `/api/courses/${courseId}/tags/${id}/`,
         {
             initialData,
             fetcher: newResourceFetcher,
@@ -149,6 +153,41 @@ export const useQueues = (courseId: number, initialData: Queue[]) =>
             refreshWhenHidden: true,
         }
     );
+
+// NOTE: Only call this when queue has rate limiting turned on
+export const useQueueQuota = (courseId: number, queueId: number) => {
+    const { data: qdata } = useRealtimeResourceList<Question, "queue_id">(
+        `/api/courses/${courseId}/queues/${queueId}/questions/`,
+        (id) => `/api/courses/${courseId}/queues/${queueId}/questions/${id}/`,
+        {
+            model: "ohq.Question",
+            property: "queue_id",
+            value: queueId,
+        },
+        {
+            fetcher: newResourceFetcher,
+        }
+    );
+
+    const { data, mutate } = useResourceNew<{
+        count: number;
+        // Lint tradeoff between python and JS
+        // eslint-disable-next-line
+        wait_time_mins: number;
+    }>(`/api/courses/${courseId}/queues/${queueId}/questions/quota_count/`, {
+        fetcher: newResourceFetcher,
+        refreshInterval: STUDENT_QUOTA_POLL_INTERVAL,
+    });
+
+    const stringified = JSON.stringify(qdata);
+
+    // this revalidates the last question query whenever there is a websocket update
+    useEffect(() => {
+        mutate(undefined, { sendRequest: false });
+    }, [stringified]);
+
+    return { data };
+};
 
 export const useQuestions = (
     courseId: number,
@@ -295,7 +334,7 @@ export async function createQuestion(
     );
 
     if (!res.ok) {
-        throw new Error("Unable to create question");
+        throw res;
     }
 }
 

@@ -153,7 +153,7 @@ class QuestionPermission(permissions.BasePermission):
             return False
 
         # Students can view their last asked question:
-        if view.action == "last":
+        if view.action in ["last", "quota_count"]:
             return membership.kind == Membership.KIND_STUDENT
 
         # Students can only create 1 question per queue

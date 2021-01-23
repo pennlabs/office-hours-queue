@@ -14,6 +14,7 @@ import { Queue as QueueType, QuestionMap, Tag } from "../../../types";
 import { QueueMenuItem } from "./QueueMenuItem";
 
 interface InstructorQueuesProps {
+    suggestedQueueId?: number;
     courseId: number;
     queues: QueueType[];
     questionmap: QuestionMap;
@@ -35,6 +36,7 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
         editFunc,
         play,
         tags,
+        suggestedQueueId,
     } = props;
 
     const dispQueues = useMemo(() => {
@@ -42,7 +44,10 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
     }, [queues]);
 
     const [selQueue, setSelQueue] = useState<number | undefined>(
-        dispQueues.find((q) => !q.archived)?.id
+        suggestedQueueId &&
+            dispQueues.map((q) => q.id).includes(suggestedQueueId)
+            ? suggestedQueueId
+            : dispQueues[0]?.id
     );
 
     const currQueue = useMemo(() => {
