@@ -1,4 +1,3 @@
-import math
 import re
 from datetime import timedelta
 
@@ -237,63 +236,6 @@ class QuestionViewSet(viewsets.ModelViewSet):
         membership.last_active = timezone.now()
         membership.save()
         return super().list(request, *args, **kwargs)
-
-    def quota_count_helper(self, queue, user):
-        """
-        Helper to get the questions within the quota period for queues with quotas
-        """
-
-        return Question.objects.filter(
-            queue=queue,
-            asked_by=user,
-            time_asked__gte=timezone.now() - timedelta(minutes=queue.rate_limit_minutes),
-        ).exclude(status__in=[Question.STATUS_REJECTED, Question.STATUS_WITHDRAWN])
-
-    def create(self, request, *args, **kwargs):
-        """
-        Create a new question and check if it follows the rate limit
-        """
-
-        queue = Queue.objects.get(id=self.kwargs["queue_pk"])
-        if (
-            queue.rate_limit_enabled
-            and Question.objects.filter(queue=queue, status=Question.STATUS_ASKED).count()
-            >= queue.rate_limit_length
-        ):
-            num_questions_asked = self.quota_count_helper(queue, request.user).count()
-
-            if num_questions_asked >= queue.rate_limit_questions:
-                return JsonResponse({"detail": "rate limited"}, status=429)
-
-        return super().create(request, *args, **kwargs)
-
-    @action(detail=False)
-    def quota_count(self, request, course_pk, queue_pk):
-        """
-        Get number of questions asked within rate limit period if it is set up for the queue
-        """
-
-        queue = Queue.objects.get(id=queue_pk)
-        if queue.rate_limit_enabled:
-            questions = self.quota_count_helper(queue, request.user)
-            count = questions.count()
-
-            wait_time_mins = 0
-            if (
-                Question.objects.filter(queue=queue, status=Question.STATUS_ASKED).count()
-                >= queue.rate_limit_length
-                and count >= queue.rate_limit_questions
-            ):
-                last_question = questions.order_by("-time_asked")[queue.rate_limit_questions - 1]
-                wait_time_secs = (
-                    queue.rate_limit_minutes * 60
-                    - (timezone.now() - last_question.time_asked).total_seconds()
-                )
-                wait_time_mins = math.ceil(wait_time_secs / 60)
-
-            return JsonResponse({"count": count, "wait_time_mins": wait_time_mins})
-        else:
-            return JsonResponse({"detail": "queue does not have rate limit"}, status=405)
 
 
 class QuestionSearchView(XLSXFileMixin, generics.ListAPIView):

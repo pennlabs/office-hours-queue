@@ -153,7 +153,7 @@ const NewAnnouncementModal = ({
                         await createAnnouncement(courseId, {
                             content: input,
                         });
-                        mutate(undefined, undefined, { sendRequest: false });
+                        mutate();
                         setInput("");
                         setModalState(false);
                     }}
