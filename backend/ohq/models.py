@@ -197,13 +197,6 @@ class Queue(models.Model):
 
     # MAX_NUMBER_QUEUES = 2
 
-    # particular user can ask rate_limit_questions in rate_limit_minutes if the queue length is
-    # greater than rate_limit_length
-    rate_limit_enabled = models.BooleanField(default=False)
-    rate_limit_length = models.IntegerField(blank=True, null=True)
-    rate_limit_questions = models.IntegerField(blank=True, null=True)
-    rate_limit_minutes = models.IntegerField(blank=True, null=True)
-
     class Meta:
         constraints = [models.UniqueConstraint(fields=["course", "name"], name="unique_queue_name")]
 

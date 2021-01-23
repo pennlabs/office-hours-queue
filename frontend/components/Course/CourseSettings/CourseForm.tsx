@@ -148,7 +148,7 @@ const CourseForm = (props: CourseFormProps) => {
             await Promise.all(tagPromises);
 
             // revalidate
-            mutateTags(undefined, undefined, { sendRequest: false });
+            mutateTags();
 
             setLoading(false);
             setSuccess(true);

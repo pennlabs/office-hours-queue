@@ -404,14 +404,6 @@ class QuestionTestCase(TestCase):
     def setUp(self):
         setUp(self)
         self.queue = Queue.objects.create(name="Queue", course=self.course)
-        self.rate_limit_queue = Queue.objects.create(
-            name="Rate Limit Queue",
-            course=self.course,
-            rate_limit_enabled=True,
-            rate_limit_length=2,
-            rate_limit_minutes=10,
-            rate_limit_questions=2,
-        )
         self.question = Question.objects.create(queue=self.queue, asked_by=self.student)
         self.other_question = Question.objects.create(queue=self.queue, asked_by=self.ta)
         self.tag = Tag.objects.create(name="existing-tag", course=self.course)
@@ -427,14 +419,6 @@ class QuestionTestCase(TestCase):
                 "anonymous": 403,
             },
             "last": {
-                "professor": 403,
-                "head_ta": 403,
-                "ta": 403,
-                "student": 200,
-                "non_member": 403,
-                "anonymous": 403,
-            },
-            "quota-count": {
                 "professor": 403,
                 "head_ta": 403,
                 "ta": 403,
@@ -509,16 +493,6 @@ class QuestionTestCase(TestCase):
             "last",
             "get",
             reverse("ohq:question-last", args=[self.course.id, self.queue.id]),
-        )
-
-    @parameterized.expand(users, name_func=get_test_name)
-    def test_quota_count(self, user):
-        test(
-            self,
-            user,
-            "quota-count",
-            "get",
-            reverse("ohq:question-quota-count", args=[self.course.id, self.rate_limit_queue.id]),
         )
 
     @parameterized.expand(users, name_func=get_test_name)

@@ -83,15 +83,9 @@ const QuestionForm = (props: QuestionFormProps) => {
             await props.queueMutate(-1, null);
             props.toastFunc("Question successfully added to queue", null);
         } catch (e) {
-            let message: string;
-            if (e.status === 429) {
-                message = "Exceeded question quota for queue";
-            } else {
-                message = "Unable to create question";
-                logException(e);
-            }
+            logException(e);
             await props.mutate(-1, null);
-            props.toastFunc(null, message);
+            props.toastFunc(null, e);
         }
         setCreatePending(false);
     };
