@@ -13,7 +13,10 @@ import { SPRING_2021_TRANSITION_MESSAGE_TOKEN } from "../../../constants";
 
 // TODO: try to readd new user stuff, rip out loading stuff
 const Dashboard = () => {
-    const { user: initalUser } = useContext(AuthUserContext);
+    const { user: initialUser } = useContext(AuthUserContext);
+    if (initialUser === undefined) {
+        throw new Error("Must be logged-in");
+    }
     const [messageDisp, setMessageDisp] = useState(false);
     useEffect(() => {
         const state = localStorage.getItem(
@@ -27,7 +30,7 @@ const Dashboard = () => {
         any,
         boolean,
         mutateFunction<UserMembership[]>
-    ] = useMemberships(initalUser);
+    ] = useMemberships(initialUser);
 
     const getMemberships = (isStudent: boolean): UserMembership[] => {
         return memberships.filter((membership) => {
@@ -38,14 +41,17 @@ const Dashboard = () => {
         });
     };
 
+    const isFaculty = initialUser.groups.includes("platform_faculty");
+
     const canCreateCourse: boolean =
         memberships.findIndex((membership) =>
             isLeadershipRole(membership.kind)
-        ) !== -1;
+        ) !== -1 || isFaculty;
 
     /* STATE */
     // const [newUserModalOpen, setNewUserModalOpen] = useState(props.newUser);
-    const hasInstructorCourses = getMemberships(false).length > 0;
+    const showInstructorCourses =
+        getMemberships(false).length > 0 || canCreateCourse;
     const [toast] = useState({ message: "", success: true });
     const [toastOpen, setToastOpen] = useState(false);
 
@@ -97,9 +103,7 @@ const Dashboard = () => {
                         memberships={getMemberships(true)}
                         mutate={mutate}
                     />
-                    {/* )} */}
-                    {/* {!props.loading && */}
-                    {hasInstructorCourses && (
+                    {showInstructorCourses && (
                         <>
                             <Grid.Row>
                                 <Segment basic padded>

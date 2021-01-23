@@ -61,7 +61,7 @@ class CoursePermission(permissions.BasePermission):
 
         if view.action == "create":
             return (
-                request.user.groups.filter(name="faculty").exists()
+                request.user.groups.filter(name="platform_faculty").exists()
                 or Membership.objects.filter(
                     user=request.user, kind=Membership.KIND_HEAD_TA
                 ).exists()
