@@ -1,4 +1,9 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {
+    useContext,
+    useEffect,
+    useState,
+    MutableRefObject,
+} from "react";
 import {
     Button,
     Grid,
@@ -20,9 +25,10 @@ export const fullName = (user: User) => `${user.firstName} ${user.lastName}`;
 interface QuestionCardProps {
     question: Question;
     mutate: mutateResourceListFunction<Question>;
+    play: MutableRefObject<() => void>;
 }
 const QuestionCard = (props: QuestionCardProps) => {
-    const { question, mutate: mutateQuestion } = props;
+    const { question, mutate: mutateQuestion, play } = props;
     const { id: questionId, askedBy } = question;
     const { user } = useContext(AuthUserContext);
     if (!user) {
@@ -253,7 +259,9 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     <Message.Header
                                         style={{ fontSize: "1rem" }}
                                     >
-                                        Awaiting response to sent message:
+                                        This message will disappear when{" "}
+                                        {question.askedBy.firstName} updates
+                                        their question:
                                     </Message.Header>
                                     <Message.Content>
                                         <p>{question.note}</p>
@@ -311,12 +319,12 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     trigger={
                                         <span>
                                             {question.tags
-                                                .map((tag) => ` ${tag}`)
+                                                .map((tag) => ` ${tag.name}`)
                                                 .toString()}
                                         </span>
                                     }
                                     content={question.tags
-                                        .map((tag) => ` ${tag}`)
+                                        .map((tag) => ` ${tag.name}`)
                                         .toString()}
                                     basic
                                     inverted

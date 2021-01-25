@@ -5,8 +5,12 @@ import {
     useRealtimeResource,
 } from "@pennlabs/rest-live-hooks";
 // TODO: REMOVE THIS AS SOON AS WE REFACTOR
-import { useResourceList as useResourceListNew } from "@pennlabs/rest-hooks";
 import {
+    useResourceList as useResourceListNew,
+    useResource as useResourceNew,
+} from "@pennlabs/rest-hooks";
+import {
+    Announcement,
     Course,
     Kind,
     Membership,
@@ -15,6 +19,7 @@ import {
     Question,
     Queue,
     Semester,
+    Tag,
     User,
     QuestionStatus,
 } from "../../types";
@@ -25,10 +30,23 @@ import {
     QUEUE_STATUS_POLL_INTERVAL,
     STAFF_QUESTION_POLL_INTERVAL,
     STUDENT_QUESTION_POS_POLL_INTERVAL,
+    ANNOUNCEMENTS_POLL_INTERVAL,
+    STUDENT_QUOTA_POLL_INTERVAL,
 } from "../../constants";
 
 export const useCourse = (courseId: number, initialCourse: Course) =>
     useResource(`/courses/${courseId}/`, initialCourse);
+
+export const useTags = (courseId: number, initialData: Tag[]) =>
+    useResourceListNew(
+        `/api/courses/${courseId}/tags/`,
+        (id) => `/api/courses/${courseId}/tags/${id}/`,
+        {
+            initialData,
+            fetcher: newResourceFetcher,
+            revalidateOnFocus: false,
+        }
+    );
 
 export const useMembers = (courseId: number, initialData: Membership[]) =>
     useResourceList(
@@ -109,6 +127,17 @@ export async function getSemesters(): Promise<Semester[]> {
         .catch((_) => []);
 }
 
+export async function createTag(courseId: number, name: string): Promise<Tag> {
+    const payload = { name };
+
+    return doApiRequest(`/courses/${courseId}/tags/`, {
+        method: "POST",
+        body: payload,
+    })
+        .then((res) => res.json())
+        .catch((_) => null);
+}
+
 function newResourceFetcher<R>(path, ...args): R | Promise<R> {
     return fetch(path, ...args).then((res) => res.json());
 }
@@ -121,8 +150,44 @@ export const useQueues = (courseId: number, initialData: Queue[]) =>
             initialData,
             fetcher: newResourceFetcher,
             refreshInterval: QUEUE_STATUS_POLL_INTERVAL,
+            refreshWhenHidden: true,
         }
     );
+
+// NOTE: Only call this when queue has rate limiting turned on
+export const useQueueQuota = (courseId: number, queueId: number) => {
+    const { data: qdata } = useRealtimeResourceList<Question, "queue_id">(
+        `/api/courses/${courseId}/queues/${queueId}/questions/`,
+        (id) => `/api/courses/${courseId}/queues/${queueId}/questions/${id}/`,
+        {
+            model: "ohq.Question",
+            property: "queue_id",
+            value: queueId,
+        },
+        {
+            fetcher: newResourceFetcher,
+        }
+    );
+
+    const { data, mutate } = useResourceNew<{
+        count: number;
+        // Lint tradeoff between python and JS
+        // eslint-disable-next-line
+        wait_time_mins: number;
+    }>(`/api/courses/${courseId}/queues/${queueId}/questions/quota_count/`, {
+        fetcher: newResourceFetcher,
+        refreshInterval: STUDENT_QUOTA_POLL_INTERVAL,
+    });
+
+    const stringified = JSON.stringify(qdata);
+
+    // this revalidates the last question query whenever there is a websocket update
+    useEffect(() => {
+        mutate(undefined, { sendRequest: false });
+    }, [stringified]);
+
+    return { data };
+};
 
 export const useQuestions = (
     courseId: number,
@@ -220,6 +285,34 @@ export const useLastQuestions = (courseId: number, queueId: number) => {
     return [data, error, isValidating, mutate];
 };
 
+export const useAnnouncements = (
+    courseId: number,
+    initialData: Announcement[]
+) =>
+    useResourceListNew(
+        `/api/courses/${courseId}/announcements/`,
+        (id) => `/api/courses/${courseId}/announcements/${id}/`,
+        {
+            initialData,
+            fetcher: newResourceFetcher,
+            refreshInterval: ANNOUNCEMENTS_POLL_INTERVAL,
+            refreshWhenHidden: true,
+        }
+    );
+
+export async function createAnnouncement(
+    courseId: number,
+    payload: { content: string }
+) {
+    const res = await doApiRequest(`/courses/${courseId}/announcements/`, {
+        method: "POST",
+        body: payload,
+    });
+    if (!res.ok) {
+        throw new Error("Unable to create announcement");
+    }
+}
+
 export async function clearQueue(courseId: number, queueId: number) {
     await doApiRequest(`/courses/${courseId}/queues/${queueId}/clear/`, {
         method: "POST",
@@ -230,7 +323,7 @@ export async function clearQueue(courseId: number, queueId: number) {
 export async function createQuestion(
     courseId: number,
     queueId: number,
-    payload: Partial<Question>
+    payload: Partial<Omit<Question, "tags"> & { tags: Partial<Tag>[] }>
 ): Promise<void> {
     const res = await doApiRequest(
         `/courses/${courseId}/queues/${queueId}/questions/`,
@@ -241,7 +334,7 @@ export async function createQuestion(
     );
 
     if (!res.ok) {
-        throw new Error("Unable to create question");
+        throw res;
     }
 }
 

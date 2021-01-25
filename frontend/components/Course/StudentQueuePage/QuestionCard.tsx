@@ -1,4 +1,4 @@
-import React, { useState, useEffect, MutableRefObject } from "react";
+import React, { useState } from "react";
 import {
     Segment,
     Header,
@@ -11,7 +11,7 @@ import {
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import EditQuestionModal from "./EditQuestionModal";
 import DeleteQuestionModal from "./DeleteQuestionModal";
-import { Question, Course, Queue, QuestionStatus } from "../../../types";
+import { Question, Course, Queue, QuestionStatus, Tag } from "../../../types";
 import {
     useQuestionPosition,
     finishQuestion,
@@ -26,7 +26,7 @@ interface QuestionCardProps {
     mutate: mutateResourceListFunction<Question>;
     lastQuestionsMutate: mutateResourceListFunction<Question>;
     toastFunc: (success: string | null, error: any) => void;
-    play: MutableRefObject<() => void>;
+    tags: Tag[];
 }
 const QuestionCard = (props: QuestionCardProps) => {
     const {
@@ -37,7 +37,7 @@ const QuestionCard = (props: QuestionCardProps) => {
         toastFunc,
         queueMutate,
         lastQuestionsMutate,
-        play,
+        tags,
     } = props;
     const [positionData, , , ,] = useQuestionPosition(
         course.id,
@@ -55,16 +55,6 @@ const QuestionCard = (props: QuestionCardProps) => {
         });
     };
 
-    useEffect(() => {
-        if (question.status === QuestionStatus.ACTIVE) {
-            play.current();
-        }
-    }, [question.status, play]);
-
-    useEffect(() => {
-        play.current();
-    }, [question.note, play]);
-
     const markQuestionAsAnswered = async () => {
         try {
             await finishQuestion(course.id, queue.id, question.id);
@@ -75,7 +65,7 @@ const QuestionCard = (props: QuestionCardProps) => {
     };
 
     return (
-        <div style={{ marginTop: "10px" }}>
+        <div>
             <EditQuestionModal
                 open={openEdit}
                 course={course}
@@ -83,6 +73,7 @@ const QuestionCard = (props: QuestionCardProps) => {
                 setOpen={setOpenEdit}
                 toastFunc={toastFunc}
                 mutate={mutate}
+                tags={tags}
             />
             <DeleteQuestionModal
                 open={openDelete}
@@ -126,7 +117,8 @@ const QuestionCard = (props: QuestionCardProps) => {
                         <br />
                         <Message info>
                             <Message.Header style={{ fontSize: "1rem" }}>
-                                An instructor has messaged you:
+                                An instructor has messaged you, please update
+                                your question:
                             </Message.Header>
                             <Message.Content>
                                 <p>{question.note}</p>
@@ -204,17 +196,22 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     trigger={
                                         <span>
                                             {question.tags
-                                                .map((tag) => ` ${tag}`)
+                                                .map((tag) => ` ${tag.name}`)
                                                 .toString()}
                                         </span>
                                     }
                                     content={question.tags
-                                        .map((tag) => ` ${tag}`)
+                                        .map((tag) => ` ${tag.name}`)
                                         .toString()}
                                     basic
                                     inverted
                                     position="bottom left"
                                 />
+                            )}
+                            {(!question.tags || question.tags.length === 0) && (
+                                <span style={{ paddingLeft: "8px" }}>
+                                    <i>No Tags</i>
+                                </span>
                             )}
                         </Grid.Column>
                     </Grid.Row>

@@ -198,8 +198,30 @@ class Queue(models.Model):
 
     # MAX_NUMBER_QUEUES = 2
 
+    # particular user can ask rate_limit_questions in rate_limit_minutes if the queue length is
+    # greater than rate_limit_length
+    rate_limit_enabled = models.BooleanField(default=False)
+    rate_limit_length = models.IntegerField(blank=True, null=True)
+    rate_limit_questions = models.IntegerField(blank=True, null=True)
+    rate_limit_minutes = models.IntegerField(blank=True, null=True)
+
     class Meta:
         constraints = [models.UniqueConstraint(fields=["course", "name"], name="unique_queue_name")]
+
+    def __str__(self):
+        return f"{self.course}: {self.name}"
+
+
+class Tag(models.Model):
+    """
+    Tags for a course.
+    """
+
+    name = models.CharField(max_length=255)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["name", "course"], name="unique_course_tag")]
 
     def __str__(self):
         return f"{self.course}: {self.name}"
@@ -244,6 +266,7 @@ class Question(models.Model):
     rejected_reason = models.CharField(max_length=255, blank=True, null=True)
 
     should_send_up_soon_notification = models.BooleanField(default=False)
+    tags = models.ManyToManyField(Tag, blank=True)
 
 
 class QueueStatistic(models.Model):
@@ -327,3 +350,14 @@ class QueueStatistic(models.Model):
         if self.hour_to_pretty() != "":
             string += " " + self.hour_to_pretty()
         return string
+
+
+class Announcement(models.Model):
+    """
+    TA announcement within a class
+    """
+
+    content = models.CharField(max_length=255)
+    author = models.ForeignKey(User, related_name="announcements", on_delete=models.CASCADE)
+    time_updated = models.DateTimeField(auto_now=True)
+    course = models.ForeignKey(Course, related_name="announcements", on_delete=models.CASCADE)

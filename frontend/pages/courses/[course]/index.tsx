@@ -9,9 +9,11 @@ import { doMultipleSuccessRequests, doApiRequest } from "../../../utils/fetch";
 import { isLeadershipRole } from "../../../utils/enums";
 import nextRedirect from "../../../utils/redirect";
 import {
+    Announcement,
     CoursePageProps,
     Queue,
     Course,
+    Tag,
     Membership,
     Question,
     QuestionMap,
@@ -22,10 +24,19 @@ import StudentQueuePage from "../../../components/Course/StudentQueuePage/Studen
 interface QueuePageProps extends CoursePageProps {
     queues: Queue[];
     questionmap: QuestionMap;
+    tags: Tag[];
+    announcements: Announcement[];
 }
 
 const QueuePage = (props: QueuePageProps) => {
-    const { course, leadership, queues, questionmap } = props;
+    const {
+        course,
+        leadership,
+        queues,
+        questionmap,
+        tags,
+        announcements,
+    } = props;
     return (
         <WebsocketProvider
             url="/api/ws/subscribe/"
@@ -50,18 +61,22 @@ const QueuePage = (props: QueuePageProps) => {
                             <div>
                                 {staff && (
                                     <InstructorQueuePage
+                                        announcements={announcements}
                                         courseId={course.id}
                                         queues={queues}
                                         questionmap={questionmap}
                                         play={play}
+                                        tags={tags}
                                     />
                                 )}
                                 {!staff && (
                                     <StudentQueuePage
+                                        announcements={announcements}
                                         course={course}
                                         queues={queues}
                                         questionmap={questionmap}
                                         play={play}
+                                        tags={tags}
                                     />
                                 )}
                             </div>
@@ -84,20 +99,32 @@ QueuePage.getInitialProps = async (
     let course: Course;
     let leadership: Membership[];
     let queues: Queue[];
+    let tags: Tag[];
+    let announcements: Announcement[];
 
     const response = await doMultipleSuccessRequests([
         { path: `/courses/${query.course}/`, data },
         { path: `/courses/${query.course}/members/`, data },
         { path: `/courses/${query.course}/queues/`, data },
+        { path: `/courses/${query.course}/tags/`, data },
+        { path: `/courses/${query.course}/announcements/`, data },
     ]);
 
     if (response.success) {
-        [course, leadership, queues] = response.data;
+        [course, leadership, queues, tags, announcements] = response.data;
+        if (course.archived) {
+            nextRedirect(
+                context,
+                () => true,
+                `/courses/${query.course}/roster`
+            );
+        }
     } else {
         nextRedirect(context, () => true, "/404");
         // this will never hit
         throw new Error("Next redirects: Unreachable");
     }
+
     // Generate a new questions object that's a map from queue id to a
     // list of questions in the queue. The API calls are wrapped in a
     // Promise.all to ensure those calls are made simultaneously
@@ -120,6 +147,8 @@ QueuePage.getInitialProps = async (
         leadership: leadership.filter((m) => isLeadershipRole(m.kind)),
         queues,
         questionmap,
+        tags,
+        announcements,
     };
 };
 export default withAuth(QueuePage);

@@ -75,7 +75,7 @@ const CreateCourseForm = (props: CreateCourseFormProps) => {
                     onChange={(id) =>
                         changeFunc(undefined, {
                             name: "semester",
-                            value: id.value,
+                            value: id!.value,
                         })
                     }
                 />
