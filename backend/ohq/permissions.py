@@ -360,8 +360,6 @@ class AnnouncementPermission(permissions.BasePermission):
             course=view.kwargs["course_pk"], user=request.user
         ).first()
 
-        # anyone who is a member of the class can see queue related statistics
-        return membership is not None
         # Non-Students can't do anything
         if membership is None:
             return False
