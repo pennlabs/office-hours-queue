@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, MutableRefObject } from "react";
-import { Header, Label, Grid, Message, Button } from "semantic-ui-react";
+import { Header, Label, Grid, Message, Button, Icon } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Select from "react-select";
 import Questions from "./Questions";
@@ -107,6 +107,14 @@ const Queue = (props: QueueProps) => {
                                 content={`${estimatedWaitTime} minute wait`}
                                 color="blue"
                                 icon="clock"
+                            />
+                        )}
+                        {queue.active && (
+                            <Label
+                                content={`${
+                                    queue.staffActive || 0
+                                } staff active`}
+                                icon={<Icon name="sync" loading={true} />}
                             />
                         )}
                     </Grid.Column>
