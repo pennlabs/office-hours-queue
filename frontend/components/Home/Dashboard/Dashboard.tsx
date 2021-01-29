@@ -1,25 +1,36 @@
-import React, { useContext, useState } from "react";
-import { Grid, Header, Segment } from "semantic-ui-react";
+import React, { useContext, useState, useEffect } from "react";
+import { Grid, Header, Segment, Message } from "semantic-ui-react";
 import Alert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
 import InstructorCourses from "./InstructorCourses";
 import StudentCourses from "./StudentCourses";
 import Footer from "../../common/Footer";
 import { AuthUserContext } from "../../../context/auth";
-import { Course, Kind, UserMembership, mutateFunction } from "../../../types";
+import { Kind, UserMembership, mutateFunction } from "../../../types";
 import { useMemberships } from "../../../hooks/data-fetching/dashboard";
 import { isLeadershipRole } from "../../../utils/enums";
+import { SPRING_2021_TRANSITION_MESSAGE_TOKEN } from "../../../constants";
 
 // TODO: try to readd new user stuff, rip out loading stuff
 const Dashboard = () => {
-    const { user: initalUser } = useContext(AuthUserContext);
+    const { user: initialUser } = useContext(AuthUserContext);
+    if (initialUser === undefined) {
+        throw new Error("Must be logged-in");
+    }
+    const [messageDisp, setMessageDisp] = useState(false);
+    useEffect(() => {
+        const state = localStorage.getItem(
+            SPRING_2021_TRANSITION_MESSAGE_TOKEN
+        );
+        setMessageDisp(state !== "true");
+    }, []);
 
     const [memberships, , , mutate]: [
         UserMembership[],
         any,
         boolean,
         mutateFunction<UserMembership[]>
-    ] = useMemberships(initalUser);
+    ] = useMemberships(initialUser);
 
     const getMemberships = (isStudent: boolean): UserMembership[] => {
         return memberships.filter((membership) => {
@@ -30,14 +41,17 @@ const Dashboard = () => {
         });
     };
 
+    const isFaculty = initialUser.groups.includes("platform_faculty");
+
     const canCreateCourse: boolean =
         memberships.findIndex((membership) =>
             isLeadershipRole(membership.kind)
-        ) !== -1;
+        ) !== -1 || isFaculty;
 
     /* STATE */
     // const [newUserModalOpen, setNewUserModalOpen] = useState(props.newUser);
-    const hasInstructorCourses = getMemberships(false).length > 0;
+    const showInstructorCourses =
+        getMemberships(false).length > 0 || canCreateCourse;
     const [toast] = useState({ message: "", success: true });
     const [toastOpen, setToastOpen] = useState(false);
 
@@ -46,21 +60,6 @@ const Dashboard = () => {
             width={13}
             style={{ display: "flex", flexDirection: "column" }}
         >
-            {/* {props.user && (
-                <NewUserModal
-                    open={newUserModalOpen}
-                    closeFunc={() => {
-                        props.setNewUser(false);
-                        setNewUserModalOpen(false);
-                    }}
-                    user={props.user}
-                    setToast={(d) => {
-                        setToast(d);
-                        setToastOpen(true);
-                    }}
-                    mutate={props.mutate}
-                />
-            )} */}
             {memberships && (
                 <Grid padded stackable>
                     <Grid.Row>
@@ -69,43 +68,42 @@ const Dashboard = () => {
                                 <Header.Content>Student Courses</Header.Content>
                             </Header>
                         </Segment>
+                        {messageDisp && (
+                            <div
+                                style={{
+                                    position: "absolute",
+                                    left: "50%",
+                                    transform: "translateX(-50%)",
+                                }}
+                            >
+                                <Message
+                                    onDismiss={() => {
+                                        setMessageDisp(false);
+                                        localStorage.setItem(
+                                            SPRING_2021_TRANSITION_MESSAGE_TOKEN,
+                                            "true"
+                                        );
+                                    }}
+                                    size="mini"
+                                    header="Welcome back!"
+                                    content={
+                                        <>
+                                            Fall 2020 courses have been archived
+                                            in preparation for Spring 2021.
+                                            <br />
+                                            Please contact us at contact@ohq.io
+                                            if this is an error.
+                                        </>
+                                    }
+                                />
+                            </div>
+                        )}
                     </Grid.Row>
-                    {/* {props.loading ? (
-                        <Grid style={{ width: "100%" }} stackable>
-                            <Grid.Row padded="true" stackable>
-                                {_.times(3, () => (
-                                    <Grid.Column
-                                        style={{
-                                            width: "280px",
-                                            height: "120px",
-                                        }}
-                                    >
-                                        <Segment basic>
-                                            <Segment raised>
-                                                <Placeholder>
-                                                    <Placeholder.Header>
-                                                        <Placeholder.Line />
-                                                        <Placeholder.Line />
-                                                    </Placeholder.Header>
-                                                    <Placeholder.Paragraph>
-                                                        <Placeholder.Line length="medium" />
-                                                        <Placeholder.Line length="short" />
-                                                    </Placeholder.Paragraph>
-                                                </Placeholder>
-                                            </Segment>
-                                        </Segment>
-                                    </Grid.Column>
-                                ))}
-                            </Grid.Row>
-                        </Grid>
-                    ) : ( */}
                     <StudentCourses
                         memberships={getMemberships(true)}
                         mutate={mutate}
                     />
-                    {/* )} */}
-                    {/* {!props.loading && */}
-                    {hasInstructorCourses && (
+                    {showInstructorCourses && (
                         <>
                             <Grid.Row>
                                 <Segment basic padded>

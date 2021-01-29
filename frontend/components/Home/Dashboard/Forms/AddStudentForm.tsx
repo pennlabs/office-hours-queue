@@ -16,14 +16,16 @@ const AddStudentForm = (props: AddStudentFormProps) => {
         }
         const courses: Course[] = await getCourses(inputValue);
 
-        return courses.map((course) => {
-            const suffix = course.isMember ? " - Already Enrolled" : "";
-            return {
-                label: `${course.department} ${course.courseCode} (${course.semesterPretty}): ${course.courseTitle}${suffix}`,
-                value: course.id,
-                disabled: course.isMember,
-            };
-        });
+        return courses
+            .filter((course) => !course.archived)
+            .map((course) => {
+                const suffix = course.isMember ? " - Already Enrolled" : "";
+                return {
+                    label: `${course.department} ${course.courseCode} (${course.semesterPretty}): ${course.courseTitle}${suffix}`,
+                    value: course.id,
+                    disabled: course.isMember,
+                };
+            });
     };
 
     return (
@@ -37,6 +39,11 @@ const AddStudentForm = (props: AddStudentFormProps) => {
                     cacheOptions
                     defaultOptions
                     loadOptions={promiseOptions}
+                    noOptionsMessage={({ inputValue }) =>
+                        inputValue.length === 0
+                            ? "Search for a course"
+                            : "No courses found"
+                    }
                     isMulti
                     placeholder="Search..."
                     isOptionDisabled={(option) => option.disabled}
@@ -46,7 +53,8 @@ const AddStudentForm = (props: AddStudentFormProps) => {
                             value:
                                 items === null
                                     ? []
-                                    : items.map((item) => item.value),
+                                    : // sound because of previous check
+                                      items!.map((item) => item.value),
                         });
                     }}
                 />

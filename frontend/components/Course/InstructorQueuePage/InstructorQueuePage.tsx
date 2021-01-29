@@ -4,17 +4,20 @@ import { WSContext } from "@pennlabs/rest-live-hooks";
 import Alert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
 import InstructorQueues from "./InstructorQueues";
+import Announcements from "../Announcements";
 import QueueSettings from "./QueueSettings/QueueSettings";
 import CreateQueue from "./CreateQueue/CreateQueue";
 import { AuthUserContext } from "../../../context/auth";
 import { useQueues, useStaff } from "../../../hooks/data-fetching/course";
-import { Queue, QuestionMap } from "../../../types";
+import { Announcement, Queue, QuestionMap, Tag } from "../../../types";
 
 interface InstructorQueuePageProps {
     courseId: number;
     queues: Queue[];
     questionmap: QuestionMap;
     play: MutableRefObject<() => void>;
+    tags: Tag[];
+    announcements: Announcement[];
 }
 
 enum PageStateEnum {
@@ -25,11 +28,12 @@ enum PageStateEnum {
 
 interface QueueState {
     kind: PageStateEnum.QUEUES;
+    queueId?: number;
 }
 
 interface SettingsState {
     kind: PageStateEnum.SETTINGS;
-    queueID: number;
+    queueId: number;
 }
 
 interface CreateState {
@@ -39,7 +43,14 @@ interface CreateState {
 type PageState = QueueState | SettingsState | CreateState;
 
 const InstructorQueuePage = (props: InstructorQueuePageProps) => {
-    const { courseId, queues: rawQueues, questionmap, play } = props;
+    const {
+        courseId,
+        queues: rawQueues,
+        questionmap,
+        play,
+        tags,
+        announcements,
+    } = props;
 
     /* STATE */
     const { user: initialUser } = useContext(AuthUserContext);
@@ -65,7 +76,7 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
 
     /* HANDLER FUNCTIONS */
     const onQueueSettings = (id: number) => {
-        setPageState({ kind: PageStateEnum.SETTINGS, queueID: id });
+        setPageState({ kind: PageStateEnum.SETTINGS, queueId: id });
     };
 
     const getQueue = (id: number) => {
@@ -74,6 +85,12 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
 
     return (
         <>
+            <Announcements
+                initialAnnouncements={announcements}
+                courseId={courseId}
+                staff={true}
+                play={play}
+            />
             {!isConnected && (
                 <div style={{ paddingTop: "1rem" }}>
                     <Message warning>
@@ -84,6 +101,7 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
             <Grid stackable>
                 {pageState.kind === PageStateEnum.QUEUES && queues && (
                     <InstructorQueues
+                        suggestedQueueId={pageState.queueId}
                         courseId={courseId}
                         queues={queues}
                         questionmap={questionmap}
@@ -94,21 +112,25 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
                         mutate={mutate}
                         leader={leader}
                         play={play}
+                        tags={tags}
                     />
                 )}
                 {pageState.kind === PageStateEnum.SETTINGS && (
-                    <Grid.Row>
+                    <Grid.Row style={{ marginTop: "1rem" }}>
                         <QueueSettings
-                            queue={getQueue(pageState.queueID)}
+                            queue={getQueue(pageState.queueId)}
                             mutate={mutate}
                             backFunc={() =>
-                                setPageState({ kind: PageStateEnum.QUEUES })
+                                setPageState({
+                                    kind: PageStateEnum.QUEUES,
+                                    queueId: pageState.queueId,
+                                })
                             }
                         />
                     </Grid.Row>
                 )}
                 {pageState.kind === PageStateEnum.CREATE && (
-                    <Grid.Row>
+                    <Grid.Row style={{ marginTop: "1rem" }}>
                         <CreateQueue
                             courseId={courseId}
                             mutate={mutate}
