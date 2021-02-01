@@ -7,6 +7,7 @@ import {
     Header,
     List,
     Icon,
+    Label,
 } from "semantic-ui-react";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -91,11 +92,27 @@ const CourseSidebar = (props: CourseSidebarProps) => {
                         >
                             <Menu.Item
                                 style={noWrapStyle}
-                                name="Analytics"
-                                icon="chart bar"
                                 active={router.pathname.endsWith("analytics")}
                                 color="blue"
-                            />
+                            >
+                                Analytics
+                                <Label
+                                    color="violet"
+                                    content="Beta"
+                                    size="tiny"
+                                    style={{
+                                        float: "none",
+                                        verticalAlign: "bottom",
+                                    }}
+                                />
+                                <Icon
+                                    name="chart bar"
+                                    style={{
+                                        float: "right",
+                                        margin: "0 0 0 .5em",
+                                    }}
+                                />
+                            </Menu.Item>
                         </Link>
                     )}
                     {staff && (

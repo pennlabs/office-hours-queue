@@ -7,6 +7,7 @@ interface HeatmapProps {
     chartTitle: string;
 }
 
+// Dynamic import because this library can only run on the browser and causes error when importing server side
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 const toDisplayHour = (hour: string) => {
@@ -28,7 +29,8 @@ export default function Heatmap({ series, chartTitle }: HeatmapProps) {
         dataLabels: {
             enabled: false,
         },
-        colors: ["#4285f5"],
+        colors: ["#2185d0"],
+        shadeIntensity: 1,
         title: {
             text: chartTitle,
         },
@@ -40,13 +42,16 @@ export default function Heatmap({ series, chartTitle }: HeatmapProps) {
                     zoomout: false,
                     pan: false,
                     reset: false,
+                    download: false,
                 },
                 export: {
                     csv: {
-                        // TODO: some export settings to make sure this doesn't break
+                        //  TODO: adjust csv export settings to make sure this doesn't break and set download: true
                     },
                 },
             },
+            foreColor: "#1B1C1D",
+            fontFamily: "Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif",
         },
         xaxis: {
             type: "category",
@@ -64,6 +69,14 @@ export default function Heatmap({ series, chartTitle }: HeatmapProps) {
                 options: {},
             },
         ],
+        plotOptions: {
+            heatmap: {
+                radius: 0,
+            },
+        },
+        stroke: {
+            colors: ["#E5E5E5"],
+        },
     };
 
     return series.length !== 0 ? (

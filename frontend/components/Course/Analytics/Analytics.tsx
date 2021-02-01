@@ -178,14 +178,6 @@ const Analytics = ({ course, queues }: AnalyticsProps) => {
 
     return (
         <Grid.Row>
-            <Grid.Row style={{ marginTop: "10px" }}>
-                <Message
-                    icon="exclamation triangle"
-                    header="Work in Progress"
-                    content="We're working on adding new analytics tools - stay tuned!"
-                    warning
-                />
-            </Grid.Row>
             {queueId ? (
                 <>
                     <Segment basic>
@@ -202,17 +194,17 @@ const Analytics = ({ course, queues }: AnalyticsProps) => {
                         </span>
                     </Segment>
                     <Averages courseId={course.id} queueId={queueId} />
-                    <Segment basic>
+                    {/* <Segment basic>
                         <Header as="h3">Questions by Type</Header>
-                        {/* {pieChartData &&
+                        {pieChartData &&
                         pieChartData.map((dataset) => {
                             return <MyPieChart dataset={dataset} />;
-                        })} */}
+                        })}
                     </Segment>
                     <Segment basic>
                         <Header as="h3">Queue Traffic</Header>
-                        {/* {lineChartData && <MyPieChart dataset={lineChartData} />} */}
-                    </Segment>
+                        {lineChartData && <MyPieChart dataset={lineChartData} />}
+                    </Segment> */}
                 </>
             ) : (
                 <Segment basic>

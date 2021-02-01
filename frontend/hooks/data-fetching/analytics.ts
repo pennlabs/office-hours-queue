@@ -1,18 +1,12 @@
-import { useResource } from "@pennlabs/rest-hooks";
 import useSwr from "swr";
 import { HeatmapSeries, AnalyticsData, Metric, DayOfWeek } from "../../types";
+import { logException } from "../../utils/sentry";
 
 export const useHeatmapData = (
     courseId: number,
     queueId: number,
     type: Metric
 ) => {
-    // This doesn't work and always returns undefined data and isValidating false (#｀-_ゝ-)
-    // const { data, isValidating } = useResource<AnalyticsData>(
-    //     `/courses/${courseId}/queues/${queueId}/statistics/?metric=${type}`,
-    // );
-    // console.log(data, isValidating)
-
     const { data, error, isValidating } = useSwr<AnalyticsData>(
         `/courses/${courseId}/queues/${queueId}/statistics/?metric=${type}`
     );
@@ -38,7 +32,7 @@ export const useHeatmapData = (
                     y: Number(value),
                 });
             } else {
-                throw new Error(`Invalid day ${day}`);
+                logException(new Error(`Invalid day ${day}`));
             }
             return acc;
         }, initialValue);
