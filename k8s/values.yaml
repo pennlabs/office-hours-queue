@@ -65,36 +65,16 @@ cronjobs:
     image: pennlabs/office-hours-queue-backend
     secret: office-hours-queue
     cmd: ["python", "manage.py", "calculatewaittimes"]
-  - name: calculate-avg-queue-wait
+  - name: queue-weekly-stat
     schedule: "0 8 * * *"
     image: pennlabs/office-hours-queue-backend
     secret: office-hours-queue
-    cmd: ["python", "manage.py", "avg_queue_wait"]
-  - name: calculate-avg-time-helping
+    cmd: ["python", "manage.py", "queue_weekly_stat"]
+  - name: queue-heatmap-stat
     schedule: "0 8 * * *"
     image: pennlabs/office-hours-queue-backend
     secret: office-hours-queue
-    cmd: ["python", "manage.py", "avg_time_helping"]
-  - name: calculate-avg-wait-heatmap
-    schedule: "0 8 * * *"
-    image: pennlabs/office-hours-queue-backend
-    secret: office-hours-queue
-    cmd: ["python", "manage.py", "avg_wait_heatmap"]
-  - name: calculate-num-questions-ans
-    schedule: "0 8 * * *"
-    image: pennlabs/office-hours-queue-backend
-    secret: office-hours-queue
-    cmd: ["python", "manage.py", "num_questions_ans"]
-  - name: calculate-num-students-helped
-    schedule: "0 8 * * *"
-    image: pennlabs/office-hours-queue-backend
-    secret: office-hours-queue
-    cmd: ["python", "manage.py", "num_students_helped"]
-  - name: calculate-questions-per-ta-heatmap
-    schedule: "0 8 * * *"
-    image: pennlabs/office-hours-queue-backend
-    secret: office-hours-queue
-    cmd: ["python", "manage.py", "questions_per_ta_heatmap"]
+    cmd: ["python", "manage.py", "queue_heatmap_stat"]
   - name: calculate-wait-time-days
     schedule: "0 8 * * *"
     image: pennlabs/office-hours-queue-backend
