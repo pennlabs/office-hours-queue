@@ -161,7 +161,7 @@ class AverageQueueWaitTimeTestCase(TestCase):
         q4.save()
 
     def test_avg_queue_wait_computation(self):
-        call_command("avg_queue_wait")
+        call_command("queue_weekly_stat")
         expected = sum(self.wait_times) * 6 / (len(self.wait_times) * 3)
 
         yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
@@ -172,7 +172,7 @@ class AverageQueueWaitTimeTestCase(TestCase):
 
         self.assertEqual(expected, actual)
 
-        call_command("avg_queue_wait", "--hist")
+        call_command("queue_weekly_stat", "--hist")
         expected_old = self.old_wait_time
 
         old_sunday = last_sunday - timezone.timedelta(weeks=2)
@@ -239,7 +239,7 @@ class AverageQueueTimeHelpingTestCase(TestCase):
         rejected.save()
 
     def test_avg_time_helping_computation(self):
-        call_command("avg_time_helping")
+        call_command("queue_weekly_stat")
         expected = sum(self.help_times) / len(self.help_times)
 
         yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
@@ -250,7 +250,7 @@ class AverageQueueTimeHelpingTestCase(TestCase):
 
         self.assertEqual(expected, actual)
 
-        call_command("avg_time_helping", "--hist")
+        call_command("queue_weekly_stat", "--hist")
         expected_old = self.old_question_time_helped
         actual_old = QueueStatistic.objects.get(
             queue=self.queue,
@@ -327,7 +327,7 @@ class AverageQueueWaitHeatmapTestCase(TestCase):
         self.older.save()
 
     def test_avg_queue_wait_computation(self):
-        call_command("avg_wait_heatmap")
+        call_command("queue_heatmap_stat")
         yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
         yesterday_weekday = yesterday.weekday()
 
@@ -358,7 +358,7 @@ class AverageQueueWaitHeatmapTestCase(TestCase):
         ).value
         self.assertEqual(expected_8, actual_8)
 
-        call_command("avg_wait_heatmap", "--hist")
+        call_command("queue_heatmap_stat", "--hist")
 
         expected_older = self.older_wait_time
         actual_older = QueueStatistic.objects.get(
@@ -423,7 +423,7 @@ class NumberQuestionsAnsweredQueueTestCase(TestCase):
         active.save()
 
     def test_num_questions_ans_computation(self):
-        call_command("num_questions_ans")
+        call_command("queue_weekly_stat")
         expected = self.num_questions_answered
 
         yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
@@ -434,7 +434,7 @@ class NumberQuestionsAnsweredQueueTestCase(TestCase):
 
         self.assertEqual(expected, actual)
 
-        call_command("num_questions_ans", "--hist")
+        call_command("queue_weekly_stat", "--hist")
 
         expected_old = 1
         actual_old = QueueStatistic.objects.get(
@@ -502,7 +502,7 @@ class NumberStudentsHelpedQueueTestCase(TestCase):
         active.save()
 
     def test_num_students_helped_computation(self):
-        call_command("num_students_helped")
+        call_command("queue_weekly_stat")
         expected = self.number_helped
 
         yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
@@ -513,7 +513,7 @@ class NumberStudentsHelpedQueueTestCase(TestCase):
 
         self.assertEqual(expected, actual)
 
-        call_command("num_students_helped", "--hist")
+        call_command("queue_weekly_stat", "--hist")
         expected = 1
         actual = QueueStatistic.objects.get(
             queue=self.queue,
@@ -592,7 +592,7 @@ class QuestionsPerTAQueueHeatmapTestCase(TestCase):
         older.save()
 
     def test_questions_per_ta_computation(self):
-        call_command("questions_per_ta_heatmap")
+        call_command("queue_heatmap_stat")
         yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
         yesterday_weekday = yesterday.weekday()
 
@@ -614,7 +614,7 @@ class QuestionsPerTAQueueHeatmapTestCase(TestCase):
         ).value
         self.assertEqual(expected_17, actual_17)
 
-        call_command("questions_per_ta_heatmap", "--hist")
+        call_command("queue_heatmap_stat", "--hist")
 
         expected_two_days_ago_8 = 1
         actual_two_days_ago_8 = QueueStatistic.objects.get(
