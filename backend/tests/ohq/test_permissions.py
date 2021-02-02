@@ -979,7 +979,7 @@ class QueueStatisticTestCase(TestCase):
             user,
             "list",
             "get",
-            reverse("ohq:queue-statistic-list", args=[self.course.id, self.queue.id]),
+            reverse("ohq:queue-statistic", args=[self.course.id, self.queue.id]),
         )
 
 

@@ -335,7 +335,7 @@ class AverageQueueWaitHeatmapTestCase(TestCase):
         actual_9 = QueueStatistic.objects.get(
             queue=self.queue,
             metric=QueueStatistic.METRIC_HEATMAP_WAIT,
-            day=yesterday_weekday,
+            day=(yesterday_weekday + 1) % 7 + 1,
             hour=9,
         ).value
         self.assertEqual(expected_9, actual_9)
@@ -344,7 +344,7 @@ class AverageQueueWaitHeatmapTestCase(TestCase):
         actual_17 = QueueStatistic.objects.get(
             queue=self.queue,
             metric=QueueStatistic.METRIC_HEATMAP_WAIT,
-            day=yesterday_weekday,
+            day=(yesterday_weekday + 1) % 7 + 1,
             hour=17,
         ).value
         self.assertEqual(expected_17, actual_17)
@@ -353,7 +353,7 @@ class AverageQueueWaitHeatmapTestCase(TestCase):
         actual_8 = QueueStatistic.objects.get(
             queue=self.queue,
             metric=QueueStatistic.METRIC_HEATMAP_WAIT,
-            day=yesterday_weekday,
+            day=(yesterday_weekday + 1) % 7 + 1,
             hour=8,
         ).value
         self.assertEqual(expected_8, actual_8)
@@ -364,7 +364,7 @@ class AverageQueueWaitHeatmapTestCase(TestCase):
         actual_older = QueueStatistic.objects.get(
             queue=self.queue,
             metric=QueueStatistic.METRIC_HEATMAP_WAIT,
-            day=self.older.time_asked.weekday(),
+            day=(self.older.time_asked.weekday() + 1) % 7 + 1,
             hour=self.older.time_asked.hour,
         ).value
         self.assertEqual(expected_older, actual_older)
@@ -600,7 +600,7 @@ class QuestionsPerTAQueueHeatmapTestCase(TestCase):
         actual_8 = QueueStatistic.objects.get(
             queue=self.queue,
             metric=QueueStatistic.METRIC_HEATMAP_QUESTIONS_PER_TA,
-            day=yesterday_weekday,
+            day=(yesterday_weekday + 1) % 7 + 1,
             hour=8,
         ).value
         self.assertEqual(expected_8, actual_8)
@@ -609,7 +609,7 @@ class QuestionsPerTAQueueHeatmapTestCase(TestCase):
         actual_17 = QueueStatistic.objects.get(
             queue=self.queue,
             metric=QueueStatistic.METRIC_HEATMAP_QUESTIONS_PER_TA,
-            day=yesterday_weekday,
+            day=(yesterday_weekday + 1) % 7 + 1,
             hour=17,
         ).value
         self.assertEqual(expected_17, actual_17)
@@ -620,7 +620,7 @@ class QuestionsPerTAQueueHeatmapTestCase(TestCase):
         actual_two_days_ago_8 = QueueStatistic.objects.get(
             queue=self.queue,
             metric=QueueStatistic.METRIC_HEATMAP_QUESTIONS_PER_TA,
-            day=self.older_time_asked.weekday(),
+            day=(self.older_time_asked.weekday() + 1) % 7 + 1,
             hour=self.older_time_asked.hour,
         ).value
         self.assertEqual(expected_two_days_ago_8, actual_two_days_ago_8)

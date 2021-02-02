@@ -30,12 +30,12 @@ class HeatmapCommand(BaseCommand):
     def handle(self, *args, **kwargs):
         if kwargs["hist"]:
             queues = Queue.objects.all()
-            weekdays = [i for i in range(7)]
+            weekdays = [i for i in range(1, 8)]
         else:
             queues = Queue.objects.filter(archived=False)
 
             # assuming the cron job runs at midnight, we only need to update yesterday's weekday
             yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
-            weekdays = [yesterday.weekday()]
+            weekdays = [(yesterday.weekday() + 1) % 7 + 1]
 
         self.calculate_statistics(queues, weekdays)

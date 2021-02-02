@@ -39,9 +39,9 @@ class WeeklyCommand(BaseCommand):
 
             while iter_date < next_sunday:
                 prev_sunday = iter_date - timezone.timedelta(days=(iter_date.weekday() + 1) % 7)
-                coming_sunday = prev_sunday + timezone.timedelta(days=7)
+                coming_saturday = prev_sunday + timezone.timedelta(days=6)
 
-                self.perform_computation(queue, prev_sunday, coming_sunday)
+                self.perform_computation(queue, prev_sunday, coming_saturday)
 
                 iter_date += timezone.timedelta(days=7)
 

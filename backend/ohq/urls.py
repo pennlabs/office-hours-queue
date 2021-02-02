@@ -9,7 +9,7 @@ from ohq.views import (
     MembershipViewSet,
     QuestionSearchView,
     QuestionViewSet,
-    QueueStatisticViewSet,
+    QueueStatisticView,
     QueueViewSet,
     ResendNotificationView,
     SemesterViewSet,
@@ -33,7 +33,6 @@ course_router.register("tags", TagViewSet, basename="tag")
 
 queue_router = routers.NestedSimpleRouter(course_router, "queues", lookup="queue")
 queue_router.register("questions", QuestionViewSet, basename="question")
-queue_router.register("statistics", QueueStatisticViewSet, basename="queue-statistic")
 
 additional_urls = [
     path("accounts/me/", UserView.as_view(), name="me"),
@@ -41,6 +40,11 @@ additional_urls = [
     path("courses/<slug:course_pk>/mass-invite/", MassInviteView.as_view(), name="mass-invite"),
     path(
         "courses/<slug:course_pk>/questions/", QuestionSearchView.as_view(), name="questionsearch"
+    ),
+    path(
+        "courses/<slug:course_pk>/queues/<slug:queue_pk>/statistics/",
+        QueueStatisticView.as_view(),
+        name="queue-statistic",
     ),
 ]
 

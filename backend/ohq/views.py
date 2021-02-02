@@ -12,7 +12,7 @@ from django_auto_prefetching import prefetch
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_renderer_xlsx.mixins import XLSXFileMixin
 from drf_renderer_xlsx.renderers import XLSXRenderer
-from rest_framework import filters, generics, mixins, viewsets
+from rest_framework import filters, generics, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -554,9 +554,8 @@ class MassInviteView(APIView):
         )
 
 
-class QueueStatisticViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class QueueStatisticView(generics.ListAPIView):
     """
-    list:
     Return a list of statistics - multiple data points for list statistics and heatmap statistics
     and singleton for card statistics.
     """
