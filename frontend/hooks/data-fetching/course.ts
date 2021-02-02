@@ -166,6 +166,9 @@ export const useQueueQuota = (courseId: number, queueId: number) => {
         },
         {
             fetcher: newResourceFetcher,
+            // TODO: Temp hack because SWRConfig doesn't configure this hook due to
+            // SWR not being marked as peer dep
+            refreshWhenHidden: true,
         }
     );
 
@@ -177,6 +180,9 @@ export const useQueueQuota = (courseId: number, queueId: number) => {
     }>(`/api/courses/${courseId}/queues/${queueId}/questions/quota_count/`, {
         fetcher: newResourceFetcher,
         refreshInterval: STUDENT_QUOTA_POLL_INTERVAL,
+        // TODO: Temp hack because SWRConfig doesn't configure this hook due to
+        // SWR not being marked as peer dep
+        refreshWhenHidden: true,
     });
 
     const stringified = JSON.stringify(qdata);
@@ -206,6 +212,9 @@ export const useQuestions = (
             initialData,
             fetcher: newResourceFetcher,
             refreshInterval: STAFF_QUESTION_POLL_INTERVAL,
+            // TODO: Temp hack because SWRConfig doesn't configure this hook due to
+            // SWR not being marked as peer dep
+            refreshWhenHidden: true,
             orderBy: (q1, q2) => {
                 const date1 = new Date(q1.timeAsked);
                 const date2 = new Date(q2.timeAsked);
@@ -238,7 +247,9 @@ export const useQuestionPosition = (
             property: "id",
             value: queueId,
         },
-        { fetcher: newResourceFetcher }
+        {
+            fetcher: newResourceFetcher,
+        }
     );
 
     const [data, error, isValidating, mutate] = useResource(
