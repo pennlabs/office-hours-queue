@@ -1,22 +1,13 @@
-import abc
-
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from ohq.models import Queue
+from ohq.statistics import calculate_questions_per_ta_heatmap, calculate_wait_time_heatmap
 
 
-class HeatmapCommand(BaseCommand):
-    __metaclass__ = abc.ABCMeta
-
+class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("--hist", action="store_true", help="Calculate all historic statistics")
-
-    @abc.abstractmethod
-    def perform_computation(self, queue, weekday, hour):
-        """
-        Performs the heatmap computation for the given queue, weekday, hour
-        """
 
     def calculate_statistics(self, queues, weekdays):
         """
@@ -25,17 +16,18 @@ class HeatmapCommand(BaseCommand):
         for queue in queues:
             for weekday in weekdays:
                 for hour in range(24):
-                    self.perform_computation(queue, weekday, hour)
+                    calculate_questions_per_ta_heatmap(queue, weekday, hour)
+                    calculate_wait_time_heatmap(queue, weekday, hour)
 
     def handle(self, *args, **kwargs):
         if kwargs["hist"]:
             queues = Queue.objects.all()
-            weekdays = [i for i in range(7)]
+            weekdays = [i for i in range(1, 8)]
         else:
             queues = Queue.objects.filter(archived=False)
 
             # assuming the cron job runs at midnight, we only need to update yesterday's weekday
             yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
-            weekdays = [yesterday.weekday()]
+            weekdays = [(yesterday.weekday() + 1) % 7 + 1]
 
         self.calculate_statistics(queues, weekdays)

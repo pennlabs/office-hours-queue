@@ -2,6 +2,7 @@ import datetime
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 
@@ -430,10 +431,8 @@ class Command(BaseCommand):
                         asked_by=studentList[askedByCount % len(studentList)].user,
                         should_send_up_soon_notification=ques["should_send_up_soon_notification"],
                     )
-
-                    newQuestion.time_asked = ques[
-                        "time_asked"
-                    ]  # prevent auto now add from changing the time
+                    # prevent auto now add from changing the time
+                    newQuestion.time_asked = ques["time_asked"]
 
                     askedByCount += 1
 
@@ -456,3 +455,11 @@ class Command(BaseCommand):
                         newQuestion.time_responded_to = ques["time_responded_to"]
 
                     newQuestion.save()
+
+        call_command("avg_queue_wait", "--hist")
+        call_command("avg_time_helping", "--hist")
+        call_command("avg_wait_heatmap", "--hist")
+        call_command("num_questions_ans", "--hist")
+        call_command("num_students_helped", "--hist")
+        call_command("questions_per_ta_heatmap", "--hist")
+        call_command("wait_time_days", "--hist")

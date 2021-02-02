@@ -293,21 +293,21 @@ class QueueStatistic(models.Model):
     ]
 
     # for specific days during the week - used for heatmap and graphs where day is x-axis
-    DAY_MONDAY = 0
-    DAY_TUESDAY = 1
-    DAY_WEDNESDAY = 2
-    DAY_THURSDAY = 3
-    DAY_FRIDAY = 4
-    DAY_SATURDAY = 5
-    DAY_SUNDAY = 6
+    DAY_SUNDAY = 1
+    DAY_MONDAY = 2
+    DAY_TUESDAY = 3
+    DAY_WEDNESDAY = 4
+    DAY_THURSDAY = 5
+    DAY_FRIDAY = 6
+    DAY_SATURDAY = 7
     DAY_CHOICES = [
+        (DAY_SUNDAY, "Sunday"),
         (DAY_MONDAY, "Monday"),
         (DAY_TUESDAY, "Tuesday"),
         (DAY_WEDNESDAY, "Wednesday"),
         (DAY_THURSDAY, "Thursday"),
         (DAY_FRIDAY, "Friday"),
         (DAY_SATURDAY, "Saturday"),
-        (DAY_SUNDAY, "Sunday"),
     ]
 
     queue = models.ForeignKey(Queue, on_delete=models.CASCADE)
