@@ -1,5 +1,5 @@
 import useSwr from "swr";
-import { HeatmapSeries, AnalyticsData, Metric, DayOfWeek } from "../../types";
+import { HeatmapSeries, HeatmapData, Metric, DayOfWeek } from "../../types";
 import { logException } from "../../utils/sentry";
 
 export const useHeatmapData = (
@@ -7,7 +7,7 @@ export const useHeatmapData = (
     queueId: number,
     type: Metric
 ) => {
-    const { data, error, isValidating } = useSwr<AnalyticsData>(
+    const { data, error, isValidating } = useSwr<HeatmapData>(
         `/courses/${courseId}/queues/${queueId}/statistics/?metric=${type}`
     );
 

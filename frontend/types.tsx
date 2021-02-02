@@ -171,14 +171,20 @@ export enum Metric {
     LIST_WAIT = "LIST_WAIT_TIME_DAYS",
 }
 
-interface AnalyticsDataElem {
+interface HeatmapDataElem {
     metric: Metric;
     day: number;
     hour: number;
     value: string;
+}
+
+interface AnalyticsDataElem {
+    metric: Metric;
+    value: string;
     date: string;
 }
 
+export type HeatmapData = HeatmapDataElem[];
 export type AnalyticsData = AnalyticsDataElem[];
 
 export interface HeatmapSeries {
