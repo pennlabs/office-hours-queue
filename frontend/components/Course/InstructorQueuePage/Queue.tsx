@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, MutableRefObject } from "react";
-import { Header, Label, Grid, Message, Button } from "semantic-ui-react";
+import { Header, Label, Grid, Message, Button, Icon } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Select from "react-select";
 import Questions from "./Questions";
@@ -109,6 +109,14 @@ const Queue = (props: QueueProps) => {
                                 icon="clock"
                             />
                         )}
+                        {queue.active && (
+                            <Label
+                                content={`${
+                                    queue.staffActive || 0
+                                } staff active`}
+                                icon={<Icon name="sync" loading={true} />}
+                            />
+                        )}
                     </Grid.Column>
                     <Grid.Column textAlign="right" floated="right">
                         {leader && (
@@ -145,7 +153,7 @@ const Queue = (props: QueueProps) => {
                                     A rate-limiting quota is set on this queue.
                                 </Message.Header>
                                 <p>
-                                    {`A quota of ${queue.rateLimitQuestions} questions(s) per ${queue.rateLimitMinutes} minutes(s) ` +
+                                    {`A quota of ${queue.rateLimitQuestions} question(s) per ${queue.rateLimitMinutes} minutes(s) ` +
                                         `per student is enforced when there are at least ${queue.rateLimitLength} student(s) in the queue.`}
                                 </p>
                             </Message>
