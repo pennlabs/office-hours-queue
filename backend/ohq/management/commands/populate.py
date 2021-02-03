@@ -456,10 +456,7 @@ class Command(BaseCommand):
 
                     newQuestion.save()
 
-        call_command("avg_queue_wait", "--hist")
-        call_command("avg_time_helping", "--hist")
-        call_command("avg_wait_heatmap", "--hist")
-        call_command("num_questions_ans", "--hist")
-        call_command("num_students_helped", "--hist")
-        call_command("questions_per_ta_heatmap", "--hist")
         call_command("wait_time_days", "--hist")
+        call_command("queue_weekly_stat", "--hist")
+        call_command("queue_heatmap_stat", "--hist")
+      
