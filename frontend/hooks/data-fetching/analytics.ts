@@ -18,7 +18,7 @@ export const useHeatmapData = (
 
         // Parse data to format it according to requirements of apexcharts heatmap
         const initialValue: Map<DayOfWeek, HeatmapSeries> = new Map();
-        for (let day = DayOfWeek.Monday; day <= DayOfWeek.Sunday; day += 1) {
+        for (let day = DayOfWeek.Sunday; day <= DayOfWeek.Saturday; day += 1) {
             initialValue.set(day, {
                 name: DayOfWeek[day],
                 data: [],
