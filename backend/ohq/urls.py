@@ -9,6 +9,7 @@ from ohq.views import (
     MembershipViewSet,
     QuestionSearchView,
     QuestionViewSet,
+    QueueStatisticView,
     QueueViewSet,
     ResendNotificationView,
     SemesterViewSet,
@@ -39,6 +40,11 @@ additional_urls = [
     path("courses/<slug:course_pk>/mass-invite/", MassInviteView.as_view(), name="mass-invite"),
     path(
         "courses/<slug:course_pk>/questions/", QuestionSearchView.as_view(), name="questionsearch"
+    ),
+    path(
+        "courses/<slug:course_pk>/queues/<slug:queue_pk>/statistics/",
+        QueueStatisticView.as_view(),
+        name="queue-statistic",
     ),
 ]
 

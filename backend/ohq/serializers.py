@@ -14,6 +14,7 @@ from ohq.models import (
     Profile,
     Question,
     Queue,
+    QueueStatistic,
     Semester,
     Tag,
 )
@@ -394,6 +395,14 @@ class UserPrivateSerializer(serializers.ModelSerializer):
 
             profile.save()
         return super().update(instance, validated_data)
+
+
+class QueueStatisticSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QueueStatistic
+        fields = ("metric", "day", "hour", "value", "date")
+        # make everything read-only, stats are only updated through commands
+        read_only_fields = ("metric", "day", "hour", "value", "date")
 
 
 class AnnouncementSerializer(CourseRouteMixin):

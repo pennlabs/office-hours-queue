@@ -9,11 +9,17 @@ import { withProtectPage } from "../../../utils/protectpage";
 import { doMultipleSuccessRequests } from "../../../utils/fetch";
 import { isLeadershipRole } from "../../../utils/enums";
 import nextRedirect from "../../../utils/redirect";
-import { CoursePageProps, Course, Membership } from "../../../types";
+import { CoursePageProps, Course, Membership, Queue } from "../../../types";
 import Analytics from "../../../components/Course/Analytics/Analytics";
 
-const AnalyticsPage = (props: CoursePageProps) => {
-    const { course, leadership } = props;
+interface AnalyticsPageProps {
+    course: Course;
+    leadership: Membership[];
+    queues: Queue[];
+}
+
+const AnalyticsPage = (props: AnalyticsPageProps) => {
+    const { course, leadership, queues } = props;
     return (
         <>
             <Head>
@@ -24,7 +30,7 @@ const AnalyticsPage = (props: CoursePageProps) => {
                     course={course}
                     leadership={leadership}
                     render={() => {
-                        return <Analytics />;
+                        return <Analytics course={course} queues={queues} />;
                     }}
                 />
             </Grid>
@@ -34,7 +40,7 @@ const AnalyticsPage = (props: CoursePageProps) => {
 
 AnalyticsPage.getInitialProps = async (
     context: NextPageContext
-): Promise<CoursePageProps> => {
+): Promise<AnalyticsPageProps> => {
     const { query, req } = context;
     const data = {
         headers: req ? { cookie: req.headers.cookie } : undefined,
@@ -42,14 +48,16 @@ AnalyticsPage.getInitialProps = async (
 
     let course: Course;
     let leadership: Membership[];
+    let queues: Queue[];
 
     const response = await doMultipleSuccessRequests([
         { path: `/courses/${query.course}/`, data },
         { path: `/courses/${query.course}/members/`, data },
+        { path: `/courses/${query.course}/queues/`, data },
     ]);
 
     if (response.success) {
-        [course, leadership] = response.data;
+        [course, leadership, queues] = response.data;
     } else {
         nextRedirect(context, () => true, "/404");
         throw new Error("Next should redirect: unreachable");
@@ -58,6 +66,7 @@ AnalyticsPage.getInitialProps = async (
     return {
         course,
         leadership: leadership.filter((m) => isLeadershipRole(m.kind)),
+        queues,
     };
 };
 

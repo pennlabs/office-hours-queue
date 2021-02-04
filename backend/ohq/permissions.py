@@ -327,6 +327,24 @@ class MassInvitePermission(permissions.BasePermission):
         return membership.is_leadership
 
 
+class QueueStatisticPermission(permissions.BasePermission):
+    """
+    Students+ can access queue related statistics
+    """
+
+    def has_permission(self, request, view):
+        # Anonymous users can't do anything
+        if not request.user.is_authenticated:
+            return False
+
+        membership = Membership.objects.filter(
+            course=view.kwargs["course_pk"], user=request.user
+        ).first()
+
+        # anyone who is a member of the class can see queue related statistics
+        return membership is not None
+
+
 class AnnouncementPermission(permissions.BasePermission):
     """
     TAs+ can create/update/delete announcements
