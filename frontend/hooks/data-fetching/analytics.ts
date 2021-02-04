@@ -29,7 +29,10 @@ export const useHeatmapData = (
             if (acc.has(day)) {
                 acc.get(day)!.data.push({
                     x: hour.toString(),
-                    y: Number(value),
+                    y:
+                        type == Metric.HEATMAP_WAIT
+                            ? Math.ceil(Number(value) / 60)
+                            : Number(value),
                 });
             } else {
                 logException(new Error(`Invalid day ${day}`));
