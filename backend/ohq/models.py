@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.dispatch import receiver
 from email_tools.emails import send_email
@@ -266,6 +267,89 @@ class Question(models.Model):
 
     should_send_up_soon_notification = models.BooleanField(default=False)
     tags = models.ManyToManyField(Tag, blank=True)
+
+
+class QueueStatistic(models.Model):
+    """
+    Statistics related to a queue
+    """
+
+    # add new metrics/statistics
+    METRIC_HEATMAP_WAIT = "HEATMAP_AVG_WAIT"
+    METRIC_HEATMAP_QUESTIONS_PER_TA = "HEATMAP_QUESTIONS_PER_TA"
+    METRIC_AVG_WAIT = "AVG_WAIT"
+    METRIC_NUM_ANSWERED = "NUM_ANSWERED"
+    METRIC_STUDENTS_HELPED = "STUDENTS_HELPED"
+    METRIC_AVG_TIME_HELPING = "AVG_TIME_HELPING"
+    METRIC_LIST_WAIT_TIME_DAYS = "LIST_WAIT_TIME_DAYS"
+    METRIC_CHOICES = [
+        (METRIC_HEATMAP_WAIT, "Average wait-time heatmap"),
+        (METRIC_HEATMAP_QUESTIONS_PER_TA, "Questions per TA heatmap"),
+        (METRIC_AVG_WAIT, "Average wait-time"),
+        (METRIC_NUM_ANSWERED, "Number of questions answered per week"),
+        (METRIC_STUDENTS_HELPED, "Students helped per week"),
+        (METRIC_AVG_TIME_HELPING, "Average time helping students"),
+        (METRIC_LIST_WAIT_TIME_DAYS, "List of wait times per day"),
+    ]
+
+    # for specific days during the week - used for heatmap and graphs where day is x-axis
+    DAY_SUNDAY = 1
+    DAY_MONDAY = 2
+    DAY_TUESDAY = 3
+    DAY_WEDNESDAY = 4
+    DAY_THURSDAY = 5
+    DAY_FRIDAY = 6
+    DAY_SATURDAY = 7
+    DAY_CHOICES = [
+        (DAY_SUNDAY, "Sunday"),
+        (DAY_MONDAY, "Monday"),
+        (DAY_TUESDAY, "Tuesday"),
+        (DAY_WEDNESDAY, "Wednesday"),
+        (DAY_THURSDAY, "Thursday"),
+        (DAY_FRIDAY, "Friday"),
+        (DAY_SATURDAY, "Saturday"),
+    ]
+
+    queue = models.ForeignKey(Queue, on_delete=models.CASCADE)
+    metric = models.CharField(max_length=256, choices=METRIC_CHOICES)
+    value = models.DecimalField(max_digits=16, decimal_places=8)
+
+    day = models.IntegerField(choices=DAY_CHOICES, blank=True, null=True)
+    hour = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(23)], blank=True, null=True
+    )
+    date = models.DateField(blank=True, null=True)  # for weekly stats, set to the Sunday of week
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["queue", "metric", "day", "hour", "date"], name="unique_statistic"
+            )
+        ]
+
+    def metric_to_pretty(self):
+        return [pretty for raw, pretty in QueueStatistic.METRIC_CHOICES if raw == self.metric][0]
+
+    def day_to_pretty(self):
+        pretty_lst = [pretty for raw, pretty in QueueStatistic.DAY_CHOICES if raw == self.day]
+        if len(pretty_lst):
+            return pretty_lst[0]
+        else:
+            return ""
+
+    def hour_to_pretty(self):
+        if self.hour is not None:
+            return f"{self.hour}:00 - {self.hour + 1}:00"
+        else:
+            return ""
+
+    def __str__(self):
+        string = f"{self.queue}: {self.metric_to_pretty()}"
+        if self.day_to_pretty() != "":
+            string += " " + self.day_to_pretty()
+        if self.hour_to_pretty() != "":
+            string += " " + self.hour_to_pretty()
+        return string
 
 
 class Announcement(models.Model):

@@ -19,7 +19,7 @@ from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 
-from ohq.filters import QuestionSearchFilter
+from ohq.filters import QuestionSearchFilter, QueueStatisticFilter
 from ohq.invite import parse_and_send_invites
 from ohq.models import (
     Announcement,
@@ -28,6 +28,7 @@ from ohq.models import (
     MembershipInvite,
     Question,
     Queue,
+    QueueStatistic,
     Semester,
     Tag,
 )
@@ -42,6 +43,7 @@ from ohq.permissions import (
     QuestionPermission,
     QuestionSearchPermission,
     QueuePermission,
+    QueueStatisticPermission,
     TagPermission,
 )
 from ohq.schemas import MassInviteSchema
@@ -54,6 +56,7 @@ from ohq.serializers import (
     Profile,
     QuestionSerializer,
     QueueSerializer,
+    QueueStatisticSerializer,
     SemesterSerializer,
     TagSerializer,
     UserPrivateSerializer,
@@ -549,6 +552,23 @@ class MassInviteView(APIView):
             },
             status=201,
         )
+
+
+class QueueStatisticView(generics.ListAPIView):
+    """
+    Return a list of statistics - multiple data points for list statistics and heatmap statistics
+    and singleton for card statistics.
+    """
+
+    serializer_class = QueueStatisticSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = QueueStatisticFilter
+    permission_classes = [QueueStatisticPermission | IsSuperuser]
+
+    def get_queryset(self):
+        # might need to change qs if students shouldn't be able to see all queue statistics
+        qs = QueueStatistic.objects.filter(queue=self.kwargs["queue_pk"])
+        return prefetch(qs, self.serializer_class)
 
 
 class AnnouncementViewSet(viewsets.ModelViewSet):
