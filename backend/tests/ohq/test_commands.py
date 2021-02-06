@@ -538,12 +538,13 @@ class QuestionsPerTAQueueHeatmapTestCase(TestCase):
 
         yesterday = timezone.localtime() - timezone.timedelta(days=1)
 
-        self.ta_1_questions_8 = 3
-        for i in range(self.ta_1_questions_8):
+        self.ta_1_questions_8_week_1 = 2
+        self.ta_1_questions_8_week_2 = 1
+        for i in range(self.ta_1_questions_8_week_1 + self.ta_1_questions_8_week_2):
             yesterday_8 = yesterday.replace(hour=8, minute=0)
             time_asked = (
                 yesterday_8
-                if i % 2 == 0
+                if i >= self.ta_1_questions_8_week_1
                 else yesterday_8 + timezone.timedelta(weeks=-1, minutes=30)
             )
             question = Question.objects.create(
@@ -561,11 +562,7 @@ class QuestionsPerTAQueueHeatmapTestCase(TestCase):
         self.ta_2_questions_17 = 4
         for i in range(self.ta_1_questions_17 + self.ta_2_questions_17):
             yesterday_17 = yesterday.replace(hour=17, minute=0)
-            time_asked = (
-                yesterday_17
-                if i % 2 == 0
-                else yesterday_17 + timezone.timedelta(weeks=-1, minutes=59)
-            )
+            time_asked = yesterday_17
             question = Question.objects.create(
                 text=f"Question {i}",
                 queue=self.queue,
@@ -596,7 +593,10 @@ class QuestionsPerTAQueueHeatmapTestCase(TestCase):
         yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
         yesterday_weekday = yesterday.weekday()
 
-        expected_8 = self.ta_1_questions_8 / self.num_tas_8
+        expected_8 = (
+            self.ta_1_questions_8_week_1 / self.num_tas_8
+            + self.ta_1_questions_8_week_2 / self.num_tas_8
+        ) / 2
         actual_8 = QueueStatistic.objects.get(
             queue=self.queue,
             metric=QueueStatistic.METRIC_HEATMAP_QUESTIONS_PER_TA,
