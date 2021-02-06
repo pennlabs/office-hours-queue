@@ -96,8 +96,10 @@ def calculate_questions_per_ta_heatmap(queue, weekday, hour):
     interval_stats = (
         Question.objects.filter(queue=queue, time_asked__week_day=weekday, time_asked__hour=hour)
         .annotate(date=TruncDate("time_asked"))
-        .values("date", "responded_to_by")
-        .annotate(q_per_ta=Count("date", distinct=False) / Count("responded_to_by", distinct=True))
+        .values("date")
+        .annotate(
+            q_per_ta=1.0 * Count("date", distinct=False) / Count("responded_to_by", distinct=True)
+        )
         .aggregate(avg=Avg(F("q_per_ta")))
     )
 
