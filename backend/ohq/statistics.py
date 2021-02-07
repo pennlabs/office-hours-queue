@@ -1,4 +1,4 @@
-from django.db.models import Avg, Count, F
+from django.db.models import Avg, Case, Count, F, When
 from django.db.models.functions import TruncDate
 
 from ohq.models import Question, QueueStatistic
@@ -98,7 +98,10 @@ def calculate_questions_per_ta_heatmap(queue, weekday, hour):
         .annotate(date=TruncDate("time_asked"))
         .values("date")
         .annotate(
-            q_per_ta=1.0 * Count("date", distinct=False) / Count("responded_to_by", distinct=True)
+            questions=Count("date", distinct=False), tas=Count("responded_to_by", distinct=True),
+        )
+        .annotate(
+            q_per_ta=Case(When(tas=0, then=F("questions")), default=1.0 * F("questions") / F("tas"))
         )
         .aggregate(avg=Avg(F("q_per_ta")))
     )
