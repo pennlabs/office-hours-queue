@@ -32,7 +32,7 @@ export const useHeatmapData = (
                     y:
                         type == Metric.HEATMAP_WAIT
                             ? Math.ceil(Number(value) / 60)
-                            : Number(value),
+                            : Number(value).toFixed(2),
                 });
             } else {
                 logException(new Error(`Invalid day ${day}`));
