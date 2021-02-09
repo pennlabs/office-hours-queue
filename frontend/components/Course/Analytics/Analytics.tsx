@@ -2,6 +2,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { Segment, Header, Grid, Message, Dropdown } from "semantic-ui-react";
 import { Course, Queue } from "../../../types";
+import Cards from "./Cards/Cards";
 // import MyPieChart from "./MyPieChart";
 import Averages from "./Heatmaps/Averages";
 
@@ -192,6 +193,9 @@ const Analytics = ({ course, queues }: AnalyticsProps) => {
                                 }}
                             />
                         </span>
+                    </Segment>
+                    <Segment basic>
+                        <Cards />
                     </Segment>
                     <Averages courseId={course.id} queueId={queueId} />
                     {/* <Segment basic>

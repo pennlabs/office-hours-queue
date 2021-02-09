@@ -1,5 +1,6 @@
 import dynamic from "next/dynamic";
 import React from "react";
+import { Segment } from "semantic-ui-react";
 import { HeatmapSeries } from "../../../../types";
 
 interface HeatmapProps {
@@ -80,8 +81,15 @@ export default function Heatmap({ series, chartTitle }: HeatmapProps) {
     };
 
     return series.length !== 0 ? (
-        <Chart series={series} options={options} type="heatmap" height={350} />
+        <div>
+            <Chart
+                series={series}
+                options={options}
+                type="heatmap"
+                height={350}
+            />
+        </div>
     ) : (
-        <div>No data available</div>
+        <Segment placeholder>No data available</Segment>
     );
 }
