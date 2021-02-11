@@ -1,0 +1,16 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: ".github/cdk"
+    ignore:
+      - dependency-name: "constructs"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "frontend"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "pip"
+    directory: "backend"
+    schedule:
+      interval: "daily"
