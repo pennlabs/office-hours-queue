@@ -5,9 +5,6 @@ from django.utils.crypto import get_random_string
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 
-<<<<<<< HEAD
-from ohq.models import Course, Membership, MembershipInvite, Profile, Question, Queue, Semester
-=======
 from ohq.models import (
     Announcement,
     Course,
@@ -20,8 +17,6 @@ from ohq.models import (
     Semester,
     Tag,
 )
-from ohq.permissions import has_permission_for_question
->>>>>>> 71e544e39680166940cdbce7e6455991984eef56
 from ohq.sms import sendSMSVerification
 from ohq.tasks import sendUpNextNotificationTask
 
