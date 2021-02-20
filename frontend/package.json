@@ -19,6 +19,7 @@
         "@pennlabs/rest-live-hooks": "^2.0.2-alpha.0",
         "@sentry/browser": "^5.21.4",
         "@sentry/node": "^5.21.4",
+        "apexcharts": "^3.23.1",
         "chart.js": "^2.9.3",
         "express": "^4.17.1",
         "http-proxy-middleware": "^1.0.5",
@@ -27,20 +28,23 @@
         "moment": "^2.27.0",
         "next": "9.4.4",
         "react": "16.13.1",
+        "react-apexcharts": "^1.3.7",
         "react-code-input": "^3.10.0",
         "react-dom": "16.13.1",
         "react-dropzone": "^11.0.2",
-        "react-ga": "^3.1.2",
+        "react-ga": "^3.2.1",
         "react-select": "^3.1.0",
         "semantic-ui-css": "^2.4.1",
         "semantic-ui-react": "^1.1.0",
         "swr": "^0.3.11",
         "typescript": "^3.9.7",
-        "uifx": "^2.0.7"
+        "uifx": "^2.0.7",
+        "url-loader": "^4.1.0"
     },
     "devDependencies": {
         "@types/node": "^14.0.23",
         "@types/react": "^16.9.43",
+        "@types/react-select": "^3.1.2",
         "@typescript-eslint/eslint-plugin": "^3.7.1",
         "@typescript-eslint/parser": "^3.7.1",
         "babel-eslint": "^10.1.0",
@@ -58,8 +62,7 @@
         "file-loader": "^6.1.0",
         "husky": "^4.2.5",
         "lint-staged": "^10.2.13",
-        "prettier": "^2.0.5",
-        "url-loader": "^4.1.0"
+        "prettier": "^2.0.5"
     },
     "husky": {
         "hooks": {

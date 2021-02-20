@@ -1,10 +1,10 @@
-import React, { useState, MutableRefObject } from "react";
+import React, { useState } from "react";
 import {
-    Segment,
     Label,
     Header,
     Grid,
     Message,
+    Segment,
     Icon,
     Dimmer,
     Loader,
@@ -14,10 +14,11 @@ import Alert from "@material-ui/lab/Alert";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import QuestionForm from "./QuestionForm";
 import QuestionCard from "./QuestionCard";
-import { Queue, Course, Question } from "../../../types";
+import { Queue, Course, Question, Tag } from "../../../types";
 import {
     useQuestions,
     useLastQuestions,
+    useQueueQuota,
 } from "../../../hooks/data-fetching/course";
 import LastQuestionCard from "./LastQuestionCard";
 
@@ -26,11 +27,63 @@ interface StudentQueueProps {
     queue: Queue;
     queueMutate: mutateResourceListFunction<Queue>;
     questions: Question[];
-    play: MutableRefObject<() => void>;
+    tags: Tag[];
 }
 
+const MessageQuota = ({
+    courseId,
+    queueId,
+    queueLength,
+    rateLimitQuestions,
+    rateLimitMinutes,
+    rateLimitLength,
+}: {
+    courseId: number;
+    queueId: number;
+    queueLength: number;
+    rateLimitQuestions: number;
+    rateLimitMinutes: number;
+    rateLimitLength: number;
+}) => {
+    const { data } = useQueueQuota(courseId, queueId);
+
+    return (
+        <Message color={queueLength >= rateLimitLength ? "red" : "green"}>
+            <Message.Header>
+                {queueLength >= rateLimitLength ? "ACTIVE:" : "INACTIVE:"} A
+                rate-limiting quota is set on this queue.
+            </Message.Header>
+            <p>
+                {`The quota will activate when there are at least ${rateLimitLength} student(s) in the queue. ` +
+                    `When activated, the quota will allow you to ask up to ${rateLimitQuestions} question(s) per ${rateLimitMinutes} minute(s)`}
+                {data && (
+                    <>
+                        <br />
+                        <br />
+                        {`You have asked ${data.count} question(s) in the past ${rateLimitMinutes} minute(s). `}
+                        {data.wait_time_mins !== 0 && (
+                            <>
+                                You will be able to ask a new question in{" "}
+                                <b>{data.wait_time_mins}</b> minutes.
+                            </>
+                        )}
+                    </>
+                )}
+            </p>
+        </Message>
+    );
+};
+
+const QuestionFormGuard: React.FunctionComponent<{
+    courseId: number;
+    queueId: number;
+}> = ({ children, courseId, queueId }) => {
+    const { data } = useQueueQuota(courseId, queueId);
+    return !data || data.wait_time_mins === 0 ? <>{children}</> : null;
+};
+
 const StudentQueue = (props: StudentQueueProps) => {
-    const { course, queue, queueMutate, questions: rawQuestions, play } = props;
+    const { course, queue, queueMutate, questions: rawQuestions, tags } = props;
     const [toast, setToast] = useState({ message: "", success: true });
     const [toastOpen, setToastOpen] = useState(false);
 
@@ -59,89 +112,139 @@ const StudentQueue = (props: StudentQueueProps) => {
 
     const updateToast = (success: string | null, error) => {
         toast.success = success !== null;
-        toast.message = success || errorMessage(error);
+        toast.message = success || error;
         setToast(toast);
         setToastOpen(true);
     };
 
-    const errorMessage = (error) => {
-        if (!error.message || error.message.split(",").length < 2)
-            return "There was an error!";
-        return error.message.split(":")[1];
-    };
-
     return (
-        <Segment basic>
-            <Header as="h3">
+        <>
+            <Header as="h3" style={{ flexGrow: 0 }}>
                 {queue.name}
                 <Header.Subheader>{queue.description}</Header.Subheader>
             </Header>
-            {(queue.active || queue.questionsAsked) && (
-                <Label
-                    content={`${queue.questionsAsked || 0} user${
-                        queue.questionsAsked === 1 ? "" : "s"
-                    } in queue`}
-                    color="blue"
-                    icon="users"
-                />
-            )}
-            {(queue.active || queue.questionsActive) && (
-                <Label
-                    content={`${queue.questionsActive || 0} user${
-                        queue.questionsActive === 1 ? "" : "s"
-                    } currently being helped`}
-                    icon="user"
-                />
-            )}
+            <Grid>
+                {(queue.active ||
+                    queue.questionsActive ||
+                    queue.questionsAsked) && (
+                    <Grid.Row columns="equal">
+                        <Grid.Column only="computer mobile">
+                            {(queue.active || queue.questionsAsked) && (
+                                <Label
+                                    content={`${
+                                        queue.questionsAsked || 0
+                                    } user${
+                                        queue.questionsAsked === 1 ? "" : "s"
+                                    } in queue`}
+                                    color="blue"
+                                    icon="users"
+                                />
+                            )}
+                            {(queue.active || queue.questionsActive) && (
+                                <Label
+                                    content={`${
+                                        queue.questionsActive || 0
+                                    } user${
+                                        queue.questionsActive === 1 ? "" : "s"
+                                    } currently being helped`}
+                                    icon="user"
+                                />
+                            )}
 
-            {(queue.active || queue.questionsAsked) &&
-                queue.estimatedWaitTime !== -1 && (
-                    <Label
-                        content={`${queue.estimatedWaitTime} min${
-                            queue.estimatedWaitTime === 1 ? "" : "s"
-                        }`}
-                        color="blue"
-                        icon="clock"
-                    />
+                            {(queue.active || queue.questionsAsked) &&
+                                queue.estimatedWaitTime !== -1 && (
+                                    <Label
+                                        content={`${
+                                            queue.estimatedWaitTime
+                                        } min${
+                                            queue.estimatedWaitTime === 1
+                                                ? ""
+                                                : "s"
+                                        }`}
+                                        color="blue"
+                                        icon="clock"
+                                    />
+                                )}
+                            {queue.active && (
+                                <Label
+                                    content={`${
+                                        queue.staffActive || 0
+                                    } staff active`}
+                                    icon={<Icon name="sync" loading={true} />}
+                                />
+                            )}
+                        </Grid.Column>
+                    </Grid.Row>
                 )}
-            {queue.active && (
-                <Label
-                    content={`${queue.staffActive || 0} staff active`}
-                    icon={<Icon name="sync" loading={true} />}
-                />
-            )}
-            <Grid.Row>
-                {questions.length !== 0 && (
-                    <QuestionCard
-                        // TODO: this is probably safe but feels wrong
-                        question={questions[0]}
-                        course={course}
-                        queue={queue}
-                        queueMutate={queueMutate}
-                        lastQuestionsMutate={mutateLastQuestions}
-                        mutate={mutateQuestions}
-                        toastFunc={updateToast}
-                        play={play}
-                    />
+                {queue.rateLimitEnabled && (
+                    <Grid.Row>
+                        <Segment basic style={{ width: "100%" }}>
+                            <MessageQuota
+                                courseId={course.id}
+                                queueId={queue.id}
+                                queueLength={queue.questionsAsked}
+                                rateLimitLength={queue.rateLimitLength}
+                                rateLimitMinutes={queue.rateLimitMinutes}
+                                rateLimitQuestions={queue.rateLimitQuestions}
+                            />
+                        </Segment>
+                    </Grid.Row>
                 )}
-                {!queue.active && questions.length === 0 && (
-                    <Message
-                        style={{ marginTop: "10px" }}
-                        header="Queue Closed"
-                        error
-                        icon="calendar times outline"
-                        content="This queue is currently closed. Contact course staff if you think this is an error."
-                    />
-                )}
-                {queue.active && questions.length === 0 && (
-                    <QuestionForm
-                        course={course}
-                        queueId={queue.id}
-                        queueMutate={queueMutate}
-                        mutate={mutateQuestions}
-                        toastFunc={updateToast}
-                    />
-                )}
+
+                <Grid.Row columns={1}>
+                    <Grid.Column>
+                        {questions.length !== 0 && (
+                            <QuestionCard
+                                // TODO: this is probably safe but feels wrong
+                                question={questions[0]}
+                                course={course}
+                                queue={queue}
+                                queueMutate={queueMutate}
+                                lastQuestionsMutate={mutateLastQuestions}
+                                mutate={mutateQuestions}
+                                toastFunc={updateToast}
+                                tags={tags}
+                            />
+                        )}
+                        {!queue.active && questions.length === 0 && (
+                            <Message
+                                header="Queue Closed"
+                                error
+                                icon="calendar times outline"
+                                content="This queue is currently closed. Contact course staff if you think this is an error."
+                            />
+                        )}
+                        {queue.active &&
+                            questions.length === 0 &&
+                            !queue.rateLimitEnabled && (
+                                <QuestionForm
+                                    course={course}
+                                    queueId={queue.id}
+                                    queueMutate={queueMutate}
+                                    mutate={mutateQuestions}
+                                    toastFunc={updateToast}
+                                    tags={tags}
+                                />
+                            )}
+                        {queue.active &&
+                            questions.length === 0 &&
+                            queue.rateLimitEnabled && (
+                                <QuestionFormGuard
+                                    courseId={course.id}
+                                    queueId={queue.id}
+                                >
+                                    <QuestionForm
+                                        course={course}
+                                        queueId={queue.id}
+                                        queueMutate={queueMutate}
+                                        mutate={mutateQuestions}
+                                        toastFunc={updateToast}
+                                        tags={tags}
+                                    />
+                                </QuestionFormGuard>
+                            )}
+                    </Grid.Column>
+                </Grid.Row>
                 {lastQuestions && lastQuestions.length !== 0 && (
                     <Grid.Row columns={1}>
                         <Grid.Column>
@@ -149,7 +252,7 @@ const StudentQueue = (props: StudentQueueProps) => {
                         </Grid.Column>
                     </Grid.Row>
                 )}
-            </Grid.Row>
+            </Grid>
             <Snackbar
                 open={toastOpen}
                 autoHideDuration={6000}
@@ -162,7 +265,7 @@ const StudentQueue = (props: StudentQueueProps) => {
                     <span>{toast.message}</span>
                 </Alert>
             </Snackbar>
-        </Segment>
+        </>
     );
 };
 

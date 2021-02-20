@@ -9,7 +9,7 @@ COPY package.json /app/
 COPY yarn.lock /app/
 
 # Install project dependencies
-RUN yarn install --frozen-lockfile --production=false
+RUN yarn install --frozen-lockfile --production=true
 
 # Copy project files
 COPY . /app/

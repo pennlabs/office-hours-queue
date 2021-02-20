@@ -14,6 +14,7 @@ flake8-quotes = "*"
 django-debug-toolbar = "*"
 django-extensions = "*"
 parameterized = "*"
+tblib = "*"
 
 [packages]
 dj-database-url = "*"
@@ -36,11 +37,11 @@ celery = "*"
 redis = "*"
 django-auto-prefetching = "*"
 django-rest-live = ">=0.4.0"
-channels = "*"
+channels = "<3"
 channels-redis = "*"
 uvicorn = {extras = ["standard"],version = "*"}
 gunicorn = "*"
 drf-renderer-xlsx = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3"

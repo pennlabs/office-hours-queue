@@ -55,9 +55,10 @@ export interface User extends BaseUser {
     id: number;
     profile: Profile;
     membershipSet: UserMembership[];
+    groups: string[];
 }
 
-export interface Queue {
+export interface BaseQueue {
     id: number;
     course: number;
     name: string;
@@ -69,6 +70,15 @@ export interface Queue {
     questionsAsked: number;
     staffActive: number;
 }
+
+export type Queue =
+    | (BaseQueue & { rateLimitEnabled: false })
+    | (BaseQueue & {
+          rateLimitEnabled: true;
+          rateLimitLength: number;
+          rateLimitQuestions: number;
+          rateLimitMinutes: number;
+      });
 
 // "ASKED" "WITHDRAWN" "ACTIVE" "REJECTED" "ANSWERED"
 export enum QuestionStatus {
@@ -91,10 +101,9 @@ export interface Question {
     timeResponseStarted?: string;
     timeRespondedTo?: string;
     shouldSendUpSoonNotification: boolean;
+    tags: Tag[];
     note: string;
     resolvedNote: boolean;
-
-    tags?: string[];
     // this is a marker field for subscribe requests
     // it should never have a value
     // eslint-disable-next-line
@@ -105,6 +114,18 @@ export interface Semester {
     id: number;
     term: string;
     pretty: string;
+}
+
+export interface Tag {
+    id: number;
+    name: string;
+}
+
+export interface Announcement {
+    id: number;
+    content: string;
+    author: BaseUser;
+    timeUpdated: string;
 }
 
 export interface QuestionMap {
@@ -138,4 +159,45 @@ export interface Toast {
 export interface CoursePageProps {
     course: Course;
     leadership: Membership[];
+}
+
+export enum Metric {
+    HEATMAP_WAIT = "HEATMAP_AVG_WAIT",
+    HEATMAP_QUESTIONS = "HEATMAP_QUESTIONS_PER_TA",
+    AVG_WAIT = "AVG_WAIT",
+    NUM_ANSWERED = "NUM_ANSWERED",
+    STUDENTS_HELPED = "STUDENTS_HELPED",
+    AVG_TIME_HELPING = "AVG_TIME_HELPING",
+    LIST_WAIT = "LIST_WAIT_TIME_DAYS",
+}
+
+interface HeatmapDataElem {
+    metric: Metric;
+    day: number;
+    hour: number;
+    value: string;
+}
+
+interface AnalyticsDataElem {
+    metric: Metric;
+    value: string;
+    date: string;
+}
+
+export type HeatmapData = HeatmapDataElem[];
+export type AnalyticsData = AnalyticsDataElem[];
+
+export interface HeatmapSeries {
+    name: string;
+    data: { x: string; y: number }[];
+}
+
+export enum DayOfWeek {
+    "Sunday" = 1,
+    "Monday" = 2,
+    "Tuesday" = 3,
+    "Wednesday" = 4,
+    "Thursday" = 5,
+    "Friday" = 6,
+    "Saturday" = 7,
 }
