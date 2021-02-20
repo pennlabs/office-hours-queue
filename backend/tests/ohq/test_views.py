@@ -149,12 +149,15 @@ class QuestionViewTestCase(TestCase):
         self.question = Question.objects.create(
             queue=self.queue, asked_by=self.student, text="Help me"
         )
+        self.question.time_asked = timezone.now() - timedelta(days=1)
+        self.question.save()
+
         self.old_question = Question.objects.create(
             queue=self.queue,
             asked_by=self.student,
             text="Help me",
-            time_responded_to=timezone.now(),
-            time_response_started=timezone.now(),
+            time_responded_to=timezone.now() - timedelta(days=1),
+            time_response_started=timezone.now() - timedelta(days=1),
             responded_to_by=self.ta,
             status=Question.STATUS_ANSWERED,
         )
@@ -180,10 +183,10 @@ class QuestionViewTestCase(TestCase):
             queue=self.queue2, asked_by=self.student3, text="Help me"
         )
 
-        self.prelimit_question1.time_asked = timezone.now() - timedelta(minutes=3)
-        self.prelimit_question2.time_asked = timezone.now() - timedelta(minutes=6)
+        self.prelimit_question.time_responded_to = timezone.now() - timedelta(minutes=3)
+        self.prelimit_question1.time_responded_to = timezone.now() - timedelta(minutes=6)
+        self.prelimit_question.save()
         self.prelimit_question1.save()
-        self.prelimit_question2.save()
 
         Question.objects.create(queue=self.queue3, asked_by=self.student3, text="Help me")
 
@@ -223,7 +226,7 @@ class QuestionViewTestCase(TestCase):
         res = self.client.get(
             reverse("ohq:question-quota-count", args=[self.course.id, self.queue2.id])
         )
-        self.assertEqual(12, json.loads(res.content)["wait_time_mins"])
+        self.assertEqual(9, json.loads(res.content)["wait_time_mins"])
 
         res = self.client.get(
             reverse("ohq:question-quota-count", args=[self.course.id, self.queue3.id])
