@@ -161,8 +161,10 @@ export const useQueueQuota = (courseId: number, queueId: number) => {
         (id) => `/api/courses/${courseId}/queues/${queueId}/questions/${id}/`,
         {
             model: "ohq.Question",
-            property: "queue_id",
-            value: queueId,
+            view_kwargs: {
+                course_pk: courseId,
+                queue_pk: queueId,
+            },
         },
         {
             fetcher: newResourceFetcher,
