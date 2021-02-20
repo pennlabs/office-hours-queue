@@ -249,7 +249,7 @@ class QuestionViewSet(viewsets.ModelViewSet):
         return Question.objects.filter(
             queue=queue,
             asked_by=user,
-            time_asked__gte=timezone.now() - timedelta(minutes=queue.rate_limit_minutes),
+            time_responded_to__gte=timezone.now() - timedelta(minutes=queue.rate_limit_minutes),
         ).exclude(status__in=[Question.STATUS_REJECTED, Question.STATUS_WITHDRAWN])
 
     def create(self, request, *args, **kwargs):
@@ -287,10 +287,12 @@ class QuestionViewSet(viewsets.ModelViewSet):
                 >= queue.rate_limit_length
                 and count >= queue.rate_limit_questions
             ):
-                last_question = questions.order_by("-time_asked")[queue.rate_limit_questions - 1]
+                last_question = questions.order_by("-time_responded_to")[
+                    queue.rate_limit_questions - 1
+                ]
                 wait_time_secs = (
                     queue.rate_limit_minutes * 60
-                    - (timezone.now() - last_question.time_asked).total_seconds()
+                    - (timezone.now() - last_question.time_responded_to).total_seconds()
                 )
                 wait_time_mins = math.ceil(wait_time_secs / 60)
 
