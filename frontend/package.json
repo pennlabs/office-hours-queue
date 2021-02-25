@@ -15,8 +15,8 @@
     "dependencies": {
         "@material-ui/core": "^4.11.0",
         "@material-ui/lab": "^4.0.0-alpha.56",
-        "@pennlabs/rest-hooks": "^0.1.6",
-        "@pennlabs/rest-live-hooks": "~1.2.0",
+        "@pennlabs/rest-hooks": "^0.1.8",
+        "@pennlabs/rest-live-hooks": "^2.0.2-alpha.0",
         "@sentry/browser": "^5.21.4",
         "@sentry/node": "^5.21.4",
         "apexcharts": "^3.23.1",
@@ -36,7 +36,7 @@
         "react-select": "^3.1.0",
         "semantic-ui-css": "^2.4.1",
         "semantic-ui-react": "^1.1.0",
-        "swr": "^0.3.0",
+        "swr": "^0.3.11",
         "typescript": "^3.9.7",
         "uifx": "^2.0.7",
         "url-loader": "^4.1.0"
@@ -70,9 +70,6 @@
         }
     },
     "lint-staged": {
-        "**/*.{ts,tsx,css}": [
-            "prettier --write",
-            "eslint --fix"
-        ]
+        "**/*.{ts,tsx,css}": ["prettier --write", "eslint --fix"]
     }
 }
