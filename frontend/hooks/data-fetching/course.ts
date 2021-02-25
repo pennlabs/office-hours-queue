@@ -163,8 +163,10 @@ export const useQueueQuota = (courseId: number, queueId: number) => {
         (id) => `/api/courses/${courseId}/queues/${queueId}/questions/${id}/`,
         {
             model: "ohq.Question",
-            property: "queue_id",
-            value: queueId,
+            view_kwargs: {
+                course_pk: courseId,
+                queue_pk: queueId,
+            },
         },
         {
             fetcher: newResourceFetcher,
@@ -207,8 +209,10 @@ export const useQuestions = (
         (id) => `/api/courses/${courseId}/queues/${queueId}/questions/${id}/`,
         {
             model: "ohq.Question",
-            property: "queue_id",
-            value: queueId,
+            view_kwargs: {
+                course_pk: courseId,
+                queue_pk: queueId,
+            },
         },
         {
             initialData,
@@ -242,28 +246,12 @@ export const useQuestionPosition = (
     queueId: number,
     id: number
 ) => {
-    const { data: qdata } = useRealtimeResource<Queue>(
-        `/api/courses/${courseId}/queues/${queueId}/`,
-        {
-            model: "ohq.Queue",
-            property: "id",
-            value: queueId,
-        },
-        {
-            fetcher: newResourceFetcher,
-        }
-    );
-
     const [data, error, isValidating, mutate] = useResource(
         `/courses/${courseId}/queues/${queueId}/questions/${id}/position/`,
         { position: -1 },
         { refreshInterval: STUDENT_QUESTION_POS_POLL_INTERVAL }
     );
 
-    const stringified = JSON.stringify(qdata);
-    useEffect(() => {
-        mutate();
-    }, [stringified]);
     return [data, error, isValidating, mutate];
 };
 
@@ -275,8 +263,10 @@ export const useLastQuestions = (courseId: number, queueId: number) => {
         (id) => `/api/courses/${courseId}/queues/${queueId}/questions/${id}/`,
         {
             model: "ohq.Question",
-            property: "queue_id",
-            value: queueId,
+            view_kwargs: {
+                course_pk: courseId,
+                queue_pk: queueId,
+            },
         },
         {
             fetcher: newResourceFetcher,
