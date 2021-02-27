@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
+import { Button, Modal } from "semantic-ui-react";
 import { AuthUserContext, withAuth } from "../context/auth";
 import Home from "../components/Home/Home";
 import AuthPrompt from "../components/Auth/AuthPrompt";
