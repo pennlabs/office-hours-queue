@@ -120,7 +120,7 @@ QueuePage.getInitialProps = async (
             );
         }
     } else {
-        nextRedirect(context, () => true, "/404");
+        nextRedirect(context, () => true, `/?signup=${query.course}`);
         // this will never hit
         throw new Error("Next redirects: Unreachable");
     }
