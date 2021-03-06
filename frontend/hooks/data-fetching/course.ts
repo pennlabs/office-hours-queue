@@ -34,8 +34,10 @@ import {
     STUDENT_QUOTA_POLL_INTERVAL,
 } from "../../constants";
 
-export const useCourse = (courseId: number, initialCourse: Course) =>
-    useResource(`/courses/${courseId}/`, initialCourse);
+export const useCourse = (
+    courseId: number,
+    initialCourse: Course | undefined
+) => useResource(`/courses/${courseId}/`, initialCourse);
 
 export const useTags = (courseId: number, initialData: Tag[]) =>
     useResourceListNew(
