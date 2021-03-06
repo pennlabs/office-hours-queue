@@ -35,7 +35,7 @@ class CoursePermission(permissions.BasePermission):
         # Anyone can get a single course
         if view.action == "retrieve":
             return True
-        
+
         membership = Membership.objects.filter(course=obj, user=request.user).first()
 
         # Non members can't do anything other than retrieve a course
