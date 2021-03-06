@@ -575,7 +575,7 @@ class QueueStatisticView(generics.ListAPIView):
         return prefetch(qs, self.serializer_class)
 
 
-class AnnouncementViewSet(viewsets.ModelViewSet):
+class AnnouncementViewSet(viewsets.ModelViewSet, RealtimeMixin):
     """
     retrieve:
     Return a single announcement.
@@ -600,6 +600,7 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
 
     permission_classes = [AnnouncementPermission | IsSuperuser]
     serializer_class = AnnouncementSerializer
+    queryset = Announcement.objects.none()
 
     def get_queryset(self):
         return Announcement.objects.filter(course=self.kwargs["course_pk"])
