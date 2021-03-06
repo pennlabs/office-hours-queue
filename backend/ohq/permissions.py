@@ -32,15 +32,15 @@ class CoursePermission(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
-        membership = Membership.objects.filter(course=obj, user=request.user).first()
-
-        # Non members can't do anything
-        if membership is None:
-            return False
-
         # Anyone can get a single course
         if view.action == "retrieve":
             return True
+
+        membership = Membership.objects.filter(course=obj, user=request.user).first()
+
+        # Non members can't do anything other than retrieve a course
+        if membership is None:
+            return False
 
         # No one can delete a course
         if view.action == "destroy":
