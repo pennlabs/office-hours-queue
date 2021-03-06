@@ -1,3 +1,4 @@
+import math
 import re
 from datetime import timedelta
 
@@ -17,12 +18,24 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
+from rest_live.mixins import RealtimeMixin
 
-from ohq.filters import QuestionSearchFilter
+from ohq.filters import QuestionSearchFilter, QueueStatisticFilter
 from ohq.invite import parse_and_send_invites
-from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester
+from ohq.models import (
+    Announcement,
+    Course,
+    Membership,
+    MembershipInvite,
+    Question,
+    Queue,
+    QueueStatistic,
+    Semester,
+    Tag,
+)
 from ohq.pagination import QuestionSearchPagination
 from ohq.permissions import (
+    AnnouncementPermission,
     CoursePermission,
     IsSuperuser,
     MassInvitePermission,
@@ -31,9 +44,12 @@ from ohq.permissions import (
     QuestionPermission,
     QuestionSearchPermission,
     QueuePermission,
+    QueueStatisticPermission,
+    TagPermission,
 )
 from ohq.schemas import MassInviteSchema
 from ohq.serializers import (
+    AnnouncementSerializer,
     CourseCreateSerializer,
     CourseSerializer,
     MembershipInviteSerializer,
@@ -41,7 +57,9 @@ from ohq.serializers import (
     Profile,
     QuestionSerializer,
     QueueSerializer,
+    QueueStatisticSerializer,
     SemesterSerializer,
+    TagSerializer,
     UserPrivateSerializer,
 )
 from ohq.sms import sendSMSVerification
@@ -141,7 +159,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         return prefetch(qs, self.get_serializer_class())
 
 
-class QuestionViewSet(viewsets.ModelViewSet):
+class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
     """
     retrieve:
     Return a single question with all information fields present.
@@ -167,6 +185,7 @@ class QuestionViewSet(viewsets.ModelViewSet):
 
     permission_classes = [QuestionPermission | IsSuperuser]
     serializer_class = QuestionSerializer
+    queryset = Question.objects.none()
 
     def get_queryset(self):
         qs = Question.objects.filter(
@@ -223,6 +242,65 @@ class QuestionViewSet(viewsets.ModelViewSet):
         membership.last_active = timezone.now()
         membership.save()
         return super().list(request, *args, **kwargs)
+
+    def quota_count_helper(self, queue, user):
+        """
+        Helper to get the questions within the quota period for queues with quotas
+        """
+
+        return Question.objects.filter(
+            queue=queue,
+            asked_by=user,
+            time_responded_to__gte=timezone.now() - timedelta(minutes=queue.rate_limit_minutes),
+        ).exclude(status__in=[Question.STATUS_REJECTED, Question.STATUS_WITHDRAWN])
+
+    def create(self, request, *args, **kwargs):
+        """
+        Create a new question and check if it follows the rate limit
+        """
+
+        queue = Queue.objects.get(id=self.kwargs["queue_pk"])
+        if (
+            queue.rate_limit_enabled
+            and Question.objects.filter(queue=queue, status=Question.STATUS_ASKED).count()
+            >= queue.rate_limit_length
+        ):
+            num_questions_asked = self.quota_count_helper(queue, request.user).count()
+
+            if num_questions_asked >= queue.rate_limit_questions:
+                return JsonResponse({"detail": "rate limited"}, status=429)
+
+        return super().create(request, *args, **kwargs)
+
+    @action(detail=False)
+    def quota_count(self, request, course_pk, queue_pk):
+        """
+        Get number of questions asked within rate limit period if it is set up for the queue
+        """
+
+        queue = Queue.objects.get(id=queue_pk)
+        if queue.rate_limit_enabled:
+            questions = self.quota_count_helper(queue, request.user)
+            count = questions.count()
+
+            wait_time_mins = 0
+            if (
+                Question.objects.filter(queue=queue, status=Question.STATUS_ASKED).count()
+                >= queue.rate_limit_length
+                and count >= queue.rate_limit_questions
+            ):
+                last_question = questions.order_by("-time_responded_to")[
+                    queue.rate_limit_questions - 1
+                ]
+                wait_time_secs = (
+                    queue.rate_limit_minutes * 60
+                    - (timezone.now() - last_question.time_responded_to).total_seconds()
+                )
+                wait_time_mins = math.ceil(wait_time_secs / 60)
+
+            return JsonResponse({"count": count, "wait_time_mins": wait_time_mins})
+        else:
+            return JsonResponse({"detail": "queue does not have rate limit"}, status=405)
 
 
 class QuestionSearchView(XLSXFileMixin, generics.ListAPIView):
@@ -333,6 +411,37 @@ class QueueViewSet(viewsets.ModelViewSet):
             responded_to_by=self.request.user,
         )
         return JsonResponse({"detail": "success"})
+
+
+class TagViewSet(viewsets.ModelViewSet):
+    """
+    retrieve:
+    Return a single tag with all information fields present.
+
+    list:
+    Return a list of tags specific to a course.
+
+    create:
+    Create a tag.
+
+    update:
+    Update all fields in the tag.
+    You must specify all of the fields or use a patch request.
+
+    partial_update:
+    Update certain fields in the tag.
+    Only specify the fields that you want to change.
+
+    destroy:
+    Delete a tag.
+    """
+
+    permission_classes = [TagPermission | IsSuperuser]
+    serializer_class = TagSerializer
+
+    def get_queryset(self):
+        qs = Tag.objects.filter(course=self.kwargs["course_pk"])
+        return prefetch(qs, self.serializer_class)
 
 
 class MembershipViewSet(viewsets.ModelViewSet):
@@ -447,3 +556,50 @@ class MassInviteView(APIView):
             },
             status=201,
         )
+
+
+class QueueStatisticView(generics.ListAPIView):
+    """
+    Return a list of statistics - multiple data points for list statistics and heatmap statistics
+    and singleton for card statistics.
+    """
+
+    serializer_class = QueueStatisticSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = QueueStatisticFilter
+    permission_classes = [QueueStatisticPermission | IsSuperuser]
+
+    def get_queryset(self):
+        # might need to change qs if students shouldn't be able to see all queue statistics
+        qs = QueueStatistic.objects.filter(queue=self.kwargs["queue_pk"])
+        return prefetch(qs, self.serializer_class)
+
+
+class AnnouncementViewSet(viewsets.ModelViewSet):
+    """
+    retrieve:
+    Return a single announcement.
+
+    list:
+    Return a list of announcements specific to a course.
+
+    create:
+    Create a announcement.
+
+    update:
+    Update all fields in the announcement.
+    You must specify all of the fields or use a patch request.
+
+    partial_update:
+    Update certain fields in the announcement.
+    Only specify the fields that you want to change.
+
+    destroy:
+    Delete a announcement.
+    """
+
+    permission_classes = [AnnouncementPermission | IsSuperuser]
+    serializer_class = AnnouncementSerializer
+
+    def get_queryset(self):
+        return Announcement.objects.filter(course=self.kwargs["course_pk"])

@@ -1,12 +1,22 @@
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
-from rest_live.decorators import subscribable
 
-from ohq.models import Course, Membership, MembershipInvite, Profile, Question, Queue, Semester
-from ohq.permissions import has_permission_for_question
+from ohq.models import (
+    Announcement,
+    Course,
+    Membership,
+    MembershipInvite,
+    Profile,
+    Question,
+    Queue,
+    QueueStatistic,
+    Semester,
+    Tag,
+)
 from ohq.sms import sendSMSVerification
 from ohq.tasks import sendUpNextNotificationTask
 
@@ -137,6 +147,10 @@ class QueueSerializer(CourseRouteMixin):
             "questions_active",
             "questions_asked",
             "staff_active",
+            "rate_limit_enabled",
+            "rate_limit_length",
+            "rate_limit_questions",
+            "rate_limit_minutes",
         )
         read_only_fields = ("estimated_wait_time",)
 
@@ -159,11 +173,16 @@ class QueueSerializer(CourseRouteMixin):
         return instance
 
 
-@subscribable("id", has_permission_for_question)
-@subscribable("queue_id", has_permission_for_question)
+class TagSerializer(CourseRouteMixin):
+    class Meta:
+        model = Tag
+        fields = ("id", "name")
+
+
 class QuestionSerializer(QueueRouteMixin):
     asked_by = UserSerializer(read_only=True)
     responded_to_by = UserSerializer(read_only=True)
+    tags = TagSerializer(many=True)
 
     class Meta:
         model = Question
@@ -179,6 +198,7 @@ class QuestionSerializer(QueueRouteMixin):
             "responded_to_by",
             "rejected_reason",
             "should_send_up_soon_notification",
+            "tags",
             "note",
             "resolved_note",
         )
@@ -244,6 +264,14 @@ class QuestionSerializer(QueueRouteMixin):
                 instance.text = validated_data["text"]
             if "video_chat_url" in validated_data:
                 instance.video_chat_url = validated_data["video_chat_url"]
+            if "tags" in validated_data:
+                instance.tags.clear()
+                for tag_data in validated_data.pop("tags"):
+                    try:
+                        tag = Tag.objects.get(course=instance.queue.course, **tag_data)
+                        instance.tags.add(tag)
+                    except ObjectDoesNotExist:
+                        continue
             # If a student modifies a question, discard any note added by a TA and mark as resolved
             instance.note = ""
             instance.resolved_note = True
@@ -252,6 +280,7 @@ class QuestionSerializer(QueueRouteMixin):
         return instance
 
     def create(self, validated_data):
+        tags = validated_data.pop("tags")
         queue = Queue.objects.get(pk=self.context["view"].kwargs["queue_pk"])
         questions_ahead = Question.objects.filter(
             queue=queue, status=Question.STATUS_ASKED, time_asked__lt=timezone.now()
@@ -259,6 +288,14 @@ class QuestionSerializer(QueueRouteMixin):
         validated_data["should_send_up_soon_notification"] = questions_ahead >= 4
         validated_data["status"] = Question.STATUS_ASKED
         validated_data["asked_by"] = self.context["request"].user
+        question = super().create(validated_data)
+        for tag_data in tags:
+            try:
+                tag = Tag.objects.get(course=queue.course, **tag_data)
+                question.tags.add(tag)
+            except ObjectDoesNotExist:
+                continue
+        return question
         validated_data["note"] = ""
         return super().create(validated_data)
 
@@ -296,10 +333,20 @@ class UserPrivateSerializer(serializers.ModelSerializer):
 
     profile = ProfileSerializer(read_only=False, required=False)
     membership_set = MembershipPrivateSerializer(many=True, read_only=True)
+    groups = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = get_user_model()
-        fields = ("id", "first_name", "last_name", "email", "username", "profile", "membership_set")
+        fields = (
+            "id",
+            "first_name",
+            "last_name",
+            "email",
+            "username",
+            "profile",
+            "membership_set",
+            "groups",
+        )
 
     def update(self, instance, validated_data):
         if "profile" in validated_data:
@@ -343,4 +390,33 @@ class UserPrivateSerializer(serializers.ModelSerializer):
                     )
 
             profile.save()
+        return super().update(instance, validated_data)
+
+
+class QueueStatisticSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QueueStatistic
+        fields = ("metric", "day", "hour", "value", "date")
+        # make everything read-only, stats are only updated through commands
+        read_only_fields = ("metric", "day", "hour", "value", "date")
+
+
+class AnnouncementSerializer(CourseRouteMixin):
+    """
+    Serializer for announcements
+    """
+
+    author = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Announcement
+        fields = ("id", "content", "author", "time_updated")
+        read_only_fields = ("author",)
+
+    def create(self, validated_data):
+        validated_data["author"] = self.context["request"].user
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        validated_data["author"] = self.context["request"].user
         return super().update(instance, validated_data)

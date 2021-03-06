@@ -61,7 +61,7 @@ class CoursePermission(permissions.BasePermission):
 
         if view.action == "create":
             return (
-                request.user.groups.filter(name="faculty").exists()
+                request.user.groups.filter(name="platform_faculty").exists()
                 or Membership.objects.filter(
                     user=request.user, kind=Membership.KIND_HEAD_TA
                 ).exists()
@@ -153,7 +153,7 @@ class QuestionPermission(permissions.BasePermission):
             return False
 
         # Students can view their last asked question:
-        if view.action == "last":
+        if view.action in ["last", "quota_count"]:
             return membership.kind == Membership.KIND_STUDENT
 
         # Students can only create 1 question per queue
@@ -169,22 +169,6 @@ class QuestionPermission(permissions.BasePermission):
         # Students+ can get, list, or modify questions
         # With restrictions defined in has_object_permission
         return True
-
-
-def has_permission_for_question(user, instance):
-    """
-    Permission function for django-rest-live.
-    """
-    if not user.is_authenticated:
-        return False
-
-    membership = Membership.objects.filter(course=instance.queue.course, user=user).first()
-    # If user is not in the class, don't let them view questions.
-    if membership is None:
-        return False
-
-    # Let students view their own questions, let TAs and above view all questions.
-    return instance.asked_by == user or membership.is_ta
 
 
 class QuestionSearchPermission(permissions.BasePermission):
@@ -325,3 +309,86 @@ class MassInvitePermission(permissions.BasePermission):
             return False
 
         return membership.is_leadership
+
+
+class QueueStatisticPermission(permissions.BasePermission):
+    """
+    Students+ can access queue related statistics
+    """
+
+    def has_permission(self, request, view):
+        # Anonymous users can't do anything
+        if not request.user.is_authenticated:
+            return False
+
+        membership = Membership.objects.filter(
+            course=view.kwargs["course_pk"], user=request.user
+        ).first()
+
+        # anyone who is a member of the class can see queue related statistics
+        return membership is not None
+
+
+class AnnouncementPermission(permissions.BasePermission):
+    """
+    TAs+ can create/update/delete announcements
+    Students can get/list announcements
+    """
+
+    def has_permission(self, request, view):
+        # Anonymous users can't do anything
+        if not request.user.is_authenticated:
+            return False
+
+        membership = Membership.objects.filter(
+            course=view.kwargs["course_pk"], user=request.user
+        ).first()
+
+        # Non-Students can't do anything
+        if membership is None:
+            return False
+
+        # Students+ can get/list announcements
+        if view.action in ["list", "retrieve"]:
+            return True
+
+        # TAs+ can create, modify, and delete announcements
+        return membership.is_ta
+
+
+class TagPermission(permissions.BasePermission):
+    """
+    Head TAs+ should be able to create, modify and delete a tag.
+    Students+ can get or list tags.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        membership = Membership.objects.get(course=view.kwargs["course_pk"], user=request.user)
+
+        # Students+ can get a single tag
+        if view.action == "retrieve":
+            return True
+
+        # Head TAs+ can make changes
+        if view.action in ["destroy", "partial_update", "update"]:
+            return membership.is_leadership
+
+    def has_permission(self, request, view):
+        # Anonymous users can't do anything
+        if not request.user.is_authenticated:
+            return False
+
+        membership = Membership.objects.filter(
+            course=view.kwargs["course_pk"], user=request.user
+        ).first()
+
+        # Non-Students can't do anything
+        if membership is None:
+            return False
+
+        if view.action in ["list", "retrieve"]:
+            return True
+
+        # Head TAs+ can make changes
+        if view.action in ["create", "destroy", "update", "partial_update"]:
+            return membership.is_leadership

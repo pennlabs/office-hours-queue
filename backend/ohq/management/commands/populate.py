@@ -2,6 +2,7 @@ import datetime
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 
@@ -427,10 +428,11 @@ class Command(BaseCommand):
                         queue=newQueue,
                         video_chat_url=ques["video_chat_url"],
                         status=ques["status"],
-                        time_asked=ques["time_asked"],
                         asked_by=studentList[askedByCount % len(studentList)].user,
                         should_send_up_soon_notification=ques["should_send_up_soon_notification"],
                     )
+                    # prevent auto now add from changing the time
+                    newQuestion.time_asked = ques["time_asked"]
 
                     askedByCount += 1
 
@@ -453,3 +455,7 @@ class Command(BaseCommand):
                         newQuestion.time_responded_to = ques["time_responded_to"]
 
                     newQuestion.save()
+
+        call_command("wait_time_days", "--hist")
+        call_command("queue_weekly_stat", "--hist")
+        call_command("queue_heatmap_stat", "--hist")

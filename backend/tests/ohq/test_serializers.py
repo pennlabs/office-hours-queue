@@ -8,7 +8,7 @@ from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.test import APIClient
 
-from ohq.models import Course, Membership, Question, Queue, Semester
+from ohq.models import Announcement, Course, Membership, Question, Queue, Semester, Tag
 from ohq.serializers import (
     CourseCreateSerializer,
     MembershipSerializer,
@@ -182,10 +182,16 @@ class QuestionSerializerTestCase(TestCase):
         self.course = Course.objects.create(
             course_code="000", department="Penn Labs", semester=self.semester
         )
+        self.course2 = Course.objects.create(
+            course_code="001", department="Penn Labs", semester=self.semester
+        )
         self.queue = Queue.objects.create(name="Queue", course=self.course)
+        self.queue2 = Queue.objects.create(name="Queue", course=self.course2)
         self.ta = User.objects.create(username="ta")
         self.student = User.objects.create(username="student")
         self.student2 = User.objects.create(username="student2")
+        Tag.objects.create(course=self.course, name="Tag")
+        Tag.objects.create(course=self.course2, name="Tag")
         Membership.objects.create(course=self.course, user=self.ta, kind=Membership.KIND_TA)
         Membership.objects.create(
             course=self.course, user=self.student, kind=Membership.KIND_STUDENT
@@ -201,7 +207,8 @@ class QuestionSerializerTestCase(TestCase):
     def test_create(self, mock_delay):
         self.client.force_authenticate(user=self.student2)
         self.client.post(
-            reverse("ohq:question-list", args=[self.course.id, self.queue.id]), {"text": "Help me"}
+            reverse("ohq:question-list", args=[self.course.id, self.queue.id]),
+            {"text": "Help me", "tags": [{"name": "Tag"}]},
         )
         self.assertEqual(2, Question.objects.all().count())
         question = Question.objects.all().order_by("time_asked")[1]
@@ -219,7 +226,7 @@ class QuestionSerializerTestCase(TestCase):
         self.client.force_authenticate(user=self.student)
         self.client.patch(
             reverse("ohq:question-detail", args=[self.course.id, self.queue.id, self.question.id]),
-            {"text": text, "video_chat_url": url},
+            {"text": text, "video_chat_url": url, "tags": [{"name": "Tag"}]},
         )
         self.question.refresh_from_db()
         self.assertEqual(text, self.question.text)
@@ -384,3 +391,48 @@ class QuestionSerializerTestCase(TestCase):
         self.question.refresh_from_db()
         self.assertEqual(Question.STATUS_ASKED, self.question.status)
         mock_delay.assert_not_called()
+
+
+class AnnouncementSerializerTestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
+        self.course = Course.objects.create(
+            course_code="000", department="Penn Labs", semester=self.semester
+        )
+        self.name = "Queue"
+        self.queue = Queue.objects.create(name=self.name, course=self.course)
+        self.head_ta = User.objects.create(username="head_ta")
+        self.ta = User.objects.create(username="ta")
+        Membership.objects.create(
+            course=self.course, user=self.head_ta, kind=Membership.KIND_HEAD_TA
+        )
+        Membership.objects.create(course=self.course, user=self.ta, kind=Membership.KIND_TA)
+        self.announcement = Announcement.objects.create(
+            course=self.course, author=self.head_ta, content="Original announcement"
+        )
+
+    def test_update_ta(self):
+        """
+        Ensure TAs can update an Announcement and the author is updated
+        """
+        content = "New content"
+        self.client.force_authenticate(user=self.ta)
+        self.client.patch(
+            reverse("ohq:announcement-detail", args=[self.course.id, self.announcement.id]),
+            {"content": content},
+        )
+        self.announcement.refresh_from_db()
+        self.assertTrue(self.announcement.author, self.ta)
+
+    def test_create(self):
+        """
+        Ensure TAs can create an Announcement and the author matches
+        """
+        self.client.force_authenticate(user=self.ta)
+        self.client.post(
+            reverse("ohq:announcement-list", args=[self.course.id]), {"content": "New announcement"}
+        )
+        self.assertEqual(2, Announcement.objects.all().count())
+        announcement = Announcement.objects.all().order_by("time_updated")[1]
+        self.assertEqual(self.ta, announcement.author)

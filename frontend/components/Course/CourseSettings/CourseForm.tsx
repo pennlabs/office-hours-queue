@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import "./CourseForm.module.css";
 
 import { Form, Button, Modal } from "semantic-ui-react";
@@ -6,14 +6,19 @@ import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 import AsyncSelect from "react-select/async";
 import { useRouter } from "next/router";
-import { mutateResourceFunction } from "@pennlabs/rest-hooks/dist/types";
-import { Course, Semester } from "../../../types";
-import { getSemesters } from "../../../hooks/data-fetching/course";
+import CreatableSelect from "react-select/creatable";
+import { Course, mutateResourceFunction, Semester, Tag } from "../../../types";
+import {
+    getSemesters,
+    createTag,
+    useTags,
+} from "../../../hooks/data-fetching/course";
 import { logException } from "../../../utils/sentry";
 
 interface CourseFormProps {
     course: Course;
-    mutate: mutateResourceFunction<Course>;
+    mutateCourse: mutateResourceFunction<Course>;
+    tags: Tag[];
 }
 
 const videoChatNum = (course) => {
@@ -22,10 +27,27 @@ const videoChatNum = (course) => {
     return 2;
 };
 
+type TagMap = {
+    [tag: string]: number;
+};
+
+const toTagMap = (tags: Tag[]) =>
+    tags.reduce((acc, t) => {
+        acc[t.name] = t.id;
+        return acc;
+    }, {});
+
 const CourseForm = (props: CourseFormProps) => {
-    const { course, mutate } = props;
+    const { course, mutateCourse, tags: initialTags } = props;
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const { data: tags, mutate: mutateTags } = useTags(course.id, initialTags);
+
+    useEffect(() => {
+        setOldTags(toTagMap(tags!));
+        setAddedTags([]);
+        setDeletedTags([]);
+    }, [tags]);
 
     const [input, setInput] = useState({
         inviteOnly: course.inviteOnly,
@@ -36,33 +58,51 @@ const CourseForm = (props: CourseFormProps) => {
         courseTitle: course.courseTitle,
         semester: course.semester,
     });
+
+    const [oldTags, setOldTags] = useState<TagMap>(toTagMap(tags!));
+    const [tagLabels, setTagLabels] = useState<string[]>(
+        tags!.map((t) => t.name)
+    );
+    const [deletedTags, setDeletedTags] = useState<string[]>([]);
+    const [addedTags, setAddedTags] = useState<string[]>([]);
+
     const [check, setCheck] = useState(videoChatNum(course));
     const [success, setSuccess] = useState(false);
-    const [disabled, setDisabled] = useState(true);
     const [error, setError] = useState(false);
     const [archiveError, setArchiveError] = useState(false);
     const [open, setOpen] = useState(false);
+
+    const disabled = useMemo(
+        () =>
+            !input.department ||
+            !input.courseCode ||
+            !input.courseTitle ||
+            !input.semester ||
+            (input.department === course.department &&
+                input.courseCode === course.courseCode &&
+                input.courseTitle === course.courseTitle &&
+                input.inviteOnly === course.inviteOnly &&
+                input.semester === course.semester &&
+                check === videoChatNum(course) &&
+                addedTags.length === 0 &&
+                deletedTags.length === 0),
+        [input, course, check, addedTags, deletedTags]
+    );
+
+    // default recommended tags
+    const tagOptions = [
+        { value: "logistics", label: "logistics" },
+        { value: "final", label: "final" },
+    ];
 
     /* HANDLER FUNCTIONS */
 
     const handleInputChange = (e, { name, value }) => {
         input[name] = name === "inviteOnly" ? !input[name] : value;
-        setInput(input);
-        setDisabled(
-            !input.department ||
-                !input.courseCode ||
-                !input.courseTitle ||
-                !input.semester ||
-                (input.department === course.department &&
-                    input.courseCode === course.courseCode &&
-                    input.courseTitle === course.courseTitle &&
-                    input.inviteOnly === course.inviteOnly &&
-                    input.semester === course.semester)
-        );
+        setInput({ ...input });
     };
 
     const handleVideoChatInputChange = (e, { name }) => {
-        setDisabled(false);
         switch (name) {
             case "requireVideoChatUrlOnQuestions": {
                 input[name] = true;
@@ -92,12 +132,26 @@ const CourseForm = (props: CourseFormProps) => {
     const onSubmit = async () => {
         try {
             setLoading(true);
-            await mutate(input);
-            // await updateCourse(course.id, input);
-            // await mutate();
+            await mutateCourse(input);
+
+            const tagPromises: Promise<any>[] = [];
+
+            addedTags.forEach((tag) => {
+                tagPromises.push(createTag(course.id, tag));
+            });
+            deletedTags.forEach((tag) => {
+                tagPromises.push(
+                    mutateTags(oldTags[tag], null, { method: "DELETE" })
+                );
+            });
+
+            await Promise.all(tagPromises);
+
+            // revalidate
+            mutateTags(undefined, undefined, { sendRequest: false });
+
             setLoading(false);
             setSuccess(true);
-            setDisabled(true);
         } catch (e) {
             logException(e);
             setLoading(false);
@@ -108,9 +162,7 @@ const CourseForm = (props: CourseFormProps) => {
     const onArchived = async () => {
         try {
             setLoading(true);
-            await mutate({ archived: true });
-            // await updateCourse(course.id, { archived: true });
-            // await mutate();
+            await mutateCourse({ archived: true });
             setLoading(false);
             setOpen(false);
             router.replace("/");
@@ -137,6 +189,48 @@ const CourseForm = (props: CourseFormProps) => {
                     value: semester.id,
                 };
             });
+    };
+
+    const handleCreateTag = (inputValue: string) => {
+        if (!(inputValue in oldTags)) {
+            setAddedTags([...addedTags, inputValue]);
+        } else {
+            setDeletedTags(
+                deletedTags.filter((tag) => {
+                    return tag !== inputValue;
+                })
+            );
+        }
+
+        setTagLabels([...tagLabels, inputValue]);
+    };
+
+    const handleTagChange = (_, event) => {
+        if (event.action === "remove-value") {
+            const text = event.removedValue.label;
+
+            if (text in oldTags) {
+                setDeletedTags([...deletedTags, text]);
+            } else {
+                setAddedTags(
+                    addedTags.filter((tag) => {
+                        return tag !== text;
+                    })
+                );
+            }
+
+            setTagLabels(
+                tagLabels.filter((tagLabel) => {
+                    return tagLabel !== text;
+                })
+            );
+        } else if (event.action === "clear") {
+            setTagLabels([]);
+            setAddedTags([]);
+            setDeletedTags(Object.keys(oldTags));
+        } else if (event.action === "select-option") {
+            handleCreateTag(event.option.label);
+        }
     };
 
     return (
@@ -186,9 +280,25 @@ const CourseForm = (props: CourseFormProps) => {
                     onChange={(id) =>
                         handleInputChange(undefined, {
                             name: "semester",
-                            value: id.value,
+                            value: id!.value,
                         })
                     }
+                />
+            </Form.Field>
+            <Form.Field>
+                <label htmlFor="tags-select">Tags</label>
+                <CreatableSelect
+                    id="tags-select"
+                    name="tags"
+                    disabled={loading}
+                    isClearable
+                    isMulti
+                    cacheOptions
+                    options={tagOptions}
+                    value={tagLabels.map((s) => ({ label: s, value: s }))}
+                    placeholder="Type a tag and press enter..."
+                    onCreateOption={handleCreateTag}
+                    onChange={handleTagChange}
                 />
             </Form.Field>
             <Form.Field required>

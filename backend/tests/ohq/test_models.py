@@ -1,8 +1,17 @@
 from django.contrib.auth import get_user_model
 from django.core import mail
 from django.test import TestCase
+from django.utils import timezone
 
-from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester
+from ohq.models import (
+    Course,
+    Membership,
+    MembershipInvite,
+    Question,
+    Queue,
+    QueueStatistic,
+    Semester,
+)
 
 
 User = get_user_model()
@@ -125,3 +134,38 @@ class SemesterTestCase(TestCase):
 
     def test_str(self):
         self.assertEqual(str(self.semester), f"{self.semester.term.title()} {self.semester.year}")
+
+
+class QueueStatisticTestCase(TestCase):
+    def setUp(self):
+        semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
+        course = Course.objects.create(
+            course_code="000", department="TEST", course_title="Title", semester=semester
+        )
+        self.queue = Queue.objects.create(name="Queue", course=course)
+        self.heatmap_queue_statistic = QueueStatistic.objects.create(
+            queue=self.queue,
+            metric=QueueStatistic.METRIC_HEATMAP_WAIT,
+            value=100.00,
+            day=QueueStatistic.DAY_MONDAY,
+            hour=0,
+        )
+        today = timezone.datetime.today().date()
+        self.avg_time_helping_queue_statistic = QueueStatistic.objects.create(
+            queue=self.queue,
+            metric=QueueStatistic.METRIC_AVG_TIME_HELPING,
+            value=120.00,
+            date=today - timezone.timedelta(days=(today.weekday() + 1) % 7),
+        )
+
+    def test_str(self):
+        self.assertEqual(
+            str(self.heatmap_queue_statistic),
+            f"{self.queue}: {self.heatmap_queue_statistic.get_metric_display()} "
+            f"{self.heatmap_queue_statistic.get_day_display()} "
+            f"{self.heatmap_queue_statistic.hour}:00 - {self.heatmap_queue_statistic.hour+1}:00",
+        )
+        self.assertEqual(
+            str(self.avg_time_helping_queue_statistic),
+            f"{self.queue}: {self.avg_time_helping_queue_statistic.get_metric_display()}",
+        )

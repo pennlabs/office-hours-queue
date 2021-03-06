@@ -10,7 +10,7 @@ import InviteModal from "./Invites/InviteModal";
 import { prettifyRole, isLeadershipRole } from "../../../utils/enums";
 import ChangeRoleDropdown from "./ChangeRoleDropdown";
 import { AuthUserContext } from "../../../context/auth";
-import { Kind, Membership, MembershipInvite } from "../../../types";
+import { Kind, Membership, MembershipInvite, Course } from "../../../types";
 import {
     useInvitedMembers,
     useMembers,
@@ -18,12 +18,13 @@ import {
 } from "../../../hooks/data-fetching/course";
 
 interface RosterProps {
-    courseId: number;
+    course: Course;
     memberships: Membership[];
     invites: MembershipInvite[];
 }
 const Roster = (props: RosterProps) => {
-    const { courseId, memberships: rawMemberships, invites } = props;
+    const { course, memberships: rawMemberships, invites } = props;
+    const courseId = course.id;
     // Types
     type tableStateType = {
         direction: "ascending" | "descending";
@@ -258,8 +259,10 @@ const Roster = (props: RosterProps) => {
                 {memberships && (
                     <Segment basic>
                         <RosterForm
-                            showShowInvitedButton={invitedMembers.length > 0}
-                            showInviteButton={leader}
+                            showShowInvitedButton={
+                                invitedMembers.length > 0 && !course.archived
+                            }
+                            showInviteButton={leader && !course.archived}
                             invitedShown={showInvited}
                             filterFunc={filterUsers}
                             inviteFunc={triggerModal}
@@ -397,7 +400,7 @@ const Roster = (props: RosterProps) => {
                                     >
                                         Role
                                     </Table.HeaderCell>
-                                    {leader && (
+                                    {leader && !course.archived && (
                                         <Table.HeaderCell width={1}>
                                             Remove
                                         </Table.HeaderCell>
@@ -424,6 +427,7 @@ const Roster = (props: RosterProps) => {
                                         </Table.Cell>
                                         <Table.Cell>
                                             {!leader ||
+                                            course.archived ||
                                             membership.kind === Kind.STUDENT ? (
                                                 prettifyRole(membership.kind)
                                             ) : (
@@ -443,7 +447,7 @@ const Roster = (props: RosterProps) => {
                                                 />
                                             )}
                                         </Table.Cell>
-                                        {leader && (
+                                        {leader && !course.archived && (
                                             <Table.Cell textAlign="center">
                                                 <RemoveButton
                                                     mutateInvites={

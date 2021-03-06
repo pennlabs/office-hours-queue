@@ -6,7 +6,7 @@ applications:
     image: pennlabs/office-hours-queue-backend
     secret: office-hours-queue
     cmd: ["/usr/local/bin/asgi-run"]
-    replicas: 2
+    replicas: 4
     ingress:
       hosts:
         - host: ohq.io
@@ -21,7 +21,7 @@ applications:
   - name: django-wsgi
     image: pennlabs/office-hours-queue-backend
     secret: office-hours-queue
-    replicas: 4
+    replicas: 8
     ingress:
       hosts:
         - host: ohq.io
@@ -65,3 +65,18 @@ cronjobs:
     image: pennlabs/office-hours-queue-backend
     secret: office-hours-queue
     cmd: ["python", "manage.py", "calculatewaittimes"]
+  - name: queue-weekly-stat
+    schedule: "0 8 * * *"
+    image: pennlabs/office-hours-queue-backend
+    secret: office-hours-queue
+    cmd: ["python", "manage.py", "queue_weekly_stat"]
+  - name: queue-heatmap-stat
+    schedule: "0 8 * * *"
+    image: pennlabs/office-hours-queue-backend
+    secret: office-hours-queue
+    cmd: ["python", "manage.py", "queue_heatmap_stat"]
+  - name: calculate-wait-time-days
+    schedule: "0 8 * * *"
+    image: pennlabs/office-hours-queue-backend
+    secret: office-hours-queue
+    cmd: ["python", "manage.py", "wait_time_days"]
