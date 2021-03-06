@@ -25,15 +25,7 @@ const Dashboard = () => {
         setMessageDisp(state !== "true");
     }, []);
 
-    const {
-        memberships,
-        mutate,
-    }: [
-        UserMembership[],
-        any,
-        boolean,
-        mutateFunction<UserMembership[]>
-    ] = useMemberships(initialUser);
+    const { memberships, mutate } = useMemberships(initialUser);
 
     const getMemberships = (isStudent: boolean): UserMembership[] => {
         return memberships.filter((membership) => {
