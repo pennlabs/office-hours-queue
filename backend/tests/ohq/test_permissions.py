@@ -99,7 +99,7 @@ class CourseTestCase(TestCase):
                 "head_ta": 200,
                 "ta": 200,
                 "student": 200,
-                "non_member": 403,
+                "non_member": 200,
                 "anonymous": 403,
             },
             "destroy": {
