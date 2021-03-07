@@ -2,20 +2,31 @@ import React, { useState } from "react";
 import { Button, Modal } from "semantic-ui-react";
 import { mutate } from "swr";
 import { joinCourse } from "../../../../hooks/data-fetching/dashboard";
-import { Course } from "../../../../types";
+import { Course, Toast } from "../../../../types";
+import { logException } from "../../../../utils/sentry";
 
 interface ModalRedirectAddCourseProps {
     course: Course;
+    toastFunc: (toast: Toast) => void;
 }
 
 const ModalRedirectAddCourse = (props: ModalRedirectAddCourseProps) => {
-    const { course } = props;
+    const { course, toastFunc } = props;
     const [open, setOpen] = useState(true);
 
     const onJoin = async () => {
         setOpen(false);
-        await joinCourse(`${course.id}`);
-        mutate("/accounts/me/");
+        try {
+            await joinCourse(`${course.id}`);
+            mutate("/accounts/me/");
+            toastFunc({
+                message: `Added ${course.department} ${course.courseCode}!`,
+                success: true,
+            });
+        } catch (e) {
+            logException(e);
+            toastFunc({ message: "Something went wrong!", success: false });
+        }
     };
 
     return (
