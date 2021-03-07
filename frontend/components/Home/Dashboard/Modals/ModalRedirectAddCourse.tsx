@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Button, Modal } from "semantic-ui-react";
-import useSWR from "swr";
+import { mutate } from "swr";
 import { joinCourse } from "../../../../hooks/data-fetching/dashboard";
-import { useCourse } from "../../../../hooks/data-fetching/course";
 import { Course } from "../../../../types";
 
 interface ModalRedirectAddCourseProps {
@@ -16,6 +15,7 @@ const ModalRedirectAddCourse = (props: ModalRedirectAddCourseProps) => {
     const onJoin = async () => {
         setOpen(false);
         await joinCourse(`${course.id}`);
+        mutate("/accounts/me/");
     };
 
     return (

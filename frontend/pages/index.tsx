@@ -16,7 +16,7 @@ const LandingPage = () => {
 
     return (
         <>
-            {signUpCourse && !signUpCourse.inviteOnly && (
+            {signUpCourse && signUpCourse.id && !signUpCourse.isMember && (
                 <ModalRedirectAddCourse course={signUpCourse} />
             )}
             <Head>
