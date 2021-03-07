@@ -14,9 +14,7 @@ import { logException } from "../../../utils/sentry";
 const AccountForm = () => {
     const { user: initialUser } = useContext(AuthUserContext);
 
-    const { data: user, mutate } = useAccountInfo(
-        initialUser
-    );
+    const { data: user, mutate } = useAccountInfo(initialUser);
 
     const [input] = useState(JSON.parse(JSON.stringify(user)));
 

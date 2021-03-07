@@ -4,11 +4,7 @@ import {
     useRealtimeResourceList,
     useRealtimeResource,
 } from "@pennlabs/rest-live-hooks";
-// TODO: REMOVE THIS AS SOON AS WE REFACTOR
-import {
-    useResourceList as useResourceListNew,
-    useResource as useResourceNew,
-} from "@pennlabs/rest-hooks";
+import { useResourceList, useResource } from "@pennlabs/rest-hooks";
 import {
     Announcement,
     Course,
@@ -25,7 +21,6 @@ import {
 } from "../../types";
 import { isLeadershipRole } from "../../utils/enums";
 import { doApiRequest } from "../../utils/fetch";
-import { useResource, useResourceList } from "./resources";
 import {
     QUEUE_STATUS_POLL_INTERVAL,
     STAFF_QUESTION_POLL_INTERVAL,
@@ -35,12 +30,12 @@ import {
 } from "../../constants";
 
 export const useCourse = (courseId: number, initialData: Course) =>
-    useResourceNew(`/api/courses/${courseId}/`, {
+    useResource(`/api/courses/${courseId}/`, {
         initialData,
     });
 
 export const useTags = (courseId: number, initialData: Tag[]) =>
-    useResourceListNew(
+    useResourceList(
         `/api/courses/${courseId}/tags/`,
         (id) => `/api/courses/${courseId}/tags/${id}/`,
         {
@@ -51,7 +46,7 @@ export const useTags = (courseId: number, initialData: Tag[]) =>
     );
 
 export const useMembers = (courseId: number, initialData: Membership[]) =>
-    useResourceListNew(
+    useResourceList(
         `/api/courses/${courseId}/members/`,
         (id) => `/api/courses/${courseId}/members/${id}/`,
         { initialData }
@@ -61,14 +56,14 @@ export const useInvitedMembers = (
     courseId: number,
     initialData: MembershipInvite[]
 ) =>
-    useResourceListNew(
+    useResourceList(
         `/api/courses/${courseId}/invites/`,
         (id) => `/api/courses/${courseId}/invites/${id}/`,
         { initialData }
     );
 
 export function useStaff(courseId: number, initialUser: User) {
-    const { data, error, isValidating, mutate } = useResourceNew(
+    const { data, error, isValidating, mutate } = useResource(
         "/api/accounts/me/",
         {
             initialData: initialUser,
@@ -96,7 +91,7 @@ export function useLeadership(courseId: number, initialData: Membership[]) {
         error,
         isValidating,
         mutate,
-    } = useResourceNew(`/api/courses/${courseId}/members/`, { initialData });
+    } = useResource(`/api/courses/${courseId}/members/`, { initialData });
     const leadership: Membership[] = (data || []).filter((mem) =>
         isLeadershipRole(mem.kind)
     );
@@ -142,7 +137,7 @@ function newResourceFetcher<R>(path, ...args): R | Promise<R> {
 }
 
 export const useQueues = (courseId: number, initialData: Queue[]) =>
-    useResourceListNew<Queue>(
+    useResourceList<Queue>(
         `/api/courses/${courseId}/queues/`,
         (id) => `/api/courses/${courseId}/queues/${id}/`,
         {
@@ -173,7 +168,7 @@ export const useQueueQuota = (courseId: number, queueId: number) => {
         }
     );
 
-    const { data, mutate } = useResourceNew<{
+    const { data, mutate } = useResource<{
         count: number;
         // Lint tradeoff between python and JS
         // eslint-disable-next-line
@@ -243,7 +238,7 @@ export const useQuestionPosition = (
     queueId: number,
     id: number
 ) => {
-    const { data, error, isValidating, mutate } = useResourceNew(
+    const { data, error, isValidating, mutate } = useResource(
         `/courses/${courseId}/queues/${queueId}/questions/${id}/position/`,
         {
             initialData: {
@@ -274,7 +269,7 @@ export const useLastQuestions = (courseId: number, queueId: number) => {
         }
     );
 
-    const { data, error, isValidating, mutate } = useResourceListNew(
+    const { data, error, isValidating, mutate } = useResourceList(
         `/courses/${courseId}/queues/${queueId}/questions/last/`,
         (id) => `/courses/${courseId}/queues/${queueId}/last/${id}/`
     );
@@ -293,7 +288,7 @@ export const useAnnouncements = (
     courseId: number,
     initialData: Announcement[]
 ) =>
-    useResourceListNew(
+    useResourceList(
         `/api/courses/${courseId}/announcements/`,
         (id) => `/api/courses/${courseId}/announcements/${id}/`,
         {
