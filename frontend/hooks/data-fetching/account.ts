@@ -1,4 +1,3 @@
-import useSWR from "swr";
 import { parsePhoneNumberFromString } from "libphonenumber-js/max";
 import { useResource } from "@pennlabs/rest-hooks";
 import { User } from "../../types";
@@ -23,7 +22,7 @@ export async function validateSMS(code) {
             smsVerificationCode: code,
         },
     };
-    const res = await doApiRequest("/accounts/me/", {
+    const res = await doApiRequest("/api/accounts/me/", {
         method: "PATCH",
         body: payload,
     });
@@ -35,7 +34,7 @@ export async function validateSMS(code) {
 }
 
 export async function resendSMSVerification() {
-    const res = await doApiRequest("/accounts/me/resend/", {
+    const res = await doApiRequest("/api/accounts/me/resend/", {
         method: "POST",
     });
 
@@ -60,7 +59,7 @@ export async function updateUser(payload: Partial<User>) {
 
         processedPayload.profile.phoneNumber = parsedNumber as string;
     }
-    const res = await doApiRequest("/accounts/me/", {
+    const res = await doApiRequest("/api/accounts/me/", {
         method: "PATCH",
         body: processedPayload,
     });

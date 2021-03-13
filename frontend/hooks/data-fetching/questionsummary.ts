@@ -60,7 +60,7 @@ export const useQuestions = (
     courseId: number,
     initialQuestions: QuestionListResult
 ): QuestionsFilterResponse => {
-    const baseUrl = `/courses/${courseId}/questions/`;
+    const baseUrl = `/api/courses/${courseId}/questions/`;
 
     const {
         data,

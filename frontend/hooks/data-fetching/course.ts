@@ -105,7 +105,7 @@ export async function sendMassInvites(
 ) {
     const payload = { emails, kind };
 
-    const res = await doApiRequest(`/courses/${courseId}/mass-invite/`, {
+    const res = await doApiRequest(`/api/courses/${courseId}/mass-invite/`, {
         method: "POST",
         body: payload,
     });
@@ -116,7 +116,7 @@ export async function sendMassInvites(
 }
 
 export async function getSemesters(): Promise<Semester[]> {
-    return doApiRequest("/semesters/")
+    return doApiRequest("/api/semesters/")
         .then((res) => res.json())
         .catch((_) => []);
 }
@@ -124,7 +124,7 @@ export async function getSemesters(): Promise<Semester[]> {
 export async function createTag(courseId: number, name: string): Promise<Tag> {
     const payload = { name };
 
-    return doApiRequest(`/courses/${courseId}/tags/`, {
+    return doApiRequest(`/api/courses/${courseId}/tags/`, {
         method: "POST",
         body: payload,
     })
@@ -239,7 +239,7 @@ export const useQuestionPosition = (
     id: number
 ) => {
     const { data, error, isValidating, mutate } = useResource(
-        `/courses/${courseId}/queues/${queueId}/questions/${id}/position/`,
+        `/api/courses/${courseId}/queues/${queueId}/questions/${id}/position/`,
         {
             initialData: {
                 position: -1,
@@ -270,7 +270,7 @@ export const useLastQuestions = (courseId: number, queueId: number) => {
     );
 
     const { data, error, isValidating, mutate } = useResourceList(
-        `/courses/${courseId}/queues/${queueId}/questions/last/`,
+        `/api/courses/${courseId}/queues/${queueId}/questions/last/`,
         (id) => `/courses/${courseId}/queues/${queueId}/last/${id}/`
     );
 
@@ -303,7 +303,7 @@ export async function createAnnouncement(
     courseId: number,
     payload: { content: string }
 ) {
-    const res = await doApiRequest(`/courses/${courseId}/announcements/`, {
+    const res = await doApiRequest(`/api/courses/${courseId}/announcements/`, {
         method: "POST",
         body: payload,
     });
@@ -313,7 +313,7 @@ export async function createAnnouncement(
 }
 
 export async function clearQueue(courseId: number, queueId: number) {
-    await doApiRequest(`/courses/${courseId}/queues/${queueId}/clear/`, {
+    await doApiRequest(`/api/courses/${courseId}/queues/${queueId}/clear/`, {
         method: "POST",
     });
     return globalMutate(`/courses/${courseId}/queues/${queueId}/`);
@@ -325,7 +325,7 @@ export async function createQuestion(
     payload: Partial<Omit<Question, "tags"> & { tags: Partial<Tag>[] }>
 ): Promise<void> {
     const res = await doApiRequest(
-        `/courses/${courseId}/queues/${queueId}/questions/`,
+        `/api/courses/${courseId}/queues/${queueId}/questions/`,
         {
             method: "POST",
             body: payload,
@@ -341,7 +341,7 @@ export async function createQueue(
     courseId: number,
     payload: Partial<Queue>
 ): Promise<void> {
-    const res = await doApiRequest(`/courses/${courseId}/queues/`, {
+    const res = await doApiRequest(`/api/courses/${courseId}/queues/`, {
         method: "POST",
         body: payload,
     });
@@ -358,7 +358,7 @@ export async function finishQuestion(
 ): Promise<void> {
     const payload = { status: QuestionStatus.ANSWERED };
     const res = await doApiRequest(
-        `/courses/${courseId}/queues/${queueId}/questions/${questionId}/`,
+        `/api/courses/${courseId}/queues/${queueId}/questions/${questionId}/`,
         {
             method: "PATCH",
             body: payload,
