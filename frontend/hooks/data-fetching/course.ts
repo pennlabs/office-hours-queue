@@ -36,7 +36,6 @@ export const useTags = (courseId: number, initialData: Tag[]) =>
         (id) => `/api/courses/${courseId}/tags/${id}/`,
         {
             initialData,
-            fetcher: newResourceFetcher,
             revalidateOnFocus: false,
         }
     );
@@ -128,17 +127,12 @@ export async function createTag(courseId: number, name: string): Promise<Tag> {
         .catch((_) => null);
 }
 
-function newResourceFetcher<R>(path, ...args): R | Promise<R> {
-    return fetch(path, ...args).then((res) => res.json());
-}
-
 export const useQueues = (courseId: number, initialData: Queue[]) =>
     useResourceList<Queue>(
         `/api/courses/${courseId}/queues/`,
         (id) => `/api/courses/${courseId}/queues/${id}/`,
         {
             initialData,
-            fetcher: newResourceFetcher,
             refreshInterval: QUEUE_STATUS_POLL_INTERVAL,
             refreshWhenHidden: true,
         }
@@ -157,9 +151,6 @@ export const useQueueQuota = (courseId: number, queueId: number) => {
             },
         },
         {
-            fetcher: newResourceFetcher,
-            // TODO: Temp hack because SWRConfig doesn't configure this hook due to
-            // SWR not being marked as peer dep
             refreshWhenHidden: true,
         }
     );
@@ -170,10 +161,7 @@ export const useQueueQuota = (courseId: number, queueId: number) => {
         // eslint-disable-next-line
         wait_time_mins: number;
     }>(`/api/courses/${courseId}/queues/${queueId}/questions/quota_count/`, {
-        fetcher: newResourceFetcher,
         refreshInterval: STUDENT_QUOTA_POLL_INTERVAL,
-        // TODO: Temp hack because SWRConfig doesn't configure this hook due to
-        // SWR not being marked as peer dep
         refreshWhenHidden: true,
     });
 
@@ -204,10 +192,7 @@ export const useQuestions = (
         },
         {
             initialData,
-            fetcher: newResourceFetcher,
             refreshInterval: STAFF_QUESTION_POLL_INTERVAL,
-            // TODO: Temp hack because SWRConfig doesn't configure this hook due to
-            // SWR not being marked as peer dep
             refreshWhenHidden: true,
             orderBy: (q1, q2) => {
                 const date1 = new Date(q1.timeAsked);
@@ -259,9 +244,6 @@ export const useLastQuestions = (courseId: number, queueId: number) => {
                 course_pk: courseId,
                 queue_pk: queueId,
             },
-        },
-        {
-            fetcher: newResourceFetcher,
         }
     );
 
@@ -289,7 +271,6 @@ export const useAnnouncements = (
         (id) => `/api/courses/${courseId}/announcements/${id}/`,
         {
             initialData,
-            fetcher: newResourceFetcher,
             refreshInterval: ANNOUNCEMENTS_POLL_INTERVAL,
             refreshWhenHidden: true,
         }
