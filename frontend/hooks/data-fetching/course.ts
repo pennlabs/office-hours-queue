@@ -1,9 +1,6 @@
 import { useEffect } from "react";
-import useSWR, { mutate as globalMutate } from "swr";
-import {
-    useRealtimeResourceList,
-    useRealtimeResource,
-} from "@pennlabs/rest-live-hooks";
+import { mutate as globalMutate } from "swr";
+import { useRealtimeResourceList } from "@pennlabs/rest-live-hooks";
 import { useResourceList, useResource } from "@pennlabs/rest-hooks";
 import {
     Announcement,
@@ -11,7 +8,6 @@ import {
     Kind,
     Membership,
     MembershipInvite,
-    mutateFunction,
     Question,
     Queue,
     Semester,
@@ -269,7 +265,7 @@ export const useLastQuestions = (courseId: number, queueId: number) => {
         }
     );
 
-    const { data, error, isValidating, mutate } = useResourceList(
+    const { data, error, isValidating, mutate } = useResourceList<Question>(
         `/api/courses/${courseId}/queues/${queueId}/questions/last/`,
         (id) => `/courses/${courseId}/queues/${queueId}/last/${id}/`
     );

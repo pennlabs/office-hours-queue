@@ -1,6 +1,5 @@
-import useSWR from "swr";
 import { useResource } from "@pennlabs/rest-hooks";
-import { Course, UserMembership, mutateFunction } from "../../types";
+import { Course, UserMembership } from "../../types";
 import { doApiRequest } from "../../utils/fetch";
 
 export async function getCourses(inputValue: string): Promise<Course[]> {
