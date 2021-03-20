@@ -1,5 +1,6 @@
 from django.db.models import Avg, Case, Count, F, When
 from django.db.models.functions import TruncDate
+from django.utils.timezone import localtime
 
 from ohq.models import Question, QueueStatistic
 
@@ -39,22 +40,56 @@ def calculate_avg_time_helping(queue, prev_sunday, coming_sunday):
     )
 
 
+def normalize_hour(utc_time):
+    """
+    Returns the hour of a time and ignores dst/standard time offsets
+    """
+    updated_time = utc_time + (localtime().dst() - localtime(utc_time).dst())
+    return localtime(updated_time).hour
+
+
 def calculate_wait_time_heatmap(queue, weekday, hour):
-    interval_avg = Question.objects.filter(
+    # questions for the given hour and one hour before
+    potential_questions = Question.objects.filter(
         queue=queue,
         time_asked__week_day=weekday,
-        time_asked__hour=hour,
+        time_asked__hour__range=[hour - 1, hour],
         time_response_started__isnull=False,
-    ).aggregate(avg_wait=Avg(F("time_response_started") - F("time_asked")))
+    )
 
-    interval_avg_wait = interval_avg["avg_wait"]
+    if hour == 0:
+        prev_day_potential = Question.objects.filter(
+            queue=queue,
+            time_asked__week_day=weekday - 1 if weekday > 1 else 7,
+            time_asked__hour=23,
+            time_response_started__isnull=False,
+        )
+        potential_questions = potential_questions.union(prev_day_potential)
+
+    collected_potential_questions = potential_questions.values()
+
+    # make hours between dst and standard time consistent and filter out any hours
+    # that don't match
+    interval_questions = list(
+        filter(
+            lambda question: normalize_hour(question["time_asked"]) == hour,
+            collected_potential_questions,
+        )
+    )
+
+    num = sum(
+        (question["time_response_started"] - question["time_asked"]).total_seconds()
+        for question in interval_questions
+    )
+
+    denom = len(interval_questions)
 
     QueueStatistic.objects.update_or_create(
         queue=queue,
         metric=QueueStatistic.METRIC_HEATMAP_WAIT,
         day=weekday,
         hour=hour,
-        defaults={"value": interval_avg_wait.seconds if interval_avg_wait else 0},
+        defaults={"value": num / denom if denom != 0 else num},
     )
 
 

@@ -273,14 +273,29 @@ class AverageQueueWaitHeatmapTestCase(TestCase):
 
         yesterday = timezone.localtime() - timezone.timedelta(days=1)
 
+        self.wait_times_0 = [1, 199, 300, 100]
+        for i in range(len(self.wait_times_0)):
+            time_asked = (
+                yesterday if i % 2 == 0 else yesterday + timezone.timedelta(weeks=-1, minutes=30)
+            )
+            time_asked = time_asked.replace(hour=0)
+            question = Question.objects.create(
+                text=f"Question {i}",
+                queue=self.queue,
+                asked_by=student,
+                responded_to_by=ta,
+                time_response_started=time_asked + timezone.timedelta(seconds=self.wait_times_0[i]),
+                status=Question.STATUS_ACTIVE,
+            )
+            question.time_asked = time_asked
+            question.save()
+
         self.wait_times_9 = [100, 200, 300, 400]
         for i in range(len(self.wait_times_9)):
-            yesterday_9 = yesterday.replace(hour=9, minute=0)
             time_asked = (
-                yesterday_9
-                if i % 2 == 0
-                else yesterday_9 + timezone.timedelta(weeks=-1, minutes=30)
+                yesterday if i % 2 == 0 else yesterday + timezone.timedelta(weeks=-1, minutes=30)
             )
+            time_asked = time_asked.replace(hour=9)
             question = Question.objects.create(
                 text=f"Question {i}",
                 queue=self.queue,
@@ -294,12 +309,10 @@ class AverageQueueWaitHeatmapTestCase(TestCase):
 
         self.wait_times_17 = [500, 600, 700, 800]
         for i in range(len(self.wait_times_17)):
-            yesterday_17 = yesterday.replace(hour=17, minute=0)
             time_asked = (
-                yesterday_17
-                if i % 2 == 0
-                else yesterday_17 + timezone.timedelta(weeks=-1, minutes=30)
+                yesterday if i % 2 == 0 else yesterday + timezone.timedelta(weeks=-1, minutes=30)
             )
+            time_asked = time_asked.replace(hour=17)
             question = Question.objects.create(
                 text=f"Question {i}",
                 queue=self.queue,
@@ -319,17 +332,26 @@ class AverageQueueWaitHeatmapTestCase(TestCase):
             queue=self.queue,
             asked_by=student,
             responded_to_by=ta,
-            time_response_started=yesterday_9
+            time_response_started=yesterday
             - timezone.timedelta(weeks=2, days=2, seconds=-self.older_wait_time),
             status=Question.STATUS_ACTIVE,
         )
-        self.older.time_asked = yesterday_9 - timezone.timedelta(weeks=2, days=2)
+        self.older.time_asked = yesterday - timezone.timedelta(weeks=2, days=2)
         self.older.save()
 
     def test_avg_queue_wait_computation(self):
         call_command("queue_heatmap_stat")
         yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
         yesterday_weekday = yesterday.weekday()
+
+        expected_0 = sum(self.wait_times_0) / len(self.wait_times_0)
+        actual_0 = QueueStatistic.objects.get(
+            queue=self.queue,
+            metric=QueueStatistic.METRIC_HEATMAP_WAIT,
+            day=(yesterday_weekday + 1) % 7 + 1,
+            hour=0,
+        ).value
+        self.assertEqual(expected_0, actual_0)
 
         expected_9 = sum(self.wait_times_9) / len(self.wait_times_9)
         actual_9 = QueueStatistic.objects.get(
