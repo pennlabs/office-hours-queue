@@ -1,4 +1,4 @@
-import React, { useContext, MutableRefObject } from "react";
+import React, { useContext, MutableRefObject, useEffect, useState } from "react";
 import { Grid, Segment, Header, Icon, ButtonProps } from "semantic-ui-react";
 import CourseSidebar from "./CourseSidebar";
 
@@ -13,7 +13,7 @@ import { Course as CourseType, Membership } from "../../types";
 interface CourseProps {
     render: (
         staff: boolean,
-        play: MutableRefObject<(() => void) | undefined>
+        play: MutableRefObject<(string) => void | undefined>
     ) => JSX.Element;
     course: CourseType;
     leadership: Membership[];
@@ -37,11 +37,14 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
         isAprilFirst ? aolAudio : bellAudio
     );
 
+
     const toggleNotifs = (
         event: React.MouseEvent<HTMLButtonElement>,
         data: ButtonProps
     ) => {
         setNotifs(!notifs);
+        play.current(`Notifications are turned ${notifs ? "ON" : "OFF"}`);
+        console.log("in");
         document.body.focus();
     };
 

@@ -9,7 +9,7 @@ interface QueueMenuItemProps {
     initialQuestions?: Question[];
     active: boolean;
     setActiveQueue: (id: number) => void;
-    play: MutableRefObject<() => void>;
+    play: MutableRefObject<(string) => void>;
 }
 
 const QuestionNotifier = ({
@@ -17,14 +17,14 @@ const QuestionNotifier = ({
     play,
 }: {
     question: Question;
-    play: MutableRefObject<() => void>;
+    play: MutableRefObject<(string) => void>;
 }) => {
     useEffect(() => {
         if (
             question.status === QuestionStatus.ACTIVE ||
             !question.resolvedNote
         ) {
-            play.current();
+            play.current("A question has been asked");
         }
     }, [question.status, play, question.resolvedNote]);
     return null;
