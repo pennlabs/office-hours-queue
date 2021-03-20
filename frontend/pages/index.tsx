@@ -1,24 +1,25 @@
 import React, { useContext, useState } from "react";
-import { useRouter } from "next/router";
 import Head from "next/head";
 import { Snackbar } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
+import { NextPageContext } from "next";
 import { AuthUserContext, withAuth } from "../context/auth";
 import Home from "../components/Home/Home";
 import AuthPrompt from "../components/Auth/AuthPrompt";
 import Dashboard from "../components/Home/Dashboard/Dashboard";
 import ModalRedirectAddCourse from "../components/Home/Dashboard/Modals/ModalRedirectAddCourse";
-import { useCourse } from "../hooks/data-fetching/course";
-import { Toast } from "../types";
+import { Course, Toast } from "../types";
+import { doApiRequest } from "../utils/fetch";
 
-const LandingPage = () => {
+interface LandingPageProps {
+    signUpCourse?: Course;
+}
+
+const LandingPage = ({ signUpCourse }: LandingPageProps) => {
     const { user } = useContext(AuthUserContext);
-    const { query } = useRouter();
 
     const [toast, setToast] = useState<Toast>({ message: "", success: true });
     const [toastOpen, setToastOpen] = useState(false);
-
-    const [signUpCourse] = useCourse(Number(query.signup), undefined);
 
     return (
         <>
@@ -55,6 +56,25 @@ const LandingPage = () => {
             </Snackbar>
         </>
     );
+};
+
+LandingPage.getInitialProps = async (
+    context: NextPageContext
+): Promise<LandingPageProps> => {
+    const { query, req } = context;
+    const data = {
+        headers: req ? { cookie: req.headers.cookie } : undefined,
+    };
+
+    const signUpId = Number(query.signup);
+    let signUpCourse: Course | undefined;
+    if (signUpId) {
+        signUpCourse = await doApiRequest(
+            `/courses/${signUpId}`,
+            data
+        ).then((res) => res.json());
+    }
+    return { signUpCourse };
 };
 
 export default withAuth(LandingPage);
