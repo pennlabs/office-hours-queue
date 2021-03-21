@@ -1,4 +1,4 @@
-from django.db.models import Avg, Case, Count, F, When
+from django.db.models import Avg, F
 from django.db.models.functions import TruncDate
 from django.utils.timezone import localtime
 
@@ -163,7 +163,7 @@ def calculate_questions_per_ta_heatmap(queue, weekday, hour):
             date_question_count[question["date"]] = 1
             date_tas[question["date"]] = set()
 
-        if question["responded_to_by_id"] != None:
+        if question["responded_to_by_id"] is not None:
             date_tas[question["date"]].add(question["responded_to_by_id"])
 
     num = 0
