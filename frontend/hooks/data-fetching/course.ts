@@ -134,7 +134,6 @@ export const useQueues = (courseId: number, initialData: Queue[]) =>
         {
             initialData,
             refreshInterval: QUEUE_STATUS_POLL_INTERVAL,
-            refreshWhenHidden: true,
         }
     );
 
@@ -149,9 +148,6 @@ export const useQueueQuota = (courseId: number, queueId: number) => {
                 course_pk: courseId,
                 queue_pk: queueId,
             },
-        },
-        {
-            refreshWhenHidden: true,
         }
     );
 
@@ -162,7 +158,6 @@ export const useQueueQuota = (courseId: number, queueId: number) => {
         wait_time_mins: number;
     }>(`/api/courses/${courseId}/queues/${queueId}/questions/quota_count/`, {
         refreshInterval: STUDENT_QUOTA_POLL_INTERVAL,
-        refreshWhenHidden: true,
     });
 
     const stringified = JSON.stringify(qdata);
@@ -193,7 +188,6 @@ export const useQuestions = (
         {
             initialData,
             refreshInterval: STAFF_QUESTION_POLL_INTERVAL,
-            refreshWhenHidden: true,
             orderBy: (q1, q2) => {
                 const date1 = new Date(q1.timeAsked);
                 const date2 = new Date(q2.timeAsked);
@@ -272,7 +266,6 @@ export const useAnnouncements = (
         {
             initialData,
             refreshInterval: ANNOUNCEMENTS_POLL_INTERVAL,
-            refreshWhenHidden: true,
         }
     );
 
