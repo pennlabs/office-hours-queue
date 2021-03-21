@@ -128,25 +128,56 @@ def calculate_num_students_helped(queue, prev_sunday, coming_saturday):
 
 
 def calculate_questions_per_ta_heatmap(queue, weekday, hour):
-    interval_stats = (
-        Question.objects.filter(queue=queue, time_asked__week_day=weekday, time_asked__hour=hour)
-        .annotate(date=TruncDate("time_asked"))
-        .values("date")
-        .annotate(
-            questions=Count("date", distinct=False), tas=Count("responded_to_by", distinct=True),
+    # questions for the given hour and one hour before
+    potential_questions = Question.objects.filter(
+        queue=queue, time_asked__week_day=weekday, time_asked__hour__range=[hour - 1, hour]
+    ).annotate(date=TruncDate("time_asked"))
+
+    if hour == 0:
+        prev_day_potential = Question.objects.filter(
+            queue=queue, time_asked__week_day=weekday - 1 if weekday > 1 else 7, time_asked__hour=23
+        ).annotate(date=TruncDate("time_asked"))
+        potential_questions = potential_questions.union(prev_day_potential)
+
+    collected_potential_questions = potential_questions.values()
+
+    # make hours between dst and standard time consistent and filter out any hours
+    # that don't match
+    interval_questions = list(
+        filter(
+            lambda question: normalize_hour(question["time_asked"]) == hour,
+            collected_potential_questions,
         )
-        .annotate(
-            q_per_ta=Case(When(tas=0, then=F("questions")), default=1.0 * F("questions") / F("tas"))
-        )
-        .aggregate(avg=Avg(F("q_per_ta")))
     )
 
-    statistic = interval_stats["avg"]
+    # question count for each date
+    date_question_count = {}
+
+    # unique ta's for each date
+    date_tas = {}
+
+    for question in interval_questions:
+        if question["date"] in date_question_count:
+            date_question_count[question["date"]] += 1
+        else:
+            date_question_count[question["date"]] = 1
+            date_tas[question["date"]] = set()
+
+        if question["responded_to_by_id"] != None:
+            date_tas[question["date"]].add(question["responded_to_by_id"])
+
+    num = 0
+    for date in date_question_count:
+        num += (
+            date_question_count[date] / len(date_tas[date])
+            if len(date_tas[date]) != 0
+            else date_question_count[date]
+        )
 
     QueueStatistic.objects.update_or_create(
         queue=queue,
         metric=QueueStatistic.METRIC_HEATMAP_QUESTIONS_PER_TA,
         day=weekday,
         hour=hour,
-        defaults={"value": statistic if statistic else 0},
+        defaults={"value": num / len(date_question_count) if len(date_question_count) != 0 else 0},
     )
