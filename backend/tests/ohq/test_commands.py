@@ -717,21 +717,22 @@ class AverageQueueWaitTimeByDateTestCase(TestCase):
         q4.save()
 
     def test_wait_time_days_computation(self):
-        call_command("wait_time_days")
+        call_command("queue_daily_stat")
         expected = sum(self.wait_times) * 6 / (len(self.wait_times) * 3)
 
         yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
         actual = QueueStatistic.objects.get(
-            queue=self.queue, metric=QueueStatistic.METRIC_LIST_WAIT_TIME_DAYS, date=yesterday
+            queue=self.queue, metric=QueueStatistic.METRIC_AVG_WAIT, date=yesterday
         ).value
 
         self.assertEqual(expected, actual)
 
-        call_command("wait_time_days", "--hist")
+        # call_command("wait_time_days", "--hist")
+        call_command("queue_daily_stat", "--hist")
         expected_old = self.old_time_wait
         actual_old = QueueStatistic.objects.get(
             queue=self.queue,
-            metric=QueueStatistic.METRIC_LIST_WAIT_TIME_DAYS,
+            metric=QueueStatistic.METRIC_AVG_WAIT,
             date=yesterday - timezone.timedelta(days=2),
         ).value
 

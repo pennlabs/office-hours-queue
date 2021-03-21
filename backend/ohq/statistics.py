@@ -4,19 +4,32 @@ from django.db.models.functions import TruncDate
 from ohq.models import Question, QueueStatistic
 
 
-def calculate_avg_queue_wait(queue, prev_sunday, coming_sunday):
+def calculate_avg_queue_wait(queue, start_date, end_date):
     avg = Question.objects.filter(
         queue=queue,
-        time_asked__date__range=[prev_sunday, coming_sunday],
+        time_asked__date__range=[start_date, end_date],
         time_response_started__isnull=False,
     ).aggregate(avg_wait=Avg(F("time_response_started") - F("time_asked")))
 
-    wait = avg["avg_wait"]
+    test = Question.objects.filter(
+        queue=queue,
+        time_asked__date__range=[start_date, end_date],
+        time_response_started__isnull=False,
+    )
+
+    # print(queue.name, start_date, end_date)
+    # print(test)
+    # for ele in test:
+    #     print(ele.time_asked)
+    
+    # print()
+
+    # wait = avg["avg_wait"]
 
     QueueStatistic.objects.update_or_create(
         queue=queue,
         metric=QueueStatistic.METRIC_AVG_WAIT,
-        date=prev_sunday,
+        date=start_date,
         defaults={"value": wait.seconds if wait else 0},
     )
 
