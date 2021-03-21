@@ -69,7 +69,7 @@ cronjobs:
     schedule: "0 8 * * *"
     image: pennlabs/office-hours-queue-backend
     secret: office-hours-queue
-    cmd: ["python", "manage.py", "queue_weekly_stat"]
+    cmd: ["python", "manage.py", "queue_daily_stat"]
   - name: queue-heatmap-stat
     schedule: "0 8 * * *"
     image: pennlabs/office-hours-queue-backend

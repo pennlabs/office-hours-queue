@@ -8,8 +8,8 @@ from django.utils import timezone
 
 from ohq.models import Course, Membership, MembershipInvite, Profile, Question, Queue, Semester
 
-# now = timezone.now()
-now = timezone.now() - timezone.timedelta(days=1)
+now = timezone.now()
+# now = timezone.now() - timezone.timedelta(days=1)
 
 # creating data for 6 courses, 8 queues, 10 questions
 courses = [
@@ -456,6 +456,6 @@ class Command(BaseCommand):
 
                     newQuestion.save()
 
-        # call_command("wait_time_days", "--hist")
-        # call_command("queue_weekly_stat", "--hist")
-        # call_command("queue_heatmap_stat", "--hist")
+        call_command("wait_time_days", "--hist")
+        call_command("queue_daily_stat", "--hist")
+        call_command("queue_heatmap_stat", "--hist")
