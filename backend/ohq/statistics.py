@@ -11,11 +11,11 @@ def calculate_avg_queue_wait(queue, start_date, end_date):
         time_response_started__isnull=False,
     ).aggregate(avg_wait=Avg(F("time_response_started") - F("time_asked")))
 
-    test = Question.objects.filter(
-        queue=queue,
-        time_asked__date__range=[start_date, end_date],
-        time_response_started__isnull=False,
-    )
+    # test = Question.objects.filter(
+    #     queue=queue,
+    #     time_asked__date__range=[start_date, end_date],
+    #     time_response_started__isnull=False,
+    # )
 
     # print(queue.name, start_date, end_date)
     # print(test)
@@ -24,7 +24,7 @@ def calculate_avg_queue_wait(queue, start_date, end_date):
     
     # print()
 
-    # wait = avg["avg_wait"]
+    wait = avg["avg_wait"]
 
     QueueStatistic.objects.update_or_create(
         queue=queue,
@@ -34,20 +34,32 @@ def calculate_avg_queue_wait(queue, start_date, end_date):
     )
 
 
-def calculate_avg_time_helping(queue, prev_sunday, coming_sunday):
+def calculate_avg_time_helping(queue, start_date, end_date):
     avg = Question.objects.filter(
         queue=queue,
         status=Question.STATUS_ANSWERED,
-        time_response_started__date__range=[prev_sunday, coming_sunday],
+        time_response_started__date__range=[start_date, end_date],
         time_responded_to__isnull=False,
     ).aggregate(avg_time=Avg(F("time_responded_to") - F("time_response_started")))
 
     duration = avg["avg_time"]
+    
+    # test = Question.objects.filter(
+    #     queue=queue,
+    #     time_asked__date__range=[start_date, end_date],
+    #     time_response_started__isnull=False,
+    # )
+    # print(queue.name, start_date, end_date)
+    # print(test)
+    # for ele in test:
+    #     print(ele.time_asked)
+    
+    # print()
 
     QueueStatistic.objects.update_or_create(
         queue=queue,
         metric=QueueStatistic.METRIC_AVG_TIME_HELPING,
-        date=prev_sunday,
+        date=start_date,
         defaults={"value": duration.seconds if duration else 0},
     )
 
@@ -71,27 +83,27 @@ def calculate_wait_time_heatmap(queue, weekday, hour):
     )
 
 
-def calculate_num_questions_ans(queue, prev_sunday, coming_saturday):
+def calculate_num_questions_ans(queue, start_date, end_date):
     num_questions = Question.objects.filter(
         queue=queue,
         status=Question.STATUS_ANSWERED,
-        time_responded_to__date__range=[prev_sunday, coming_saturday],
+        time_responded_to__date__range=[start_date, end_date],
     ).count()
 
     QueueStatistic.objects.update_or_create(
         queue=queue,
         metric=QueueStatistic.METRIC_NUM_ANSWERED,
-        date=prev_sunday,
+        date=start_date,
         defaults={"value": num_questions},
     )
 
 
-def calculate_num_students_helped(queue, prev_sunday, coming_saturday):
+def calculate_num_students_helped(queue, start_date, end_date):
     num_students = (
         Question.objects.filter(
             queue=queue,
             status=Question.STATUS_ANSWERED,
-            time_responded_to__date__range=[prev_sunday, coming_saturday],
+            time_responded_to__date__range=[start_date, end_date],
         )
         .distinct("asked_by")
         .count()
@@ -100,7 +112,7 @@ def calculate_num_students_helped(queue, prev_sunday, coming_saturday):
     QueueStatistic.objects.update_or_create(
         queue=queue,
         metric=QueueStatistic.METRIC_STUDENTS_HELPED,
-        date=prev_sunday,
+        date=start_date,
         defaults={"value": num_students},
     )
 

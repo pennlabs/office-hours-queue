@@ -268,6 +268,9 @@ class Question(models.Model):
     should_send_up_soon_notification = models.BooleanField(default=False)
     tags = models.ManyToManyField(Tag, blank=True)
 
+    def __str__(self):
+        return f"{self.queue}: Asked by {self.asked_by}"
+
 
 class QueueStatistic(models.Model):
     """
@@ -281,15 +284,13 @@ class QueueStatistic(models.Model):
     METRIC_NUM_ANSWERED = "NUM_ANSWERED"
     METRIC_STUDENTS_HELPED = "STUDENTS_HELPED"
     METRIC_AVG_TIME_HELPING = "AVG_TIME_HELPING"
-    METRIC_LIST_WAIT_TIME_DAYS = "LIST_WAIT_TIME_DAYS"
     METRIC_CHOICES = [
         (METRIC_HEATMAP_WAIT, "Average wait-time heatmap"),
         (METRIC_HEATMAP_QUESTIONS_PER_TA, "Questions per TA heatmap"),
-        (METRIC_AVG_WAIT, "Average wait-time"),
-        (METRIC_NUM_ANSWERED, "Number of questions answered per week"),
-        (METRIC_STUDENTS_HELPED, "Students helped per week"),
+        (METRIC_AVG_WAIT, "Average wait-time per day"),
+        (METRIC_NUM_ANSWERED, "Number of questions answered per day"),
+        (METRIC_STUDENTS_HELPED, "Students helped per day"),
         (METRIC_AVG_TIME_HELPING, "Average time helping students"),
-        (METRIC_LIST_WAIT_TIME_DAYS, "List of wait times per day"),
     ]
 
     # for specific days during the week - used for heatmap and graphs where day is x-axis

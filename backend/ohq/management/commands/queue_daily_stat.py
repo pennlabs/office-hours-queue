@@ -4,6 +4,9 @@ from django.utils import timezone
 from ohq.models import Question, Queue
 from ohq.statistics import (
     calculate_avg_queue_wait,
+    calculate_avg_time_helping,
+    calculate_num_questions_ans,
+    calculate_num_students_helped,
 )
 
 
@@ -31,9 +34,9 @@ class Command(BaseCommand):
             while iter_date <= yesterday:
 
                 calculate_avg_queue_wait(queue, iter_date, iter_date)
-                # calculate_avg_time_helping(queue, prev_sunday, coming_saturday)
-                # calculate_num_questions_ans(queue, prev_sunday, coming_saturday)
-                # calculate_num_students_helped(queue, prev_sunday, coming_saturday)
+                calculate_avg_time_helping(queue, iter_date, iter_date)
+                calculate_num_questions_ans(queue, iter_date, iter_date)
+                calculate_num_students_helped(queue, iter_date, iter_date)
 
                 iter_date += timezone.timedelta(days=1)
 
