@@ -336,6 +336,7 @@ class AnnouncementPermission(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
+        print(view.action)
         # Anonymous users can't do anything
         if not request.user.is_authenticated:
             return False
