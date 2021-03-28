@@ -243,6 +243,7 @@ class MembershipPermission(permissions.BasePermission):
 
         # Students+ can get, modify, and delete memberships
         # can list memberships of leaders.
+        # can also list any active TA's
         # With restrictions defined in has_object_permission
         return True
 
