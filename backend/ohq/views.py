@@ -376,24 +376,11 @@ class QueueViewSet(viewsets.ModelViewSet):
         questions_active = questions.filter(status=Question.STATUS_ACTIVE)
         questions_asked = questions.filter(status=Question.STATUS_ASKED)
 
-        time_threshold = timezone.now() - timedelta(minutes=1)
-        staff_active = (
-            Membership.objects.filter(
-                Q(course=OuterRef("course__pk"))
-                & ~Q(kind=Membership.KIND_STUDENT)
-                & Q(last_active__gt=time_threshold)
-            )
-            .order_by()
-            .values("course")
-            .annotate(count=Count("*", output_field=FloatField()),)
-            .values("count")
-        )
         qs = (
             Queue.objects.filter(course=self.kwargs["course_pk"], archived=False)
             .annotate(
                 questions_active=Subquery(questions_active[:1], output_field=IntegerField()),
                 questions_asked=Subquery(questions_asked[:1]),
-                staff_active=Subquery(staff_active[:1]),
             )
             .order_by("id")
         )
@@ -483,6 +470,23 @@ class MembershipViewSet(viewsets.ModelViewSet):
                 | Q(user=self.request.user)
             )
         return prefetch(qs, self.serializer_class)
+
+    @action(detail=False, url_path="staffActive")
+    def staff_active(self, request, course_pk):
+        """
+        Get's the active staff in a course
+        """
+    
+        time_threshold = timezone.now() - timedelta(minutes=1)
+
+        staff_active = Membership.objects.filter(
+            Q(course=course_pk)
+            & ~Q(kind=Membership.KIND_STUDENT)
+            & Q(last_active__gt=time_threshold)
+        )
+
+        serializer = self.get_serializer(staff_active, many=True)
+        return Response(serializer.data)
 
 
 class MembershipInviteViewSet(viewsets.ModelViewSet):

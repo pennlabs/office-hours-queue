@@ -136,7 +136,6 @@ class MembershipInviteSerializer(CourseRouteMixin):
 class QueueSerializer(CourseRouteMixin):
     questions_active = serializers.IntegerField(default=0, read_only=True)
     questions_asked = serializers.IntegerField(default=0, read_only=True)
-    staff_active = serializers.IntegerField(default=0, read_only=True)
 
     class Meta:
         model = Queue
@@ -149,7 +148,6 @@ class QueueSerializer(CourseRouteMixin):
             "active",
             "questions_active",
             "questions_asked",
-            "staff_active",
             "rate_limit_enabled",
             "rate_limit_length",
             "rate_limit_questions",
