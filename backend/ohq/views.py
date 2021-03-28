@@ -4,7 +4,7 @@ from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.core.validators import ValidationError
-from django.db.models import Count, Exists, FloatField, IntegerField, OuterRef, Q, Subquery
+from django.db.models import Count, Exists, IntegerField, OuterRef, Q, Subquery
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.utils import timezone
 from django.utils.crypto import get_random_string
@@ -471,12 +471,12 @@ class MembershipViewSet(viewsets.ModelViewSet):
             )
         return prefetch(qs, self.serializer_class)
 
-    @action(detail=False, url_path="staffActive")
+    @action(detail=False)
     def staff_active(self, request, course_pk):
         """
         Get's the active staff in a course
         """
-    
+
         time_threshold = timezone.now() - timedelta(minutes=1)
 
         staff_active = Membership.objects.filter(
