@@ -1,6 +1,6 @@
 import React, { useEffect, MutableRefObject } from "react";
 import { Menu, Label } from "semantic-ui-react";
-import { useQuestions } from "../../../hooks/data-fetching/course";
+import { useQuestionPosition, useQuestions } from "../../../hooks/data-fetching/course";
 import { Question, Queue, QuestionStatus } from "../../../types";
 
 interface QueueMenuItemProps {
@@ -15,18 +15,37 @@ interface QueueMenuItemProps {
 const QuestionNotifier = ({
     question,
     play,
+    courseId,
+    queue,
 }: {
     question: Question;
     play: MutableRefObject<(string) => void>;
-}) => {
+    courseId: number;
+    queue: Queue;
+    }) => {
+    
+    const [positionData, , , ,] = useQuestionPosition(
+        courseId,
+        queue.id,
+        question.id
+    );
     useEffect(() => {
         if (
             question.status === QuestionStatus.ACTIVE ||
             !question.resolvedNote
         ) {
-            play.current("A question has been asked");
+            play.current("Your question is being answered");
         }
     }, [question.status, play, question.resolvedNote]);
+
+    useEffect(() => {
+        if (
+            positionData.position == 1
+        ) {
+            play.current("Your question will be answered soon");
+        }
+    }, [positionData.position]);
+
     return null;
 };
 
@@ -68,7 +87,7 @@ export const QueueMenuItem = (props: QueueMenuItemProps) => {
                 {queue.name}
             </Menu.Item>
             {questions!.map((q) => (
-                <QuestionNotifier question={q} play={play} key={q.id} />
+                <QuestionNotifier question={q} play={play} courseId={courseId} queue={queue} key={q.id} />
             ))}
         </>
     );

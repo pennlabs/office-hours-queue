@@ -15,7 +15,9 @@ interface InstructorQueuePageProps {
     courseId: number;
     queues: Queue[];
     questionmap: QuestionMap;
-    play: MutableRefObject<() => void>;
+    play: MutableRefObject<(string) => void>;
+    notifs: boolean;
+    setNotifs: (boolean) => void;
     tags: Tag[];
     announcements: Announcement[];
 }
@@ -48,6 +50,8 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
         queues: rawQueues,
         questionmap,
         play,
+        notifs,
+        setNotifs,
         tags,
         announcements,
     } = props;
@@ -112,6 +116,8 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
                         mutate={mutate}
                         leader={leader}
                         play={play}
+                        notifs={notifs}
+                        setNotifs={setNotifs}
                         tags={tags}
                     />
                 )}

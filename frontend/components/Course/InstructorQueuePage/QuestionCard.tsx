@@ -25,10 +25,11 @@ export const fullName = (user: User) => `${user.firstName} ${user.lastName}`;
 interface QuestionCardProps {
     question: Question;
     mutate: mutateResourceListFunction<Question>;
-    play: MutableRefObject<() => void>;
+    notifs: boolean;
+    setNotifs: (boolean) => void;
 }
 const QuestionCard = (props: QuestionCardProps) => {
-    const { question, mutate: mutateQuestion, play } = props;
+    const { question, mutate: mutateQuestion, notifs, setNotifs } = props;
     const { id: questionId, askedBy } = question;
     const { user } = useContext(AuthUserContext);
     if (!user) {
@@ -39,6 +40,9 @@ const QuestionCard = (props: QuestionCardProps) => {
 
     const [open, setOpen] = useState(false);
     const [messageModalOpen, setMessageModalOpen] = useState(false);
+
+    const [lastNotif, setLastNotif] = useState(notifs);
+
     const timeString = (date, isLong) => {
         return new Date(date).toLocaleString(
             "en-US",
@@ -51,14 +55,18 @@ const QuestionCard = (props: QuestionCardProps) => {
     };
 
     const onAnswer = async () => {
+        setLastNotif(notifs);
+        setNotifs(false);
         await mutateQuestion(questionId, { status: QuestionStatus.ACTIVE });
     };
 
     const onFinish = async () => {
+        setNotifs(lastNotif);
         await mutateQuestion(questionId, { status: QuestionStatus.ANSWERED });
     };
 
     const onUndo = async () => {
+        setNotifs(lastNotif);
         await mutateQuestion(questionId, { status: QuestionStatus.ASKED });
     };
 

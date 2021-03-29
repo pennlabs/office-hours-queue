@@ -10,7 +10,7 @@ interface StudentQueuesProps {
     course: Course;
     queueMutate: mutateResourceListFunction<Queue>;
     questionmap: QuestionMap;
-    play: MutableRefObject<() => void>;
+    play: MutableRefObject<(string) => void>;
     tags: Tag[];
 }
 const StudentQueues = (props: StudentQueuesProps) => {

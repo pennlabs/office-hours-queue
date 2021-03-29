@@ -53,9 +53,12 @@ const QueuePage = (props: QueuePageProps) => {
                 <CourseWrapper
                     course={course}
                     leadership={leadership}
+                    notificationUI={true}
                     render={(
                         staff: boolean,
-                        play: MutableRefObject<() => void>
+                        play: MutableRefObject<(string) => void>,
+                        notifs: boolean,
+                        setNotifs: (boolean) => void
                     ) => {
                         return (
                             <div>
@@ -66,6 +69,8 @@ const QueuePage = (props: QueuePageProps) => {
                                         queues={queues}
                                         questionmap={questionmap}
                                         play={play}
+                                        notifs={notifs}
+                                        setNotifs={setNotifs}
                                         tags={tags}
                                     />
                                 )}

@@ -9,7 +9,7 @@ interface QueueMenuItemProps {
     initialQuestions?: Question[];
     active: boolean;
     setActiveQueue: (id: number) => void;
-    play: MutableRefObject<() => void>;
+    play: MutableRefObject<(string) => void>;
 }
 
 const QuestionNotifier = ({
@@ -17,12 +17,12 @@ const QuestionNotifier = ({
     play,
 }: {
     question: Question;
-    play: MutableRefObject<() => void>;
+    play: MutableRefObject<(string) => void>;
 }) => {
     const [resolved, setResolved] = useState(question.resolvedNote);
     useEffect(() => {
         if (!resolved && question.resolvedNote) {
-            play.current();
+            play.current("A Question Has Been Edited");
             setResolved(true);
         }
 
@@ -65,7 +65,8 @@ export const QueueMenuItem = (props: QueueMenuItemProps) => {
             latestAsked.current = new Date(
                 questions[questions.length - 1].timeAsked
             );
-            play.current();
+            console.log(play);
+            play.current("A New Question Has Been Asked smth smth smth");
         }
         // questions is not stale because we check for deep equality
         // eslint-disable-next-line

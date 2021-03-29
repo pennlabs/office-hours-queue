@@ -15,7 +15,7 @@ interface StudentQueuePageProps {
     course: Course;
     queues: Queue[];
     questionmap: QuestionMap;
-    play: MutableRefObject<() => void>;
+    play: MutableRefObject<(string) => void>;
     tags: Tag[];
     announcements: Announcement[];
 }

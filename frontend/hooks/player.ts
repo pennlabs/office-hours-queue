@@ -18,13 +18,17 @@ export function usePlayer(
     
     const [notifs, setNotifs] = useState(false);
 
-    const playFunc = (message: string) => {
-        if (notifs) {
-            player.current?.play();
-            new Notification('Alert', { body: message, data: 'somethingelse', icon: '../favicon.ico'});
-        }
-        console.log(Notification.permission);
+    useEffect(() => {
+        setNotifs(localStorage.getItem('notifs') === null ? false : localStorage.getItem('notifs') === "true" ? true : false);
+    }, [])
 
+    const playFunc = (message: string) => {
+        console.log("INSIDEE PLAYFUNC", notifs);
+        if (notifs) {
+            console.log("Sending notification now");
+            //player.current?.play();
+            //new Notification('Alert', { body: message, data: 'somethingelse', icon: '../favicon.ico'});
+        }
     };
 
     const play = useRef<(string) => void>(playFunc);

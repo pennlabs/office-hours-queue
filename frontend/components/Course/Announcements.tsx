@@ -25,7 +25,7 @@ interface AnnouncementsProps {
     courseId: number;
     initialAnnouncements: Announcement[];
     staff: boolean;
-    play: MutableRefObject<() => void>;
+    play: MutableRefObject<(string) => void>;
 }
 
 interface ModalProps {
@@ -270,7 +270,7 @@ export default function Announcements(props: AnnouncementsProps) {
         const unread = calcNumUnread(announcements!, latestRead, user!);
         setNumUnread(unread);
         if (!staff && unread > 0) {
-            play.current();
+            play.current(`You Have ${unread} New Announcements`);
         }
     }, [announcements, latestRead, play, staff, user]);
 

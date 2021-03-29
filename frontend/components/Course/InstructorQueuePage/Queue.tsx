@@ -14,7 +14,8 @@ interface QueueProps {
     mutate: mutateResourceListFunction<QueueType>;
     leader: boolean;
     editFunc: () => void;
-    play: MutableRefObject<() => void>;
+    notifs: boolean;
+    setNotifs: (boolean) => void;
     tags: Tag[];
 }
 
@@ -26,7 +27,8 @@ const Queue = (props: QueueProps) => {
         mutate,
         leader,
         editFunc,
-        play,
+        notifs,
+        setNotifs,
         tags,
     } = props;
     const { id: queueId, active, estimatedWaitTime } = queue;
@@ -216,7 +218,8 @@ const Queue = (props: QueueProps) => {
                             questions={filteredQuestions}
                             mutate={mutateQuestions}
                             active={active}
-                            play={play}
+                            notifs={notifs}
+                            setNotifs={setNotifs}
                         />
                     </Grid.Column>
                 </Grid.Row>
