@@ -25,7 +25,7 @@ import {
     STUDENT_QUOTA_POLL_INTERVAL,
 } from "../../constants";
 
-export const useCourse = (courseId: number, initialData: Course) =>
+export const useCourse = (courseId: number, initialData?: Course) =>
     useResource(`/api/courses/${courseId}/`, {
         initialData,
     });
