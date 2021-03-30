@@ -59,7 +59,7 @@ export default function Heatmap({ series, chartTitle }: HeatmapProps) {
                 formatter: toDisplayHour,
             },
             title: {
-                text: "Hour (EDT)",
+                text: "Hour (UTC)",
                 offsetY: 10,
             },
         },
