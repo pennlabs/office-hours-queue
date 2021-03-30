@@ -20,7 +20,7 @@ interface CourseProps {
 
 const CourseWrapper = ({ render, ...props }: CourseProps) => {
     const { course: rawCourse, leadership } = props;
-    const [course, , ,] = useCourse(rawCourse.id, rawCourse);
+    const { data: course } = useCourse(rawCourse.id, rawCourse);
 
     const { user: initialUser } = useContext(AuthUserContext);
     if (!initialUser) {
@@ -29,7 +29,7 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
         );
     }
 
-    const [, staff, , ,] = useStaff(rawCourse.id, initialUser);
+    const { staff } = useStaff(rawCourse.id, initialUser);
 
     const [notifs, setNotifs, play] = usePlayer(bellAudio);
 

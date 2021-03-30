@@ -1,21 +1,13 @@
 import { useEffect } from "react";
-import useSWR, { mutate as globalMutate } from "swr";
-import {
-    useRealtimeResourceList,
-    useRealtimeResource,
-} from "@pennlabs/rest-live-hooks";
-// TODO: REMOVE THIS AS SOON AS WE REFACTOR
-import {
-    useResourceList as useResourceListNew,
-    useResource as useResourceNew,
-} from "@pennlabs/rest-hooks";
+import { mutate as globalMutate } from "swr";
+import { useRealtimeResourceList } from "@pennlabs/rest-live-hooks";
+import { useResourceList, useResource } from "@pennlabs/rest-hooks";
 import {
     Announcement,
     Course,
     Kind,
     Membership,
     MembershipInvite,
-    mutateFunction,
     Question,
     Queue,
     Semester,
@@ -25,7 +17,6 @@ import {
 } from "../../types";
 import { isLeadershipRole } from "../../utils/enums";
 import { doApiRequest } from "../../utils/fetch";
-import { useResource, useResourceList } from "./resources";
 import {
     QUEUE_STATUS_POLL_INTERVAL,
     STAFF_QUESTION_POLL_INTERVAL,
@@ -34,25 +25,26 @@ import {
     STUDENT_QUOTA_POLL_INTERVAL,
 } from "../../constants";
 
-export const useCourse = (courseId: number, initialCourse: Course) =>
-    useResource(`/courses/${courseId}/`, initialCourse);
+export const useCourse = (courseId: number, initialData: Course) =>
+    useResource(`/api/courses/${courseId}/`, {
+        initialData,
+    });
 
 export const useTags = (courseId: number, initialData: Tag[]) =>
-    useResourceListNew(
+    useResourceList(
         `/api/courses/${courseId}/tags/`,
         (id) => `/api/courses/${courseId}/tags/${id}/`,
         {
             initialData,
-            fetcher: newResourceFetcher,
             revalidateOnFocus: false,
         }
     );
 
 export const useMembers = (courseId: number, initialData: Membership[]) =>
     useResourceList(
-        `/courses/${courseId}/members/`,
-        (id) => `/courses/${courseId}/members/${id}/`,
-        initialData
+        `/api/courses/${courseId}/members/`,
+        (id) => `/api/courses/${courseId}/members/${id}/`,
+        { initialData }
     );
 
 export const useInvitedMembers = (
@@ -60,18 +52,18 @@ export const useInvitedMembers = (
     initialData: MembershipInvite[]
 ) =>
     useResourceList(
-        `/courses/${courseId}/invites/`,
-        (id) => `/courses/${courseId}/invites/${id}/`,
-        initialData
+        `/api/courses/${courseId}/invites/`,
+        (id) => `/api/courses/${courseId}/invites/${id}/`,
+        { initialData }
     );
 
-export function useStaff(
-    courseId: number,
-    initialUser: User
-): [boolean, boolean, any, boolean, mutateFunction<User>] {
-    const { data, error, isValidating, mutate } = useSWR("/accounts/me/", {
-        initialData: initialUser,
-    });
+export function useStaff(courseId: number, initialUser: User) {
+    const { data, error, isValidating, mutate } = useResource(
+        "/api/accounts/me/",
+        {
+            initialData: initialUser,
+        }
+    );
 
     // data cannot be null because key does not change and
     // initialData is provided
@@ -85,23 +77,20 @@ export function useStaff(
 
     const leader = isLeadershipRole(course.kind);
     const staff = course.kind !== Kind.STUDENT;
-    return [leader, staff, error, isValidating, mutate];
+    return { leader, staff, error, isValidating, mutate };
 }
 
-export function useLeadership(
-    courseId: number,
-    initialData: Membership[]
-): [Membership[], any, boolean, mutateFunction<Membership[]>] {
+export function useLeadership(courseId: number, initialData: Membership[]) {
     const {
         data,
         error,
         isValidating,
         mutate,
-    } = useSWR(`/courses/${courseId}/members/`, { initialData });
+    } = useResource(`/api/courses/${courseId}/members/`, { initialData });
     const leadership: Membership[] = (data || []).filter((mem) =>
         isLeadershipRole(mem.kind)
     );
-    return [leadership, error, isValidating, mutate];
+    return { leadership, error, isValidating, mutate };
 }
 
 export async function sendMassInvites(
@@ -111,7 +100,7 @@ export async function sendMassInvites(
 ) {
     const payload = { emails, kind };
 
-    const res = await doApiRequest(`/courses/${courseId}/mass-invite/`, {
+    const res = await doApiRequest(`/api/courses/${courseId}/mass-invite/`, {
         method: "POST",
         body: payload,
     });
@@ -122,7 +111,7 @@ export async function sendMassInvites(
 }
 
 export async function getSemesters(): Promise<Semester[]> {
-    return doApiRequest("/semesters/")
+    return doApiRequest("/api/semesters/")
         .then((res) => res.json())
         .catch((_) => []);
 }
@@ -130,7 +119,7 @@ export async function getSemesters(): Promise<Semester[]> {
 export async function createTag(courseId: number, name: string): Promise<Tag> {
     const payload = { name };
 
-    return doApiRequest(`/courses/${courseId}/tags/`, {
+    return doApiRequest(`/api/courses/${courseId}/tags/`, {
         method: "POST",
         body: payload,
     })
@@ -138,19 +127,13 @@ export async function createTag(courseId: number, name: string): Promise<Tag> {
         .catch((_) => null);
 }
 
-function newResourceFetcher<R>(path, ...args): R | Promise<R> {
-    return fetch(path, ...args).then((res) => res.json());
-}
-
 export const useQueues = (courseId: number, initialData: Queue[]) =>
-    useResourceListNew<Queue>(
+    useResourceList<Queue>(
         `/api/courses/${courseId}/queues/`,
         (id) => `/api/courses/${courseId}/queues/${id}/`,
         {
             initialData,
-            fetcher: newResourceFetcher,
             refreshInterval: QUEUE_STATUS_POLL_INTERVAL,
-            refreshWhenHidden: true,
         }
     );
 
@@ -165,26 +148,16 @@ export const useQueueQuota = (courseId: number, queueId: number) => {
                 course_pk: courseId,
                 queue_pk: queueId,
             },
-        },
-        {
-            fetcher: newResourceFetcher,
-            // TODO: Temp hack because SWRConfig doesn't configure this hook due to
-            // SWR not being marked as peer dep
-            refreshWhenHidden: true,
         }
     );
 
-    const { data, mutate } = useResourceNew<{
+    const { data, mutate } = useResource<{
         count: number;
         // Lint tradeoff between python and JS
         // eslint-disable-next-line
         wait_time_mins: number;
     }>(`/api/courses/${courseId}/queues/${queueId}/questions/quota_count/`, {
-        fetcher: newResourceFetcher,
         refreshInterval: STUDENT_QUOTA_POLL_INTERVAL,
-        // TODO: Temp hack because SWRConfig doesn't configure this hook due to
-        // SWR not being marked as peer dep
-        refreshWhenHidden: true,
     });
 
     const stringified = JSON.stringify(qdata);
@@ -214,11 +187,7 @@ export const useQuestions = (
         },
         {
             initialData,
-            fetcher: newResourceFetcher,
             refreshInterval: STAFF_QUESTION_POLL_INTERVAL,
-            // TODO: Temp hack because SWRConfig doesn't configure this hook due to
-            // SWR not being marked as peer dep
-            refreshWhenHidden: true,
             orderBy: (q1, q2) => {
                 const date1 = new Date(q1.timeAsked);
                 const date2 = new Date(q2.timeAsked);
@@ -244,13 +213,17 @@ export const useQuestionPosition = (
     queueId: number,
     id: number
 ) => {
-    const [data, error, isValidating, mutate] = useResource(
-        `/courses/${courseId}/queues/${queueId}/questions/${id}/position/`,
-        { position: -1 },
-        { refreshInterval: STUDENT_QUESTION_POS_POLL_INTERVAL }
+    const { data, error, isValidating, mutate } = useResource(
+        `/api/courses/${courseId}/queues/${queueId}/questions/${id}/position/`,
+        {
+            initialData: {
+                position: -1,
+            },
+            refreshInterval: STUDENT_QUESTION_POS_POLL_INTERVAL,
+        }
     );
 
-    return [data, error, isValidating, mutate];
+    return { data, error, isValidating, mutate };
 };
 
 // only student queues should use this, since it doesn't make
@@ -265,14 +238,11 @@ export const useLastQuestions = (courseId: number, queueId: number) => {
                 course_pk: courseId,
                 queue_pk: queueId,
             },
-        },
-        {
-            fetcher: newResourceFetcher,
         }
     );
 
-    const [data, error, isValidating, mutate] = useResourceList(
-        `/courses/${courseId}/queues/${queueId}/questions/last/`,
+    const { data, error, isValidating, mutate } = useResourceList<Question>(
+        `/api/courses/${courseId}/queues/${queueId}/questions/last/`,
         (id) => `/courses/${courseId}/queues/${queueId}/last/${id}/`
     );
 
@@ -283,21 +253,19 @@ export const useLastQuestions = (courseId: number, queueId: number) => {
         mutate(-1, null);
     }, [stringified]);
 
-    return [data, error, isValidating, mutate];
+    return { data, error, isValidating, mutate };
 };
 
 export const useAnnouncements = (
     courseId: number,
     initialData: Announcement[]
 ) =>
-    useResourceListNew(
+    useResourceList(
         `/api/courses/${courseId}/announcements/`,
         (id) => `/api/courses/${courseId}/announcements/${id}/`,
         {
             initialData,
-            fetcher: newResourceFetcher,
             refreshInterval: ANNOUNCEMENTS_POLL_INTERVAL,
-            refreshWhenHidden: true,
         }
     );
 
@@ -305,7 +273,7 @@ export async function createAnnouncement(
     courseId: number,
     payload: { content: string }
 ) {
-    const res = await doApiRequest(`/courses/${courseId}/announcements/`, {
+    const res = await doApiRequest(`/api/courses/${courseId}/announcements/`, {
         method: "POST",
         body: payload,
     });
@@ -315,7 +283,7 @@ export async function createAnnouncement(
 }
 
 export async function clearQueue(courseId: number, queueId: number) {
-    await doApiRequest(`/courses/${courseId}/queues/${queueId}/clear/`, {
+    await doApiRequest(`/api/courses/${courseId}/queues/${queueId}/clear/`, {
         method: "POST",
     });
     return globalMutate(`/courses/${courseId}/queues/${queueId}/`);
@@ -327,7 +295,7 @@ export async function createQuestion(
     payload: Partial<Omit<Question, "tags"> & { tags: Partial<Tag>[] }>
 ): Promise<void> {
     const res = await doApiRequest(
-        `/courses/${courseId}/queues/${queueId}/questions/`,
+        `/api/courses/${courseId}/queues/${queueId}/questions/`,
         {
             method: "POST",
             body: payload,
@@ -343,7 +311,7 @@ export async function createQueue(
     courseId: number,
     payload: Partial<Queue>
 ): Promise<void> {
-    const res = await doApiRequest(`/courses/${courseId}/queues/`, {
+    const res = await doApiRequest(`/api/courses/${courseId}/queues/`, {
         method: "POST",
         body: payload,
     });
@@ -360,7 +328,7 @@ export async function finishQuestion(
 ): Promise<void> {
     const payload = { status: QuestionStatus.ANSWERED };
     const res = await doApiRequest(
-        `/courses/${courseId}/queues/${queueId}/questions/${questionId}/`,
+        `/api/courses/${courseId}/queues/${queueId}/questions/${questionId}/`,
         {
             method: "PATCH",
             body: payload,

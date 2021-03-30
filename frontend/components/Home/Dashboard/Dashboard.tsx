@@ -6,7 +6,7 @@ import InstructorCourses from "./InstructorCourses";
 import StudentCourses from "./StudentCourses";
 import Footer from "../../common/Footer";
 import { AuthUserContext } from "../../../context/auth";
-import { Kind, UserMembership, mutateFunction } from "../../../types";
+import { Kind, UserMembership } from "../../../types";
 import { useMemberships } from "../../../hooks/data-fetching/dashboard";
 import { isLeadershipRole } from "../../../utils/enums";
 import { SPRING_2021_TRANSITION_MESSAGE_TOKEN } from "../../../constants";
@@ -25,12 +25,7 @@ const Dashboard = () => {
         setMessageDisp(state !== "true");
     }, []);
 
-    const [memberships, , , mutate]: [
-        UserMembership[],
-        any,
-        boolean,
-        mutateFunction<UserMembership[]>
-    ] = useMemberships(initialUser);
+    const { memberships, mutate } = useMemberships(initialUser);
 
     const getMemberships = (isStudent: boolean): UserMembership[] => {
         return memberships.filter((membership) => {

@@ -1,10 +1,7 @@
 import React, { useState } from "react";
 import { Icon, Popup, Button } from "semantic-ui-react";
-import {
-    Membership,
-    MembershipInvite,
-    mutateResourceListFunction,
-} from "../../../types";
+import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
+import { Membership, MembershipInvite } from "../../../types";
 
 interface RemoveButtonProps {
     disabled?: boolean;
@@ -31,9 +28,9 @@ const RemoveButton = (props: RemoveButtonProps) => {
     const onSubmit = async () => {
         setLoading(true);
         if (isInvited) {
-            await mutateInvites(id, null, "DELETE");
+            await mutateInvites(id, null, { method: "DELETE" });
         } else {
-            await mutateMemberships(id, null, "DELETE");
+            await mutateMemberships(id, null, { method: "DELETE" });
         }
         setLoading(false);
         setOpen(false);

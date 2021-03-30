@@ -1,20 +1,15 @@
 import React, { useState } from "react";
 import { Modal, Button } from "semantic-ui-react";
+import { mutateResourceFunction } from "@pennlabs/rest-hooks/dist/types";
 import CreateCourseForm from "../Forms/CreateCourseForm";
 import { createCourse } from "../../../../hooks/data-fetching/dashboard";
-import {
-    Course,
-    mutateFunction,
-    UserMembership,
-    Toast,
-    Kind,
-} from "../../../../types";
+import { Course, UserMembership, Toast, Kind } from "../../../../types";
 import { logException } from "../../../../utils/sentry";
 
 interface ModalAddInstructorCourseProps {
     open: boolean;
     closeFunc: () => void;
-    mutate: mutateFunction<UserMembership[]>;
+    mutate: mutateResourceFunction<UserMembership[]>;
     toastFunc: (toast: Toast) => void;
 }
 interface CreateCourse extends Course {

@@ -31,7 +31,7 @@ const Roster = (props: RosterProps) => {
         column: string;
     };
 
-    const [membershipsData, , , membershipsMutate] = useMembers(
+    const { data: membershipsData, mutate: membershipsMutate } = useMembers(
         courseId,
         rawMemberships
     );
@@ -47,14 +47,14 @@ const Roster = (props: RosterProps) => {
         );
     }
 
-    const [leader, , ,] = useStaff(courseId, initialUser);
+    const { leader } = useStaff(courseId, initialUser);
 
     /* STATE */
     const [filteredUsers, setFilteredUsers] = useState(memberships);
-    const [invitedMembersData, , , invitedMutate] = useInvitedMembers(
-        courseId,
-        invites
-    );
+    const {
+        data: invitedMembersData,
+        mutate: invitedMutate,
+    } = useInvitedMembers(courseId, invites);
 
     // invitedMembersData is non null because initialData is provided
     // and the key stays the same
@@ -212,7 +212,7 @@ const Roster = (props: RosterProps) => {
 
     const onInviteSuccess = async () => {
         setRosterUpdateToast();
-        await invitedMutate(-1, {}, "GET"); // Re-validate.
+        await invitedMutate(-1, {}, { method: "GET" }); // Re-validate.
     };
 
     const onRemoveSuccess = async (name) => {
