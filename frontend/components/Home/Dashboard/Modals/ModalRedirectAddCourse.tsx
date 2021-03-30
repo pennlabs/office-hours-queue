@@ -18,7 +18,7 @@ const ModalRedirectAddCourse = (props: ModalRedirectAddCourseProps) => {
         setOpen(false);
         try {
             await joinCourse(`${course.id}`);
-            mutate("/accounts/me/");
+            mutate("/api/accounts/me/");
             toastFunc({
                 message: `Added ${course.department} ${course.courseCode}!`,
                 success: true,

@@ -70,7 +70,7 @@ LandingPage.getInitialProps = async (
     let signUpCourse: Course | undefined;
     if (signUpId) {
         signUpCourse = await doApiRequest(
-            `/courses/${signUpId}`,
+            `/api/courses/${signUpId}`,
             data
         ).then((res) => res.json());
     }
