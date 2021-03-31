@@ -18,14 +18,14 @@ def calculate_student_avg_time_stats(user, questions, course):
         user=user,
         course=course,
         metric=MembershipStatistic.METRIC_STUDENT_AVG_TIME_HELPED,
-        value=avg_time_helped
+        defaults={"value": avg_time_helped}
     )
     
     MembershipStatistic.objects.update_or_create(
         user=user,
         course=course,
         metric=MembershipStatistic.METRIC_STUDENT_AVG_TIME_WAITING,
-        value=avg_time_waiting
+        defaults={"value": avg_time_waiting}
     )
 
 def calculate_instructor_avg_time_stats(user, questions, course):
@@ -44,14 +44,14 @@ def calculate_instructor_avg_time_stats(user, questions, course):
         user=user,
         course=course,
         metric=MembershipStatistic.METRIC_INSTR_AVG_TIME_HELPING,
-        value=avg_time
+        defaults={"value": avg_time}
     )
     
     MembershipStatistic.objects.update_or_create(
         user=user,
         course=course,
         metric=MembershipStatistic.METRIC_INSTR_AVG_STUDENTS_PER_HOUR,
-        value=questions_per_hour
+        defaults={"value": questions_per_hour}
     )       
 
 def calculate_avg_queue_wait(queue, start_date, end_date):

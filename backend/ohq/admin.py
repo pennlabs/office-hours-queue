@@ -9,6 +9,7 @@ from ohq.models import (
     Question,
     Queue,
     QueueStatistic,
+    MembershipStatistic,
     Semester,
     Tag,
 )
@@ -17,6 +18,7 @@ from ohq.models import (
 admin.site.register(Course)
 admin.site.register(Membership)
 admin.site.register(MembershipInvite)
+admin.site.register(MembershipStatistic)
 admin.site.register(Profile)
 admin.site.register(Question)
 admin.site.register(Queue)
