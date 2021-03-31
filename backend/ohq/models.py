@@ -268,6 +268,44 @@ class Question(models.Model):
     should_send_up_soon_notification = models.BooleanField(default=False)
     tags = models.ManyToManyField(Tag, blank=True)
 
+    def __str__(self):
+        return f"{self.queue}: Asked by {self.asked_by}"
+
+class MembershipStatistic(models.Model):
+    """    
+    Statistics related to students and instructors
+
+    ! These should be replaced each time we run the command, so check if this behaviour happens otherwise look into it.
+
+    """
+    METRIC_STUDENT_AVG_TIME_HELPED = "STUDENT_AVG_TIME_HELPED"
+    METRIC_STUDENT_AVG_TIME_WAITING = "STUDENT_AVG_TIME_WAITING"
+    METRIC_INSTR_AVG_TIME_HELPING = "INSTR_AVG_TIME_HELPING"
+    METRIC_INSTR_AVG_STUDENTS_PER_HOUR = "INSTR_AVG_STUDENTS_PER_HOUR"
+    METRIC_CHOICES = [
+        (METRIC_STUDENT_AVG_TIME_HELPED, "Student: Average time being helped"),
+        (METRIC_STUDENT_AVG_TIME_WAITING, "Student: Average time waiting for help"),
+        (METRIC_INSTR_AVG_TIME_HELPING, "Instructor: Average time helping per question"),
+        (METRIC_INSTR_AVG_STUDENTS_PER_HOUR, "Instructor: Average number of students helped per hour"),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    metric = models.CharField(max_length=256, choices=METRIC_CHOICES)
+    value = models.DecimalField(max_digits=16, decimal_places=8)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "course", "metric"], name="membership_statistic"
+            )
+        ]
+
+    def metric_to_pretty(self):
+        return [pretty for raw, pretty in MembershipStatistic.METRIC_CHOICES if raw == self.metric][0]
+
+    def __str__(self):
+        return f"{self.course}: {self.user}: {self.metric_to_pretty()}"
 
 class QueueStatistic(models.Model):
     """

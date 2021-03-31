@@ -1,10 +1,60 @@
 from django.db.models import Avg, Case, Count, F, When
 from django.db.models.functions import TruncDate
 
-from ohq.models import Question, QueueStatistic
+from ohq.models import Question, QueueStatistic, MembershipStatistic
 
 
-def calculate_avg_queue_wait(queue, prev_sunday, coming_sunday):
+def calculate_student_avg_time_stats(user, questions, course):
+    num_questions = total_time_helped = total_time_waiting = 0
+    for question in questions:
+        total_time_helped += (question.time_responded_to - question.time_response_started).seconds
+        total_time_waiting += (question.time_response_started - question.time_asked).seconds
+        num_questions += 1
+    
+    avg_time_helped = total_time_helped / num_questions
+    avg_time_waiting = total_time_waiting / num_questions
+    
+    MembershipStatistic.objects.update_or_create(
+        user=user,
+        course=course,
+        metric=MembershipStatistic.METRIC_STUDENT_AVG_TIME_HELPED,
+        value=avg_time_helped
+    )
+    
+    MembershipStatistic.objects.update_or_create(
+        user=user,
+        course=course,
+        metric=MembershipStatistic.METRIC_STUDENT_AVG_TIME_WAITING,
+        value=avg_time_waiting
+    )
+
+def calculate_instructor_avg_time_stats(user, questions, course):
+    num_questions = total_time = 0
+    for question in questions:
+        total_time += (question.time_responded_to - question.time_response_started).seconds
+        num_questions += 1
+    
+    avg_time = total_time / num_questions
+    questions_per_hour = (num_questions / total_time) * 3600
+
+    METRIC_INSTR_AVG_TIME_HELPING = "INSTR_AVG_TIME_HELPING"
+    METRIC_INSTR_AVG_STUDENTS_PER_HOUR = "INSTR_AVG_STUDENTS_PER_HOUR"
+    
+    MembershipStatistic.objects.update_or_create(
+        user=user,
+        course=course,
+        metric=MembershipStatistic.METRIC_INSTR_AVG_TIME_HELPING,
+        value=avg_time
+    )
+    
+    MembershipStatistic.objects.update_or_create(
+        user=user,
+        course=course,
+        metric=MembershipStatistic.METRIC_INSTR_AVG_STUDENTS_PER_HOUR,
+        value=questions_per_hour
+    )       
+
+def calculate_avg_queue_wait(queue, start_date, end_date):
     avg = Question.objects.filter(
         queue=queue,
         time_asked__date__range=[prev_sunday, coming_sunday],
