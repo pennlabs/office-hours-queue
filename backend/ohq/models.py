@@ -274,9 +274,6 @@ class Question(models.Model):
 class MembershipStatistic(models.Model):
     """    
     Statistics related to students and instructors
-
-    ! These should be replaced each time we run the command, so check if this behaviour happens otherwise look into it.
-
     """
     METRIC_STUDENT_AVG_TIME_HELPED = "STUDENT_AVG_TIME_HELPED"
     METRIC_STUDENT_AVG_TIME_WAITING = "STUDENT_AVG_TIME_WAITING"

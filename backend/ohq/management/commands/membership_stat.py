@@ -12,7 +12,6 @@ class Command(BaseCommand):
         # Iterate through all the users, building membership stats for each user
         for user in users:
             memberships = Membership.objects.filter(user=user, course__archived=False)
-        
             for membership in memberships:
                 questions_asked = Question.objects.filter(asked_by=user, status=Question.STATUS_ANSWERED, queue__course=membership.course)
                 questions_answered = Question.objects.filter(responded_to_by=user, status=Question.STATUS_ANSWERED, queue__course=membership.course)
@@ -24,5 +23,4 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         User = get_user_model()
         users = User.objects.filter(is_active=True)
-
         self.calculate_statistics(users)
