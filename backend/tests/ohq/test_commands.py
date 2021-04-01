@@ -739,7 +739,7 @@ class AverageQueueWaitTimeByDateTestCase(TestCase):
         self.assertEqual(expected_old, actual_old)
 
 
-class StudentTimeHelpedAndWaitingTestCase(TestCase):
+class StudentMembershipStatisticsTestCase(TestCase):
     '''
     Test student wait times and time spent being helped per course
     '''
@@ -877,6 +877,128 @@ class StudentTimeHelpedAndWaitingTestCase(TestCase):
                     metric=MembershipStatistic.METRIC_STUDENT_AVG_TIME_HELPED
                 ).value
                 self.assertEqual(expected, actual)
+
+class InstructorMembershipStatisticsTestCase(TestCase):
+    '''
+    Test instructor time spent helping and average students helped per hour
+    '''
+    def setUp(self):
+        semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
+        course1 = Course.objects.create(
+            course_code="001", department="TEST1", course_title="Test Course 1", semester=semester
+        )
+        course2 = Course.objects.create(
+            course_code="002", department="TEST2", course_title="Test Course 2", semester=semester
+        )
+
+        self.courses = [course1, course2]
+        queue1a = Queue.objects.create(name="Queue1a", course=course1)
+        queue1b = Queue.objects.create(name="Queue1b", course=course1)
+        queue2a = Queue.objects.create(name="Queue2a", course=course2)
+        queue2b = Queue.objects.create(name="Queue2b", course=course2)
+        self.queues = [queue1a, queue1b, queue2a, queue2b]
+
+        student = User.objects.create_user("student1", "student1@a.com", "student1")
+        ta1 = User.objects.create_user("ta1", "ta1@a.com", "ta1") 
+        ta2 = User.objects.create_user("ta2", "ta2@a.com", "ta2") 
+        self.tas = [ta1, ta2]
+
+        Membership.objects.create(user=ta1, course=course1, kind=Membership.KIND_TA)
+        Membership.objects.create(user=ta1, course=course2, kind=Membership.KIND_TA)
+        Membership.objects.create(user=ta2, course=course1, kind=Membership.KIND_TA)
+        Membership.objects.create(user=ta2, course=course2, kind=Membership.KIND_TA)
+
+        yesterday = timezone.localtime() - timezone.timedelta(days=1)
+
+        self.help_times = {
+            ta1: {
+                queue1a: [2100, 2200],
+                queue1b: [2300, 2400],
+                queue2a: [2500, 2600],
+                queue2b: [2700, 2800]
+            },
+            ta2: {
+                queue1a: [3900, 3000],
+                queue1b: [3100, 3200],
+                queue2a: [3300, 3400],
+                queue2b: [3500, 3600]
+            }
+        }
+
+        for ta in [ta1, ta2]:
+            # test all varieties of statuses, but only answered questions should be included
+            for queue in [queue1a, queue1b, queue2a, queue2b]:
+                for i, help_time in enumerate(self.help_times[ta][queue]):
+                    
+                    q1 = Question.objects.create(
+                        text=f"Question {i + 1} by {ta} in {queue.name}",
+                        queue=queue,
+                        asked_by=student,
+                        responded_to_by=ta,
+                        time_response_started=yesterday,
+                        time_responded_to=yesterday + timezone.timedelta(seconds=help_time),
+                        status=Question.STATUS_ANSWERED,
+                    )
+                    q1.time_asked = yesterday
+                    q1.save()
+
+                    q2 = Question.objects.create(
+                        text=f"Active Question {i + 1} by {ta} in {queue.name}",
+                        queue=queue,
+                        asked_by=student,
+                        responded_to_by=ta,
+                        time_response_started=yesterday + timezone.timedelta(seconds=20),
+                        status=Question.STATUS_ACTIVE,
+                    )
+                    q2.time_asked = yesterday
+                    q2.save()
+
+                    q3 = Question.objects.create(
+                        text=f"Active Question {i + 1} by {ta} in {queue.name}",
+                        queue=queue,
+                        asked_by=student,
+                        responded_to_by=ta,
+                        time_response_started=yesterday
+                        + timezone.timedelta(seconds=10000),
+                        time_responded_to=yesterday,
+                        status=Question.STATUS_REJECTED,
+                    )
+                    q3.time_asked = yesterday
+                    q3.save()
+
+    def test_instructor_membership_stats(self):
+        call_command("membership_stat")
+
+        # Test help times
+        for ta in self.tas:
+            help_times = [
+                sum(self.help_times[ta][self.queues[0]]) + sum(self.help_times[ta][self.queues[1]]), # Times for course 1
+                sum(self.help_times[ta][self.queues[2]]) + sum(self.help_times[ta][self.queues[3]])  # Times for course 2
+            ]
+            for i, course in enumerate(self.courses):
+                expected = help_times[i] / 4
+                actual = MembershipStatistic.objects.get(
+                    user=ta, 
+                    course=course, 
+                    metric=MembershipStatistic.METRIC_INSTR_AVG_TIME_HELPING
+                ).value
+                self.assertEqual(expected, actual)
+        
+        # Test average questions answered per hour
+        for ta in self.tas:
+            help_times = [
+                sum(self.help_times[ta][self.queues[0]]) + sum(self.help_times[ta][self.queues[1]]), # Times for course 1
+                sum(self.help_times[ta][self.queues[2]]) + sum(self.help_times[ta][self.queues[3]])  # Times for course 2
+            ]
+            for i, course in enumerate(self.courses):
+                expected = (4 / help_times[i]) * 3600
+                actual = MembershipStatistic.objects.get(
+                    user=ta, 
+                    course=course, 
+                    metric=MembershipStatistic.METRIC_INSTR_AVG_STUDENTS_PER_HOUR
+                ).value
+                self.assertAlmostEqual(expected, float(actual))
+
 
 class ArchiveCourseTestCase(TestCase):
     def setUp(self):
