@@ -32,7 +32,7 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
 
     const { staff } = useStaff(rawCourse.id, initialUser);
 
-    const isAprilFirst = true;
+    const isAprilFirst = false;
     const [notifs, setNotifs, play] = usePlayer(
         isAprilFirst ? aolAudio : bellAudio
     );
