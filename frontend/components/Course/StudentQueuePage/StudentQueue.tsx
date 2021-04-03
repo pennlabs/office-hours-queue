@@ -92,10 +92,10 @@ const StudentQueue = (props: StudentQueueProps) => {
         queue.id,
         rawQuestions
     );
-    const [lastQuestions, , , mutateLastQuestions] = useLastQuestions(
-        course.id,
-        queue.id
-    );
+    const {
+        data: lastQuestions,
+        mutate: mutateLastQuestions,
+    } = useLastQuestions(course.id, queue.id);
 
     if (!questions) {
         return (

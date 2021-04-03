@@ -28,7 +28,7 @@ const StudentQueuePage = (props: StudentQueuePageProps) => {
         tags: rawTags,
         announcements,
     } = props;
-    const [course, , ,] = useCourse(rawCourse.id, rawCourse);
+    const { data: course } = useCourse(rawCourse.id, rawCourse);
     const { data: queues, mutate } = useQueues(course!.id, rawQueues);
     const { data: tags } = useTags(rawCourse.id, rawTags);
 

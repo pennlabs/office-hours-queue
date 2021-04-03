@@ -39,7 +39,7 @@ const QuestionCard = (props: QuestionCardProps) => {
         lastQuestionsMutate,
         tags,
     } = props;
-    const [positionData, , , ,] = useQuestionPosition(
+    const { data: positionData } = useQuestionPosition(
         course.id,
         queue.id,
         question.id
