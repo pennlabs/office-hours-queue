@@ -23,11 +23,9 @@ export function usePlayer(
     }, [])
 
     const playFunc = (message: string) => {
-        console.log("INSIDEE PLAYFUNC", notifs);
         if (notifs) {
-            console.log("Sending notification now");
-            //player.current?.play();
-            //new Notification('Alert', { body: message, data: 'somethingelse', icon: '../favicon.ico'});
+            player.current?.play();
+            new Notification('Alert', { body: message, data: 'somethingelse', icon: '../favicon.ico'});
         }
     };
 
