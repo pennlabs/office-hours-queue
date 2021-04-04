@@ -270,7 +270,7 @@ export default function Announcements(props: AnnouncementsProps) {
         const unread = calcNumUnread(announcements!, latestRead, user!);
         setNumUnread(unread);
         if (!staff && unread > 0) {
-            play.current(`You Have ${unread} New Announcements`);
+            play.current(`You have ${unread} unread announcements`);
         }
     }, [announcements, latestRead, play, staff, user]);
 

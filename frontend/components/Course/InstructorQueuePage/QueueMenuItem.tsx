@@ -22,7 +22,7 @@ const QuestionNotifier = ({
     const [resolved, setResolved] = useState(question.resolvedNote);
     useEffect(() => {
         if (!resolved && question.resolvedNote) {
-            play.current("A Question Has Been Edited");
+            play.current("A question has been edited");
             setResolved(true);
         }
 
@@ -65,8 +65,7 @@ export const QueueMenuItem = (props: QueueMenuItemProps) => {
             latestAsked.current = new Date(
                 questions[questions.length - 1].timeAsked
             );
-            console.log(play);
-            play.current("A New Question Has Been Asked smth smth smth");
+            play.current("A new question has been asked");
         }
         // questions is not stale because we check for deep equality
         // eslint-disable-next-line

@@ -24,7 +24,7 @@ const QuestionNotifier = ({
     queue: Queue;
     }) => {
     
-    const [positionData, , , ,] = useQuestionPosition(
+    const { data: positionData } = useQuestionPosition(
         courseId,
         queue.id,
         question.id
@@ -40,11 +40,11 @@ const QuestionNotifier = ({
 
     useEffect(() => {
         if (
-            positionData.position == 1
+            positionData && positionData.position == 2
         ) {
             play.current("Your question will be answered soon");
         }
-    }, [positionData.position]);
+    }, [positionData]);
 
     return null;
 };

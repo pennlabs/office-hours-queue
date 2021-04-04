@@ -46,7 +46,6 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
     ) => {
         setNotifs(!notifs);
         localStorage.setItem('notifs', !notifs ? "true" : "false");
-        //play.current(`Notifications are turned ${notifs ? "OFF" : "ON"}`);
         document.body.focus();
     };
 

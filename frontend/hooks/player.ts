@@ -25,7 +25,7 @@ export function usePlayer(
     const playFunc = (message: string) => {
         if (notifs) {
             player.current?.play();
-            new Notification('Alert', { body: message, data: 'somethingelse', icon: '../favicon.ico'});
+            new Notification('Alert', { body: message, icon: '../favicon.ico'});
         }
     };
 
