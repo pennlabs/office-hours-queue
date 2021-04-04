@@ -276,20 +276,20 @@ class CourseStatistic(models.Model):
     METRIC_STUDENT_QUESTIONS_ASKED = "STUDENT_QUESTIONS_ASKED"
     METRIC_STUDENT_TIME_BEING_HELPED = "STUDENT_TIME_BEING_HELPED"
     METRIC_INSTR_QUESTIONS_ANSWERED = "INSTR_QUESTIONS_ANSWERED"
-    METRIC_INSTR_TIME_SPENT_ANSWERING = "INSTR_TIME_SPENT_ANSWERING"
+    METRIC_INSTR_TIME_ANSWERING = "INSTR_TIME_SPENT_ANSWERING"
 
     METRIC_CHOICES = [
         (METRIC_STUDENT_QUESTIONS_ASKED, "Student: Questions asked"),
         (METRIC_STUDENT_TIME_BEING_HELPED, "Student: Time spent being helped"),
         (METRIC_INSTR_QUESTIONS_ANSWERED, "Instructor: Questions answered"),
-        (METRIC_INSTR_TIME_SPENT_ANSWERING, "Instructor: Time spent answering questions")
+        (METRIC_INSTR_TIME_ANSWERING, "Instructor: Time answering questions")
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     metric = models.CharField(max_length=256, choices=METRIC_CHOICES)
     value = models.DecimalField(max_digits=16, decimal_places=8)
-    date = models.DateField(blank=True, null=True)  # for weekly stats, set to the Sunday of week
+    date = models.DateField(blank=True, null=True)  
 
     class Meta:
         constraints = [
@@ -302,7 +302,7 @@ class CourseStatistic(models.Model):
         return [pretty for raw, pretty in CourseStatistic.METRIC_CHOICES if raw == self.metric][0]
 
     def __str__(self):
-        return f"{self.course} {self.date}: {self.metric_to_pretty()}"
+        return f"{self.course}: {self.date}: {self.metric_to_pretty()}"
 
 
 class QueueStatistic(models.Model):
