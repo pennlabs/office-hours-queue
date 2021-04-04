@@ -740,9 +740,10 @@ class AverageQueueWaitTimeByDateTestCase(TestCase):
 
 
 class StudentMembershipStatisticsTestCase(TestCase):
-    '''
+    """
     Test student wait times and time spent being helped per course
-    '''
+    """
+
     def setUp(self):
         semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
         course1 = Course.objects.create(
@@ -759,7 +760,7 @@ class StudentMembershipStatisticsTestCase(TestCase):
         queue2b = Queue.objects.create(name="Queue2b", course=course2)
         self.queues = [queue1a, queue1b, queue2a, queue2b]
 
-        ta = User.objects.create_user("ta1", "ta@a.com", "ta") # Just a TA
+        ta = User.objects.create_user("ta1", "ta@a.com", "ta")  # Just a TA
         student1 = User.objects.create_user("student1", "student1@a.com", "student1")
         student2 = User.objects.create_user("student2", "student2@a.com", "student2")
         self.students = [student1, student2]
@@ -776,14 +777,14 @@ class StudentMembershipStatisticsTestCase(TestCase):
                 queue1a: [100, 200],
                 queue1b: [300, 400],
                 queue2a: [500, 600],
-                queue2b: [700, 800]
+                queue2b: [700, 800],
             },
             student2: {
                 queue1a: [900, 1000],
                 queue1b: [1100, 1200],
                 queue2a: [1300, 1400],
-                queue2b: [1500, 1600]
-            }
+                queue2b: [1500, 1600],
+            },
         }
 
         self.help_times = {
@@ -791,14 +792,14 @@ class StudentMembershipStatisticsTestCase(TestCase):
                 queue1a: [2100, 2200],
                 queue1b: [2300, 2400],
                 queue2a: [2500, 2600],
-                queue2b: [2700, 2800]
+                queue2b: [2700, 2800],
             },
             student2: {
                 queue1a: [3900, 3000],
                 queue1b: [3100, 3200],
                 queue2a: [3300, 3400],
-                queue2b: [3500, 3600]
-            }
+                queue2b: [3500, 3600],
+            },
         }
 
         for student in [student1, student2]:
@@ -806,15 +807,16 @@ class StudentMembershipStatisticsTestCase(TestCase):
             for queue in [queue1a, queue1b, queue2a, queue2b]:
                 for i, wait_time in enumerate(self.wait_times[student][queue]):
                     help_time = self.help_times[student][queue][i]
-                    
+
                     q1 = Question.objects.create(
                         text=f"Question {i + 1} by {student} in {queue.name}",
                         queue=queue,
                         asked_by=student,
                         responded_to_by=ta,
-                        time_response_started=yesterday
-                        + timezone.timedelta(seconds=wait_time),
-                        time_responded_to=yesterday + timezone.timedelta(seconds=wait_time) + timezone.timedelta(seconds=help_time),
+                        time_response_started=yesterday + timezone.timedelta(seconds=wait_time),
+                        time_responded_to=yesterday
+                        + timezone.timedelta(seconds=wait_time)
+                        + timezone.timedelta(seconds=help_time),
                         status=Question.STATUS_ANSWERED,
                     )
                     q1.time_asked = yesterday
@@ -836,8 +838,7 @@ class StudentMembershipStatisticsTestCase(TestCase):
                         queue=queue,
                         asked_by=student,
                         responded_to_by=ta,
-                        time_response_started=yesterday
-                        + timezone.timedelta(seconds=10000),
+                        time_response_started=yesterday + timezone.timedelta(seconds=10000),
                         time_responded_to=yesterday,
                         status=Question.STATUS_REJECTED,
                     )
@@ -850,38 +851,44 @@ class StudentMembershipStatisticsTestCase(TestCase):
         # Test wait times
         for student in self.students:
             wait_times = [
-                sum(self.wait_times[student][self.queues[0]]) + sum(self.wait_times[student][self.queues[1]]), # Times for course 1
-                sum(self.wait_times[student][self.queues[2]]) + sum(self.wait_times[student][self.queues[3]])  # Times for course 2
+                sum(self.wait_times[student][self.queues[0]])
+                + sum(self.wait_times[student][self.queues[1]]),  # Times for course 1
+                sum(self.wait_times[student][self.queues[2]])
+                + sum(self.wait_times[student][self.queues[3]]),  # Times for course 2
             ]
             for i, course in enumerate(self.courses):
                 expected = wait_times[i] / 4
                 actual = MembershipStatistic.objects.get(
-                    user=student, 
-                    course=course, 
-                    metric=MembershipStatistic.METRIC_STUDENT_AVG_TIME_WAITING
+                    user=student,
+                    course=course,
+                    metric=MembershipStatistic.METRIC_STUDENT_AVG_TIME_WAITING,
                 ).value
-                
+
                 self.assertEqual(expected, actual)
 
         # Test help times
         for student in self.students:
             help_times = [
-                sum(self.help_times[student][self.queues[0]]) + sum(self.help_times[student][self.queues[1]]), # Times for course 1
-                sum(self.help_times[student][self.queues[2]]) + sum(self.help_times[student][self.queues[3]])  # Times for course 2
+                sum(self.help_times[student][self.queues[0]])
+                + sum(self.help_times[student][self.queues[1]]),  # Times for course 1
+                sum(self.help_times[student][self.queues[2]])
+                + sum(self.help_times[student][self.queues[3]]),  # Times for course 2
             ]
             for i, course in enumerate(self.courses):
                 expected = help_times[i] / 4
                 actual = MembershipStatistic.objects.get(
-                    user=student, 
-                    course=course, 
-                    metric=MembershipStatistic.METRIC_STUDENT_AVG_TIME_HELPED
+                    user=student,
+                    course=course,
+                    metric=MembershipStatistic.METRIC_STUDENT_AVG_TIME_HELPED,
                 ).value
                 self.assertEqual(expected, actual)
 
+
 class InstructorMembershipStatisticsTestCase(TestCase):
-    '''
+    """
     Test instructor time spent helping and average students helped per hour
-    '''
+    """
+
     def setUp(self):
         semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
         course1 = Course.objects.create(
@@ -899,8 +906,8 @@ class InstructorMembershipStatisticsTestCase(TestCase):
         self.queues = [queue1a, queue1b, queue2a, queue2b]
 
         student = User.objects.create_user("student1", "student1@a.com", "student1")
-        ta1 = User.objects.create_user("ta1", "ta1@a.com", "ta1") 
-        ta2 = User.objects.create_user("ta2", "ta2@a.com", "ta2") 
+        ta1 = User.objects.create_user("ta1", "ta1@a.com", "ta1")
+        ta2 = User.objects.create_user("ta2", "ta2@a.com", "ta2")
         self.tas = [ta1, ta2]
 
         Membership.objects.create(user=ta1, course=course1, kind=Membership.KIND_TA)
@@ -915,21 +922,21 @@ class InstructorMembershipStatisticsTestCase(TestCase):
                 queue1a: [2100, 2200],
                 queue1b: [2300, 2400],
                 queue2a: [2500, 2600],
-                queue2b: [2700, 2800]
+                queue2b: [2700, 2800],
             },
             ta2: {
                 queue1a: [3900, 3000],
                 queue1b: [3100, 3200],
                 queue2a: [3300, 3400],
-                queue2b: [3500, 3600]
-            }
+                queue2b: [3500, 3600],
+            },
         }
 
         for ta in [ta1, ta2]:
             # test all varieties of statuses, but only answered questions should be included
             for queue in [queue1a, queue1b, queue2a, queue2b]:
                 for i, help_time in enumerate(self.help_times[ta][queue]):
-                    
+
                     q1 = Question.objects.create(
                         text=f"Question {i + 1} by {ta} in {queue.name}",
                         queue=queue,
@@ -958,8 +965,7 @@ class InstructorMembershipStatisticsTestCase(TestCase):
                         queue=queue,
                         asked_by=student,
                         responded_to_by=ta,
-                        time_response_started=yesterday
-                        + timezone.timedelta(seconds=10000),
+                        time_response_started=yesterday + timezone.timedelta(seconds=10000),
                         time_responded_to=yesterday,
                         status=Question.STATUS_REJECTED,
                     )
@@ -972,30 +978,32 @@ class InstructorMembershipStatisticsTestCase(TestCase):
         # Test help times
         for ta in self.tas:
             help_times = [
-                sum(self.help_times[ta][self.queues[0]]) + sum(self.help_times[ta][self.queues[1]]), # Times for course 1
-                sum(self.help_times[ta][self.queues[2]]) + sum(self.help_times[ta][self.queues[3]])  # Times for course 2
+                sum(self.help_times[ta][self.queues[0]])
+                + sum(self.help_times[ta][self.queues[1]]),  # Times for course 1
+                sum(self.help_times[ta][self.queues[2]])
+                + sum(self.help_times[ta][self.queues[3]]),  # Times for course 2
             ]
             for i, course in enumerate(self.courses):
                 expected = help_times[i] / 4
                 actual = MembershipStatistic.objects.get(
-                    user=ta, 
-                    course=course, 
-                    metric=MembershipStatistic.METRIC_INSTR_AVG_TIME_HELPING
+                    user=ta, course=course, metric=MembershipStatistic.METRIC_INSTR_AVG_TIME_HELPING
                 ).value
                 self.assertEqual(expected, actual)
-        
+
         # Test average questions answered per hour
         for ta in self.tas:
             help_times = [
-                sum(self.help_times[ta][self.queues[0]]) + sum(self.help_times[ta][self.queues[1]]), # Times for course 1
-                sum(self.help_times[ta][self.queues[2]]) + sum(self.help_times[ta][self.queues[3]])  # Times for course 2
+                sum(self.help_times[ta][self.queues[0]])
+                + sum(self.help_times[ta][self.queues[1]]),  # Times for course 1
+                sum(self.help_times[ta][self.queues[2]])
+                + sum(self.help_times[ta][self.queues[3]]),  # Times for course 2
             ]
             for i, course in enumerate(self.courses):
                 expected = (4 / help_times[i]) * 3600
                 actual = MembershipStatistic.objects.get(
-                    user=ta, 
-                    course=course, 
-                    metric=MembershipStatistic.METRIC_INSTR_AVG_STUDENTS_PER_HOUR
+                    user=ta,
+                    course=course,
+                    metric=MembershipStatistic.METRIC_INSTR_AVG_STUDENTS_PER_HOUR,
                 ).value
                 self.assertAlmostEqual(expected, float(actual))
 

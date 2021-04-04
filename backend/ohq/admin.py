@@ -5,11 +5,11 @@ from ohq.models import (
     Course,
     Membership,
     MembershipInvite,
+    MembershipStatistic,
     Profile,
     Question,
     Queue,
     QueueStatistic,
-    MembershipStatistic,
     Semester,
     Tag,
 )

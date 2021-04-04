@@ -271,10 +271,12 @@ class Question(models.Model):
     def __str__(self):
         return f"{self.queue}: Asked by {self.asked_by}"
 
+
 class MembershipStatistic(models.Model):
-    """    
+    """
     Statistics related to students and instructors
     """
+
     METRIC_STUDENT_AVG_TIME_HELPED = "STUDENT_AVG_TIME_HELPED"
     METRIC_STUDENT_AVG_TIME_WAITING = "STUDENT_AVG_TIME_WAITING"
     METRIC_INSTR_AVG_TIME_HELPING = "INSTR_AVG_TIME_HELPING"
@@ -283,7 +285,10 @@ class MembershipStatistic(models.Model):
         (METRIC_STUDENT_AVG_TIME_HELPED, "Student: Average time being helped"),
         (METRIC_STUDENT_AVG_TIME_WAITING, "Student: Average time waiting for help"),
         (METRIC_INSTR_AVG_TIME_HELPING, "Instructor: Average time helping per question"),
-        (METRIC_INSTR_AVG_STUDENTS_PER_HOUR, "Instructor: Average number of students helped per hour"),
+        (
+            METRIC_INSTR_AVG_STUDENTS_PER_HOUR,
+            "Instructor: Average number of students helped per hour",
+        ),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -299,10 +304,13 @@ class MembershipStatistic(models.Model):
         ]
 
     def metric_to_pretty(self):
-        return [pretty for raw, pretty in MembershipStatistic.METRIC_CHOICES if raw == self.metric][0]
+        return [pretty for raw, pretty in MembershipStatistic.METRIC_CHOICES if raw == self.metric][
+            0
+        ]
 
     def __str__(self):
         return f"{self.course}: {self.user}: {self.metric_to_pretty()}"
+
 
 class QueueStatistic(models.Model):
     """
