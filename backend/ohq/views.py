@@ -431,7 +431,7 @@ class TagViewSet(viewsets.ModelViewSet):
         return prefetch(qs, self.serializer_class)
 
 
-class MembershipViewSet(viewsets.ModelViewSet):
+class MembershipViewSet(viewsets.ModelViewSet, RealtimeMixin):
     """
     retrieve:
     Return a single membership.
@@ -457,36 +457,36 @@ class MembershipViewSet(viewsets.ModelViewSet):
 
     permission_classes = [MembershipPermission | IsSuperuser]
     serializer_class = MembershipSerializer
+    queryset = Membership.objects.none()
 
     def get_queryset(self):
-        qs = Membership.objects.filter(course=self.kwargs["course_pk"]).order_by("user__first_name")
+        course_members = Membership.objects.filter(course=self.kwargs["course_pk"]).order_by(
+            "user__first_name"
+        )
+
+        qs = course_members
 
         membership = Membership.objects.get(course=self.kwargs["course_pk"], user=self.request.user)
 
+        # TODO: if we add roster page, change this to
+        # ~Q(kind=Membership.KIND_STUDENT) | Q(user=self.request.user)
         if not membership.is_ta:
-            qs = qs.filter(
+            qs = course_members.filter(
                 Q(kind=Membership.KIND_PROFESSOR)
                 | Q(kind=Membership.KIND_HEAD_TA)
                 | Q(user=self.request.user)
             )
-        return prefetch(qs, self.serializer_class)
 
-    @action(detail=False)
-    def staff_active(self, request, course_pk):
-        """
-        Get's the active staff in a course
-        """
+        active = self.request.query_params.get("active", "")
 
         time_threshold = timezone.now() - timedelta(minutes=1)
 
-        staff_active = Membership.objects.filter(
-            Q(course=course_pk)
-            & ~Q(kind=Membership.KIND_STUDENT)
-            & Q(last_active__gt=time_threshold)
-        )
+        if active == "true":
+            qs = course_members.filter(
+                ~Q(kind=Membership.KIND_STUDENT) & Q(last_active__gt=time_threshold)
+            )
 
-        serializer = self.get_serializer(staff_active, many=True)
-        return Response(serializer.data)
+        return prefetch(qs, self.serializer_class)
 
 
 class MembershipInviteViewSet(viewsets.ModelViewSet):

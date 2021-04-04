@@ -769,14 +769,6 @@ class MembershipTestCase(TestCase):
                 "non_member": 403,
                 "anonymous": 403,
             },
-            "staff-active": {
-                "professor": 200,
-                "head_ta": 200,
-                "ta": 200,
-                "student": 200,
-                "non_member": 403,
-                "anonymous": 403,
-            },
         }
 
     @parameterized.expand(users, name_func=get_test_name)
@@ -836,16 +828,6 @@ class MembershipTestCase(TestCase):
             "patch",
             reverse("ohq:member-detail", args=[self.course.id, self.membership.id]),
             {"description": "new"},
-        )
-
-    @parameterized.expand(users, name_func=get_test_name)
-    def test_staff_active(self, user):
-        test(
-            self,
-            user,
-            "staff-active",
-            "get",
-            reverse("ohq:member-staff-active", args=[self.course.id]),
         )
 
 

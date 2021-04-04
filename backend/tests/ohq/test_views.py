@@ -260,7 +260,13 @@ class MembershipViewTestCase(TestCase):
     def test_staff_active(self):
         self.client.force_authenticate(user=self.student)
 
-        res = self.client.get(reverse("ohq:member-staff-active", args=[self.course.id]))
+        res = self.client.get(reverse("ohq:member-list", args=[self.course.id]))
+        content = json.loads(res.content)
+
+        # when not looking at the active TA's, we expect 2 users: head ta and logged in student
+        self.assertEqual(2, len(content))
+
+        res = self.client.get(reverse("ohq:member-list", args=[self.course.id]) + "?active=true")
         content = json.loads(res.content)
 
         self.assertEqual(0, len(content))
@@ -268,7 +274,7 @@ class MembershipViewTestCase(TestCase):
         self.head_ta_membership.last_active = timezone.now()
         self.head_ta_membership.save()
 
-        res = self.client.get(reverse("ohq:member-staff-active", args=[self.course.id]))
+        res = self.client.get(reverse("ohq:member-list", args=[self.course.id]) + "?active=true")
         content = json.loads(res.content)
 
         self.assertEqual(1, len(content))
@@ -278,7 +284,7 @@ class MembershipViewTestCase(TestCase):
         self.ta_membership.last_active = timezone.now()
         self.ta_membership.save()
 
-        res = self.client.get(reverse("ohq:member-staff-active", args=[self.course.id]))
+        res = self.client.get(reverse("ohq:member-list", args=[self.course.id]) + "?active=true")
         content = json.loads(res.content)
 
         self.assertEqual(2, len(content))
@@ -290,7 +296,7 @@ class MembershipViewTestCase(TestCase):
         self.head_ta_membership.last_active = timezone.now() - timezone.timedelta(minutes=5)
         self.head_ta_membership.save()
 
-        res = self.client.get(reverse("ohq:member-staff-active", args=[self.course.id]))
+        res = self.client.get(reverse("ohq:member-list", args=[self.course.id]) + "?active=true")
         content = json.loads(res.content)
 
         expected_content = camelize(MembershipSerializer([self.ta_membership], many=True).data)
@@ -301,7 +307,7 @@ class MembershipViewTestCase(TestCase):
         self.student_membership.last_active = timezone.now()
         self.student_membership.save()
 
-        res = self.client.get(reverse("ohq:member-staff-active", args=[self.course.id]))
+        res = self.client.get(reverse("ohq:member-list", args=[self.course.id]) + "?active=true")
         content = json.loads(res.content)
 
         self.assertEqual(1, len(content))
