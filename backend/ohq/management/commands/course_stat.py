@@ -17,9 +17,9 @@ class Command(BaseCommand):
         yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
         last_week = yesterday - timezone.timedelta(days=7)
         for course in courses:
-            # calculate_student_most_questions_asked(course, yesterday)
-            # calculate_student_most_time_being_helped(course, yesterday)
-            # calculate_instructor_most_questions_answered(course, yesterday)
+            calculate_student_most_questions_asked(course, yesterday)
+            calculate_student_most_time_being_helped(course, yesterday)
+            calculate_instructor_most_questions_answered(course, yesterday)
             calculate_instructor_most_time_helping(course, yesterday)
             # Doesn't take into account ties
 
@@ -58,59 +58,7 @@ class Command(BaseCommand):
             # print()
             # print(instructor_most_time_spent)
 
-            # for question in student_most_questions_asked:
-            #     print(question)
-                # user = question.asked_by
-                # count = question.questions_asked
-                # print(user, count)
-            print()
-
-            # students_most_time_spent = question_query.order_by('-question_duration')
-
-            # print(question_query)
-            # print('count asked: ', question_query[0].questions_asked)
-            # print('asked by: ', question_query[0].asked_by)
-            # print('count answered: ', question_query[0].questions_answered)
-            # print('answered by: ', question_query[0].responded_to_by)
-            # print('answered by: ', question_query[0].question_duration)
-                
-            # for question in questions:
-            #     student_count[question.asked_by][0] += quest
-        
             
-            
-            
-
-
-        # yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
-        # last_sunday = yesterday - timezone.timedelta(days=(yesterday.weekday() + 1) % 7)
-        # next_sunday = last_sunday + timezone.timedelta(days=7)
-
-        # for queue in queues:
-        #     queue_questions = Question.objects.filter(queue=queue)
-
-        #     if earliest_date:
-        #         iter_date = earliest_date
-        #     else:
-        #         iter_date = (
-        #             timezone.template_localtime(
-        #                 queue_questions.earliest("time_asked").time_asked
-        #             ).date()
-        #             if queue_questions
-        #             else yesterday
-        #         )
-
-        #     while iter_date < next_sunday:
-        #         prev_sunday = iter_date - timezone.timedelta(days=(iter_date.weekday() + 1) % 7)
-        #         coming_saturday = prev_sunday + timezone.timedelta(days=6)
-
-        #         calculate_avg_queue_wait(queue, prev_sunday, coming_saturday)
-        #         calculate_avg_time_helping(queue, prev_sunday, coming_saturday)
-        #         calculate_num_questions_ans(queue, prev_sunday, coming_saturday)
-        #         calculate_num_students_helped(queue, prev_sunday, coming_saturday)
-
-        #         iter_date += timezone.timedelta(days=7)
-
     def handle(self, *args, **kwargs):
         courses = Course.objects.filter(archived=False)
         # print(courses)
