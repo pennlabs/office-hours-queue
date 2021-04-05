@@ -92,6 +92,7 @@ class RegisterClassTestCase(TestCase):
 
         self.assertEqual(stdout_msg, out.getvalue())
 
+
 class AverageQueueWaitTimeTestCase(TestCase):
     def setUp(self):
         semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
@@ -180,6 +181,7 @@ class AverageQueueWaitTimeTestCase(TestCase):
 
         self.assertEqual(expected_old, actual_old)
 
+
 class AverageQueueTimeHelpingTestCase(TestCase):
     def setUp(self):
         semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
@@ -254,6 +256,7 @@ class AverageQueueTimeHelpingTestCase(TestCase):
         ).value
 
         self.assertEqual(expected_old, actual_old)
+
 
 class NumberQuestionsAnsweredQueueTestCase(TestCase):
     def setUp(self):
@@ -404,6 +407,7 @@ class NumberStudentsHelpedQueueTestCase(TestCase):
             date=yesterday - timezone.timedelta(weeks=1),
         ).value
         self.assertEqual(expected, actual)
+
 
 class AverageQueueWaitHeatmapTestCase(TestCase):
     def setUp(self):
@@ -639,6 +643,7 @@ class QuestionsPerTAQueueHeatmapTestCase(TestCase):
             hour=self.older_time_asked.hour,
         ).value
         self.assertEqual(expected_two_days_ago_8, actual_two_days_ago_8)
+
 
 class ArchiveCourseTestCase(TestCase):
     def setUp(self):

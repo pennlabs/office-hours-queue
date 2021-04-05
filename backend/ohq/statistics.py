@@ -6,9 +6,7 @@ from ohq.models import Question, QueueStatistic
 
 def calculate_avg_queue_wait(queue, date):
     avg = Question.objects.filter(
-        queue=queue,
-        time_asked__date=date,
-        time_response_started__isnull=False,
+        queue=queue, time_asked__date=date, time_response_started__isnull=False,
     ).aggregate(avg_wait=Avg(F("time_response_started") - F("time_asked")))
 
     wait = avg["avg_wait"]
@@ -60,9 +58,7 @@ def calculate_wait_time_heatmap(queue, weekday, hour):
 
 def calculate_num_questions_ans(queue, date):
     num_questions = Question.objects.filter(
-        queue=queue,
-        status=Question.STATUS_ANSWERED,
-        time_responded_to__date=date,
+        queue=queue, status=Question.STATUS_ANSWERED, time_responded_to__date=date,
     ).count()
 
     QueueStatistic.objects.update_or_create(
@@ -76,9 +72,7 @@ def calculate_num_questions_ans(queue, date):
 def calculate_num_students_helped(queue, date):
     num_students = (
         Question.objects.filter(
-            queue=queue,
-            status=Question.STATUS_ANSWERED,
-            time_responded_to__date=date,
+            queue=queue, status=Question.STATUS_ANSWERED, time_responded_to__date=date,
         )
         .distinct("asked_by")
         .count()

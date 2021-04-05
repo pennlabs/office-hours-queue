@@ -6,13 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ohq', '0009_auto_20210201_2224'),
+        ("ohq", "0009_auto_20210201_2224"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='queuestatistic',
-            name='metric',
-            field=models.CharField(choices=[('HEATMAP_AVG_WAIT', 'Average wait-time heatmap'), ('HEATMAP_QUESTIONS_PER_TA', 'Questions per TA heatmap'), ('AVG_WAIT', 'Average wait-time per day'), ('NUM_ANSWERED', 'Number of questions answered per day'), ('STUDENTS_HELPED', 'Students helped per day'), ('AVG_TIME_HELPING', 'Average time helping students')], max_length=256),
+            model_name="queuestatistic",
+            name="metric",
+            field=models.CharField(
+                choices=[
+                    ("HEATMAP_AVG_WAIT", "Average wait-time heatmap"),
+                    ("HEATMAP_QUESTIONS_PER_TA", "Questions per TA heatmap"),
+                    ("AVG_WAIT", "Average wait-time per day"),
+                    ("NUM_ANSWERED", "Number of questions answered per day"),
+                    ("STUDENTS_HELPED", "Students helped per day"),
+                    ("AVG_TIME_HELPING", "Average time helping students"),
+                ],
+                max_length=256,
+            ),
         ),
     ]

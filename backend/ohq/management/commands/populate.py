@@ -8,6 +8,7 @@ from django.utils import timezone
 
 from ohq.models import Course, Membership, MembershipInvite, Profile, Question, Queue, Semester
 
+
 now = timezone.now()
 # now = timezone.now() - timezone.timedelta(days=1)
 
