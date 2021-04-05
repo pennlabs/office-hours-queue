@@ -119,13 +119,12 @@ class QuestionTestCase(TestCase):
         )
         self.queue = Queue.objects.create(name="Queue", course=course)
         self.user = User.objects.create(username="user", email="example@example.com")
-        self.question = Question.objects.create(text="Question?", queue=self.queue, asked_by=self.user)
+        self.question = Question.objects.create(
+            text="Question?", queue=self.queue, asked_by=self.user
+        )
 
     def test_str(self):
-        self.assertEqual(
-            str(self.question),
-            f"{self.queue}: Asked by {self.user}"
-        )
+        self.assertEqual(str(self.question), f"{self.queue}: Asked by {self.user}")
 
 
 class SemesterTestCase(TestCase):
@@ -137,6 +136,7 @@ class SemesterTestCase(TestCase):
 
     def test_str(self):
         self.assertEqual(str(self.semester), f"{self.semester.term.title()} {self.semester.year}")
+
 
 class MembershipStatisticTestCase(TestCase):
     def setUp(self):
@@ -150,73 +150,73 @@ class MembershipStatisticTestCase(TestCase):
             course=self.course,
             user=self.user,
             metric=MembershipStatistic.METRIC_STUDENT_AVG_TIME_HELPED,
-            value=100.00
+            value=100.00,
         )
 
         self.student_avg_time_waiting = MembershipStatistic.objects.create(
             course=self.course,
             user=self.user,
             metric=MembershipStatistic.METRIC_STUDENT_AVG_TIME_WAITING,
-            value=100.00
+            value=100.00,
         )
 
         self.instructor_avg_time_helping = MembershipStatistic.objects.create(
             course=self.course,
             user=self.user,
             metric=MembershipStatistic.METRIC_INSTR_AVG_TIME_HELPING,
-            value=100.00
+            value=100.00,
         )
 
         self.instructor_avg_students_per_hour = MembershipStatistic.objects.create(
             course=self.course,
             user=self.user,
             metric=MembershipStatistic.METRIC_INSTR_AVG_STUDENTS_PER_HOUR,
-            value=100.00
+            value=100.00,
         )
-    
+
     def test_metric_to_pretty(self):
 
         self.assertEqual(
-            self.student_avg_time_helped.metric_to_pretty(),
-            "Student: Average time being helped"
+            self.student_avg_time_helped.metric_to_pretty(), "Student: Average time being helped"
         )
 
         self.assertEqual(
             self.student_avg_time_waiting.metric_to_pretty(),
-            "Student: Average time waiting for help"
+            "Student: Average time waiting for help",
         )
 
         self.assertEqual(
             self.instructor_avg_time_helping.metric_to_pretty(),
-            "Instructor: Average time helping per question"
+            "Instructor: Average time helping per question",
         )
 
         self.assertEqual(
             self.instructor_avg_students_per_hour.metric_to_pretty(),
-            "Instructor: Average number of students helped per hour"
+            "Instructor: Average number of students helped per hour",
         )
 
     def test_str(self):
-        
+
         self.assertEqual(
             str(self.student_avg_time_helped),
-             f"{self.course}: {self.user}: Student: Average time being helped"
+            f"{self.course}: {self.user}: Student: Average time being helped",
         )
 
         self.assertEqual(
             str(self.student_avg_time_waiting),
-             f"{self.course}: {self.user}: Student: Average time waiting for help"
+            f"{self.course}: {self.user}: Student: Average time waiting for help",
         )
 
         self.assertEqual(
-           str(self.instructor_avg_time_helping),
-             f"{self.course}: {self.user}: Instructor: Average time helping per question"
+            str(self.instructor_avg_time_helping),
+            f"{self.course}: {self.user}: Instructor: Average time helping per question",
         )
 
         self.assertEqual(
             str(self.instructor_avg_students_per_hour),
-             f"{self.course}: {self.user}: Instructor: Average number of students helped per hour"
+            f"{self.course}: {self.user}: Instructor: Average number of students helped per hour",
         )
+
 
 class QueueStatisticTestCase(TestCase):
     def setUp(self):

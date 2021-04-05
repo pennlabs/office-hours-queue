@@ -310,6 +310,7 @@ class MassInvitePermission(permissions.BasePermission):
 
         return membership.is_leadership
 
+
 class MembershipStatisticPermission(permissions.BasePermission):
     """
     Students+ can access course related statistics
@@ -326,6 +327,7 @@ class MembershipStatisticPermission(permissions.BasePermission):
 
         # anyone who is a member of the class can see course related membership statistics
         return membership is not None
+
 
 class QueueStatisticPermission(permissions.BasePermission):
     """

@@ -954,6 +954,7 @@ class MassInviteTestCase(TestCase):
             {"emails": "test@example.com,test2@example.com", "kind": Membership.KIND_STUDENT},
         )
 
+
 class MembershipStatisticTestCase(TestCase):
     def setUp(self):
         setUp(self)
@@ -974,11 +975,7 @@ class MembershipStatisticTestCase(TestCase):
     @parameterized.expand(users, name_func=get_test_name)
     def test_list(self, user):
         test(
-            self,
-            user,
-            "list",
-            "get",
-            reverse("ohq:membership-statistic", args=[self.course.id]),
+            self, user, "list", "get", reverse("ohq:membership-statistic", args=[self.course.id]),
         )
 
 
