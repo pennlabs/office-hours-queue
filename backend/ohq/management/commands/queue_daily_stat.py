@@ -33,10 +33,10 @@ class Command(BaseCommand):
 
             while iter_date <= yesterday:
 
-                calculate_avg_queue_wait(queue, iter_date, iter_date)
-                calculate_avg_time_helping(queue, iter_date, iter_date)
-                calculate_num_questions_ans(queue, iter_date, iter_date)
-                calculate_num_students_helped(queue, iter_date, iter_date)
+                calculate_avg_queue_wait(queue, iter_date)
+                calculate_avg_time_helping(queue, iter_date)
+                calculate_num_questions_ans(queue, iter_date)
+                calculate_num_students_helped(queue, iter_date)
 
                 iter_date += timezone.timedelta(days=1)
 

@@ -170,7 +170,6 @@ class AverageQueueWaitTimeTestCase(TestCase):
 
         self.assertEqual(expected, actual)
 
-        # call_command("wait_time_days", "--hist")
         call_command("queue_daily_stat", "--hist")
         expected_old = self.old_time_wait
         actual_old = QueueStatistic.objects.get(
@@ -244,7 +243,6 @@ class AverageQueueTimeHelpingTestCase(TestCase):
         actual = QueueStatistic.objects.get(
             queue=self.queue, metric=QueueStatistic.METRIC_AVG_TIME_HELPING, date=yesterday
         ).value
-
         self.assertEqual(expected, actual)
 
         call_command("queue_daily_stat", "--hist")

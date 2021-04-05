@@ -4,10 +4,10 @@ from django.db.models.functions import TruncDate
 from ohq.models import Question, QueueStatistic
 
 
-def calculate_avg_queue_wait(queue, start_date, end_date):
+def calculate_avg_queue_wait(queue, date):
     avg = Question.objects.filter(
         queue=queue,
-        time_asked__date__range=[start_date, end_date],
+        time_asked__date=date,
         time_response_started__isnull=False,
     ).aggregate(avg_wait=Avg(F("time_response_started") - F("time_asked")))
 
@@ -16,16 +16,16 @@ def calculate_avg_queue_wait(queue, start_date, end_date):
     QueueStatistic.objects.update_or_create(
         queue=queue,
         metric=QueueStatistic.METRIC_AVG_WAIT,
-        date=start_date,
+        date=date,
         defaults={"value": wait.seconds if wait else 0},
     )
 
 
-def calculate_avg_time_helping(queue, start_date, end_date):
+def calculate_avg_time_helping(queue, date):
     avg = Question.objects.filter(
         queue=queue,
         status=Question.STATUS_ANSWERED,
-        time_response_started__date__range=[start_date, end_date],
+        time_response_started__date=date,
         time_responded_to__isnull=False,
     ).aggregate(avg_time=Avg(F("time_responded_to") - F("time_response_started")))
 
@@ -34,7 +34,7 @@ def calculate_avg_time_helping(queue, start_date, end_date):
     QueueStatistic.objects.update_or_create(
         queue=queue,
         metric=QueueStatistic.METRIC_AVG_TIME_HELPING,
-        date=start_date,
+        date=date,
         defaults={"value": duration.seconds if duration else 0},
     )
 
@@ -58,27 +58,27 @@ def calculate_wait_time_heatmap(queue, weekday, hour):
     )
 
 
-def calculate_num_questions_ans(queue, start_date, end_date):
+def calculate_num_questions_ans(queue, date):
     num_questions = Question.objects.filter(
         queue=queue,
         status=Question.STATUS_ANSWERED,
-        time_responded_to__date__range=[start_date, end_date],
+        time_responded_to__date=date,
     ).count()
 
     QueueStatistic.objects.update_or_create(
         queue=queue,
         metric=QueueStatistic.METRIC_NUM_ANSWERED,
-        date=start_date,
+        date=date,
         defaults={"value": num_questions},
     )
 
 
-def calculate_num_students_helped(queue, start_date, end_date):
+def calculate_num_students_helped(queue, date):
     num_students = (
         Question.objects.filter(
             queue=queue,
             status=Question.STATUS_ANSWERED,
-            time_responded_to__date__range=[start_date, end_date],
+            time_responded_to__date=date,
         )
         .distinct("asked_by")
         .count()
@@ -87,7 +87,7 @@ def calculate_num_students_helped(queue, start_date, end_date):
     QueueStatistic.objects.update_or_create(
         queue=queue,
         metric=QueueStatistic.METRIC_STUDENTS_HELPED,
-        date=start_date,
+        date=date,
         defaults={"value": num_students},
     )
 

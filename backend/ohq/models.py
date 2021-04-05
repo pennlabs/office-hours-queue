@@ -268,9 +268,6 @@ class Question(models.Model):
     should_send_up_soon_notification = models.BooleanField(default=False)
     tags = models.ManyToManyField(Tag, blank=True)
 
-    def __str__(self):
-        return f"{self.queue}: Asked by {self.asked_by}"
-
 
 class QueueStatistic(models.Model):
     """
@@ -319,7 +316,7 @@ class QueueStatistic(models.Model):
     hour = models.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(23)], blank=True, null=True
     )
-    date = models.DateField(blank=True, null=True)  # for weekly stats, set to the Sunday of week
+    date = models.DateField(blank=True, null=True)
 
     class Meta:
         constraints = [
