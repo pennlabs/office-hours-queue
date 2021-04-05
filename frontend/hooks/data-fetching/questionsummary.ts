@@ -78,7 +78,7 @@ export const useQuestions = (
     const filterString = summaryFilterToQuery(filterCopy);
 
     // get rid of trailing slash
-    let downloadUrl = `${baseUrl.slice(0, -1)}`;
+    let downloadUrl = baseUrl.slice(0, -1);
 
     // filter is empty will return "?"
     if (filterString.length === 1) {
