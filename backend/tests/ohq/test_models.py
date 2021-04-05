@@ -152,33 +152,33 @@ class QueueStatisticTestCase(TestCase):
             hour=0,
         )
         today = timezone.datetime.today().date()
-        
+
         self.avg_wait_time_queue_statistic = QueueStatistic.objects.create(
             queue=self.queue,
             metric=QueueStatistic.METRIC_AVG_WAIT,
             value=150.00,
-            date=today - timezone.timedelta(days=1)
+            date=today - timezone.timedelta(days=1),
         )
 
         self.num_questions_answered_queue_statistic = QueueStatistic.objects.create(
             queue=self.queue,
             metric=QueueStatistic.METRIC_NUM_ANSWERED,
             value=10.00,
-            date=today - timezone.timedelta(days=1)
+            date=today - timezone.timedelta(days=1),
         )
-        
+
         self.num_students_helped_queue_statistic = QueueStatistic.objects.create(
             queue=self.queue,
             metric=QueueStatistic.METRIC_STUDENTS_HELPED,
             value=50.00,
-            date=today - timezone.timedelta(days=1)
+            date=today - timezone.timedelta(days=1),
         )
 
         self.avg_time_helping_queue_statistic = QueueStatistic.objects.create(
             queue=self.queue,
             metric=QueueStatistic.METRIC_AVG_TIME_HELPING,
             value=120.00,
-            date=today - timezone.timedelta(days=1)
+            date=today - timezone.timedelta(days=1),
         )
 
     def test_str(self):
