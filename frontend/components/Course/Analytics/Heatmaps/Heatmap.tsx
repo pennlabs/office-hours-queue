@@ -66,7 +66,6 @@ export default function Heatmap({ series, chartTitle }: HeatmapProps) {
             },
             title: {
                 text: `Hour (${timeZoneName})`,
-                offsetY: 10,
             },
         },
         responsive: [
