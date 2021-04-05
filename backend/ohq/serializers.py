@@ -10,6 +10,7 @@ from ohq.models import (
     Course,
     Membership,
     MembershipInvite,
+    MembershipStatistic,
     Profile,
     Question,
     Queue,
@@ -393,12 +394,12 @@ class UserPrivateSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
-# class MembershipStatisticsSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = MembershipStatistic
-#         fields = ("user", "metric", "value")
-#         # make everything read-only, stats are only updated through commands
-#         read_only_fields = ("user", "metric", "value")
+class MembershipStatisticSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MembershipStatistic
+        fields = ("metric", "value")
+        # make everything read-only, stats are only updated through commands
+        read_only_fields = ("metric", "value")
 
 
 class QueueStatisticSerializer(serializers.ModelSerializer):
