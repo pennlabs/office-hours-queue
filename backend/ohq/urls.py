@@ -5,6 +5,7 @@ from rest_live.routers import RealtimeRouter
 from ohq.views import (
     AnnouncementViewSet,
     CourseViewSet,
+    CourseStatisticView,
     MassInviteView,
     MembershipInviteViewSet,
     MembershipViewSet,
@@ -49,6 +50,11 @@ additional_urls = [
         "courses/<slug:course_pk>/queues/<slug:queue_pk>/statistics/",
         QueueStatisticView.as_view(),
         name="queue-statistic",
+    ),
+    path(
+        "courses/<slug:course_pk>/course-statistics/",
+        CourseStatisticView.as_view(),
+        name="course-statistic",
     ),
 ]
 

@@ -8,6 +8,7 @@ from rest_framework import serializers
 from ohq.models import (
     Announcement,
     Course,
+    CourseStatistic,
     Membership,
     MembershipInvite,
     Profile,
@@ -391,6 +392,14 @@ class UserPrivateSerializer(serializers.ModelSerializer):
 
             profile.save()
         return super().update(instance, validated_data)
+
+
+class CourseStatisticSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseStatistic
+        fields = ("user", "metric", "value", "date")
+        # make everything read-only, stats are only updated through commands
+        read_only_fields = ("user", "metric", "value", "date")
 
 
 class QueueStatisticSerializer(serializers.ModelSerializer):

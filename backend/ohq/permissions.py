@@ -310,6 +310,22 @@ class MassInvitePermission(permissions.BasePermission):
 
         return membership.is_leadership
 
+class CourseStatisticPermission(permissions.BasePermission):
+    """
+    TA+ can access course related statistics
+    """
+
+    def has_permission(self, request, view):
+        # Anonymous users can't do anything
+        if not request.user.is_authenticated:
+            return False
+
+        membership = Membership.objects.filter(
+            course=view.kwargs["course_pk"], user=request.user
+        ).exclude(kind=Membership.KIND_STUDENT).first()
+
+        # anyone who is a member of the class can see course related statistics
+        return membership is not None
 
 class QueueStatisticPermission(permissions.BasePermission):
     """
