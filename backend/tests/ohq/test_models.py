@@ -5,6 +5,7 @@ from django.utils import timezone
 
 from ohq.models import (
     Course,
+    CourseStatistic,
     Membership,
     MembershipInvite,
     Question,
@@ -135,6 +136,92 @@ class SemesterTestCase(TestCase):
     def test_str(self):
         self.assertEqual(str(self.semester), f"{self.semester.term.title()} {self.semester.year}")
 
+class CourseStatisticTestCase(TestCase):
+
+    def setUp(self):
+        semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
+        self.course = Course.objects.create(
+            course_code="000", department="TEST", course_title="Title", semester=semester
+        )
+        self.user = User.objects.create_user("user", "user@a.com", "user")
+        today = timezone.datetime.today().date()
+
+        self.student_num_questions_asked = CourseStatistic.objects.create(
+            course=self.course,
+            user=self.user,
+            metric=CourseStatistic.METRIC_STUDENT_QUESTIONS_ASKED,
+            value=100.00,
+            date=today,
+        )
+
+        self.student_time_being_helped = CourseStatistic.objects.create(
+            course=self.course,
+            user=self.user,
+            metric=CourseStatistic.METRIC_STUDENT_TIME_BEING_HELPED,
+            value=100.00,
+            date=today,
+        )
+
+        self.instructor_num_questions_answered = CourseStatistic.objects.create(
+            course=self.course,
+            user=self.user,
+            metric=CourseStatistic.METRIC_INSTR_QUESTIONS_ANSWERED,
+            value=100.00,
+            date=today,
+        )
+
+        self.instructor_time_answering_questions = CourseStatistic.objects.create(
+            course=self.course,
+            user=self.user,
+            metric=CourseStatistic.METRIC_INSTR_TIME_ANSWERING,
+            value=100.00,
+            date=today,
+        )
+
+    def test_metric_to_pretty(self):
+
+        self.assertEqual(
+            self.student_num_questions_asked.metric_to_pretty(), 
+            "Student: Questions asked"
+        )
+
+        self.assertEqual(
+            self.student_time_being_helped.metric_to_pretty(),
+            "Student: Time being helped",
+        )
+
+        self.assertEqual(
+            self.instructor_num_questions_answered.metric_to_pretty(),
+            "Instructor: Questions answered",
+        )
+
+        self.assertEqual(
+            self.instructor_time_answering_questions.metric_to_pretty(),
+            "Instructor: Time answering questions",
+        )
+
+    def test_str(self):
+
+        today = timezone.datetime.today().date()
+        self.assertEqual(
+            str(self.student_num_questions_asked), 
+            f"{self.course}: {today}: Student: Questions asked"
+        )
+
+        self.assertEqual(
+            str(self.student_time_being_helped),
+            f"{self.course}: {today}: Student: Time being helped"
+        )
+
+        self.assertEqual(
+            str(self.instructor_num_questions_answered),
+            f"{self.course}: {today}: Instructor: Questions answered"
+        )
+
+        self.assertEqual(
+            str(self.instructor_time_answering_questions),
+            f"{self.course}: {today}: Instructor: Time answering questions"
+        )
 
 class QueueStatisticTestCase(TestCase):
     def setUp(self):

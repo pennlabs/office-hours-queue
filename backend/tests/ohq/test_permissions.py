@@ -9,6 +9,7 @@ from rest_framework.test import APIClient
 from ohq.models import (
     Announcement,
     Course,
+    CourseStatistic,
     Membership,
     MembershipInvite,
     Question,
@@ -952,6 +953,32 @@ class MassInviteTestCase(TestCase):
             "post",
             reverse("ohq:mass-invite", args=[self.course.id]),
             {"emails": "test@example.com,test2@example.com", "kind": Membership.KIND_STUDENT},
+        )
+
+class CourseStatisticTestCase(TestCase):
+    def setUp(self):
+        setUp(self)
+
+        # Expected results
+        self.expected = {
+            "list": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 403,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+        }
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_list(self, user):
+        test(
+            self,
+            user,
+            "list",
+            "get",
+            reverse("ohq:course-statistic", args=[self.course.id]),
         )
 
 

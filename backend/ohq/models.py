@@ -268,9 +268,6 @@ class Question(models.Model):
     should_send_up_soon_notification = models.BooleanField(default=False)
     tags = models.ManyToManyField(Tag, blank=True)
 
-    def __str__(self):
-        return f"{self.queue}: Asked by {self.asked_by}"
-
 class CourseStatistic(models.Model):
     """
     Most active students/TAs in the past week for a course
@@ -283,7 +280,7 @@ class CourseStatistic(models.Model):
 
     METRIC_CHOICES = [
         (METRIC_STUDENT_QUESTIONS_ASKED, "Student: Questions asked"),
-        (METRIC_STUDENT_TIME_BEING_HELPED, "Student: Time spent being helped"),
+        (METRIC_STUDENT_TIME_BEING_HELPED, "Student: Time being helped"),
         (METRIC_INSTR_QUESTIONS_ANSWERED, "Instructor: Questions answered"),
         (METRIC_INSTR_TIME_ANSWERING, "Instructor: Time answering questions")
     ]

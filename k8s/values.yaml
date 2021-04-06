@@ -80,3 +80,8 @@ cronjobs:
     image: pennlabs/office-hours-queue-backend
     secret: office-hours-queue
     cmd: ["python", "manage.py", "wait_time_days"]
+    - name: calculate-course-stat
+    schedule: "0 8 * * *"
+    image: pennlabs/office-hours-queue-backend
+    secret: office-hours-queue
+    cmd: ["python", "manage.py", "course_stat.py"]
