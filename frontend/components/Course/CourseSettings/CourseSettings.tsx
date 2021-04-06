@@ -11,7 +11,7 @@ interface CourseSettingsProps {
 
 const CourseSettings = (props: CourseSettingsProps) => {
     const { course: rawCourse, tags } = props;
-    const [courseData, , , mutateCourse] = useCourse(rawCourse.id, rawCourse);
+    const { data: courseData, mutate } = useCourse(rawCourse.id, rawCourse);
 
     // courseData is non null because initialData is provided
     // and the key stays the same
@@ -28,7 +28,7 @@ const CourseSettings = (props: CourseSettingsProps) => {
                 <Segment basic>
                     <CourseForm
                         course={course}
-                        mutateCourse={mutateCourse}
+                        mutateCourse={mutate}
                         tags={tags}
                     />
                 </Segment>

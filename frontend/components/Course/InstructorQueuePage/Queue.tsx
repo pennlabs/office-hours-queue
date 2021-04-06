@@ -160,7 +160,7 @@ const Queue = (props: QueueProps) => {
                         </Grid.Column>
                     </Grid.Row>
                 )}
-                {queue.questionsActive >= 8 && !queue.rateLimitEnabled && (
+                {queue.questionsAsked >= 6 && !queue.rateLimitEnabled && (
                     <Grid.Row>
                         <Grid.Column>
                             <Message color="red">

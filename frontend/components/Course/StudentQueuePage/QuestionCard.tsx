@@ -39,7 +39,7 @@ const QuestionCard = (props: QuestionCardProps) => {
         lastQuestionsMutate,
         tags,
     } = props;
-    const [positionData, , , ,] = useQuestionPosition(
+    const { data: positionData } = useQuestionPosition(
         course.id,
         queue.id,
         question.id
@@ -110,7 +110,11 @@ const QuestionCard = (props: QuestionCardProps) => {
                     </Grid.Row>
                 </Grid>
             </Segment>
-            <Segment attached tertiary={question.timeResponseStarted !== null}>
+            <Segment
+                attached
+                tertiary={question.timeResponseStarted !== null}
+                style={{ overflowWrap: "anywhere" }}
+            >
                 {question.text}
                 {question.note && !question.resolvedNote && (
                     <>
@@ -120,7 +124,9 @@ const QuestionCard = (props: QuestionCardProps) => {
                                 An instructor has messaged you, please update
                                 your question:
                             </Message.Header>
-                            <Message.Content>
+                            <Message.Content
+                                style={{ overflowWrap: "anywhere" }}
+                            >
                                 <p>{question.note}</p>
                             </Message.Content>
                         </Message>

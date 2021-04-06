@@ -7,7 +7,8 @@ import Alert from "@material-ui/lab/Alert";
 import AsyncSelect from "react-select/async";
 import { useRouter } from "next/router";
 import CreatableSelect from "react-select/creatable";
-import { Course, mutateResourceFunction, Semester, Tag } from "../../../types";
+import { mutateResourceFunction } from "@pennlabs/rest-hooks/dist/types";
+import { Course, Semester, Tag } from "../../../types";
 import {
     getSemesters,
     createTag,

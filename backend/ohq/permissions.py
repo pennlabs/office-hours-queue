@@ -32,15 +32,15 @@ class CoursePermission(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
-        membership = Membership.objects.filter(course=obj, user=request.user).first()
-
-        # Non members can't do anything
-        if membership is None:
-            return False
-
         # Anyone can get a single course
         if view.action == "retrieve":
             return True
+
+        membership = Membership.objects.filter(course=obj, user=request.user).first()
+
+        # Non members can't do anything other than retrieve a course
+        if membership is None:
+            return False
 
         # No one can delete a course
         if view.action == "destroy":
@@ -169,22 +169,6 @@ class QuestionPermission(permissions.BasePermission):
         # Students+ can get, list, or modify questions
         # With restrictions defined in has_object_permission
         return True
-
-
-def has_permission_for_question(user, instance):
-    """
-    Permission function for django-rest-live.
-    """
-    if not user.is_authenticated:
-        return False
-
-    membership = Membership.objects.filter(course=instance.queue.course, user=user).first()
-    # If user is not in the class, don't let them view questions.
-    if membership is None:
-        return False
-
-    # Let students view their own questions, let TAs and above view all questions.
-    return instance.asked_by == user or membership.is_ta
 
 
 class QuestionSearchPermission(permissions.BasePermission):

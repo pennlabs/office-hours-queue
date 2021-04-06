@@ -533,24 +533,25 @@ class QuestionsPerTAQueueHeatmapTestCase(TestCase):
         ta2 = User.objects.create_user("ta2", "ta2@a.com", "ta2")
         student = User.objects.create_user("student", "student@a.com", "student")
 
-        self.num_tas_8 = 1
+        self.num_tas_8 = 2
         self.num_tas_17 = 2
 
         yesterday = timezone.localtime() - timezone.timedelta(days=1)
 
-        self.ta_1_questions_8 = 3
-        for i in range(self.ta_1_questions_8):
+        self.ta_1_questions_8_week_1 = 2
+        self.ta_1_questions_8_week_2 = 3
+        for i in range(self.ta_1_questions_8_week_1 + self.ta_1_questions_8_week_2):
             yesterday_8 = yesterday.replace(hour=8, minute=0)
             time_asked = (
                 yesterday_8
-                if i % 2 == 0
+                if i >= self.ta_1_questions_8_week_1
                 else yesterday_8 + timezone.timedelta(weeks=-1, minutes=30)
             )
             question = Question.objects.create(
                 text=f"Question {i}",
                 queue=self.queue,
                 asked_by=student,
-                responded_to_by=ta1,
+                responded_to_by=ta1 if i % 2 == 0 else ta2,
                 time_response_started=time_asked + timezone.timedelta(minutes=10),
                 status=Question.STATUS_ACTIVE if i % 3 == 0 else Question.STATUS_ANSWERED,
             )
@@ -561,11 +562,7 @@ class QuestionsPerTAQueueHeatmapTestCase(TestCase):
         self.ta_2_questions_17 = 4
         for i in range(self.ta_1_questions_17 + self.ta_2_questions_17):
             yesterday_17 = yesterday.replace(hour=17, minute=0)
-            time_asked = (
-                yesterday_17
-                if i % 2 == 0
-                else yesterday_17 + timezone.timedelta(weeks=-1, minutes=59)
-            )
+            time_asked = yesterday_17
             question = Question.objects.create(
                 text=f"Question {i}",
                 queue=self.queue,
@@ -573,6 +570,20 @@ class QuestionsPerTAQueueHeatmapTestCase(TestCase):
                 responded_to_by=ta1 if i < self.ta_1_questions_17 else ta2,
                 time_response_started=time_asked + timezone.timedelta(minutes=10),
                 status=Question.STATUS_ACTIVE if i % 3 == 0 else Question.STATUS_ANSWERED,
+            )
+            question.time_asked = time_asked
+            question.save()
+
+        # divide by zero case setup
+        self.questions_20 = 2
+        for i in range(self.questions_20):
+            yesterday_20 = yesterday.replace(hour=20, minute=0)
+            time_asked = yesterday_20
+            question = Question.objects.create(
+                text=f"Question {i}",
+                queue=self.queue,
+                asked_by=student,
+                status=Question.STATUS_ASKED,
             )
             question.time_asked = time_asked
             question.save()
@@ -596,7 +607,10 @@ class QuestionsPerTAQueueHeatmapTestCase(TestCase):
         yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
         yesterday_weekday = yesterday.weekday()
 
-        expected_8 = self.ta_1_questions_8 / self.num_tas_8
+        expected_8 = (
+            self.ta_1_questions_8_week_1 / self.num_tas_8
+            + self.ta_1_questions_8_week_2 / self.num_tas_8
+        ) / 2
         actual_8 = QueueStatistic.objects.get(
             queue=self.queue,
             metric=QueueStatistic.METRIC_HEATMAP_QUESTIONS_PER_TA,
@@ -613,6 +627,15 @@ class QuestionsPerTAQueueHeatmapTestCase(TestCase):
             hour=17,
         ).value
         self.assertEqual(expected_17, actual_17)
+
+        expected_20 = self.questions_20
+        actual_20 = QueueStatistic.objects.get(
+            queue=self.queue,
+            metric=QueueStatistic.METRIC_HEATMAP_QUESTIONS_PER_TA,
+            day=(yesterday_weekday + 1) % 7 + 1,
+            hour=20,
+        ).value
+        self.assertEqual(expected_20, actual_20)
 
         call_command("queue_heatmap_stat", "--hist")
 

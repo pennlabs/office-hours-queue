@@ -18,6 +18,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
+from rest_live.mixins import RealtimeMixin
 
 from ohq.filters import QuestionSearchFilter, QueueStatisticFilter
 from ohq.invite import parse_and_send_invites
@@ -158,7 +159,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         return prefetch(qs, self.get_serializer_class())
 
 
-class QuestionViewSet(viewsets.ModelViewSet):
+class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
     """
     retrieve:
     Return a single question with all information fields present.
@@ -184,6 +185,7 @@ class QuestionViewSet(viewsets.ModelViewSet):
 
     permission_classes = [QuestionPermission | IsSuperuser]
     serializer_class = QuestionSerializer
+    queryset = Question.objects.none()
 
     def get_queryset(self):
         qs = Question.objects.filter(
@@ -249,7 +251,7 @@ class QuestionViewSet(viewsets.ModelViewSet):
         return Question.objects.filter(
             queue=queue,
             asked_by=user,
-            time_asked__gte=timezone.now() - timedelta(minutes=queue.rate_limit_minutes),
+            time_responded_to__gte=timezone.now() - timedelta(minutes=queue.rate_limit_minutes),
         ).exclude(status__in=[Question.STATUS_REJECTED, Question.STATUS_WITHDRAWN])
 
     def create(self, request, *args, **kwargs):
@@ -287,10 +289,12 @@ class QuestionViewSet(viewsets.ModelViewSet):
                 >= queue.rate_limit_length
                 and count >= queue.rate_limit_questions
             ):
-                last_question = questions.order_by("-time_asked")[queue.rate_limit_questions - 1]
+                last_question = questions.order_by("-time_responded_to")[
+                    queue.rate_limit_questions - 1
+                ]
                 wait_time_secs = (
                     queue.rate_limit_minutes * 60
-                    - (timezone.now() - last_question.time_asked).total_seconds()
+                    - (timezone.now() - last_question.time_responded_to).total_seconds()
                 )
                 wait_time_mins = math.ceil(wait_time_secs / 60)
 

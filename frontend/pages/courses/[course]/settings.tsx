@@ -49,9 +49,9 @@ SettingsPage.getInitialProps = async (
     let tags: Tag[];
 
     const response = await doMultipleSuccessRequests([
-        { path: `/courses/${query.course}/`, data },
-        { path: `/courses/${query.course}/members/`, data },
-        { path: `/courses/${query.course}/tags/`, data },
+        { path: `/api/courses/${query.course}/`, data },
+        { path: `/api/courses/${query.course}/members/`, data },
+        { path: `/api/courses/${query.course}/tags/`, data },
     ]);
 
     if (response.success) {

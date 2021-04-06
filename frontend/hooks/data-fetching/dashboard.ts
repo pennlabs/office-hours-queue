@@ -1,16 +1,16 @@
-import useSWR from "swr";
-import { Course, UserMembership, mutateFunction } from "../../types";
+import { useResource } from "@pennlabs/rest-hooks";
+import { Course, UserMembership } from "../../types";
 import { doApiRequest } from "../../utils/fetch";
 
 export async function getCourses(inputValue: string): Promise<Course[]> {
-    return doApiRequest(`/courses/?search=${inputValue}`)
+    return doApiRequest(`/api/courses/?search=${inputValue}`)
         .then((res) => res.json())
         .then((res) => res.map((course) => course))
         .catch((_) => []);
 }
 
 export async function joinCourse(courseId: string): Promise<void> {
-    const res = await doApiRequest(`/courses/${courseId}/members/`, {
+    const res = await doApiRequest(`/api/courses/${courseId}/members/`, {
         method: "POST",
     });
 
@@ -24,7 +24,7 @@ export async function leaveCourse(
     membershipId: string
 ): Promise<void> {
     const res = await doApiRequest(
-        `/courses/${courseId}/members/${membershipId}/`,
+        `/api/courses/${courseId}/members/${membershipId}/`,
         {
             method: "DELETE",
         }
@@ -36,7 +36,7 @@ export async function leaveCourse(
 }
 
 export async function createCourse(payload: any): Promise<void> {
-    const res = await doApiRequest("/courses/", {
+    const res = await doApiRequest("/api/courses/", {
         method: "POST",
         body: payload,
     });
@@ -46,13 +46,14 @@ export async function createCourse(payload: any): Promise<void> {
     }
 }
 
-export function useMemberships(
-    initialUser
-): [UserMembership[], any, boolean, mutateFunction<UserMembership[]>] {
-    const { data, error, isValidating, mutate } = useSWR("/accounts/me/", {
-        initialData: initialUser,
-    });
+export function useMemberships(initialUser) {
+    const { data, error, isValidating, mutate } = useResource(
+        "/api/accounts/me/",
+        {
+            initialData: initialUser,
+        }
+    );
     const memberships: UserMembership[] = data ? data.membershipSet : [];
 
-    return [memberships, error, isValidating, mutate];
+    return { memberships, error, isValidating, mutate };
 }

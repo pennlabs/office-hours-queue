@@ -49,7 +49,7 @@ const SummaryForm = ({ updateFilter, downloadUrl }) => {
     const [debounce, setDebounce] = useState<NodeJS.Timeout | null>(null);
 
     return (
-        <Form>
+        <Form autoComplete="off">
             <Form.Group>
                 <Form.Field>
                     <label htmlFor="form-after">After</label>

@@ -1,4 +1,5 @@
-from django.db.models import Avg, F
+from django.db.models import Avg, Case, Count, F, When
+from django.db.models.functions import TruncDate
 
 from ohq.models import Question, QueueStatistic
 
@@ -92,20 +93,25 @@ def calculate_num_students_helped(queue, prev_sunday, coming_saturday):
 
 
 def calculate_questions_per_ta_heatmap(queue, weekday, hour):
-    interval_questions = Question.objects.filter(
-        queue=queue, time_asked__week_day=weekday, time_asked__hour=hour
+    interval_stats = (
+        Question.objects.filter(queue=queue, time_asked__week_day=weekday, time_asked__hour=hour)
+        .annotate(date=TruncDate("time_asked"))
+        .values("date")
+        .annotate(
+            questions=Count("date", distinct=False), tas=Count("responded_to_by", distinct=True),
+        )
+        .annotate(
+            q_per_ta=Case(When(tas=0, then=F("questions")), default=1.0 * F("questions") / F("tas"))
+        )
+        .aggregate(avg=Avg(F("q_per_ta")))
     )
 
-    num_tas = interval_questions.distinct("responded_to_by").count()
-
-    num_questions = interval_questions.count()
-
-    statistic = num_questions / num_tas if num_tas else num_questions
+    statistic = interval_stats["avg"]
 
     QueueStatistic.objects.update_or_create(
         queue=queue,
         metric=QueueStatistic.METRIC_HEATMAP_QUESTIONS_PER_TA,
         day=weekday,
         hour=hour,
-        defaults={"value": statistic},
+        defaults={"value": statistic if statistic else 0},
     )

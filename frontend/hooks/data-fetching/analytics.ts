@@ -1,4 +1,4 @@
-import useSwr from "swr";
+import { useResource } from "@pennlabs/rest-hooks";
 import { HeatmapSeries, HeatmapData, Metric, DayOfWeek } from "../../types";
 import { logException } from "../../utils/sentry";
 
@@ -7,8 +7,8 @@ export const useHeatmapData = (
     queueId: number,
     type: Metric
 ) => {
-    const { data, error, isValidating } = useSwr<HeatmapData>(
-        `/courses/${courseId}/queues/${queueId}/statistics/?metric=${type}`
+    const { data, error, isValidating } = useResource<HeatmapData>(
+        `/api/courses/${courseId}/queues/${queueId}/statistics/?metric=${type}`
     );
 
     if (data) {
@@ -32,7 +32,9 @@ export const useHeatmapData = (
                     y:
                         type == Metric.HEATMAP_WAIT
                             ? Math.ceil(Number(value) / 60)
-                            : Number(value),
+                            : Math.round(
+                                  (Number(value) + Number.EPSILON) * 100
+                              ) / 100,
                 });
             } else {
                 logException(new Error(`Invalid day ${day}`));

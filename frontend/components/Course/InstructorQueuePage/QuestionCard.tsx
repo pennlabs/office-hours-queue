@@ -162,7 +162,11 @@ const QuestionCard = (props: QuestionCardProps) => {
                     </Grid.Row>
                 </Grid>
             </Segment>
-            <Segment attached tertiary={question.timeResponseStarted !== null}>
+            <Segment
+                attached
+                tertiary={question.timeResponseStarted !== null}
+                style={{ overflowWrap: "anywhere" }}
+            >
                 {question.text}
             </Segment>
             <Segment attached="bottom" secondary textAlign="right">
@@ -263,7 +267,9 @@ const QuestionCard = (props: QuestionCardProps) => {
                                         {question.askedBy.firstName} updates
                                         their question:
                                     </Message.Header>
-                                    <Message.Content>
+                                    <Message.Content
+                                        style={{ overflowWrap: "anywhere" }}
+                                    >
                                         <p>{question.note}</p>
                                         <Button
                                             compact

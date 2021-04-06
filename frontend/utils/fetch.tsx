@@ -5,7 +5,7 @@ export const SITE_ORIGIN =
         ? `https://${process.env.DOMAIN || "ohq.io"}`
         : `http://localhost:${process.env.PORT || 3000}`;
 
-export const API_BASE_URL = `${SITE_ORIGIN}/api`;
+export const API_BASE_URL = `${SITE_ORIGIN}`;
 
 export function getApiUrl(path: string): string {
     if (/^https?:\/\//.test(path)) {

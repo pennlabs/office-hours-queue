@@ -20,7 +20,7 @@ interface SummaryProps {
 
 const Summary = (props: SummaryProps) => {
     const { course: rawCourse, questionListResult } = props;
-    const [course, , ,] = useCourse(rawCourse.id, rawCourse);
+    const { data: course } = useCourse(rawCourse.id, rawCourse);
 
     const getFullName = (user: User) => `${user.firstName} ${user.lastName}`;
 
