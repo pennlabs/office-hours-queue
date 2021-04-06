@@ -20,12 +20,7 @@ from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 from rest_live.mixins import RealtimeMixin
 
-from ohq.filters import (
-    QuestionSearchFilter, 
-    QueueStatisticFilter,
-    CourseStatisticFilter,
-)
-
+from ohq.filters import CourseStatisticFilter, QuestionSearchFilter, QueueStatisticFilter
 from ohq.invite import parse_and_send_invites
 from ohq.models import (
     Announcement,
@@ -565,6 +560,7 @@ class MassInviteView(APIView):
             status=201,
         )
 
+
 class CourseStatisticView(generics.ListAPIView):
     """
     Return a list of statistics - multiple data points for list statistics and heatmap statistics
@@ -579,6 +575,7 @@ class CourseStatisticView(generics.ListAPIView):
     def get_queryset(self):
         qs = CourseStatistic.objects.filter(course=self.kwargs["course_pk"])
         return prefetch(qs, self.serializer_class)
+
 
 class QueueStatisticView(generics.ListAPIView):
     """

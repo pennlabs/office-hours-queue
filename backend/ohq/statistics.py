@@ -1,22 +1,25 @@
-from django.db.models import Avg, Case, Count, F, When, Sum
-from django.db.models.functions import TruncDate
 from django.contrib.auth import get_user_model
+from django.db.models import Avg, Case, Count, F, Sum, When
+from django.db.models.functions import TruncDate
 from django.utils import timezone
 
-from ohq.models import Question, QueueStatistic, CourseStatistic
+from ohq.models import CourseStatistic, Question, QueueStatistic
+
 
 User = get_user_model()
 
+
 def calculate_student_most_questions_asked(course, yesterday):
     last_week = yesterday - timezone.timedelta(days=7)
-    student_most_questions = (Question.objects.filter(
-                                                queue__course=course, 
-                                                time_responded_to__gt=last_week,
-                                                status=Question.STATUS_ANSWERED)
-                                            .values('asked_by')
-                                            .annotate(questions_asked=Count('asked_by'))
-                                            .order_by('-questions_asked')[:5])
-    
+    student_most_questions = (
+        Question.objects.filter(
+            queue__course=course, time_responded_to__gt=last_week, status=Question.STATUS_ANSWERED
+        )
+        .values("asked_by")
+        .annotate(questions_asked=Count("asked_by"))
+        .order_by("-questions_asked")[:5]
+    )
+
     for q in student_most_questions:
         student_pk = q["asked_by"]
         user = User.objects.get(pk=student_pk)
@@ -27,19 +30,21 @@ def calculate_student_most_questions_asked(course, yesterday):
             user=user,
             metric=CourseStatistic.METRIC_STUDENT_QUESTIONS_ASKED,
             date=yesterday,
-            defaults={"value": num_questions}            
+            defaults={"value": num_questions},
         )
+
 
 def calculate_student_most_time_being_helped(course, yesterday):
     last_week = yesterday - timezone.timedelta(days=7)
-    student_most_time = (Question.objects.filter(
-                                            queue__course=course, 
-                                            time_responded_to__gt=last_week,
-                                            status=Question.STATUS_ANSWERED)
-                                        .values('asked_by')
-                                        .annotate(time_being_helped=Sum(F('time_responded_to') - F('time_response_started')))
-                                        .order_by('-time_being_helped')[:5])
-    
+    student_most_time = (
+        Question.objects.filter(
+            queue__course=course, time_responded_to__gt=last_week, status=Question.STATUS_ANSWERED
+        )
+        .values("asked_by")
+        .annotate(time_being_helped=Sum(F("time_responded_to") - F("time_response_started")))
+        .order_by("-time_being_helped")[:5]
+    )
+
     for q in student_most_time:
         student_pk = q["asked_by"]
         user = User.objects.get(pk=student_pk)
@@ -50,41 +55,45 @@ def calculate_student_most_time_being_helped(course, yesterday):
             user=user,
             metric=CourseStatistic.METRIC_STUDENT_TIME_BEING_HELPED,
             date=yesterday,
-            defaults={"value": time}     
+            defaults={"value": time},
         )
+
 
 def calculate_instructor_most_questions_answered(course, yesterday):
     last_week = yesterday - timezone.timedelta(days=7)
-    instructor_most_questions = (Question.objects.filter(
-                                                    queue__course=course, 
-                                                    time_responded_to__gt=last_week,
-                                                    status=Question.STATUS_ANSWERED)
-                                                .values('responded_to_by')
-                                                .annotate(questions_answered=Count('responded_to_by'))
-                                                .order_by('-questions_answered')[:5])
-    
+    instructor_most_questions = (
+        Question.objects.filter(
+            queue__course=course, time_responded_to__gt=last_week, status=Question.STATUS_ANSWERED
+        )
+        .values("responded_to_by")
+        .annotate(questions_answered=Count("responded_to_by"))
+        .order_by("-questions_answered")[:5]
+    )
+
     for q in instructor_most_questions:
         instructor_pk = q["responded_to_by"]
         user = User.objects.get(pk=instructor_pk)
         num_questions = q["questions_answered"]
-        
+
         CourseStatistic.objects.update_or_create(
             course=course,
             user=user,
             metric=CourseStatistic.METRIC_INSTR_QUESTIONS_ANSWERED,
             date=yesterday,
-            defaults={"value": num_questions}            
+            defaults={"value": num_questions},
         )
+
 
 def calculate_instructor_most_time_helping(course, yesterday):
     last_week = yesterday - timezone.timedelta(days=7)
-    instructor_most_time = (Question.objects.filter(
-                                            queue__course=course, 
-                                            time_responded_to__gt=last_week,
-                                            status=Question.STATUS_ANSWERED)
-                                        .values('responded_to_by')
-                                        .annotate(time_answering=Sum(F('time_responded_to') - F('time_response_started')))
-                                        .order_by('-time_answering')[:5])
+    instructor_most_time = (
+        Question.objects.filter(
+            queue__course=course, time_responded_to__gt=last_week, status=Question.STATUS_ANSWERED
+        )
+        .values("responded_to_by")
+        .annotate(time_answering=Sum(F("time_responded_to") - F("time_response_started")))
+        .order_by("-time_answering")[:5]
+    )
 
     for q in instructor_most_time:
         instructor_pk = q["responded_to_by"]
@@ -96,7 +105,7 @@ def calculate_instructor_most_time_helping(course, yesterday):
             user=user,
             metric=CourseStatistic.METRIC_INSTR_TIME_ANSWERING,
             date=yesterday,
-            defaults={"value": time}     
+            defaults={"value": time},
         )
 
 

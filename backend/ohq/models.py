@@ -268,6 +268,7 @@ class Question(models.Model):
     should_send_up_soon_notification = models.BooleanField(default=False)
     tags = models.ManyToManyField(Tag, blank=True)
 
+
 class CourseStatistic(models.Model):
     """
     Most active students/TAs in the past week for a course
@@ -282,14 +283,14 @@ class CourseStatistic(models.Model):
         (METRIC_STUDENT_QUESTIONS_ASKED, "Student: Questions asked"),
         (METRIC_STUDENT_TIME_BEING_HELPED, "Student: Time being helped"),
         (METRIC_INSTR_QUESTIONS_ANSWERED, "Instructor: Questions answered"),
-        (METRIC_INSTR_TIME_ANSWERING, "Instructor: Time answering questions")
+        (METRIC_INSTR_TIME_ANSWERING, "Instructor: Time answering questions"),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     metric = models.CharField(max_length=256, choices=METRIC_CHOICES)
     value = models.DecimalField(max_digits=16, decimal_places=8)
-    date = models.DateField(blank=True, null=True)  
+    date = models.DateField(blank=True, null=True)
 
     class Meta:
         constraints = [

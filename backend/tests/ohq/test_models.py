@@ -136,8 +136,8 @@ class SemesterTestCase(TestCase):
     def test_str(self):
         self.assertEqual(str(self.semester), f"{self.semester.term.title()} {self.semester.year}")
 
-class CourseStatisticTestCase(TestCase):
 
+class CourseStatisticTestCase(TestCase):
     def setUp(self):
         semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
         self.course = Course.objects.create(
@@ -181,13 +181,11 @@ class CourseStatisticTestCase(TestCase):
     def test_metric_to_pretty(self):
 
         self.assertEqual(
-            self.student_num_questions_asked.metric_to_pretty(), 
-            "Student: Questions asked"
+            self.student_num_questions_asked.metric_to_pretty(), "Student: Questions asked"
         )
 
         self.assertEqual(
-            self.student_time_being_helped.metric_to_pretty(),
-            "Student: Time being helped",
+            self.student_time_being_helped.metric_to_pretty(), "Student: Time being helped",
         )
 
         self.assertEqual(
@@ -204,24 +202,25 @@ class CourseStatisticTestCase(TestCase):
 
         today = timezone.datetime.today().date()
         self.assertEqual(
-            str(self.student_num_questions_asked), 
-            f"{self.course}: {today}: Student: Questions asked"
+            str(self.student_num_questions_asked),
+            f"{self.course}: {today}: Student: Questions asked",
         )
 
         self.assertEqual(
             str(self.student_time_being_helped),
-            f"{self.course}: {today}: Student: Time being helped"
+            f"{self.course}: {today}: Student: Time being helped",
         )
 
         self.assertEqual(
             str(self.instructor_num_questions_answered),
-            f"{self.course}: {today}: Instructor: Questions answered"
+            f"{self.course}: {today}: Instructor: Questions answered",
         )
 
         self.assertEqual(
             str(self.instructor_time_answering_questions),
-            f"{self.course}: {today}: Instructor: Time answering questions"
+            f"{self.course}: {today}: Instructor: Time answering questions",
         )
+
 
 class QueueStatisticTestCase(TestCase):
     def setUp(self):

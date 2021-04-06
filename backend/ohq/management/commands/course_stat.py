@@ -1,13 +1,12 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from django.db.models import Count, F, Sum
 
-from ohq.models import Question, Queue, Course
+from ohq.models import Course
 from ohq.statistics import (
+    calculate_instructor_most_questions_answered,
+    calculate_instructor_most_time_helping,
     calculate_student_most_questions_asked,
     calculate_student_most_time_being_helped,
-    calculate_instructor_most_questions_answered,
-    calculate_instructor_most_time_helping
 )
 
 
@@ -20,8 +19,7 @@ class Command(BaseCommand):
             calculate_student_most_time_being_helped(course, yesterday)
             calculate_instructor_most_questions_answered(course, yesterday)
             calculate_instructor_most_time_helping(course, yesterday)
-            
-            
+
     def handle(self, *args, **kwargs):
         courses = Course.objects.filter(archived=False)
         self.calculate_statistics(courses)

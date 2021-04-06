@@ -6,13 +6,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ohq', '0012_auto_20210406_0101'),
+        ("ohq", "0012_auto_20210406_0101"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='coursestatistic',
-            name='metric',
-            field=models.CharField(choices=[('STUDENT_QUESTIONS_ASKED', 'Student: Questions asked'), ('STUDENT_TIME_BEING_HELPED', 'Student: Time being helped'), ('INSTR_QUESTIONS_ANSWERED', 'Instructor: Questions answered'), ('INSTR_TIME_ANSWERING', 'Instructor: Time answering questions')], max_length=256),
+            model_name="coursestatistic",
+            name="metric",
+            field=models.CharField(
+                choices=[
+                    ("STUDENT_QUESTIONS_ASKED", "Student: Questions asked"),
+                    ("STUDENT_TIME_BEING_HELPED", "Student: Time being helped"),
+                    ("INSTR_QUESTIONS_ANSWERED", "Instructor: Questions answered"),
+                    ("INSTR_TIME_ANSWERING", "Instructor: Time answering questions"),
+                ],
+                max_length=256,
+            ),
         ),
     ]

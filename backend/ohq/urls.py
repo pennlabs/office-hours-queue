@@ -4,8 +4,8 @@ from rest_live.routers import RealtimeRouter
 
 from ohq.views import (
     AnnouncementViewSet,
-    CourseViewSet,
     CourseStatisticView,
+    CourseViewSet,
     MassInviteView,
     MembershipInviteViewSet,
     MembershipViewSet,
