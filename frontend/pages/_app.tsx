@@ -7,14 +7,13 @@ import { doApiRequest } from "../utils/fetch";
 import withGA from "../utils/ga/withGA";
 
 const MyApp = ({ Component, pageProps }) => {
-
     useEffect(() => {
         if (!("Notification" in window)) {
             console.log("This browser does not support desktop notification");
-          } else {
+        } else {
             Notification.requestPermission();
-          }
-    })
+        }
+    });
     return (
         <SWRConfig
             value={{

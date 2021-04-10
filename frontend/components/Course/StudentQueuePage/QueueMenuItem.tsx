@@ -1,6 +1,9 @@
 import React, { useEffect, MutableRefObject } from "react";
 import { Menu, Label } from "semantic-ui-react";
-import { useQuestionPosition, useQuestions } from "../../../hooks/data-fetching/course";
+import {
+    useQuestionPosition,
+    useQuestions,
+} from "../../../hooks/data-fetching/course";
 import { Question, Queue, QuestionStatus } from "../../../types";
 
 interface QueueMenuItemProps {
@@ -22,8 +25,7 @@ const QuestionNotifier = ({
     play: MutableRefObject<(string) => void>;
     courseId: number;
     queue: Queue;
-    }) => {
-    
+}) => {
     const { data: positionData } = useQuestionPosition(
         courseId,
         queue.id,
@@ -39,9 +41,7 @@ const QuestionNotifier = ({
     }, [question.status, play, question.resolvedNote]);
 
     useEffect(() => {
-        if (
-            positionData && positionData.position == 2
-        ) {
+        if (positionData && positionData.position === 2) {
             play.current("Your question will be answered soon");
         }
     }, [positionData]);
@@ -87,7 +87,13 @@ export const QueueMenuItem = (props: QueueMenuItemProps) => {
                 {queue.name}
             </Menu.Item>
             {questions!.map((q) => (
-                <QuestionNotifier question={q} play={play} courseId={courseId} queue={queue} key={q.id} />
+                <QuestionNotifier
+                    question={q}
+                    play={play}
+                    courseId={courseId}
+                    queue={queue}
+                    key={q.id}
+                />
             ))}
         </>
     );

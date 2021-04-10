@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Segment, Message } from "semantic-ui-react";
 import { Question } from "../../../types";
 import { getFullName } from "../../../utils";

@@ -1,4 +1,4 @@
-import React, { useContext, MutableRefObject, useEffect, useState } from "react";
+import React, { useContext, MutableRefObject } from "react";
 import { Grid, Segment, Header, Icon, ButtonProps } from "semantic-ui-react";
 import CourseSidebar from "./CourseSidebar";
 
@@ -45,7 +45,7 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
         data: ButtonProps
     ) => {
         setNotifs(!notifs);
-        localStorage.setItem('notifs', !notifs ? "true" : "false");
+        localStorage.setItem("notifs", !notifs ? "true" : "false");
         document.body.focus();
     };
 
@@ -111,7 +111,9 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                         )}
                     </Grid>
                 )}
-                <Segment basic>{render(staff, play, notifs, setNotifs)}</Segment>
+                <Segment basic>
+                    {render(staff, play, notifs, setNotifs)}
+                </Segment>
                 <Footer />
             </Grid.Column>
         </>
