@@ -24,17 +24,20 @@ export function usePlayer(
 
     useEffect(() => {
         if (localStorage != null) {
-            setNotifs(localStorage.getItem("notifs") === "true" ? true : false);
+            setNotifs(localStorage.getItem("notifs") === "true");
         }
     }, []);
+
+    const pushNotifcation = (message) =>
+        new Notification("Alert", {
+            body: message,
+            icon: "../favicon.ico",
+        });
 
     const playFunc = (message: string) => {
         if (notifs) {
             player.current?.play();
-            new Notification("Alert", {
-                body: message,
-                icon: "../favicon.ico",
-            });
+            pushNotifcation(message);
         }
     };
 
