@@ -89,7 +89,7 @@ class AnnouncementTest(TransactionTestCase):
             "action": "retrieve",
             "model": "ohq.Announcement",
             "view_kwargs": {"course_pk": self.course.id},
-            "lookup_by": new_announcement.id
+            "lookup_by": new_announcement.id,
         }
         await self.client.send_json_to(payload)
         self.assertTrue(await self.client.receive_nothing())
