@@ -327,7 +327,7 @@ class CourseStatisticPermission(permissions.BasePermission):
             .first()
         )
 
-        # anyone who is a member of the class can see course related statistics
+        # anyone who is an instructor of the class can see course related statistics
         return membership is not None
 
 
