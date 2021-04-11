@@ -123,7 +123,7 @@ const Queue = (props: QueueProps) => {
                         {queue.active && (
                             <Popup
                                 content={
-                                    activeStaff ? (
+                                    activeStaff && activeStaff.length > 0 ? (
                                         <List divided verticalAlign="middle">
                                             {activeStaff.map((staff) => (
                                                 <List.Item basic>

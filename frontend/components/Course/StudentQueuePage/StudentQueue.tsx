@@ -178,7 +178,8 @@ const StudentQueue = (props: StudentQueueProps) => {
                             {queue.active && (
                                 <Popup
                                     content={
-                                        activeStaff ? (
+                                        activeStaff &&
+                                        activeStaff.length > 0 ? (
                                             <List
                                                 divided
                                                 verticalAlign="middle"
@@ -191,7 +192,7 @@ const StudentQueue = (props: StudentQueueProps) => {
                                                 ))}
                                             </List>
                                         ) : (
-                                            <Label content={"Somethin"} />
+                                            "No staff active"
                                         )
                                     }
                                     trigger={
