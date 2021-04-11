@@ -64,3 +64,44 @@ class AnnouncementTest(TransactionTestCase):
             "action": "CREATED",
         }
         self.assertEqual(expected, response)
+
+        new_announcement.content = "Updated content"
+        await database_sync_to_async(new_announcement.save)()
+        response = await self.client.receive_json_from()
+        expected = {
+            "type": "broadcast",
+            "id": 1,
+            "model": "ohq.Announcement",
+            "instance": camelize(AnnouncementSerializer(new_announcement).data),
+            "action": "UPDATED",
+        }
+        self.assertEqual(expected, response)
+
+    @async_test
+    async def test_subscribe_single(self):
+        new_announcement = await database_sync_to_async(Announcement.objects.create)(
+            course=self.course, author=self.professor, content="New announcement"
+        )
+
+        payload = {
+            "type": "subscribe",
+            "id": 2,
+            "action": "retrieve",
+            "model": "ohq.Announcement",
+            "view_kwargs": {"course_pk": self.course.id},
+            "lookup_by": new_announcement.id
+        }
+        await self.client.send_json_to(payload)
+        self.assertTrue(await self.client.receive_nothing())
+
+        new_announcement.content = "Updated content"
+        await database_sync_to_async(new_announcement.save)()
+        response = await self.client.receive_json_from()
+        expected = {
+            "type": "broadcast",
+            "id": 2,
+            "model": "ohq.Announcement",
+            "instance": camelize(AnnouncementSerializer(new_announcement).data),
+            "action": "UPDATED",
+        }
+        self.assertEqual(expected, response)
