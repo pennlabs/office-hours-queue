@@ -10,13 +10,19 @@ import {
 } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Queue from "./Queue";
-import { Queue as QueueType, QuestionMap, Tag } from "../../../types";
+import {
+    Queue as QueueType,
+    QuestionMap,
+    Tag,
+    Membership,
+} from "../../../types";
 import { QueueMenuItem } from "./QueueMenuItem";
 
 interface InstructorQueuesProps {
     suggestedQueueId?: number;
     courseId: number;
     queues: QueueType[];
+    activeStaff: Membership[];
     questionmap: QuestionMap;
     leader: boolean;
     mutate: mutateResourceListFunction<QueueType>;
@@ -29,6 +35,7 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
     const {
         courseId,
         queues,
+        activeStaff,
         questionmap,
         leader,
         createFunc,
@@ -106,6 +113,7 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
                             courseId={courseId}
                             key={currQueue.id}
                             queue={currQueue}
+                            activeStaff={activeStaff}
                             questions={questionmap[currQueue.id] || []}
                             leader={leader}
                             mutate={mutate}

@@ -2,19 +2,28 @@ import React, { MutableRefObject, useState, useMemo, useEffect } from "react";
 import { Grid, Message, Menu } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import StudentQueue from "./StudentQueue";
-import { Queue, Course, QuestionMap, Tag } from "../../../types";
+import { Queue, Course, QuestionMap, Tag, Membership } from "../../../types";
 import { QueueMenuItem } from "./QueueMenuItem";
 
 interface StudentQueuesProps {
     queues: Queue[];
     course: Course;
+    activeStaff: Membership[];
     queueMutate: mutateResourceListFunction<Queue>;
     questionmap: QuestionMap;
     play: MutableRefObject<() => void>;
     tags: Tag[];
 }
 const StudentQueues = (props: StudentQueuesProps) => {
-    const { queues, course, queueMutate, questionmap, play, tags } = props;
+    const {
+        queues,
+        activeStaff,
+        course,
+        queueMutate,
+        questionmap,
+        play,
+        tags,
+    } = props;
 
     const dispQueues = queues.filter((q) => !q.archived);
     const [selQueue, setSelQueue] = useState<number | undefined>(
@@ -64,6 +73,7 @@ const StudentQueues = (props: StudentQueuesProps) => {
                                     key={currQueue.id}
                                     course={course}
                                     queue={currQueue}
+                                    activeStaff={activeStaff}
                                     tags={tags}
                                     queueMutate={queueMutate}
                                     questions={questionmap[currQueue.id] || []}
