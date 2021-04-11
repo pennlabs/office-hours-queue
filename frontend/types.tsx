@@ -132,25 +132,6 @@ export interface QuestionMap {
     [queueId: number]: Question[];
 }
 
-export type mutateFunction<D> = (
-    data?: D,
-    shouldRevalidate?: boolean
-) => Promise<D | undefined>;
-
-export interface Identifiable {
-    id: number;
-}
-
-export type mutateResourceFunction<D> = (
-    data?: Partial<D>,
-    method?: string
-) => Promise<D | undefined>;
-export type mutateResourceListFunction<D extends Identifiable> = (
-    id: number,
-    data: Partial<D> | null,
-    method?: string
-) => Promise<D[] | undefined>;
-
 export interface Toast {
     message: string;
     success: boolean;
