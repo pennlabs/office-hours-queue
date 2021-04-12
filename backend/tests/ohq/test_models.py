@@ -33,7 +33,7 @@ class TagTestCase(TestCase):
             course_code="000", department="TEST", course_title="Title", semester=self.semester
         )
         self.tag = Tag.objects.create(name="Test Tag", course=self.course)
-    
+
     def test_str(self):
         self.assertEqual(str(self.tag), f"{self.course}: Test Tag")
 
