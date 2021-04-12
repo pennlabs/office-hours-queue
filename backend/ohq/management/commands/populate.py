@@ -10,7 +10,6 @@ from ohq.models import Course, Membership, MembershipInvite, Profile, Question, 
 
 
 now = timezone.now()
-# now = timezone.now() - timezone.timedelta(days=1)
 
 # creating data for 6 courses, 8 queues, 10 questions
 courses = [

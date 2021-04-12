@@ -11,6 +11,7 @@ from ohq.models import (
     Queue,
     QueueStatistic,
     Semester,
+    Tag,
 )
 
 
@@ -23,6 +24,18 @@ class ProfileTestCase(TestCase):
 
     def test_str(self):
         self.assertEqual(str(self.user.profile), str(self.user))
+
+
+class TagTestCase(TestCase):
+    def setUp(self):
+        self.semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
+        self.course = Course.objects.create(
+            course_code="000", department="TEST", course_title="Title", semester=self.semester
+        )
+        self.tag = Tag.objects.create(name="Test Tag", course=self.course)
+    
+    def test_str(self):
+        self.assertEqual(str(self.tag), f"{self.course}: Test Tag")
 
 
 class CourseTestCase(TestCase):
