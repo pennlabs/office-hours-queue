@@ -3,23 +3,14 @@ from django.db.models.functions import TruncDate
 
 from ohq.models import MembershipStatistic, Question, QueueStatistic
 
-
-def calculate_student_avg_time_stats(user, questions, course):
-    num_questions = total_time_helped = total_time_waiting = 0
+def calculate_student_time_waiting(user, questions, course):
+    
+    num_questions = total_time_waiting = 0
     for question in questions:
-        total_time_helped += (question.time_responded_to - question.time_response_started).seconds
         total_time_waiting += (question.time_response_started - question.time_asked).seconds
         num_questions += 1
 
-    avg_time_helped = total_time_helped / num_questions
     avg_time_waiting = total_time_waiting / num_questions
-
-    MembershipStatistic.objects.update_or_create(
-        user=user,
-        course=course,
-        metric=MembershipStatistic.METRIC_STUDENT_AVG_TIME_HELPED,
-        defaults={"value": avg_time_helped},
-    )
 
     MembershipStatistic.objects.update_or_create(
         user=user,
@@ -28,15 +19,29 @@ def calculate_student_avg_time_stats(user, questions, course):
         defaults={"value": avg_time_waiting},
     )
 
+def calculate_student_time_helped(user, questions, course):
 
-def calculate_instructor_avg_time_stats(user, questions, course):
+    num_questions = total_time_helped = 0
+    for question in questions:
+        total_time_helped += (question.time_responded_to - question.time_response_started).seconds
+        num_questions += 1
+
+    avg_time_helped = total_time_helped / num_questions
+
+    MembershipStatistic.objects.update_or_create(
+        user=user,
+        course=course,
+        metric=MembershipStatistic.METRIC_STUDENT_AVG_TIME_HELPED,
+        defaults={"value": avg_time_helped},
+    )
+
+def calculate_instructor_time_helping(user, questions, course):
     num_questions = total_time = 0
     for question in questions:
         total_time += (question.time_responded_to - question.time_response_started).seconds
         num_questions += 1
 
     avg_time = total_time / num_questions
-    questions_per_hour = (num_questions / total_time) * 3600
 
     MembershipStatistic.objects.update_or_create(
         user=user,
@@ -44,6 +49,14 @@ def calculate_instructor_avg_time_stats(user, questions, course):
         metric=MembershipStatistic.METRIC_INSTR_AVG_TIME_HELPING,
         defaults={"value": avg_time},
     )
+
+def calculate_instructor_students_per_hour(user, questions, course):
+    num_questions = total_time = 0
+    for question in questions:
+        total_time += (question.time_responded_to - question.time_response_started).seconds
+        num_questions += 1
+
+    questions_per_hour = (num_questions / total_time) * 3600
 
     MembershipStatistic.objects.update_or_create(
         user=user,
