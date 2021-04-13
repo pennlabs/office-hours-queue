@@ -755,7 +755,11 @@ class StudentWaitTimeMembershipStatisticTestCase(TestCase):
             course_code="002", department="TEST2", course_title="Test Course 2", semester=semester
         )
         course3 = Course.objects.create(
-            course_code="003", department="TEST3", course_title="Old course", semester=old_semester, archived=True
+            course_code="003",
+            department="TEST3",
+            course_title="Old course",
+            semester=old_semester,
+            archived=True,
         )
 
         self.courses = [course1, course2, course3]
@@ -868,15 +872,14 @@ class StudentWaitTimeMembershipStatisticTestCase(TestCase):
             q4.time_asked = yesterday
             q4.save()
 
-
     def test_student_membership_stats(self):
         call_command("membership_stat")
         for student in self.students:
             wait_times = [
                 sum(self.wait_times[student][self.queues[0]])  # Times for course 1
-                + sum(self.wait_times[student][self.queues[1]]),  
+                + sum(self.wait_times[student][self.queues[1]]),
                 sum(self.wait_times[student][self.queues[2]])  # Times for course 2
-                + sum(self.wait_times[student][self.queues[3]])
+                + sum(self.wait_times[student][self.queues[3]]),
             ]
 
             for i, course in enumerate(self.courses):
@@ -897,12 +900,12 @@ class StudentWaitTimeMembershipStatisticTestCase(TestCase):
         for student in self.students:
             wait_times = [
                 sum(self.wait_times[student][self.queues[0]])  # Times for course 1
-                + sum(self.wait_times[student][self.queues[1]]),  
+                + sum(self.wait_times[student][self.queues[1]]),
                 sum(self.wait_times[student][self.queues[2]])  # Times for course 2
                 + sum(self.wait_times[student][self.queues[3]]),
-                200
+                200,
             ]
-            
+
             for i, course in enumerate(self.courses):
                 # Checking archived course
                 if i == 2:
@@ -916,7 +919,7 @@ class StudentWaitTimeMembershipStatisticTestCase(TestCase):
                 ).value
 
                 self.assertEqual(expected, actual)
-            
+
 
 class StudentTimeHelpedMembershipStatisticTestCase(TestCase):
     """
@@ -934,11 +937,15 @@ class StudentTimeHelpedMembershipStatisticTestCase(TestCase):
             course_code="002", department="TEST2", course_title="Test Course 2", semester=semester
         )
         course3 = Course.objects.create(
-            course_code="003", department="TEST3", course_title="Old course", semester=old_semester, archived=True
+            course_code="003",
+            department="TEST3",
+            course_title="Old course",
+            semester=old_semester,
+            archived=True,
         )
 
         self.courses = [course1, course2, course3]
-        
+
         queue1a = Queue.objects.create(name="Queue1a", course=course1)
         queue1b = Queue.objects.create(name="Queue1b", course=course1)
         queue2a = Queue.objects.create(name="Queue2a", course=course2)
@@ -1047,7 +1054,6 @@ class StudentTimeHelpedMembershipStatisticTestCase(TestCase):
             )
             q4.time_asked = yesterday
             q4.save()
-
 
     def test_student_membership_stats(self):
         call_command("membership_stat")
@@ -1069,17 +1075,17 @@ class StudentTimeHelpedMembershipStatisticTestCase(TestCase):
                     metric=MembershipStatistic.METRIC_STUDENT_AVG_TIME_HELPED,
                 ).value
                 self.assertEqual(expected, actual)
-    
+
         call_command("membership_stat", "--hist")
         for student in self.students:
             help_times = [
                 sum(self.help_times[student][self.queues[0]])  # Times for course 1
-                + sum(self.help_times[student][self.queues[1]]),  
+                + sum(self.help_times[student][self.queues[1]]),
                 sum(self.help_times[student][self.queues[2]])  # Times for course 2
                 + sum(self.help_times[student][self.queues[3]]),
-                1000
+                1000,
             ]
-            
+
             for i, course in enumerate(self.courses):
                 # Checking archived course
                 if i == 2:
@@ -1093,6 +1099,7 @@ class StudentTimeHelpedMembershipStatisticTestCase(TestCase):
                 ).value
 
                 self.assertEqual(expected, actual)
+
 
 class InstructorTimeHelpingMembershipStatisticTestCase(TestCase):
     """
@@ -1110,7 +1117,11 @@ class InstructorTimeHelpingMembershipStatisticTestCase(TestCase):
             course_code="002", department="TEST2", course_title="Test Course 2", semester=semester
         )
         course3 = Course.objects.create(
-            course_code="003", department="TEST3", course_title="Old course", semester=old_semester, archived=True
+            course_code="003",
+            department="TEST3",
+            course_title="Old course",
+            semester=old_semester,
+            archived=True,
         )
 
         self.courses = [course1, course2, course3]
@@ -1223,17 +1234,16 @@ class InstructorTimeHelpingMembershipStatisticTestCase(TestCase):
                 ).value
                 self.assertEqual(expected, actual)
 
-        
         call_command("membership_stat", "--hist")
         for ta in self.tas:
             help_times = [
                 sum(self.help_times[ta][self.queues[0]])  # Times for course 1
-                + sum(self.help_times[ta][self.queues[1]]),  
+                + sum(self.help_times[ta][self.queues[1]]),
                 sum(self.help_times[ta][self.queues[2]])  # Times for course 2
-                + sum(self.help_times[ta][self.queues[3]]),  
-                1000
+                + sum(self.help_times[ta][self.queues[3]]),
+                1000,
             ]
-        
+
             for i, course in enumerate(self.courses):
                 if i == 2:
                     expected = 1000
@@ -1261,7 +1271,11 @@ class InstructorNumQuestionsPerHourMembershipStatisticTestCase(TestCase):
             course_code="002", department="TEST2", course_title="Test Course 2", semester=semester
         )
         course3 = Course.objects.create(
-            course_code="003", department="TEST3", course_title="Old course", semester=old_semester, archived=True
+            course_code="003",
+            department="TEST3",
+            course_title="Old course",
+            semester=old_semester,
+            archived=True,
         )
 
         self.courses = [course1, course2, course3]
@@ -1376,15 +1390,15 @@ class InstructorNumQuestionsPerHourMembershipStatisticTestCase(TestCase):
                     metric=MembershipStatistic.METRIC_INSTR_AVG_STUDENTS_PER_HOUR,
                 ).value
                 self.assertAlmostEqual(expected, float(actual))
-        
+
         call_command("membership_stat", "--hist")
         for ta in self.tas:
             help_times = [
                 sum(self.help_times[ta][self.queues[0]])  # Times for course 1
-                + sum(self.help_times[ta][self.queues[1]]),  
+                + sum(self.help_times[ta][self.queues[1]]),
                 sum(self.help_times[ta][self.queues[2]])  # Times for course 2
-                + sum(self.help_times[ta][self.queues[3]]),  
-                1000
+                + sum(self.help_times[ta][self.queues[3]]),
+                1000,
             ]
             for i, course in enumerate(self.courses):
                 if i == 2:
@@ -1397,6 +1411,7 @@ class InstructorNumQuestionsPerHourMembershipStatisticTestCase(TestCase):
                     metric=MembershipStatistic.METRIC_INSTR_AVG_STUDENTS_PER_HOUR,
                 ).value
                 self.assertAlmostEqual(expected, float(actual))
+
 
 class ArchiveCourseTestCase(TestCase):
     def setUp(self):

@@ -3,8 +3,9 @@ from django.db.models.functions import TruncDate
 
 from ohq.models import MembershipStatistic, Question, QueueStatistic
 
+
 def calculate_student_time_waiting(user, questions, course):
-    
+
     num_questions = total_time_waiting = 0
     for question in questions:
         total_time_waiting += (question.time_response_started - question.time_asked).seconds
@@ -18,6 +19,7 @@ def calculate_student_time_waiting(user, questions, course):
         metric=MembershipStatistic.METRIC_STUDENT_AVG_TIME_WAITING,
         defaults={"value": avg_time_waiting},
     )
+
 
 def calculate_student_time_helped(user, questions, course):
 
@@ -35,6 +37,7 @@ def calculate_student_time_helped(user, questions, course):
         defaults={"value": avg_time_helped},
     )
 
+
 def calculate_instructor_time_helping(user, questions, course):
     num_questions = total_time = 0
     for question in questions:
@@ -49,6 +52,7 @@ def calculate_instructor_time_helping(user, questions, course):
         metric=MembershipStatistic.METRIC_INSTR_AVG_TIME_HELPING,
         defaults={"value": avg_time},
     )
+
 
 def calculate_instructor_students_per_hour(user, questions, course):
     num_questions = total_time = 0
