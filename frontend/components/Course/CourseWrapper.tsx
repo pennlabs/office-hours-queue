@@ -5,6 +5,7 @@ import CourseSidebar from "./CourseSidebar";
 import { AuthUserContext } from "../../context/auth";
 import { useCourse, useStaff } from "../../hooks/data-fetching/course";
 import * as bellAudio from "./InstructorQueuePage/notification.mp3";
+import * as aolAudio from "./InstructorQueuePage/aol.mp3";
 import Footer from "../common/Footer";
 import { usePlayer } from "../../hooks/player";
 import { Course as CourseType, Membership } from "../../types";
@@ -20,7 +21,7 @@ interface CourseProps {
 
 const CourseWrapper = ({ render, ...props }: CourseProps) => {
     const { course: rawCourse, leadership } = props;
-    const [course, , ,] = useCourse(rawCourse.id, rawCourse);
+    const { data: course } = useCourse(rawCourse.id, rawCourse);
 
     const { user: initialUser } = useContext(AuthUserContext);
     if (!initialUser) {
@@ -29,9 +30,12 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
         );
     }
 
-    const [, staff, , ,] = useStaff(rawCourse.id, initialUser);
+    const { staff } = useStaff(rawCourse.id, initialUser);
 
-    const [notifs, setNotifs, play] = usePlayer(bellAudio);
+    const isAprilFirst = false;
+    const [notifs, setNotifs, play] = usePlayer(
+        isAprilFirst ? aolAudio : bellAudio
+    );
 
     const toggleNotifs = (
         event: React.MouseEvent<HTMLButtonElement>,

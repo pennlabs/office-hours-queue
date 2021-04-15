@@ -61,9 +61,9 @@ RosterPage.getInitialProps = async (
     let invites: MembershipInvite[];
 
     const response = await doMultipleSuccessRequests([
-        { path: `/courses/${query.course}/`, data },
-        { path: `/courses/${query.course}/members/`, data },
-        { path: `/courses/${query.course}/invites/`, data },
+        { path: `/api/courses/${query.course}/`, data },
+        { path: `/api/courses/${query.course}/members/`, data },
+        { path: `/api/courses/${query.course}/invites/`, data },
     ]);
 
     if (response.success) {

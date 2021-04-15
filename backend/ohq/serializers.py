@@ -129,6 +129,9 @@ class MembershipInviteSerializer(CourseRouteMixin):
         model = MembershipInvite
         fields = ("id", "email", "kind", "time_created")
 
+    def validate_email(self, value):
+        return value.lower()
+
 
 class QueueSerializer(CourseRouteMixin):
     questions_active = serializers.IntegerField(default=0, read_only=True)
