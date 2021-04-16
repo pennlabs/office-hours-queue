@@ -186,6 +186,7 @@ class QuestionSerializer(QueueRouteMixin):
     asked_by = UserSerializer(read_only=True)
     responded_to_by = UserSerializer(read_only=True)
     tags = TagSerializer(many=True)
+    position = serializers.IntegerField(default=-1, read_only=True)
 
     class Meta:
         model = Question
@@ -204,6 +205,7 @@ class QuestionSerializer(QueueRouteMixin):
             "tags",
             "note",
             "resolved_note",
+            "position",
         )
         read_only_fields = (
             "time_asked",
@@ -213,6 +215,7 @@ class QuestionSerializer(QueueRouteMixin):
             "responded_to_by",
             "should_send_up_soon_notification",
             "resolved_note",
+            "position",
         )
 
     def update(self, instance, validated_data):
