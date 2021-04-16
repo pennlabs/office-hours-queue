@@ -8,7 +8,6 @@ from django.db.models import (
     Case,
     Count,
     Exists,
-    F,
     FloatField,
     IntegerField,
     OuterRef,
