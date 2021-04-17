@@ -36,7 +36,7 @@ const QuestionCard = (props: QuestionCardProps) => {
     const [open, setOpen] = useState(false);
     const [messageModalOpen, setMessageModalOpen] = useState(false);
 
-    //save notification preference for when an instructor answers a question
+    // save notification preference for when an instructor answers a question
     const [lastNotif, setLastNotif] = useState(notifs);
 
     const timeString = (date, isLong) => {
@@ -51,18 +51,18 @@ const QuestionCard = (props: QuestionCardProps) => {
     };
 
     const onAnswer = async () => {
-        setLastNotif(notifs); //Turns notifications off when answering questions
+        setLastNotif(notifs); // turns notifications off when answering questions
         setNotifs(false);
         await mutateQuestion(questionId, { status: QuestionStatus.ACTIVE });
     };
 
     const onFinish = async () => {
-        setNotifs(lastNotif); //Resets notification preference when finished answering question
+        setNotifs(lastNotif); // resets notification preference when finished answering question
         await mutateQuestion(questionId, { status: QuestionStatus.ANSWERED });
     };
 
     const onUndo = async () => {
-        setNotifs(lastNotif); //Resets notification preference when stopped answering question
+        setNotifs(lastNotif); // resets notification preference when stopped answering question
         await mutateQuestion(questionId, { status: QuestionStatus.ASKED });
     };
 
