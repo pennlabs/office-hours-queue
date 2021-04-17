@@ -283,6 +283,20 @@ class QuestionSerializer(QueueRouteMixin):
             instance.resolved_note = True
 
         instance.save()
+
+        # if the status changes to something that affects position, call save() on asked questions
+        if "status" in validated_data and validated_data["status"] in [
+            Question.STATUS_ACTIVE,
+            Question.STATUS_WITHDRAWN,
+            Question.STATUS_REJECTED,
+        ]:
+            asked_questions = Question.objects.filter(
+                queue=instance.queue, status=Question.STATUS_ASKED
+            )
+
+            for question in asked_questions:
+                question.save()
+
         return instance
 
     def create(self, validated_data):
