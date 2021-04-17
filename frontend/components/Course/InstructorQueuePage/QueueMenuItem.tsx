@@ -1,7 +1,12 @@
 import React, { useState, useRef, useEffect, MutableRefObject } from "react";
 import { Menu, Label } from "semantic-ui-react";
 import { useQuestions } from "../../../hooks/data-fetching/course";
-import { Question, Queue, QuestionStatus } from "../../../types";
+import {
+    Question,
+    Queue,
+    QuestionStatus,
+    NotificationProps,
+} from "../../../types";
 
 interface QueueMenuItemProps {
     queue: Queue;
@@ -9,7 +14,7 @@ interface QueueMenuItemProps {
     initialQuestions?: Question[];
     active: boolean;
     setActiveQueue: (id: number) => void;
-    play: MutableRefObject<(string) => void>;
+    play: NotificationProps;
 }
 
 const QuestionNotifier = ({
@@ -17,7 +22,7 @@ const QuestionNotifier = ({
     play,
 }: {
     question: Question;
-    play: MutableRefObject<(string) => void>;
+    play: NotificationProps;
 }) => {
     const [resolved, setResolved] = useState(question.resolvedNote);
     useEffect(() => {

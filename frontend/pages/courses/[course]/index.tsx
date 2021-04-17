@@ -17,6 +17,7 @@ import {
     Membership,
     Question,
     QuestionMap,
+    NotificationProps,
 } from "../../../types";
 import InstructorQueuePage from "../../../components/Course/InstructorQueuePage/InstructorQueuePage";
 import StudentQueuePage from "../../../components/Course/StudentQueuePage/StudentQueuePage";
@@ -56,7 +57,7 @@ const QueuePage = (props: QueuePageProps) => {
                     notificationUI={true}
                     render={(
                         staff: boolean,
-                        play: MutableRefObject<(string) => void>,
+                        play: NotificationProps,
                         notifs: boolean,
                         setNotifs: (boolean) => void
                     ) => {

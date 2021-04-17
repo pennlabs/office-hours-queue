@@ -14,7 +14,7 @@ import {
     Button,
 } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
-import { Announcement, BaseUser } from "../../types";
+import { Announcement, BaseUser, NotificationProps } from "../../types";
 import { AuthUserContext } from "../../context/auth";
 import {
     useAnnouncements,
@@ -25,7 +25,7 @@ interface AnnouncementsProps {
     courseId: number;
     initialAnnouncements: Announcement[];
     staff: boolean;
-    play: MutableRefObject<(string) => void>;
+    play: NotificationProps;
 }
 
 interface ModalProps {

@@ -9,13 +9,19 @@ import QueueSettings from "./QueueSettings/QueueSettings";
 import CreateQueue from "./CreateQueue/CreateQueue";
 import { AuthUserContext } from "../../../context/auth";
 import { useQueues, useStaff } from "../../../hooks/data-fetching/course";
-import { Announcement, Queue, QuestionMap, Tag } from "../../../types";
+import {
+    Announcement,
+    Queue,
+    QuestionMap,
+    Tag,
+    NotificationProps,
+} from "../../../types";
 
 interface InstructorQueuePageProps {
     courseId: number;
     queues: Queue[];
     questionmap: QuestionMap;
-    play: MutableRefObject<(string) => void>;
+    play: NotificationProps;
     notifs: boolean;
     setNotifs: (boolean) => void;
     tags: Tag[];

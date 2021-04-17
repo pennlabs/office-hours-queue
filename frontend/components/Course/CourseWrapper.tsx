@@ -1,5 +1,12 @@
 import React, { useContext, MutableRefObject } from "react";
-import { Grid, Segment, Header, Icon, ButtonProps } from "semantic-ui-react";
+import {
+    Grid,
+    Segment,
+    Header,
+    Icon,
+    ButtonProps,
+    Popup,
+} from "semantic-ui-react";
 import CourseSidebar from "./CourseSidebar";
 
 import { AuthUserContext } from "../../context/auth";
@@ -78,19 +85,46 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                                             paddingTop: "0.71rem",
                                         }}
                                     >
-                                        <div
-                                            style={{
-                                                display: "inline",
-                                                position: "relative",
-                                                top: "0.14rem",
-                                                fontSize: "1.29rem",
-                                                fontFamily: "Lato",
-                                                color: "#666666",
-                                            }}
+                                        <Popup
+                                            trigger={
+                                                <div
+                                                    style={{
+                                                        display: "inline",
+                                                        position: "relative",
+                                                        top: "0.14rem",
+                                                        fontSize: "1.29rem",
+                                                        fontFamily: "Lato",
+                                                        color: "#666666",
+                                                    }}
+                                                >
+                                                    Notifications are{" "}
+                                                    {notifs ? "ON" : "OFF"}
+                                                </div>
+                                            }
                                         >
-                                            Notifications are{" "}
-                                            {notifs ? "ON" : "OFF"}
-                                        </div>
+                                            <p>
+                                                Browser permissions are{" "}
+                                                {typeof Notification !==
+                                                    "undefined" && (
+                                                    <strong>
+                                                        {
+                                                            Notification.permission
+                                                        }
+                                                    </strong>
+                                                )}
+                                                .
+                                            </p>
+                                            {typeof Notification !==
+                                                "undefined" &&
+                                                Notification.permission ==
+                                                    "denied" && (
+                                                    <p>
+                                                        Enable notification
+                                                        permisions to receive
+                                                        browser notifications.
+                                                    </p>
+                                                )}
+                                        </Popup>
                                         <Icon
                                             size="large"
                                             style={{

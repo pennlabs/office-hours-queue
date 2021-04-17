@@ -4,7 +4,12 @@ import {
     useQuestionPosition,
     useQuestions,
 } from "../../../hooks/data-fetching/course";
-import { Question, Queue, QuestionStatus } from "../../../types";
+import {
+    Question,
+    Queue,
+    QuestionStatus,
+    NotificationProps,
+} from "../../../types";
 
 interface QueueMenuItemProps {
     queue: Queue;
@@ -12,7 +17,7 @@ interface QueueMenuItemProps {
     initialQuestions?: Question[];
     active: boolean;
     setActiveQueue: (id: number) => void;
-    play: MutableRefObject<(string) => void>;
+    play: NotificationProps;
 }
 
 const QuestionNotifier = ({
@@ -22,7 +27,7 @@ const QuestionNotifier = ({
     queue,
 }: {
     question: Question;
-    play: MutableRefObject<(string) => void>;
+    play: NotificationProps;
     courseId: number;
     queue: Queue;
 }) => {

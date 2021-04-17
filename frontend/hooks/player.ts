@@ -7,20 +7,17 @@ import {
     SetStateAction,
     MutableRefObject,
 } from "react";
+import { NotificationProps } from "../types";
 
 export function usePlayer(
     audio: string
-): [
-    boolean,
-    Dispatch<SetStateAction<Boolean>>,
-    MutableRefObject<(string) => void>
-] {
+): [boolean, Dispatch<SetStateAction<Boolean>>, NotificationProps] {
     const player = useRef<UIfx>();
     useEffect(() => {
         player.current = new UIfx(audio, { throttleMs: 100 });
     }, [audio]);
 
-    const [notifs, setNotifs] = useState(false);
+    const [notifs, setNotifs] = useState(true);
 
     useEffect(() => {
         if (localStorage != null) {

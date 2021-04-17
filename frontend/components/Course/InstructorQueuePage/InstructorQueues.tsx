@@ -2,7 +2,12 @@ import React, { MutableRefObject, useState, useMemo, useEffect } from "react";
 import { Grid, Icon, Message, Menu, Button } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Queue from "./Queue";
-import { Queue as QueueType, QuestionMap, Tag } from "../../../types";
+import {
+    Queue as QueueType,
+    QuestionMap,
+    Tag,
+    NotificationProps,
+} from "../../../types";
 import { QueueMenuItem } from "./QueueMenuItem";
 
 interface InstructorQueuesProps {
@@ -14,7 +19,7 @@ interface InstructorQueuesProps {
     mutate: mutateResourceListFunction<QueueType>;
     editFunc: (n: number) => void;
     createFunc: () => void;
-    play: MutableRefObject<(string) => void>;
+    play: NotificationProps;
     notifs: boolean;
     setNotifs: (boolean) => void;
     tags: Tag[];

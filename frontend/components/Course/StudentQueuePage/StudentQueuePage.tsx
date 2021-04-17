@@ -9,13 +9,20 @@ import {
     useCourse,
     useTags,
 } from "../../../hooks/data-fetching/course";
-import { Announcement, Course, Queue, QuestionMap, Tag } from "../../../types";
+import {
+    Announcement,
+    Course,
+    Queue,
+    QuestionMap,
+    Tag,
+    NotificationProps,
+} from "../../../types";
 
 interface StudentQueuePageProps {
     course: Course;
     queues: Queue[];
     questionmap: QuestionMap;
-    play: MutableRefObject<(string) => void>;
+    play: NotificationProps;
     tags: Tag[];
     announcements: Announcement[];
 }
