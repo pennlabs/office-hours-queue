@@ -9,13 +9,21 @@ import {
     useCourse,
     useTags,
 } from "../../../hooks/data-fetching/course";
-import { Announcement, Course, Queue, QuestionMap, Tag } from "../../../types";
+import {
+    Announcement,
+    Course,
+    Queue,
+    QuestionMap,
+    Tag,
+    Membership,
+} from "../../../types";
 
 interface StudentQueuePageProps {
     course: Course;
     queues: Queue[];
     questionmap: QuestionMap;
     play: MutableRefObject<() => void>;
+    activeStaff: Membership[];
     tags: Tag[];
     announcements: Announcement[];
 }
@@ -25,6 +33,7 @@ const StudentQueuePage = (props: StudentQueuePageProps) => {
         queues: rawQueues,
         questionmap,
         play,
+        activeStaff,
         tags: rawTags,
         announcements,
     } = props;
@@ -55,6 +64,7 @@ const StudentQueuePage = (props: StudentQueuePageProps) => {
                     // key never changes and initial data are provided
                     course={course!}
                     queues={queues!}
+                    activeStaff={activeStaff}
                     tags={tags!}
                     queueMutate={mutate}
                     questionmap={questionmap}

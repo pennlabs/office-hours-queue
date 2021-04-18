@@ -4,7 +4,7 @@ from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.core.validators import ValidationError
-from django.db.models import Count, Exists, FloatField, IntegerField, OuterRef, Q, Subquery
+from django.db.models import Count, Exists, IntegerField, OuterRef, Q, Subquery
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.utils import timezone
 from django.utils.crypto import get_random_string
@@ -376,24 +376,11 @@ class QueueViewSet(viewsets.ModelViewSet):
         questions_active = questions.filter(status=Question.STATUS_ACTIVE)
         questions_asked = questions.filter(status=Question.STATUS_ASKED)
 
-        time_threshold = timezone.now() - timedelta(minutes=1)
-        staff_active = (
-            Membership.objects.filter(
-                Q(course=OuterRef("course__pk"))
-                & ~Q(kind=Membership.KIND_STUDENT)
-                & Q(last_active__gt=time_threshold)
-            )
-            .order_by()
-            .values("course")
-            .annotate(count=Count("*", output_field=FloatField()),)
-            .values("count")
-        )
         qs = (
             Queue.objects.filter(course=self.kwargs["course_pk"], archived=False)
             .annotate(
                 questions_active=Subquery(questions_active[:1], output_field=IntegerField()),
                 questions_asked=Subquery(questions_asked[:1]),
-                staff_active=Subquery(staff_active[:1]),
             )
             .order_by("id")
         )
@@ -444,7 +431,7 @@ class TagViewSet(viewsets.ModelViewSet):
         return prefetch(qs, self.serializer_class)
 
 
-class MembershipViewSet(viewsets.ModelViewSet):
+class MembershipViewSet(viewsets.ModelViewSet, RealtimeMixin):
     """
     retrieve:
     Return a single membership.
@@ -470,19 +457,53 @@ class MembershipViewSet(viewsets.ModelViewSet):
 
     permission_classes = [MembershipPermission | IsSuperuser]
     serializer_class = MembershipSerializer
+    queryset = Membership.objects.none()
 
     def get_queryset(self):
-        qs = Membership.objects.filter(course=self.kwargs["course_pk"]).order_by("user__first_name")
+        course_members = Membership.objects.filter(course=self.kwargs["course_pk"]).order_by(
+            "user__first_name"
+        )
+
+        qs = course_members
 
         membership = Membership.objects.get(course=self.kwargs["course_pk"], user=self.request.user)
 
+        # TODO: if we add roster page, change this to
+        # ~Q(kind=Membership.KIND_STUDENT) | Q(user=self.request.user)
         if not membership.is_ta:
-            qs = qs.filter(
+            qs = course_members.filter(
                 Q(kind=Membership.KIND_PROFESSOR)
                 | Q(kind=Membership.KIND_HEAD_TA)
                 | Q(user=self.request.user)
             )
+
+        active = self.request.query_params.get("active", "")
+
+        time_threshold = timezone.now() - timedelta(minutes=1)
+
+        if active == "true":
+            qs = course_members.filter(
+                ~Q(kind=Membership.KIND_STUDENT) & Q(last_active__gt=time_threshold)
+            )
+
         return prefetch(qs, self.serializer_class)
+
+    @action(detail=False)
+    def staff_active(self, request, course_pk):
+        """
+        Get's the active staff in a course
+        """
+
+        time_threshold = timezone.now() - timedelta(minutes=1)
+
+        staff_active = Membership.objects.filter(
+            Q(course=course_pk)
+            & ~Q(kind=Membership.KIND_STUDENT)
+            & Q(last_active__gt=time_threshold)
+        )
+
+        serializer = self.get_serializer(staff_active, many=True)
+        return Response(serializer.data)
 
 
 class MembershipInviteViewSet(viewsets.ModelViewSet):

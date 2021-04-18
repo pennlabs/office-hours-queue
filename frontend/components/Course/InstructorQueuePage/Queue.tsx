@@ -1,15 +1,25 @@
 import React, { useState, useEffect, useMemo, MutableRefObject } from "react";
-import { Header, Label, Grid, Message, Button, Icon } from "semantic-ui-react";
+import {
+    Header,
+    Label,
+    Grid,
+    Message,
+    Button,
+    Icon,
+    Popup,
+    List,
+} from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Select from "react-select";
 import Questions from "./Questions";
 import ClearQueueModal from "./ClearQueueModal";
-import { Queue as QueueType, Question, Tag } from "../../../types";
+import { Queue as QueueType, Question, Tag, Membership } from "../../../types";
 import { useQuestions } from "../../../hooks/data-fetching/course";
 
 interface QueueProps {
     courseId: number;
     queue: QueueType;
+    activeStaff: Membership[];
     questions: Question[];
     mutate: mutateResourceListFunction<QueueType>;
     leader: boolean;
@@ -22,6 +32,7 @@ const Queue = (props: QueueProps) => {
     const {
         courseId,
         queue,
+        activeStaff,
         questions: rawQuestions,
         mutate,
         leader,
@@ -110,11 +121,31 @@ const Queue = (props: QueueProps) => {
                             />
                         )}
                         {queue.active && (
-                            <Label
-                                content={`${
-                                    queue.staffActive || 0
-                                } staff active`}
-                                icon={<Icon name="sync" loading={true} />}
+                            <Popup
+                                content={
+                                    activeStaff && activeStaff.length > 0 ? (
+                                        <List divided verticalAlign="middle">
+                                            {activeStaff.map((staff) => (
+                                                <List.Item basic>
+                                                    {staff.user.firstName}{" "}
+                                                    {staff.user.lastName}
+                                                </List.Item>
+                                            ))}
+                                        </List>
+                                    ) : (
+                                        "No staff active"
+                                    )
+                                }
+                                trigger={
+                                    <Label
+                                        content={`${
+                                            activeStaff ? activeStaff.length : 0
+                                        } staff active`}
+                                        icon={
+                                            <Icon name="sync" loading={true} />
+                                        }
+                                    />
+                                }
                             />
                         )}
                     </Grid.Column>

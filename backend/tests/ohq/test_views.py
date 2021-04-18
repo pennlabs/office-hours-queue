@@ -9,7 +9,7 @@ from djangorestframework_camel_case.util import camelize
 from rest_framework.test import APIClient
 
 from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester
-from ohq.serializers import UserPrivateSerializer
+from ohq.serializers import MembershipSerializer, UserPrivateSerializer
 
 
 User = get_user_model()
@@ -232,3 +232,84 @@ class QuestionViewTestCase(TestCase):
             reverse("ohq:question-quota-count", args=[self.course.id, self.queue3.id])
         )
         self.assertEqual(0, json.loads(res.content)["wait_time_mins"])
+
+
+class MembershipViewTestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.semester = Semester.objects.create(year=2020, term=Semester.TERM_FALL)
+        self.course = Course.objects.create(
+            course_code="000", department="Test Class", semester=self.semester
+        )
+        self.queue = Queue.objects.create(name="Queue", course=self.course)
+
+        self.head_ta = User.objects.create_user("head_ta", "head_ta@a.com", "head_ta")
+        self.ta = User.objects.create_user("ta", "ta@a.com", "ta")
+        self.student = User.objects.create_user("student", "student@a.com", "student")
+
+        self.head_ta_membership = Membership.objects.create(
+            course=self.course, user=self.head_ta, kind=Membership.KIND_HEAD_TA
+        )
+        self.ta_membership = Membership.objects.create(
+            course=self.course, user=self.ta, kind=Membership.KIND_TA
+        )
+        self.student_membership = Membership.objects.create(
+            course=self.course, user=self.student, kind=Membership.KIND_STUDENT
+        )
+
+    def test_staff_active(self):
+        self.client.force_authenticate(user=self.student)
+
+        res = self.client.get(reverse("ohq:member-list", args=[self.course.id]))
+        content = json.loads(res.content)
+
+        # when not looking at the active TA's, we expect 2 users: head ta and logged in student
+        self.assertEqual(2, len(content))
+
+        res = self.client.get(reverse("ohq:member-list", args=[self.course.id]) + "?active=true")
+        content = json.loads(res.content)
+
+        self.assertEqual(0, len(content))
+
+        self.head_ta_membership.last_active = timezone.now()
+        self.head_ta_membership.save()
+
+        res = self.client.get(reverse("ohq:member-list", args=[self.course.id]) + "?active=true")
+        content = json.loads(res.content)
+
+        self.assertEqual(1, len(content))
+        expected_content = camelize(MembershipSerializer([self.head_ta_membership], many=True).data)
+        self.assertEqual(expected_content, content)
+
+        self.ta_membership.last_active = timezone.now()
+        self.ta_membership.save()
+
+        res = self.client.get(reverse("ohq:member-list", args=[self.course.id]) + "?active=true")
+        content = json.loads(res.content)
+
+        self.assertEqual(2, len(content))
+        expected_content = camelize(
+            MembershipSerializer([self.head_ta_membership, self.ta_membership], many=True).data
+        )
+        self.assertEqual(expected_content, content)
+
+        self.head_ta_membership.last_active = timezone.now() - timezone.timedelta(minutes=5)
+        self.head_ta_membership.save()
+
+        res = self.client.get(reverse("ohq:member-list", args=[self.course.id]) + "?active=true")
+        content = json.loads(res.content)
+
+        expected_content = camelize(MembershipSerializer([self.ta_membership], many=True).data)
+        self.assertEqual(expected_content, content)
+
+        self.assertEqual(1, len(content))
+
+        self.student_membership.last_active = timezone.now()
+        self.student_membership.save()
+
+        res = self.client.get(reverse("ohq:member-list", args=[self.course.id]) + "?active=true")
+        content = json.loads(res.content)
+
+        self.assertEqual(1, len(content))
+        expected_content = camelize(MembershipSerializer([self.ta_membership], many=True).data)
+        self.assertEqual(expected_content, content)

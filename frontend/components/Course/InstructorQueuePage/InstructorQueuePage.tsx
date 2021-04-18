@@ -9,13 +9,20 @@ import QueueSettings from "./QueueSettings/QueueSettings";
 import CreateQueue from "./CreateQueue/CreateQueue";
 import { AuthUserContext } from "../../../context/auth";
 import { useQueues, useStaff } from "../../../hooks/data-fetching/course";
-import { Announcement, Queue, QuestionMap, Tag } from "../../../types";
+import {
+    Announcement,
+    Queue,
+    QuestionMap,
+    Tag,
+    Membership,
+} from "../../../types";
 
 interface InstructorQueuePageProps {
     courseId: number;
     queues: Queue[];
     questionmap: QuestionMap;
     play: MutableRefObject<() => void>;
+    activeStaff: Membership[];
     tags: Tag[];
     announcements: Announcement[];
 }
@@ -46,6 +53,7 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
     const {
         courseId,
         queues: rawQueues,
+        activeStaff,
         questionmap,
         play,
         tags,
@@ -104,6 +112,7 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
                         suggestedQueueId={pageState.queueId}
                         courseId={courseId}
                         queues={queues}
+                        activeStaff={activeStaff}
                         questionmap={questionmap}
                         editFunc={onQueueSettings}
                         createFunc={() => {

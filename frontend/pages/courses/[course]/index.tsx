@@ -17,6 +17,7 @@ import {
     Membership,
     Question,
     QuestionMap,
+    User,
 } from "../../../types";
 import InstructorQueuePage from "../../../components/Course/InstructorQueuePage/InstructorQueuePage";
 import StudentQueuePage from "../../../components/Course/StudentQueuePage/StudentQueuePage";
@@ -26,6 +27,7 @@ interface QueuePageProps extends CoursePageProps {
     questionmap: QuestionMap;
     tags: Tag[];
     announcements: Announcement[];
+    activeStaff: Membership[];
 }
 
 const QueuePage = (props: QueuePageProps) => {
@@ -36,6 +38,7 @@ const QueuePage = (props: QueuePageProps) => {
         questionmap,
         tags,
         announcements,
+        activeStaff,
     } = props;
     return (
         <WebsocketProvider
@@ -64,6 +67,7 @@ const QueuePage = (props: QueuePageProps) => {
                                         announcements={announcements}
                                         courseId={course.id}
                                         queues={queues}
+                                        activeStaff={activeStaff}
                                         questionmap={questionmap}
                                         play={play}
                                         tags={tags}
@@ -74,6 +78,7 @@ const QueuePage = (props: QueuePageProps) => {
                                         announcements={announcements}
                                         course={course}
                                         queues={queues}
+                                        activeStaff={activeStaff}
                                         questionmap={questionmap}
                                         play={play}
                                         tags={tags}
@@ -101,6 +106,7 @@ QueuePage.getInitialProps = async (
     let queues: Queue[];
     let tags: Tag[];
     let announcements: Announcement[];
+    let activeStaff: Membership[];
 
     const response = await doMultipleSuccessRequests([
         { path: `/api/courses/${query.course}/`, data },
@@ -108,10 +114,18 @@ QueuePage.getInitialProps = async (
         { path: `/api/courses/${query.course}/queues/`, data },
         { path: `/api/courses/${query.course}/tags/`, data },
         { path: `/api/courses/${query.course}/announcements/`, data },
+        { path: `/api/courses/${query.course}/members/?active=true`, data },
     ]);
 
     if (response.success) {
-        [course, leadership, queues, tags, announcements] = response.data;
+        [
+            course,
+            leadership,
+            queues,
+            tags,
+            announcements,
+            activeStaff,
+        ] = response.data;
         if (course.archived) {
             nextRedirect(
                 context,
@@ -149,6 +163,7 @@ QueuePage.getInitialProps = async (
         questionmap,
         tags,
         announcements,
+        activeStaff,
     };
 };
 export default withAuth(QueuePage);
