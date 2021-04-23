@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React, { useState } from "react";
-import { Segment, Header, Grid, Message, Dropdown } from "semantic-ui-react";
+import { Segment, Grid, Dropdown } from "semantic-ui-react";
 import { Course, Queue } from "../../../types";
 // import MyPieChart from "./MyPieChart";
 import Averages from "./Heatmaps/Averages";
