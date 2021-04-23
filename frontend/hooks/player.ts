@@ -1,12 +1,5 @@
 import UIfx from "uifx";
-import {
-    useState,
-    useRef,
-    useEffect,
-    Dispatch,
-    SetStateAction,
-    MutableRefObject,
-} from "react";
+import { useState, useRef, useEffect, Dispatch, SetStateAction } from "react";
 import { NotificationProps } from "../types";
 
 export function usePlayer(
@@ -20,8 +13,8 @@ export function usePlayer(
     const [notifs, setNotifs] = useState(true);
 
     useEffect(() => {
-        if (localStorage != null) {
-            setNotifs(localStorage.getItem("notifs") === "true");
+        if (localStorage && localStorage.getItem("notifs") === "false") {
+            setNotifs(false);
         }
     }, []);
 
