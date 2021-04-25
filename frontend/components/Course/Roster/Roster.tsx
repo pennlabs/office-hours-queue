@@ -9,7 +9,7 @@ import InviteModal from "./Invites/InviteModal";
 
 import { prettifyRole, isLeadershipRole } from "../../../utils/enums";
 import ChangeRoleDropdown from "./ChangeRoleDropdown";
-import { AuthUserContext } from "../../../context/auth";
+import { AuthUserContext } from "../../../utils/auth";
 import { Kind, Membership, MembershipInvite, Course } from "../../../types";
 import {
     useInvitedMembers,

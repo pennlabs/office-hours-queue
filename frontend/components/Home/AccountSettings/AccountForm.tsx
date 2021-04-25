@@ -2,9 +2,9 @@ import React, { useState, useContext } from "react";
 import { Form, Button, Icon, Popup } from "semantic-ui-react";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
-import { AuthUserContext } from "../../../context/auth";
+import { AuthUserContext } from "../../../utils/auth";
 import VerificationModal from "./VerificationModal";
-import { User, Toast } from "../../../types";
+import { Toast } from "../../../types";
 import {
     updateUser,
     useAccountInfo,

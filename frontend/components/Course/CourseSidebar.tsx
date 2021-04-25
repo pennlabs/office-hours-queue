@@ -13,7 +13,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { prettifyRole } from "../../utils/enums";
 
-import { AuthUserContext } from "../../context/auth";
+import { AuthUserContext } from "../../utils/auth";
 import { useLeadership, useStaff } from "../../hooks/data-fetching/course";
 import styles from "../../styles/landingpage.module.css";
 import { leadershipSortFunc } from "../../utils";
@@ -184,6 +184,7 @@ const CourseSidebar = (props: CourseSidebarProps) => {
             >
                 <a
                     href="https://airtable.com/shrIZxIjyAE3gOUSg"
+                    rel="noreferrer"
                     target="_blank"
                 >
                     <p>Feedback</p>
