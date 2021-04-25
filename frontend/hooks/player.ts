@@ -18,11 +18,15 @@ export function usePlayer(
         }
     }, []);
 
-    const pushNotifcation = (message) =>
-        new Notification("Alert", {
-            body: message,
-            icon: "../favicon.ico",
-        });
+    const pushNotifcation = (message) => {
+        if ("Notification" in window) {
+            /* eslint-disable-next-line */
+            new Notification("Alert", {
+                body: message,
+                icon: "../favicon.ico",
+            });
+        }
+    };
 
     const playFunc = (message: string) => {
         if (notifs) {
