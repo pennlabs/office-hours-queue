@@ -456,6 +456,5 @@ class Command(BaseCommand):
 
                     newQuestion.save()
 
-        call_command("wait_time_days", "--hist")
         call_command("queue_daily_stat", "--hist")
         call_command("queue_heatmap_stat", "--hist")
