@@ -20,11 +20,15 @@ export function usePlayer(
 
     const pushNotifcation = (message) => {
         if ("Notification" in window) {
-            /* eslint-disable-next-line */
-            new Notification("Alert", {
-                body: message,
-                icon: "../favicon.ico",
-            });
+            try {
+                /* eslint-disable-next-line */
+                new Notification("Alert", {
+                    body: message,
+                    icon: "../favicon.ico",
+                });
+            } catch (e) {
+                console.log("Notifications API not supported on this device");
+            }
         }
     };
 
