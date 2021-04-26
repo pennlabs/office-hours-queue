@@ -23,3 +23,19 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+const { createJSDocTypeExpression } = require("typescript");
+
+Cypress.Commands.add("login", (username, password) => {
+    cy.visit("localhost:3000/admin/");
+    cy.get("[name=username]").type(username);
+    cy.get("[name=password]").type(password);
+    cy.contains("Log in").click();
+    cy.contains("OHQ");
+});
+
+Cypress.Commands.add("logout", () => {
+    cy.visit("localhost:3000/admin/");
+    cy.contains("Log out").click()
+    cy.contains("OHQ");
+});
