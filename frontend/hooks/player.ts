@@ -1,6 +1,7 @@
 import UIfx from "uifx";
 import { useState, useRef, useEffect, Dispatch, SetStateAction } from "react";
 import { NotificationProps } from "../types";
+import { playNotification, checkPermissions } from "./notifcation";
 
 export function usePlayer(
     audio: string
@@ -13,29 +14,15 @@ export function usePlayer(
     const [notifs, setNotifs] = useState(true);
 
     useEffect(() => {
-        if (localStorage && localStorage.getItem("notifs") === "false") {
+        if (checkPermissions()) {
             setNotifs(false);
         }
     }, []);
 
-    const pushNotifcation = (message) => {
-        if ("Notification" in window) {
-            try {
-                /* eslint-disable-next-line */
-                new Notification("Alert", {
-                    body: message,
-                    icon: "../favicon.ico",
-                });
-            } catch (e) {
-                console.log("Notifications API not supported on this device");
-            }
-        }
-    };
-
     const playFunc = (message: string) => {
         if (notifs) {
             player.current?.play();
-            pushNotifcation(message);
+            playNotification(message);
         }
     };
 

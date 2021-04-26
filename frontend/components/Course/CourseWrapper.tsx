@@ -101,6 +101,7 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                                                     {notifs ? "ON" : "OFF"}
                                                 </div>
                                             }
+                                            size="mini"
                                         >
                                             <p>
                                                 Browser permissions are{" "}
@@ -116,7 +117,7 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                                             </p>
                                             {typeof Notification !==
                                                 "undefined" &&
-                                                Notification.permission ==
+                                                Notification.permission ===
                                                     "denied" && (
                                                     <p>
                                                         Enable notification

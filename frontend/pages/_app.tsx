@@ -5,14 +5,11 @@ import "../styles/index.css";
 import { SWRConfig } from "swr";
 import { doApiRequest } from "../utils/fetch";
 import withGA from "../utils/ga/withGA";
+import { askNotificationPermissions } from "../hooks/notifcation";
 
 const MyApp = ({ Component, pageProps }) => {
     useEffect(() => {
-        if (!("Notification" in window)) {
-            console.log("This browser does not support desktop notification");
-        } else {
-            Notification.requestPermission();
-        }
+        askNotificationPermissions();
     });
     return (
         <SWRConfig
