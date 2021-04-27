@@ -84,14 +84,16 @@ const Dashboard = () => {
                                     content={
                                         <>
                                             and we want to hear from you! Help
-                                            us improve OHQ by filling out our
+                                            us improve OHQ by filling
+                                            <br />
+                                            out our{" "}
                                             <a
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 href="https://airtable.com/shrFrWqkc6vVNziIa"
                                             >
                                                 end-of-semester survey
-                                            </a>
+                                            </a>{" "}
                                             today!
                                         </>
                                     }
