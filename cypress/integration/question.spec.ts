@@ -1,5 +1,3 @@
-const axios = require("axios").default;
-
 const { createJSDocTypeExpression } = require("typescript");
 
 describe("Question Tests", () => {
