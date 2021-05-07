@@ -1,14 +1,24 @@
+const axios = require("axios").default;
+
 const { createJSDocTypeExpression } = require("typescript");
 
 describe("Question Tests", () => {
-  afterEach(() => {
-    cy.contains("Reject").click();
-    cy.contains("Select Reason").click();
-    cy.contains("Not Specific").click();
-    cy.get(".modal .button").contains("Reject").click();
+  beforeEach(() => {
+    cy.login("gautam1", "gautam1");
+    cy.getCookie("csrftoken")
+      .then((cookie) => cookie.value)
+      .then((csrftokenBefore) => {
+        cy.request({
+          url: "/api/courses/7/queues/9/clear/",
+          method: "POST",
+          headers: {
+            "X-CSRFToken": csrftokenBefore,
+          },
+        });
 
-    cy.logout();
-  })
+        cy.logout();
+      });
+  });
 
   it("Tests question using API request (to test web sockets)", () => {
     const questionString =
@@ -37,10 +47,12 @@ describe("Question Tests", () => {
                   .then((cookie) => cookie.value)
                   .then((sessionidTA) => {
                     cy.contains("cis cis101").click();
+                    cy.wait(3000);
 
                     cy.clearCookies();
 
                     cy.request({
+                      failOnStatusCode: true,
                       url: "/api/courses/7/queues/9/questions/",
                       method: "POST",
                       headers: {
@@ -65,6 +77,13 @@ describe("Question Tests", () => {
                     cy.contains(questionString, { timeout: 5000 }).should(
                       "be.visible"
                     );
+
+                    cy.contains("Reject").click();
+                    cy.contains("Select Reason").click();
+                    cy.contains("Not Specific").click();
+                    cy.get(".modal .button").contains("Reject").click();
+
+                    cy.logout();
                   });
               });
           });
@@ -88,5 +107,12 @@ describe("Question Tests", () => {
 
     cy.contains("cis cis101").click();
     cy.contains(questionString, { timeout: 5000 }).should("be.visible");
+
+    cy.contains("Reject").click();
+    cy.contains("Select Reason").click();
+    cy.contains("Not Specific").click();
+    cy.get(".modal .button").contains("Reject").click();
+
+    cy.logout();
   });
 });
