@@ -9,7 +9,7 @@ import { AuthUserContext } from "../../../utils/auth";
 import { Kind, UserMembership } from "../../../types";
 import { useMemberships } from "../../../hooks/data-fetching/dashboard";
 import { isLeadershipRole } from "../../../utils/enums";
-import { SPRING_2021_TRANSITION_MESSAGE_TOKEN } from "../../../constants";
+import { ANALYTICS_SURVEY_SHOWN_SPRING_2021_END_TOKEN } from "../../../constants";
 
 // TODO: try to readd new user stuff, rip out loading stuff
 const Dashboard = () => {
@@ -20,7 +20,7 @@ const Dashboard = () => {
     const [messageDisp, setMessageDisp] = useState(false);
     useEffect(() => {
         const state = localStorage.getItem(
-            SPRING_2021_TRANSITION_MESSAGE_TOKEN
+            ANALYTICS_SURVEY_SHOWN_SPRING_2021_END_TOKEN
         );
         setMessageDisp(state !== "true");
     }, []);
@@ -75,19 +75,26 @@ const Dashboard = () => {
                                     onDismiss={() => {
                                         setMessageDisp(false);
                                         localStorage.setItem(
-                                            SPRING_2021_TRANSITION_MESSAGE_TOKEN,
+                                            ANALYTICS_SURVEY_SHOWN_SPRING_2021_END_TOKEN,
                                             "true"
                                         );
                                     }}
                                     size="mini"
-                                    header="Welcome back!"
+                                    header="The semester is ending..."
                                     content={
                                         <>
-                                            Fall 2020 courses have been archived
-                                            in preparation for Spring 2021.
+                                            and we want to hear from you! Help
+                                            us improve OHQ by filling
                                             <br />
-                                            Please contact us at contact@ohq.io
-                                            if this is an error.
+                                            out our{" "}
+                                            <a
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                href="https://airtable.com/shrFrWqkc6vVNziIa"
+                                            >
+                                                end-of-semester survey
+                                            </a>{" "}
+                                            today!
                                         </>
                                     }
                                 />
