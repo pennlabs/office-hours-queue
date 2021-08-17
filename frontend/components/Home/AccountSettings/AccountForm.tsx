@@ -11,7 +11,6 @@ import {
     updateUser,
     useAccountInfo,
 } from "../../../hooks/data-fetching/account";
-import { logException } from "../../../utils/sentry";
 
 const AccountForm = () => {
     const { user: initialUser } = useContext(AuthUserContext);
