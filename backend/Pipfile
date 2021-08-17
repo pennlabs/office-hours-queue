@@ -19,7 +19,7 @@ tblib = "*"
 [packages]
 dj-database-url = "*"
 djangorestframework = "*"
-psycopg2 = "==2.8.6"
+psycopg2 = "*"
 sentry-sdk = "*"
 django = "*"
 django-cors-headers = "*"
@@ -44,4 +44,4 @@ gunicorn = "*"
 drf-renderer-xlsx = "*"
 
 [requires]
-python_version = "3"
+python_version = "3.8"
