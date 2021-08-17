@@ -19,7 +19,7 @@ tblib = "*"
 [packages]
 dj-database-url = "*"
 djangorestframework = "*"
-psycopg2 = "*"
+psycopg2 = "==2.8.6"
 sentry-sdk = "*"
 django = "*"
 django-cors-headers = "*"
