@@ -16,7 +16,7 @@ const AccountForm = () => {
 
     const { data: user, mutate } = useAccountInfo(initialUser);
 
-    const [input] = useState(JSON.parse(JSON.stringify(user)));
+    const [input] = useState<User>(JSON.parse(JSON.stringify(user)));
 
     const [showNumber, setShowNumber] = useState(
         user.profile.smsNotificationsEnabled
@@ -32,7 +32,8 @@ const AccountForm = () => {
         return (
             !input.firstName ||
             !input.lastName ||
-            !input.profile.phoneNumber ||
+            (input.profile.smsNotificationsEnabled &&
+                !input.profile.phoneNumber) ||
             (input.firstName === user.firstName &&
                 input.lastName === user.lastName &&
                 input.profile.smsNotificationsEnabled ===
@@ -64,7 +65,10 @@ const AccountForm = () => {
             setToastOpen(true);
             setDisabled(true);
 
-            if (input.profile.phoneNumber !== user.profile.phoneNumber) {
+            if (
+                input.profile.smsNotificationsEnabled &&
+                input.profile.phoneNumber !== user.profile.phoneNumber
+            ) {
                 setSmsOpen(true);
             }
         } catch (e) {

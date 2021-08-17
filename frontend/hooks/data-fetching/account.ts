@@ -1,4 +1,5 @@
 import { parsePhoneNumberFromString } from "libphonenumber-js/max";
+import _ from "lodash";
 import { useResource } from "@pennlabs/rest-hooks";
 import { User } from "../../types";
 import { doApiRequest } from "../../utils/fetch";
@@ -44,21 +45,25 @@ export async function resendSMSVerification() {
 }
 
 export async function updateUser(payload: Partial<User>) {
-    const processedPayload: Partial<User> = payload;
-    if (processedPayload.profile && payload.profile?.phoneNumber) {
-        // TODO: Better error handling
+    const processedPayload: Partial<User> = _.cloneDeep(payload);
+    if (processedPayload.profile) {
+        if (!processedPayload.profile.smsNotificationsEnabled) {
+            delete processedPayload.profile.phoneNumber;
+        } else if (processedPayload.profile.phoneNumber) {
+            // TODO: Better error handling
+            const parsedNumber = parsePhoneNumberFromString(
+                String(processedPayload.profile.phoneNumber),
+                "US"
+            )?.number;
 
-        const parsedNumber = parsePhoneNumberFromString(
-            String(payload.profile.phoneNumber),
-            "US"
-        )?.number;
+            if (!parsedNumber) {
+                throw new Error("phone parsing failed");
+            }
 
-        if (!parsedNumber) {
-            throw new Error("phone parsing failed");
+            processedPayload.profile.phoneNumber = parsedNumber as string;
         }
-
-        processedPayload.profile.phoneNumber = parsedNumber as string;
     }
+
     const res = await doApiRequest("/api/accounts/me/", {
         method: "PATCH",
         body: processedPayload,
