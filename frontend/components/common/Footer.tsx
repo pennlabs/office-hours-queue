@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Container } from "semantic-ui-react";
 
 import AboutModal from "./AboutModal";

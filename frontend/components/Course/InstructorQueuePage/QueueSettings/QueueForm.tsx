@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Form, Button, Modal } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Snackbar from "@material-ui/core/Snackbar";

@@ -1,4 +1,3 @@
-import React from "react";
 import { Modal, Button } from "semantic-ui-react";
 import { mutateResourceFunction } from "@pennlabs/rest-hooks/dist/types";
 import { leaveCourse } from "../../../../hooks/data-fetching/dashboard";

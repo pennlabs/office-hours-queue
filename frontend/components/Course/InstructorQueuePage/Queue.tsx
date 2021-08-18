@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Header, Label, Grid, Message, Button, Icon } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Select from "react-select";

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import Head from "next/head";
 import { Snackbar } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";

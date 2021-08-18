@@ -1,4 +1,3 @@
-import React from "react";
 import Head from "next/head";
 import { Grid } from "semantic-ui-react";
 import { WebsocketProvider } from "@pennlabs/rest-live-hooks";

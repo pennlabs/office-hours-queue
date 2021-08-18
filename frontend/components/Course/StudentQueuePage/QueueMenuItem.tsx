@@ -1,4 +1,4 @@
-import React, { useEffect, MutableRefObject } from "react";
+import { useEffect, MutableRefObject } from "react";
 import { Menu, Label } from "semantic-ui-react";
 import {
     useQuestionPosition,

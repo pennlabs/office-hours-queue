@@ -1,5 +1,4 @@
 import { Tab, Segment, Header } from "semantic-ui-react";
-import React from "react";
 import { useHeatmapData } from "../../../../hooks/data-fetching/analytics";
 import { Metric } from "../../../../types";
 import Heatmap from "./Heatmap";

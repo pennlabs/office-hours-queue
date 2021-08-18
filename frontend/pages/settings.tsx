@@ -1,4 +1,3 @@
-import React from "react";
 import Head from "next/head";
 import { withAuth, withAuthComponent } from "../utils/auth";
 import Home from "../components/Home/Home";

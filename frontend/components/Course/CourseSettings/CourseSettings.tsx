@@ -1,4 +1,3 @@
-import React from "react";
 import { Segment, Header, Grid } from "semantic-ui-react";
 import CourseForm from "./CourseForm";
 import { Course, Tag } from "../../../types";

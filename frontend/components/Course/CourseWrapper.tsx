@@ -1,4 +1,5 @@
-import React, { useContext, MutableRefObject } from "react";
+import { useContext, MutableRefObject } from "react";
+import * as React from "react";
 import {
     Grid,
     Segment,
