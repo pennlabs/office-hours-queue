@@ -1,6 +1,6 @@
 import React from "react";
 import Head from "next/head";
-import { withAuth } from "../context/auth";
+import { withAuth, withAuthComponent } from "../utils/auth";
 import Home from "../components/Home/Home";
 import AccountSettings from "../components/Home/AccountSettings/AccountSettings";
 
@@ -17,4 +17,6 @@ const LandingPage = () => {
     );
 };
 
-export default withAuth(LandingPage);
+export const getServerSideProps = withAuth(async () => ({ props: {} }));
+
+export default withAuthComponent(LandingPage);

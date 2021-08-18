@@ -30,7 +30,7 @@ export const useHeatmapData = (
                 acc.get(day)!.data.push({
                     x: hour.toString(),
                     y:
-                        type == Metric.HEATMAP_WAIT
+                        type === Metric.HEATMAP_WAIT
                             ? Math.ceil(Number(value) / 60)
                             : Math.round(
                                   (Number(value) + Number.EPSILON) * 100

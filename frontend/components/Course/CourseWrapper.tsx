@@ -9,7 +9,7 @@ import {
 } from "semantic-ui-react";
 import CourseSidebar from "./CourseSidebar";
 
-import { AuthUserContext } from "../../context/auth";
+import { AuthUserContext } from "../../utils/auth";
 import { useCourse, useStaff } from "../../hooks/data-fetching/course";
 import * as bellAudio from "./InstructorQueuePage/notification.mp3";
 import * as aolAudio from "./InstructorQueuePage/aol.mp3";
@@ -116,7 +116,7 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                                             </p>
                                             {typeof Notification !==
                                                 "undefined" &&
-                                                Notification.permission ==
+                                                Notification.permission ===
                                                     "denied" && (
                                                     <p>
                                                         Enable notification

@@ -11,7 +11,7 @@ import {
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import EditQuestionModal from "./EditQuestionModal";
 import DeleteQuestionModal from "./DeleteQuestionModal";
-import { Question, Course, Queue, QuestionStatus, Tag } from "../../../types";
+import { Question, Course, Queue, Tag } from "../../../types";
 import {
     useQuestionPosition,
     finishQuestion,

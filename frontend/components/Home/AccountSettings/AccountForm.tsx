@@ -4,7 +4,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 import { parsePhoneNumberFromString } from "libphonenumber-js/max";
 import _ from "lodash";
-import { AuthUserContext } from "../../../context/auth";
+import { AuthUserContext } from "../../../utils/auth";
 import VerificationModal from "./VerificationModal";
 import { User, Toast } from "../../../types";
 import {

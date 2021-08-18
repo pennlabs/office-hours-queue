@@ -1,4 +1,4 @@
-import { NextPageContext } from "next";
+import { GetServerSidePropsContext } from "next";
 import { User, Kind } from "../types";
 
 /**
@@ -9,7 +9,10 @@ import { User, Kind } from "../types";
  *
  */
 
-export default function staffCheck(user: User, ctx: NextPageContext): boolean {
+export default function staffCheck(
+    user: User,
+    ctx: GetServerSidePropsContext
+): boolean {
     const {
         query: { course },
     } = ctx;

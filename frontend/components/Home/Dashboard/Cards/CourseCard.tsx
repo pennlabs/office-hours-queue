@@ -14,10 +14,6 @@ const CourseCard = (props: CourseCardProps) => {
     const { course } = membership;
     const [hover, setHover] = useState(false);
 
-    const path = {
-        pathname: `/courses/${course.id}`,
-    };
-
     const handleLeave = () => {
         if (setLeaveMembership && setOpenLeave) {
             setLeaveMembership(membership);

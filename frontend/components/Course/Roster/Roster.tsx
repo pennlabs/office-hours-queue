@@ -9,7 +9,7 @@ import InviteModal from "./Invites/InviteModal";
 
 import { prettifyRole, isLeadershipRole } from "../../../utils/enums";
 import ChangeRoleDropdown from "./ChangeRoleDropdown";
-import { AuthUserContext } from "../../../context/auth";
+import { AuthUserContext } from "../../../utils/auth";
 import { Kind, Membership, MembershipInvite, Course } from "../../../types";
 import {
     useInvitedMembers,
@@ -183,14 +183,6 @@ const Roster = (props: RosterProps) => {
             open: true,
             success: true,
             message: "Invitation successfully revoked",
-        });
-    };
-
-    const setInviteResendToast = () => {
-        setToast({
-            open: true,
-            success: true,
-            message: "Invitation successfully resent",
         });
     };
 

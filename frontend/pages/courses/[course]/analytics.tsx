@@ -1,15 +1,17 @@
 import React from "react";
 import Head from "next/head";
 import { Grid } from "semantic-ui-react";
-import { NextPageContext } from "next";
+import { GetServerSidePropsContext } from "next";
 import CourseWrapper from "../../../components/Course/CourseWrapper";
-import { withAuth } from "../../../context/auth";
 import staffCheck from "../../../utils/staffcheck";
-import { withProtectPage } from "../../../utils/protectpage";
+import {
+    withAuth,
+    withAuthComponent,
+    withProtectPage,
+} from "../../../utils/auth";
 import { doMultipleSuccessRequests } from "../../../utils/fetch";
 import { isLeadershipRole } from "../../../utils/enums";
-import nextRedirect from "../../../utils/redirect";
-import { CoursePageProps, Course, Membership, Queue } from "../../../types";
+import { Course, Membership, Queue } from "../../../types";
 import Analytics from "../../../components/Course/Analytics/Analytics";
 
 interface AnalyticsPageProps {
@@ -38,9 +40,7 @@ const AnalyticsPage = (props: AnalyticsPageProps) => {
     );
 };
 
-AnalyticsPage.getInitialProps = async (
-    context: NextPageContext
-): Promise<AnalyticsPageProps> => {
+async function getServerSidePropsInner(context: GetServerSidePropsContext) {
     const { query, req } = context;
     const data = {
         headers: req ? { cookie: req.headers.cookie } : undefined,
@@ -59,17 +59,28 @@ AnalyticsPage.getInitialProps = async (
     if (response.success) {
         [course, leadership, queues] = response.data;
     } else {
-        nextRedirect(context, () => true, "/404");
-        throw new Error("Next should redirect: unreachable");
+        return {
+            redirect: {
+                destination: "/404",
+                permanent: false,
+            },
+        };
     }
 
     return {
-        course,
-        leadership: leadership.filter((m) => isLeadershipRole(m.kind)),
-        queues,
+        props: {
+            course,
+            leadership: leadership.filter((m) => isLeadershipRole(m.kind)),
+            queues,
+        },
     };
-};
+}
 
-export default withProtectPage(withAuth(AnalyticsPage), (user, ctx) => {
-    return staffCheck(user, ctx);
-});
+export const getServerSideProps = withProtectPage(
+    withAuth(getServerSidePropsInner),
+    (user, ctx) => {
+        return staffCheck(user, ctx);
+    }
+);
+
+export default withAuthComponent(AnalyticsPage);

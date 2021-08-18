@@ -11,7 +11,7 @@ import {
 import moment from "moment";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import RejectQuestionModal from "./RejectQuestionModal";
-import { AuthUserContext } from "../../../context/auth";
+import { AuthUserContext } from "../../../utils/auth";
 import { Question, QuestionStatus, User } from "../../../types";
 import MessageQuestionModal from "./MessageQuestionModal";
 

@@ -2,17 +2,17 @@ import React, { useContext, useState } from "react";
 import Head from "next/head";
 import { Snackbar } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
-import { NextPageContext } from "next";
-import { AuthUserContext, withAuth } from "../context/auth";
+import { GetServerSidePropsContext } from "next";
 import Home from "../components/Home/Home";
 import AuthPrompt from "../components/Auth/AuthPrompt";
 import Dashboard from "../components/Home/Dashboard/Dashboard";
 import ModalRedirectAddCourse from "../components/Home/Dashboard/Modals/ModalRedirectAddCourse";
 import { Course, Toast } from "../types";
 import { doApiRequest } from "../utils/fetch";
+import { AuthUserContext, withAuth, withAuthComponent } from "../utils/auth";
 
 interface LandingPageProps {
-    signUpCourse?: Course;
+    signUpCourse: Course | null;
 }
 
 const LandingPage = ({ signUpCourse }: LandingPageProps) => {
@@ -58,23 +58,24 @@ const LandingPage = ({ signUpCourse }: LandingPageProps) => {
     );
 };
 
-LandingPage.getInitialProps = async (
-    context: NextPageContext
-): Promise<LandingPageProps> => {
+async function getServerSidePropsInner(context: GetServerSidePropsContext) {
     const { query, req } = context;
     const data = {
-        headers: req ? { cookie: req.headers.cookie } : undefined,
+        headers: { cookie: req.headers.cookie },
     };
 
     const signUpId = Number(query.signup);
-    let signUpCourse: Course | undefined;
+    let signUpCourse: Course | null = null;
     if (signUpId) {
         signUpCourse = await doApiRequest(
             `/api/courses/${signUpId}`,
             data
         ).then((res) => res.json());
     }
-    return { signUpCourse };
-};
 
-export default withAuth(LandingPage);
+    return { props: { signUpCourse } };
+}
+
+export const getServerSideProps = withAuth(getServerSidePropsInner);
+
+export default withAuthComponent(LandingPage);

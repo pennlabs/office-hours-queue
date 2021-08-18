@@ -1,11 +1,11 @@
-import React, { MutableRefObject } from "react";
+import React from "react";
 import Head from "next/head";
 import { Grid } from "semantic-ui-react";
 import { WebsocketProvider } from "@pennlabs/rest-live-hooks";
-import { NextPageContext } from "next";
+import { GetServerSidePropsContext } from "next";
 import CourseWrapper from "../../../components/Course/CourseWrapper";
-import { withAuth } from "../../../context/auth";
 import { doMultipleSuccessRequests, doApiRequest } from "../../../utils/fetch";
+import { withAuth, withAuthComponent } from "../../../utils/auth";
 import { isLeadershipRole } from "../../../utils/enums";
 import nextRedirect from "../../../utils/redirect";
 import {
@@ -59,7 +59,7 @@ const QueuePage = (props: QueuePageProps) => {
                         staff: boolean,
                         play: NotificationProps,
                         notifs: boolean,
-                        setNotifs: (boolean) => void
+                        setNotifs: (status: boolean) => void
                     ) => {
                         return (
                             <div>
@@ -94,9 +94,7 @@ const QueuePage = (props: QueuePageProps) => {
     );
 };
 
-QueuePage.getInitialProps = async (
-    context: NextPageContext
-): Promise<QueuePageProps> => {
+async function getServerSidePropsInner(context: GetServerSidePropsContext) {
     const { query, req } = context;
     const data = {
         headers: req ? { cookie: req.headers.cookie } : undefined,
@@ -126,9 +124,12 @@ QueuePage.getInitialProps = async (
             );
         }
     } else {
-        nextRedirect(context, () => true, `/?signup=${query.course}`);
-        // this will never hit
-        throw new Error("Next redirects: Unreachable");
+        return {
+            redirect: {
+                destination: `/?signup=${query.course}`,
+                permanent: false,
+            },
+        };
     }
 
     // Generate a new questions object that's a map from queue id to a
@@ -149,12 +150,17 @@ QueuePage.getInitialProps = async (
         .reduce((map, questions) => ({ ...map, ...questions }), {});
 
     return {
-        course,
-        leadership: leadership.filter((m) => isLeadershipRole(m.kind)),
-        queues,
-        questionmap,
-        tags,
-        announcements,
+        props: {
+            course,
+            leadership: leadership.filter((m) => isLeadershipRole(m.kind)),
+            queues,
+            questionmap,
+            tags,
+            announcements,
+        },
     };
-};
-export default withAuth(QueuePage);
+}
+
+export const getServerSideProps = withAuth(getServerSidePropsInner);
+
+export default withAuthComponent(QueuePage);
