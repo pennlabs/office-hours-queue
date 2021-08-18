@@ -6,7 +6,7 @@ import { parsePhoneNumberFromString } from "libphonenumber-js/max";
 import _ from "lodash";
 import { AuthUserContext } from "../../../utils/auth";
 import VerificationModal from "./VerificationModal";
-import { Toast } from "../../../types";
+import { User, Toast } from "../../../types";
 import {
     updateUser,
     useAccountInfo,
