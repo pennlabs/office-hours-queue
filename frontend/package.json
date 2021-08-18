@@ -37,7 +37,7 @@
         "semantic-ui-css": "^2.4.1",
         "semantic-ui-react": "^1.1.0",
         "swr": "^0.3.11",
-        "typescript": "^3.9.7",
+        "typescript": "^4.3.5",
         "uifx": "^2.0.7",
         "url-loader": "^4.1.0"
     },
@@ -50,7 +50,7 @@
         "@typescript-eslint/parser": "^3.7.1",
         "babel-eslint": "^10.1.0",
         "babel-plugin-styled-components": "^1.10.7",
-        "eslint": "^5.16.0",
+        "eslint": "^7.32.0",
         "eslint-config-airbnb": "^18.2.0",
         "eslint-config-prettier": "^6.11.0",
         "eslint-config-react-app": "^5.2.1",
