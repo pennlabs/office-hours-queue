@@ -23,5 +23,7 @@ def calculate_wait_times():
             avg_wait=Avg(F("time_response_started") - F("time_asked"))
         )
         wait = avg["avg_wait"]
-        queue.estimated_wait_time = wait.seconds // 60 if wait else 0
+        # only recalculate average if we have a valid average
+        if wait:
+            queue.estimated_wait_time = wait.seconds // 60
         queue.save()
