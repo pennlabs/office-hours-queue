@@ -1,7 +1,4 @@
 module.exports = {
-    future: {
-        webpack5: true,
-    },
     webpack(config, options) {
         const { isServer } = options;
         config.module.rules.push({
