@@ -186,14 +186,6 @@ const Roster = (props: RosterProps) => {
         });
     };
 
-    const setInviteResendToast = () => {
-        setToast({
-            open: true,
-            success: true,
-            message: "Invitation successfully resent",
-        });
-    };
-
     const setChangeRoleToast = () => {
         setToast({
             open: true,
