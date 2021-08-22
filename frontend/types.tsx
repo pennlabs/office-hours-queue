@@ -1,3 +1,5 @@
+import { MutableRefObject } from "react";
+
 export interface Course {
     id: number;
     courseCode: string;
@@ -35,7 +37,7 @@ export interface Membership {
 
 export interface MembershipInvite {
     id: number;
-    kind: string;
+    kind: Kind;
     email: string;
 }
 
@@ -182,3 +184,5 @@ export enum DayOfWeek {
     "Friday" = 6,
     "Saturday" = 7,
 }
+
+export type NotificationProps = MutableRefObject<(string) => void>;

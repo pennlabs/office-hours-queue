@@ -67,7 +67,6 @@ const RejectQuestionModal = (props: RejectQuestionModalProps) => {
             closeFunc();
         } catch (e) {
             logException(e);
-            console.log(e);
         }
     };
 

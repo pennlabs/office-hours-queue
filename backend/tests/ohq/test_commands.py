@@ -105,6 +105,7 @@ class AverageQueueWaitTimeTestCase(TestCase):
 
         yesterday = timezone.localtime() - timezone.timedelta(days=1)
 
+        # this command computes avg wait time yesterday
         self.wait_times = [100, 200, 300, 400]
         for i in range(len(self.wait_times)):
             # test all varieties of statuses
@@ -139,45 +140,43 @@ class AverageQueueWaitTimeTestCase(TestCase):
                 responded_to_by=ta,
                 time_response_started=yesterday
                 + timezone.timedelta(seconds=self.wait_times[i] * 3),
-                time_responded_to=yesterday,
+                time_responded_to=yesterday + timezone.timedelta(seconds=self.wait_times[i] * 3),
                 status=Question.STATUS_REJECTED,
             )
             q3.time_asked = yesterday
             q3.save()
 
-        # create question that isn't in the current week
-        self.old_wait_time = 120
+        # create question that wasn't yesterday
+        self.old_time_wait = 789
         q4 = Question.objects.create(
             text="Old question",
             queue=self.queue,
             asked_by=student,
             responded_to_by=ta,
             time_response_started=yesterday
-            - timezone.timedelta(weeks=2)
-            + timezone.timedelta(seconds=self.old_wait_time),
+            - timezone.timedelta(days=2, seconds=-self.old_time_wait),
             status=Question.STATUS_ACTIVE,
         )
-        q4.time_asked = yesterday - timezone.timedelta(weeks=2)
+        q4.time_asked = yesterday - timezone.timedelta(days=2)
         q4.save()
 
-    def test_avg_queue_wait_computation(self):
-        call_command("queue_weekly_stat")
+    def test_wait_time_days_computation(self):
+        call_command("queue_daily_stat")
         expected = sum(self.wait_times) * 6 / (len(self.wait_times) * 3)
 
         yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
-        last_sunday = yesterday - timezone.timedelta(days=(yesterday.weekday() + 1) % 7)
         actual = QueueStatistic.objects.get(
-            queue=self.queue, metric=QueueStatistic.METRIC_AVG_WAIT, date=last_sunday
+            queue=self.queue, metric=QueueStatistic.METRIC_AVG_WAIT, date=yesterday
         ).value
 
         self.assertEqual(expected, actual)
 
-        call_command("queue_weekly_stat", "--hist")
-        expected_old = self.old_wait_time
-
-        old_sunday = last_sunday - timezone.timedelta(weeks=2)
+        call_command("queue_daily_stat", "--hist")
+        expected_old = self.old_time_wait
         actual_old = QueueStatistic.objects.get(
-            queue=self.queue, metric=QueueStatistic.METRIC_AVG_WAIT, date=old_sunday
+            queue=self.queue,
+            metric=QueueStatistic.METRIC_AVG_WAIT,
+            date=yesterday - timezone.timedelta(days=2),
         ).value
 
         self.assertEqual(expected_old, actual_old)
@@ -239,26 +238,175 @@ class AverageQueueTimeHelpingTestCase(TestCase):
         rejected.save()
 
     def test_avg_time_helping_computation(self):
-        call_command("queue_weekly_stat")
+        call_command("queue_daily_stat")
         expected = sum(self.help_times) / len(self.help_times)
 
         yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
-        last_sunday = yesterday - timezone.timedelta(days=(yesterday.weekday() + 1) % 7)
         actual = QueueStatistic.objects.get(
-            queue=self.queue, metric=QueueStatistic.METRIC_AVG_TIME_HELPING, date=last_sunday
+            queue=self.queue, metric=QueueStatistic.METRIC_AVG_TIME_HELPING, date=yesterday
         ).value
-
         self.assertEqual(expected, actual)
 
-        call_command("queue_weekly_stat", "--hist")
+        call_command("queue_daily_stat", "--hist")
         expected_old = self.old_question_time_helped
         actual_old = QueueStatistic.objects.get(
             queue=self.queue,
             metric=QueueStatistic.METRIC_AVG_TIME_HELPING,
-            date=last_sunday - timezone.timedelta(weeks=2),
+            date=yesterday - timezone.timedelta(weeks=2),
         ).value
 
         self.assertEqual(expected_old, actual_old)
+
+
+class NumberQuestionsAnsweredQueueTestCase(TestCase):
+    def setUp(self):
+        semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
+        course = Course.objects.create(
+            course_code="000", department="TEST", course_title="Title", semester=semester
+        )
+        self.queue = Queue.objects.create(name="Queue", course=course)
+        ta = User.objects.create_user("ta", "ta@a.com", "ta")
+        student = User.objects.create_user("student", "student@a.com", "student")
+
+        yesterday = timezone.localtime() - timezone.timedelta(days=1)
+        self.num_questions_answered = 4
+
+        for i in range(self.num_questions_answered):
+            question = Question.objects.create(
+                text=f"Question {i}",
+                queue=self.queue,
+                asked_by=student,
+                responded_to_by=ta,
+                time_response_started=yesterday - timezone.timedelta(seconds=10),
+                time_responded_to=yesterday,
+                status=Question.STATUS_ANSWERED,
+            )
+            question.time_asked = yesterday - timezone.timedelta(seconds=20)
+            question.save()
+
+        # create question that isn't in the current week
+        old_question = Question.objects.create(
+            text="Old question",
+            queue=self.queue,
+            asked_by=student,
+            responded_to_by=ta,
+            time_response_started=yesterday - timezone.timedelta(weeks=2),
+            time_responded_to=yesterday - timezone.timedelta(weeks=1),
+            status=Question.STATUS_ANSWERED,
+        )
+        old_question.time_asked = yesterday - timezone.timedelta(weeks=2)
+        old_question.save()
+
+        # create an active question, won't be included
+        active = Question.objects.create(
+            text="active question",
+            queue=self.queue,
+            asked_by=student,
+            responded_to_by=ta,
+            time_response_started=yesterday,
+            time_responded_to=yesterday,
+            status=Question.STATUS_ACTIVE,
+        )
+        active.time_asked = yesterday
+        active.save()
+
+    def test_num_questions_ans_computation(self):
+        call_command("queue_daily_stat")
+        expected = self.num_questions_answered
+
+        yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
+        actual = QueueStatistic.objects.get(
+            queue=self.queue, metric=QueueStatistic.METRIC_NUM_ANSWERED, date=yesterday
+        ).value
+
+        self.assertEqual(expected, actual)
+
+        call_command("queue_daily_stat", "--hist")
+
+        expected_old = 1
+        actual_old = QueueStatistic.objects.get(
+            queue=self.queue,
+            metric=QueueStatistic.METRIC_NUM_ANSWERED,
+            date=yesterday - timezone.timedelta(weeks=1),
+        ).value
+
+        self.assertEqual(expected_old, actual_old)
+
+
+class NumberStudentsHelpedQueueTestCase(TestCase):
+    def setUp(self):
+        semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
+        course = Course.objects.create(
+            course_code="000", department="TEST", course_title="Title", semester=semester
+        )
+        self.queue = Queue.objects.create(name="Queue", course=course)
+        ta = User.objects.create_user("ta", "ta@a.com", "ta")
+        student1 = User.objects.create_user("student1", "student1@a.com", "student1")
+        student2 = User.objects.create_user("student2", "student2@a.com", "student2")
+        student3 = User.objects.create_user("student3", "student3@a.com", "student3")
+
+        yesterday = timezone.localtime() - timezone.timedelta(days=1)
+        students = [student1, student2, student3]
+        self.number_helped = 2
+
+        for i in range(self.number_helped):
+            question = Question.objects.create(
+                text=f"Question {i}",
+                queue=self.queue,
+                asked_by=students[i],
+                responded_to_by=ta,
+                time_response_started=yesterday - timezone.timedelta(seconds=10),
+                time_responded_to=yesterday,
+                status=Question.STATUS_ANSWERED,
+            )
+            question.time_asked = yesterday - timezone.timedelta(seconds=20)
+            question.save()
+
+        # create question that isn't in the current week
+        old_question = Question.objects.create(
+            text="Old question",
+            queue=self.queue,
+            asked_by=student3,
+            responded_to_by=ta,
+            time_response_started=yesterday - timezone.timedelta(weeks=2),
+            time_responded_to=yesterday - timezone.timedelta(weeks=1),
+            status=Question.STATUS_ANSWERED,
+        )
+        old_question.time_asked = yesterday - timezone.timedelta(weeks=2)
+        old_question.save()
+
+        # create an active question, won't be included
+        active = Question.objects.create(
+            text="active question",
+            queue=self.queue,
+            asked_by=student3,
+            responded_to_by=ta,
+            time_response_started=yesterday,
+            time_responded_to=yesterday,
+            status=Question.STATUS_ACTIVE,
+        )
+        active.time_asked = yesterday
+        active.save()
+
+    def test_num_students_helped_computation(self):
+        call_command("queue_daily_stat")
+        expected = self.number_helped
+
+        yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
+        actual = QueueStatistic.objects.get(
+            queue=self.queue, metric=QueueStatistic.METRIC_STUDENTS_HELPED, date=yesterday
+        ).value
+
+        self.assertEqual(expected, actual)
+
+        call_command("queue_daily_stat", "--hist")
+        expected = 1
+        actual = QueueStatistic.objects.get(
+            queue=self.queue,
+            metric=QueueStatistic.METRIC_STUDENTS_HELPED,
+            date=yesterday - timezone.timedelta(weeks=1),
+        ).value
+        self.assertEqual(expected, actual)
 
 
 class AverageQueueWaitHeatmapTestCase(TestCase):
@@ -368,158 +516,6 @@ class AverageQueueWaitHeatmapTestCase(TestCase):
             hour=self.older.time_asked.hour,
         ).value
         self.assertEqual(expected_older, actual_older)
-
-
-class NumberQuestionsAnsweredQueueTestCase(TestCase):
-    def setUp(self):
-        semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
-        course = Course.objects.create(
-            course_code="000", department="TEST", course_title="Title", semester=semester
-        )
-        self.queue = Queue.objects.create(name="Queue", course=course)
-        ta = User.objects.create_user("ta", "ta@a.com", "ta")
-        student = User.objects.create_user("student", "student@a.com", "student")
-
-        yesterday = timezone.localtime() - timezone.timedelta(days=1)
-        self.num_questions_answered = 4
-
-        for i in range(self.num_questions_answered):
-            question = Question.objects.create(
-                text=f"Question {i}",
-                queue=self.queue,
-                asked_by=student,
-                responded_to_by=ta,
-                time_response_started=yesterday - timezone.timedelta(seconds=10),
-                time_responded_to=yesterday,
-                status=Question.STATUS_ANSWERED,
-            )
-            question.time_asked = yesterday - timezone.timedelta(seconds=20)
-            question.save()
-
-        # create question that isn't in the current week
-        old_question = Question.objects.create(
-            text="Old question",
-            queue=self.queue,
-            asked_by=student,
-            responded_to_by=ta,
-            time_response_started=yesterday - timezone.timedelta(weeks=2),
-            time_responded_to=yesterday - timezone.timedelta(weeks=1),
-            status=Question.STATUS_ANSWERED,
-        )
-        old_question.time_asked = yesterday - timezone.timedelta(weeks=2)
-        old_question.save()
-
-        # create an active question, won't be included
-        active = Question.objects.create(
-            text="active question",
-            queue=self.queue,
-            asked_by=student,
-            responded_to_by=ta,
-            time_response_started=yesterday,
-            time_responded_to=yesterday,
-            status=Question.STATUS_ACTIVE,
-        )
-        active.time_asked = yesterday
-        active.save()
-
-    def test_num_questions_ans_computation(self):
-        call_command("queue_weekly_stat")
-        expected = self.num_questions_answered
-
-        yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
-        last_sunday = yesterday - timezone.timedelta(days=(yesterday.weekday() + 1) % 7)
-        actual = QueueStatistic.objects.get(
-            queue=self.queue, metric=QueueStatistic.METRIC_NUM_ANSWERED, date=last_sunday
-        ).value
-
-        self.assertEqual(expected, actual)
-
-        call_command("queue_weekly_stat", "--hist")
-
-        expected_old = 1
-        actual_old = QueueStatistic.objects.get(
-            queue=self.queue,
-            metric=QueueStatistic.METRIC_NUM_ANSWERED,
-            date=last_sunday - timezone.timedelta(weeks=1),
-        ).value
-
-        self.assertEqual(expected_old, actual_old)
-
-
-class NumberStudentsHelpedQueueTestCase(TestCase):
-    def setUp(self):
-        semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
-        course = Course.objects.create(
-            course_code="000", department="TEST", course_title="Title", semester=semester
-        )
-        self.queue = Queue.objects.create(name="Queue", course=course)
-        ta = User.objects.create_user("ta", "ta@a.com", "ta")
-        student1 = User.objects.create_user("student1", "student1@a.com", "student1")
-        student2 = User.objects.create_user("student2", "student2@a.com", "student2")
-        student3 = User.objects.create_user("student3", "student3@a.com", "student3")
-
-        yesterday = timezone.localtime() - timezone.timedelta(days=1)
-        students = [student1, student2, student3]
-        self.number_helped = 2
-
-        for i in range(self.number_helped):
-            question = Question.objects.create(
-                text=f"Question {i}",
-                queue=self.queue,
-                asked_by=students[i],
-                responded_to_by=ta,
-                time_response_started=yesterday - timezone.timedelta(seconds=10),
-                time_responded_to=yesterday,
-                status=Question.STATUS_ANSWERED,
-            )
-            question.time_asked = yesterday - timezone.timedelta(seconds=20)
-            question.save()
-
-        # create question that isn't in the current week
-        old_question = Question.objects.create(
-            text="Old question",
-            queue=self.queue,
-            asked_by=student3,
-            responded_to_by=ta,
-            time_response_started=yesterday - timezone.timedelta(weeks=2),
-            time_responded_to=yesterday - timezone.timedelta(weeks=1),
-            status=Question.STATUS_ANSWERED,
-        )
-        old_question.time_asked = yesterday - timezone.timedelta(weeks=2)
-        old_question.save()
-
-        # create an active question, won't be included
-        active = Question.objects.create(
-            text="active question",
-            queue=self.queue,
-            asked_by=student3,
-            responded_to_by=ta,
-            time_response_started=yesterday,
-            time_responded_to=yesterday,
-            status=Question.STATUS_ACTIVE,
-        )
-        active.time_asked = yesterday
-        active.save()
-
-    def test_num_students_helped_computation(self):
-        call_command("queue_weekly_stat")
-        expected = self.number_helped
-
-        yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
-        last_sunday = yesterday - timezone.timedelta(days=(yesterday.weekday() + 1) % 7)
-        actual = QueueStatistic.objects.get(
-            queue=self.queue, metric=QueueStatistic.METRIC_STUDENTS_HELPED, date=last_sunday
-        ).value
-
-        self.assertEqual(expected, actual)
-
-        call_command("queue_weekly_stat", "--hist")
-        expected = 1
-        actual = QueueStatistic.objects.get(
-            queue=self.queue,
-            metric=QueueStatistic.METRIC_STUDENTS_HELPED,
-            date=last_sunday - timezone.timedelta(weeks=1),
-        ).value
 
 
 class QuestionsPerTAQueueHeatmapTestCase(TestCase):
@@ -647,95 +643,6 @@ class QuestionsPerTAQueueHeatmapTestCase(TestCase):
             hour=self.older_time_asked.hour,
         ).value
         self.assertEqual(expected_two_days_ago_8, actual_two_days_ago_8)
-
-
-class AverageQueueWaitTimeByDateTestCase(TestCase):
-    def setUp(self):
-        semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
-        course = Course.objects.create(
-            course_code="000", department="TEST", course_title="Title", semester=semester
-        )
-        self.queue = Queue.objects.create(name="Queue", course=course)
-        ta = User.objects.create_user("ta", "ta@a.com", "ta")
-        student = User.objects.create_user("student", "student@a.com", "student")
-
-        yesterday = timezone.localtime() - timezone.timedelta(days=1)
-
-        # this command computes avg wait time yesterday
-        self.wait_times = [100, 200, 300, 400]
-        for i in range(len(self.wait_times)):
-            # test all varieties of statuses
-            q1 = Question.objects.create(
-                text=f"Question {i}",
-                queue=self.queue,
-                asked_by=student,
-                responded_to_by=ta,
-                time_response_started=yesterday + timezone.timedelta(seconds=self.wait_times[i]),
-                status=Question.STATUS_ACTIVE,
-            )
-            q1.time_asked = yesterday
-            q1.save()
-
-            q2 = Question.objects.create(
-                text=f"Question {i + len(self.wait_times)}",
-                queue=self.queue,
-                asked_by=student,
-                responded_to_by=ta,
-                time_response_started=yesterday
-                + timezone.timedelta(seconds=self.wait_times[i] * 2),
-                time_responded_to=yesterday + timezone.timedelta(seconds=1000),
-                status=Question.STATUS_ANSWERED,
-            )
-            q2.time_asked = yesterday
-            q2.save()
-
-            q3 = Question.objects.create(
-                text=f"Question {i + 2 * len(self.wait_times)}",
-                queue=self.queue,
-                asked_by=student,
-                responded_to_by=ta,
-                time_response_started=yesterday
-                + timezone.timedelta(seconds=self.wait_times[i] * 3),
-                time_responded_to=yesterday + timezone.timedelta(seconds=self.wait_times[i] * 3),
-                status=Question.STATUS_REJECTED,
-            )
-            q3.time_asked = yesterday
-            q3.save()
-
-        # create question that wasn't yesterday
-        self.old_time_wait = 789
-        q4 = Question.objects.create(
-            text="Old question",
-            queue=self.queue,
-            asked_by=student,
-            responded_to_by=ta,
-            time_response_started=yesterday
-            - timezone.timedelta(days=2, seconds=-self.old_time_wait),
-            status=Question.STATUS_ACTIVE,
-        )
-        q4.time_asked = yesterday - timezone.timedelta(days=2)
-        q4.save()
-
-    def test_wait_time_days_computation(self):
-        call_command("wait_time_days")
-        expected = sum(self.wait_times) * 6 / (len(self.wait_times) * 3)
-
-        yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
-        actual = QueueStatistic.objects.get(
-            queue=self.queue, metric=QueueStatistic.METRIC_LIST_WAIT_TIME_DAYS, date=yesterday
-        ).value
-
-        self.assertEqual(expected, actual)
-
-        call_command("wait_time_days", "--hist")
-        expected_old = self.old_time_wait
-        actual_old = QueueStatistic.objects.get(
-            queue=self.queue,
-            metric=QueueStatistic.METRIC_LIST_WAIT_TIME_DAYS,
-            date=yesterday - timezone.timedelta(days=2),
-        ).value
-
-        self.assertEqual(expected_old, actual_old)
 
 
 class ArchiveCourseTestCase(TestCase):

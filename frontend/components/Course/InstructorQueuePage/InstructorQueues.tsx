@@ -1,16 +1,13 @@
 import React, { MutableRefObject, useState, useMemo, useEffect } from "react";
-import {
-    Grid,
-    Segment,
-    Icon,
-    Message,
-    Label,
-    Menu,
-    Button,
-} from "semantic-ui-react";
+import { Grid, Icon, Message, Menu, Button } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Queue from "./Queue";
-import { Queue as QueueType, QuestionMap, Tag } from "../../../types";
+import {
+    Queue as QueueType,
+    QuestionMap,
+    Tag,
+    NotificationProps,
+} from "../../../types";
 import { QueueMenuItem } from "./QueueMenuItem";
 
 interface InstructorQueuesProps {
@@ -22,7 +19,9 @@ interface InstructorQueuesProps {
     mutate: mutateResourceListFunction<QueueType>;
     editFunc: (n: number) => void;
     createFunc: () => void;
-    play: MutableRefObject<() => void>;
+    play: NotificationProps;
+    notifs: boolean;
+    setNotifs: (boolean) => void;
     tags: Tag[];
 }
 const InstructorQueues = (props: InstructorQueuesProps) => {
@@ -35,6 +34,8 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
         mutate,
         editFunc,
         play,
+        notifs,
+        setNotifs,
         tags,
         suggestedQueueId,
     } = props;
@@ -110,7 +111,8 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
                             leader={leader}
                             mutate={mutate}
                             editFunc={() => editFunc(currQueue.id)}
-                            play={play}
+                            notifs={notifs}
+                            setNotifs={setNotifs}
                             tags={tags}
                         />
                     </Grid.Column>
