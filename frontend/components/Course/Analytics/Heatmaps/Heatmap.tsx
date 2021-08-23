@@ -10,18 +10,23 @@ interface HeatmapProps {
 // Dynamic import because this library can only run on the browser and causes error when importing server side
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const toDisplayHour = (hour: string) => {
-    const hourNum = Number(hour);
-    if (hourNum > 12) {
-        return `${hourNum - 12} PM`;
+const toDisplayHour = (hourString: string) => {
+    const hourDecimal = Number(hourString);
+    const hour = Math.trunc(hourDecimal);
+    const minutes = (hourDecimal % 1) * 60;
+
+    const minuteDisplay = minutes !== 0 ? `:${minutes}` : "";
+
+    if (hour > 12) {
+        return `${hour - 12}${minuteDisplay} PM`;
     }
-    if (hourNum === 0) {
-        return "12 AM";
+    if (hour === 0) {
+        return `12${minuteDisplay} AM`;
     }
-    if (hourNum === 12) {
-        return "12 PM";
+    if (hour === 12) {
+        return `12${minuteDisplay} PM`;
     }
-    return `${hourNum} AM`;
+    return `${hour}${minuteDisplay} AM`;
 };
 
 export default function Heatmap({ series, chartTitle }: HeatmapProps) {

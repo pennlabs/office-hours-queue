@@ -6,7 +6,7 @@ const positiveMod = (n: number, m: number) => ((n % m) + m) % m;
 
 const utcToLocal = (utcDay: DayOfWeek, utcHour: number, currentDate: Date) => {
     // getTimezoneOffset() is positive if the local time zone is behind UTC. For example, for UTC+10, -600 will be returned.
-    const hourOffset = Math.floor(-currentDate.getTimezoneOffset() / 60);
+    const hourOffset = -currentDate.getTimezoneOffset() / 60;
     const dayOffset = Math.floor((utcHour + hourOffset) / 24);
 
     const localHour = positiveMod(utcHour + hourOffset, 24);
