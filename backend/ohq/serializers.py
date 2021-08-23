@@ -129,6 +129,9 @@ class MembershipInviteSerializer(CourseRouteMixin):
         model = MembershipInvite
         fields = ("id", "email", "kind", "time_created")
 
+    def validate_email(self, value):
+        return value.lower()
+
 
 class QueueSerializer(CourseRouteMixin):
     questions_active = serializers.IntegerField(default=0, read_only=True)
@@ -333,7 +336,7 @@ class UserPrivateSerializer(serializers.ModelSerializer):
 
     profile = ProfileSerializer(read_only=False, required=False)
     membership_set = MembershipPrivateSerializer(many=True, read_only=True)
-    groups = serializers.StringRelatedField(many=True)
+    groups = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = get_user_model()

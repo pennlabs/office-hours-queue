@@ -9,13 +9,21 @@ import QueueSettings from "./QueueSettings/QueueSettings";
 import CreateQueue from "./CreateQueue/CreateQueue";
 import { AuthUserContext } from "../../../context/auth";
 import { useQueues, useStaff } from "../../../hooks/data-fetching/course";
-import { Announcement, Queue, QuestionMap, Tag } from "../../../types";
+import {
+    Announcement,
+    Queue,
+    QuestionMap,
+    Tag,
+    NotificationProps,
+} from "../../../types";
 
 interface InstructorQueuePageProps {
     courseId: number;
     queues: Queue[];
     questionmap: QuestionMap;
-    play: MutableRefObject<() => void>;
+    play: NotificationProps;
+    notifs: boolean;
+    setNotifs: (boolean) => void;
     tags: Tag[];
     announcements: Announcement[];
 }
@@ -48,6 +56,8 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
         queues: rawQueues,
         questionmap,
         play,
+        notifs,
+        setNotifs,
         tags,
         announcements,
     } = props;
@@ -112,6 +122,8 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
                         mutate={mutate}
                         leader={leader}
                         play={play}
+                        notifs={notifs}
+                        setNotifs={setNotifs}
                         tags={tags}
                     />
                 )}

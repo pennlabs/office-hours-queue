@@ -281,15 +281,13 @@ class QueueStatistic(models.Model):
     METRIC_NUM_ANSWERED = "NUM_ANSWERED"
     METRIC_STUDENTS_HELPED = "STUDENTS_HELPED"
     METRIC_AVG_TIME_HELPING = "AVG_TIME_HELPING"
-    METRIC_LIST_WAIT_TIME_DAYS = "LIST_WAIT_TIME_DAYS"
     METRIC_CHOICES = [
         (METRIC_HEATMAP_WAIT, "Average wait-time heatmap"),
         (METRIC_HEATMAP_QUESTIONS_PER_TA, "Questions per TA heatmap"),
-        (METRIC_AVG_WAIT, "Average wait-time"),
-        (METRIC_NUM_ANSWERED, "Number of questions answered per week"),
-        (METRIC_STUDENTS_HELPED, "Students helped per week"),
+        (METRIC_AVG_WAIT, "Average wait-time per day"),
+        (METRIC_NUM_ANSWERED, "Number of questions answered per day"),
+        (METRIC_STUDENTS_HELPED, "Students helped per day"),
         (METRIC_AVG_TIME_HELPING, "Average time helping students"),
-        (METRIC_LIST_WAIT_TIME_DAYS, "List of wait times per day"),
     ]
 
     # for specific days during the week - used for heatmap and graphs where day is x-axis
@@ -318,7 +316,7 @@ class QueueStatistic(models.Model):
     hour = models.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(23)], blank=True, null=True
     )
-    date = models.DateField(blank=True, null=True)  # for weekly stats, set to the Sunday of week
+    date = models.DateField(blank=True, null=True)
 
     class Meta:
         constraints = [
@@ -357,7 +355,7 @@ class Announcement(models.Model):
     TA announcement within a class
     """
 
-    content = models.CharField(max_length=255)
+    content = models.TextField()
     author = models.ForeignKey(User, related_name="announcements", on_delete=models.CASCADE)
     time_updated = models.DateTimeField(auto_now=True)
     course = models.ForeignKey(Course, related_name="announcements", on_delete=models.CASCADE)
