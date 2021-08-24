@@ -1,5 +1,6 @@
 import dynamic from "next/dynamic";
 import React from "react";
+import { positiveMod } from "../../../../hooks/data-fetching/analytics";
 import { HeatmapSeries } from "../../../../types";
 
 interface HeatmapProps {
@@ -10,21 +11,33 @@ interface HeatmapProps {
 // Dynamic import because this library can only run on the browser and causes error when importing server side
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const toDisplayHour = (hour: string) => {
-    const hourNum = Number(hour);
-    if (hourNum > 12) {
-        return `${hourNum - 12} PM`;
+const toDisplayHour = (isPositiveOffset: boolean, hourString: string) => {
+    const hourDecimal = Number(hourString);
+    let hour = Math.trunc(hourDecimal);
+    let minutes = (hourDecimal % 1) * 60;
+    if (minutes !== 0 && !isPositiveOffset) {
+        minutes = 60 - minutes;
+        hour = positiveMod(hour - 1, 24);
     }
-    if (hourNum === 0) {
-        return "12 AM";
+
+    const minuteDisplay = minutes !== 0 ? `:${minutes}` : "";
+
+    if (hour > 12) {
+        return `${hour - 12}${minuteDisplay} PM`;
     }
-    if (hourNum === 12) {
-        return "12 PM";
+    if (hour === 0) {
+        return `12${minuteDisplay} AM`;
     }
-    return `${hourNum} AM`;
+    if (hour === 12) {
+        return `12${minuteDisplay} PM`;
+    }
+    return `${hour}${minuteDisplay} AM`;
 };
 
 export default function Heatmap({ series, chartTitle }: HeatmapProps) {
+    const timeZoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const isPositiveUtcOffset = -new Date().getTimezoneOffset() > 0;
+
     const options = {
         dataLabels: {
             enabled: false,
@@ -56,11 +69,11 @@ export default function Heatmap({ series, chartTitle }: HeatmapProps) {
         xaxis: {
             type: "category",
             labels: {
-                formatter: toDisplayHour,
+                formatter: (hour: string) =>
+                    toDisplayHour(isPositiveUtcOffset, hour),
             },
             title: {
-                text: "Hour (UTC)",
-                offsetY: 10,
+                text: `Hour (${timeZoneName})`,
             },
         },
         responsive: [
