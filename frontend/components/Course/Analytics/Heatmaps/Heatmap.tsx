@@ -1,5 +1,6 @@
 import dynamic from "next/dynamic";
 import React from "react";
+import { positiveMod } from "../../../../hooks/data-fetching/analytics";
 import { HeatmapSeries } from "../../../../types";
 
 interface HeatmapProps {
@@ -10,10 +11,14 @@ interface HeatmapProps {
 // Dynamic import because this library can only run on the browser and causes error when importing server side
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const toDisplayHour = (hourString: string) => {
+const toDisplayHour = (isPositiveOffset: boolean, hourString: string) => {
     const hourDecimal = Number(hourString);
-    const hour = Math.trunc(hourDecimal);
-    const minutes = (hourDecimal % 1) * 60;
+    let hour = Math.trunc(hourDecimal);
+    let minutes = (hourDecimal % 1) * 60;
+    if (minutes !== 0 && !isPositiveOffset) {
+        minutes = 60 - minutes;
+        hour = positiveMod(hour - 1, 24);
+    }
 
     const minuteDisplay = minutes !== 0 ? `:${minutes}` : "";
 
@@ -31,6 +36,7 @@ const toDisplayHour = (hourString: string) => {
 
 export default function Heatmap({ series, chartTitle }: HeatmapProps) {
     const timeZoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const isPositiveUtcOffset = -new Date().getTimezoneOffset() > 0;
 
     const options = {
         dataLabels: {
@@ -63,7 +69,8 @@ export default function Heatmap({ series, chartTitle }: HeatmapProps) {
         xaxis: {
             type: "category",
             labels: {
-                formatter: toDisplayHour,
+                formatter: (hour: string) =>
+                    toDisplayHour(isPositiveUtcOffset, hour),
             },
             title: {
                 text: `Hour (${timeZoneName})`,

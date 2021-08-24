@@ -2,13 +2,10 @@ import { useResource } from "@pennlabs/rest-hooks";
 import { HeatmapSeries, HeatmapData, Metric, DayOfWeek } from "../../types";
 import { logException } from "../../utils/sentry";
 
-const positiveMod = (n: number, m: number) => ((n % m) + m) % m;
+export const positiveMod = (n: number, m: number) => ((n % m) + m) % m;
 
-const utcToLocal = (utcDay: DayOfWeek, utcHour: number, currentDate: Date) => {
-    // getTimezoneOffset() is positive if the local time zone is behind UTC. For example, for UTC+10, -600 will be returned.
-    const hourOffset = -currentDate.getTimezoneOffset() / 60;
+const utcToLocal = (utcDay: DayOfWeek, utcHour: number, hourOffset: number) => {
     const dayOffset = Math.floor((utcHour + hourOffset) / 24);
-
     const localHour = positiveMod(utcHour + hourOffset, 24);
     const localDay = positiveMod(utcDay - 1 + dayOffset, 7) + 1;
     return { localDay, localHour };
@@ -36,14 +33,15 @@ export const useHeatmapData = (
                 data: [],
             });
         }
-        const currentDate = new Date();
+        // getTimezoneOffset() is positive if the local time zone is behind UTC. For example, for UTC+10, -600 will be returned.
+        const hourOffset = -new Date().getTimezoneOffset() / 60;
 
         const seriesDataMap = data.reduce((acc, { day, hour, value }) => {
             if (acc.has(day)) {
                 const { localDay, localHour } = utcToLocal(
                     day,
                     hour,
-                    currentDate
+                    hourOffset
                 );
 
                 acc.get(localDay)!.data.push({
