@@ -33,7 +33,7 @@ argparse@^2.0.1:
   resolved "https://registry.yarnpkg.com/argparse/-/argparse-2.0.1.tgz#246f50f3ca78a3240f6c997e8a9bd1eac49e4b38"
   integrity sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==
 
-cdkactions-cli@^0.2.1:
+cdkactions-cli@^0.2.3:
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/cdkactions-cli/-/cdkactions-cli-0.2.3.tgz#2393682b37ab0b04c6964160b393e8d71b08118f"
   integrity sha512-qYPbzuQ1M5gQGa8NRnaWwm3iXmdqMoiHR7YTh6oYROpfBGER7kwBBb6ydFlSwKK62hE0B++by43hbEBXlHvr8A==
@@ -45,7 +45,7 @@ cdkactions-cli@^0.2.1:
     yaml "^1.10.0"
     yargs "^16.2.0"
 
-cdkactions@^0.2.0, cdkactions@^0.2.1, cdkactions@^0.2.3:
+cdkactions@^0.2.0, cdkactions@^0.2.3:
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/cdkactions/-/cdkactions-0.2.3.tgz#aa27bf720962376d54f8ef95cdfb0ab46458b966"
   integrity sha512-/DYQ2qsT6fzgZB+cmQjtPqR4aAWCqAytWbFpJK+iJLQ4jQrl6l4uMf01TLiWY3mAILS0YGlwPcoBbGvq9Jnz5g==
