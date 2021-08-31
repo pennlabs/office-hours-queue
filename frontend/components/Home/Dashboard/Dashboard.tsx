@@ -9,7 +9,7 @@ import { AuthUserContext } from "../../../context/auth";
 import { Kind, UserMembership } from "../../../types";
 import { useMemberships } from "../../../hooks/data-fetching/dashboard";
 import { isLeadershipRole } from "../../../utils/enums";
-import { ANALYTICS_SURVEY_SHOWN_SPRING_2021_END_TOKEN } from "../../../constants";
+import { FALL_2021_TRANSITION_MESSAGE_TOKEN } from "../../../constants";
 
 // TODO: try to readd new user stuff, rip out loading stuff
 const Dashboard = () => {
@@ -19,9 +19,7 @@ const Dashboard = () => {
     }
     const [messageDisp, setMessageDisp] = useState(false);
     useEffect(() => {
-        const state = localStorage.getItem(
-            ANALYTICS_SURVEY_SHOWN_SPRING_2021_END_TOKEN
-        );
+        const state = localStorage.getItem(FALL_2021_TRANSITION_MESSAGE_TOKEN);
         setMessageDisp(state !== "true");
     }, []);
 
@@ -75,26 +73,20 @@ const Dashboard = () => {
                                     onDismiss={() => {
                                         setMessageDisp(false);
                                         localStorage.setItem(
-                                            ANALYTICS_SURVEY_SHOWN_SPRING_2021_END_TOKEN,
+                                            FALL_2021_TRANSITION_MESSAGE_TOKEN,
                                             "true"
                                         );
                                     }}
                                     size="mini"
-                                    header="The semester is ending..."
+                                    header="Welcome back!"
                                     content={
                                         <>
-                                            and we want to hear from you! Help
-                                            us improve OHQ by filling
+                                            Spring and Summer 2021 courses have
+                                            been archived in preparation for
+                                            Fall 2021.
                                             <br />
-                                            out our{" "}
-                                            <a
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                href="https://airtable.com/shrFrWqkc6vVNziIa"
-                                            >
-                                                end-of-semester survey
-                                            </a>{" "}
-                                            today!
+                                            Please contact us at contact@ohq.io
+                                            if this is an error.
                                         </>
                                     }
                                 />
