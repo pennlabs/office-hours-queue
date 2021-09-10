@@ -2,7 +2,7 @@ import { useResource } from "@pennlabs/rest-hooks";
 import { HeatmapSeries, HeatmapData, Metric, DayOfWeek } from "../../types";
 import { logException } from "../../utils/sentry";
 
-export const positiveMod = (n: number, m: number) => ((n % m) + m) % m;
+const positiveMod = (n: number, m: number) => ((n % m) + m) % m;
 
 const utcToLocal = (utcDay: DayOfWeek, utcHour: number, hourOffset: number) => {
     const dayOffset = Math.floor((utcHour + hourOffset) / 24);

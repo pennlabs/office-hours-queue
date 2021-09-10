@@ -1,6 +1,5 @@
 import dynamic from "next/dynamic";
 import React from "react";
-import { positiveMod } from "../../../../hooks/data-fetching/analytics";
 import { HeatmapSeries } from "../../../../types";
 
 interface HeatmapProps {
@@ -11,32 +10,20 @@ interface HeatmapProps {
 // Dynamic import because this library can only run on the browser and causes error when importing server side
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const toDisplayHour = (isPositiveOffset: boolean, hourString: string) => {
+const toDisplayHour = (hourString: string) => {
     const hourDecimal = Number(hourString);
-    let hour = Math.trunc(hourDecimal);
-    let minutes = (hourDecimal % 1) * 60;
-    if (minutes !== 0 && !isPositiveOffset) {
-        minutes = 60 - minutes;
-        hour = positiveMod(hour - 1, 24);
-    }
+    const hour = Math.trunc(hourDecimal);
+    const minutes = (hourDecimal % 1) * 60;
 
+    const hourDisplay = hour % 12 !== 0 ? hour % 12 : 12;
     const minuteDisplay = minutes !== 0 ? `:${minutes}` : "";
+    const amOrPmDisplay = hour < 12 ? "AM" : "PM";
 
-    if (hour > 12) {
-        return `${hour - 12}${minuteDisplay} PM`;
-    }
-    if (hour === 0) {
-        return `12${minuteDisplay} AM`;
-    }
-    if (hour === 12) {
-        return `12${minuteDisplay} PM`;
-    }
-    return `${hour}${minuteDisplay} AM`;
+    return `${hourDisplay}${minuteDisplay} ${amOrPmDisplay}`;
 };
 
 export default function Heatmap({ series, chartTitle }: HeatmapProps) {
     const timeZoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const isPositiveUtcOffset = -new Date().getTimezoneOffset() > 0;
 
     const options = {
         dataLabels: {
@@ -69,8 +56,7 @@ export default function Heatmap({ series, chartTitle }: HeatmapProps) {
         xaxis: {
             type: "category",
             labels: {
-                formatter: (hour: string) =>
-                    toDisplayHour(isPositiveUtcOffset, hour),
+                formatter: toDisplayHour,
             },
             title: {
                 text: `Hour (${timeZoneName})`,
