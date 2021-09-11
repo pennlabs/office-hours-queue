@@ -37,7 +37,7 @@ export interface Membership {
 
 export interface MembershipInvite {
     id: number;
-    kind: string;
+    kind: Kind;
     email: string;
 }
 

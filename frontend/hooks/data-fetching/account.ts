@@ -1,8 +1,8 @@
-import { parsePhoneNumberFromString } from "libphonenumber-js/max";
 import _ from "lodash";
 import { useResource } from "@pennlabs/rest-hooks";
 import { User } from "../../types";
 import { doApiRequest } from "../../utils/fetch";
+import { logException } from "../../utils/sentry";
 
 export function useAccountInfo(initialUser?: User) {
     const { data, error, isValidating, mutate } = useResource(
@@ -46,22 +46,11 @@ export async function resendSMSVerification() {
 
 export async function updateUser(payload: Partial<User>) {
     const processedPayload: Partial<User> = _.cloneDeep(payload);
-    if (processedPayload.profile) {
-        if (!processedPayload.profile.smsNotificationsEnabled) {
-            delete processedPayload.profile.phoneNumber;
-        } else if (processedPayload.profile.phoneNumber) {
-            // TODO: Better error handling
-            const parsedNumber = parsePhoneNumberFromString(
-                String(processedPayload.profile.phoneNumber),
-                "US"
-            )?.number;
-
-            if (!parsedNumber) {
-                throw new Error("phone parsing failed");
-            }
-
-            processedPayload.profile.phoneNumber = parsedNumber as string;
-        }
+    if (
+        processedPayload.profile &&
+        !processedPayload.profile.smsNotificationsEnabled
+    ) {
+        delete processedPayload.profile.phoneNumber;
     }
 
     const res = await doApiRequest("/api/accounts/me/", {
@@ -70,6 +59,8 @@ export async function updateUser(payload: Partial<User>) {
     });
 
     if (!res.ok) {
-        throw new Error("update user failed");
+        const error = await res.json();
+        logException(error);
+        throw new Error("Update user failed");
     }
 }
