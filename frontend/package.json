@@ -42,6 +42,7 @@
         "url-loader": "^4.1.0"
     },
     "devDependencies": {
+        "@types/lodash": "^4.14.172",
         "@types/node": "^14.0.23",
         "@types/react": "^16.9.43",
         "@types/react-select": "^3.1.2",
@@ -70,6 +71,9 @@
         }
     },
     "lint-staged": {
-        "**/*.{ts,tsx,css}": ["prettier --write", "eslint --fix"]
+        "**/*.{ts,tsx,css}": [
+            "prettier --write",
+            "eslint --fix"
+        ]
     }
 }
