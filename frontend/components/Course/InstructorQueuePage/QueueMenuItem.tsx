@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, MutableRefObject } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Menu, Label } from "semantic-ui-react";
 import { useQuestions } from "../../../hooks/data-fetching/course";
 import {

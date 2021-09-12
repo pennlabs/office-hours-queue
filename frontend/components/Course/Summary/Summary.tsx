@@ -1,7 +1,7 @@
 // TODO: sort by time asked
 
 import React from "react";
-import { Segment, Grid, Table, Loader, Pagination } from "semantic-ui-react";
+import { Segment, Grid, Table, Pagination } from "semantic-ui-react";
 import {
     useQuestions,
     QuestionListResult,
@@ -24,13 +24,7 @@ const Summary = (props: SummaryProps) => {
 
     const getFullName = (user: User) => `${user.firstName} ${user.lastName}`;
 
-    const {
-        data,
-        isValidating: loading,
-        updateFilter,
-        filters,
-        downloadUrl,
-    } = useQuestions(
+    const { data, updateFilter, filters, downloadUrl } = useQuestions(
         // course is non-null because initial data is provided and key never changes
         course!.id,
         questionListResult

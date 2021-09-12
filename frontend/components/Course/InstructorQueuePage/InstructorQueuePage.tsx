@@ -1,4 +1,4 @@
-import React, { useContext, useState, MutableRefObject } from "react";
+import React, { useContext, useState } from "react";
 import { Grid, Message } from "semantic-ui-react";
 import { WSContext } from "@pennlabs/rest-live-hooks";
 import Alert from "@material-ui/lab/Alert";
@@ -7,7 +7,7 @@ import InstructorQueues from "./InstructorQueues";
 import Announcements from "../Announcements";
 import QueueSettings from "./QueueSettings/QueueSettings";
 import CreateQueue from "./CreateQueue/CreateQueue";
-import { AuthUserContext } from "../../../context/auth";
+import { AuthUserContext } from "../../../utils/auth";
 import { useQueues, useStaff } from "../../../hooks/data-fetching/course";
 import {
     Announcement,

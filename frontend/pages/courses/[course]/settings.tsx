@@ -1,11 +1,14 @@
 import React from "react";
 import Head from "next/head";
 import { Grid } from "semantic-ui-react";
-import { NextPageContext } from "next";
+import { GetServerSidePropsContext } from "next";
 import CourseWrapper from "../../../components/Course/CourseWrapper";
-import { withAuth } from "../../../context/auth";
+import {
+    withAuth,
+    withAuthComponent,
+    withProtectPage,
+} from "../../../utils/auth";
 import staffCheck from "../../../utils/staffcheck";
-import { withProtectPage } from "../../../utils/protectpage";
 import { doMultipleSuccessRequests } from "../../../utils/fetch";
 import { isLeadershipRole } from "../../../utils/enums";
 import CourseSettings from "../../../components/Course/CourseSettings/CourseSettings";
@@ -36,9 +39,7 @@ const SettingsPage = (props: SettingsPageProps) => {
     );
 };
 
-SettingsPage.getInitialProps = async (
-    context: NextPageContext
-): Promise<SettingsPageProps> => {
+async function getServerSidePropsInner(context: GetServerSidePropsContext) {
     const { query, req } = context;
     const data = {
         headers: req ? { cookie: req.headers.cookie } : undefined,
@@ -65,17 +66,28 @@ SettingsPage.getInitialProps = async (
             );
         }
     } else {
-        nextRedirect(context, () => true, "/404");
-        throw new Error("Next should redirect: unreachable");
+        return {
+            redirect: {
+                destination: "/404",
+                permanent: false,
+            },
+        };
     }
 
     return {
-        course,
-        leadership: leadership.filter((m) => isLeadershipRole(m.kind)),
-        tags,
+        props: {
+            course,
+            leadership: leadership.filter((m) => isLeadershipRole(m.kind)),
+            tags,
+        },
     };
-};
+}
 
-export default withProtectPage(withAuth(SettingsPage), (user, ctx) => {
-    return staffCheck(user, ctx);
-});
+export const getServerSideProps = withProtectPage(
+    withAuth(getServerSidePropsInner),
+    (user, ctx) => {
+        return staffCheck(user, ctx);
+    }
+);
+
+export default withAuthComponent(SettingsPage);

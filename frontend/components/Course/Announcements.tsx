@@ -1,9 +1,4 @@
-import React, {
-    useState,
-    useEffect,
-    useContext,
-    MutableRefObject,
-} from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
     Accordion,
     Dropdown,
@@ -15,7 +10,7 @@ import {
 } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import { Announcement, BaseUser, NotificationProps } from "../../types";
-import { AuthUserContext } from "../../context/auth";
+import { AuthUserContext } from "../../utils/auth";
 import {
     useAnnouncements,
     createAnnouncement,
