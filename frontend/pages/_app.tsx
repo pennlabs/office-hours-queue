@@ -13,7 +13,7 @@ const MyApp = ({ Component, pageProps }) => {
         } else {
             Notification.requestPermission();
         }
-    });
+    }, []);
     return (
         <SWRConfig
             value={{

@@ -10,21 +10,21 @@ interface HeatmapProps {
 // Dynamic import because this library can only run on the browser and causes error when importing server side
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const toDisplayHour = (hour: string) => {
-    const hourNum = Number(hour);
-    if (hourNum > 12) {
-        return `${hourNum - 12} PM`;
-    }
-    if (hourNum === 0) {
-        return "12 AM";
-    }
-    if (hourNum === 12) {
-        return "12 PM";
-    }
-    return `${hourNum} AM`;
+const toDisplayHour = (hourString: string) => {
+    const hourDecimal = Number(hourString);
+    const hour = Math.trunc(hourDecimal);
+    const minutes = (hourDecimal % 1) * 60;
+
+    const hourDisplay = hour % 12 !== 0 ? hour % 12 : 12;
+    const minuteDisplay = minutes !== 0 ? `:${minutes}` : "";
+    const amOrPmDisplay = hour < 12 ? "AM" : "PM";
+
+    return `${hourDisplay}${minuteDisplay} ${amOrPmDisplay}`;
 };
 
 export default function Heatmap({ series, chartTitle }: HeatmapProps) {
+    const timeZoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
     const options = {
         dataLabels: {
             enabled: false,
@@ -59,8 +59,7 @@ export default function Heatmap({ series, chartTitle }: HeatmapProps) {
                 formatter: toDisplayHour,
             },
             title: {
-                text: "Hour (UTC)",
-                offsetY: 10,
+                text: `Hour (${timeZoneName})`,
             },
         },
         responsive: [

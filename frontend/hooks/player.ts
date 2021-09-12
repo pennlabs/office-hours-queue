@@ -18,11 +18,19 @@ export function usePlayer(
         }
     }, []);
 
-    const pushNotifcation = (message) =>
-        new Notification("Alert", {
-            body: message,
-            icon: "../favicon.ico",
-        });
+    const pushNotifcation = (message) => {
+        if ("Notification" in window) {
+            try {
+                /* eslint-disable-next-line */
+                new Notification("Alert", {
+                    body: message,
+                    icon: "../favicon.ico",
+                });
+            } catch (e) {
+                console.log("Notifications API not supported on this device");
+            }
+        }
+    };
 
     const playFunc = (message: string) => {
         if (notifs) {
