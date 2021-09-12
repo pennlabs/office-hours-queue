@@ -204,7 +204,7 @@ class QuestionSerializer(QueueRouteMixin):
             "tags",
             "note",
             "resolved_note",
-            "student_descriptor"
+            "student_descriptor",
         )
         read_only_fields = (
             "time_asked",
