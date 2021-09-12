@@ -160,7 +160,6 @@ class QuestionViewTestCase(TestCase):
             time_response_started=timezone.now() - timedelta(days=1),
             responded_to_by=self.ta,
             status=Question.STATUS_ANSWERED,
-            student_descriptor="In the back",
         )
         self.old_question.time_asked = timezone.now() - timedelta(days=1)
         self.old_question.save()

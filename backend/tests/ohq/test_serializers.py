@@ -226,7 +226,12 @@ class QuestionSerializerTestCase(TestCase):
         self.client.force_authenticate(user=self.student)
         self.client.patch(
             reverse("ohq:question-detail", args=[self.course.id, self.queue.id, self.question.id]),
-            {"text": text, "video_chat_url": url, "tags": [{"name": "Tag"}]},
+            {
+                "text": text,
+                "video_chat_url": url,
+                "tags": [{"name": "Tag"}],
+                "student_descriptor": "In the back",
+            },
         )
         self.question.refresh_from_db()
         self.assertEqual(text, self.question.text)
