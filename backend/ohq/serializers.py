@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
+from rest_live.signals import save_handler
 
 from ohq.models import (
     Announcement,
@@ -295,7 +296,7 @@ class QuestionSerializer(QueueRouteMixin):
             )
 
             for question in asked_questions:
-                question.save()
+                save_handler(sender=Question, instance=question, dispatch_uid=f"rest-live")
 
         return instance
 
