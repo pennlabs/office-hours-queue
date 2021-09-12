@@ -73,9 +73,9 @@ export interface BaseQueue {
 }
 
 export enum VideoChatSetting {
-    REQUIRED = "REQUIRED",
+    ENABLED = "ENABLED",
     OPTIONAL = "OPTIONAL",
-    NONE = "NONE",
+    DISABLED = "DISABLED",
 }
 
 export type Queue =
