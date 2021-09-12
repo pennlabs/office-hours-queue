@@ -1,7 +1,12 @@
 import React, { useState, useRef, useEffect, MutableRefObject } from "react";
 import { Menu, Label } from "semantic-ui-react";
 import { useQuestions } from "../../../hooks/data-fetching/course";
-import { Question, Queue, QuestionStatus } from "../../../types";
+import {
+    Question,
+    Queue,
+    QuestionStatus,
+    NotificationProps,
+} from "../../../types";
 
 interface QueueMenuItemProps {
     queue: Queue;
@@ -9,7 +14,7 @@ interface QueueMenuItemProps {
     initialQuestions?: Question[];
     active: boolean;
     setActiveQueue: (id: number) => void;
-    play: MutableRefObject<() => void>;
+    play: NotificationProps;
 }
 
 const QuestionNotifier = ({
@@ -17,12 +22,12 @@ const QuestionNotifier = ({
     play,
 }: {
     question: Question;
-    play: MutableRefObject<() => void>;
+    play: NotificationProps;
 }) => {
     const [resolved, setResolved] = useState(question.resolvedNote);
     useEffect(() => {
         if (!resolved && question.resolvedNote) {
-            play.current();
+            play.current("A question has been edited");
             setResolved(true);
         }
 
@@ -65,7 +70,7 @@ export const QueueMenuItem = (props: QueueMenuItemProps) => {
             latestAsked.current = new Date(
                 questions[questions.length - 1].timeAsked
             );
-            play.current();
+            play.current("A new question has been asked");
         }
         // questions is not stale because we check for deep equality
         // eslint-disable-next-line

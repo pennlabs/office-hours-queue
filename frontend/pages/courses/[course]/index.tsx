@@ -17,6 +17,7 @@ import {
     Membership,
     Question,
     QuestionMap,
+    NotificationProps,
 } from "../../../types";
 import InstructorQueuePage from "../../../components/Course/InstructorQueuePage/InstructorQueuePage";
 import StudentQueuePage from "../../../components/Course/StudentQueuePage/StudentQueuePage";
@@ -53,9 +54,12 @@ const QueuePage = (props: QueuePageProps) => {
                 <CourseWrapper
                     course={course}
                     leadership={leadership}
+                    notificationUI={true}
                     render={(
                         staff: boolean,
-                        play: MutableRefObject<() => void>
+                        play: NotificationProps,
+                        notifs: boolean,
+                        setNotifs: (boolean) => void
                     ) => {
                         return (
                             <div>
@@ -66,6 +70,8 @@ const QueuePage = (props: QueuePageProps) => {
                                         queues={queues}
                                         questionmap={questionmap}
                                         play={play}
+                                        notifs={notifs}
+                                        setNotifs={setNotifs}
                                         tags={tags}
                                     />
                                 )}
