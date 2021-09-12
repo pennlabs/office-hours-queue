@@ -3,7 +3,7 @@ import { Form, Button, Modal } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
-import { Queue } from "../../../../types";
+import { Queue, VideoChatSetting } from "../../../../types";
 import { logException } from "../../../../utils/sentry";
 
 // TODO: error check PATCH
@@ -17,6 +17,7 @@ interface QueueFormInput {
     name: string;
     description: string;
     queueId: number;
+    videoChatSetting: VideoChatSetting;
     rateLimitEnabled: boolean;
     rateLimitLength?: number;
     rateLimitQuestions?: number;
@@ -49,6 +50,7 @@ const QueueForm = (props: QueueFormProps) => {
         name: queue.name,
         description: queue.description,
         queueId: queue.id,
+        videoChatSetting: queue.videoChatSetting,
         rateLimitEnabled: queue.rateLimitEnabled,
         rateLimitLength: queue.rateLimitEnabled
             ? queue.rateLimitLength
@@ -91,7 +93,8 @@ const QueueForm = (props: QueueFormProps) => {
 
         let isSame =
             input.name === queue.name &&
-            input.description === queue.description;
+            input.description === queue.description &&
+            input.videoChatSetting === queue.videoChatSetting;
         if (input.rateLimitEnabled !== queue.rateLimitEnabled) {
             isSame = false;
         } else if (input.rateLimitEnabled && queue.rateLimitEnabled) {
@@ -131,6 +134,21 @@ const QueueForm = (props: QueueFormProps) => {
         setInput({ ...input });
         setDescCharCount(input.description.length);
         setNameCharCount(input.name.length);
+    };
+
+    const handleVideoChatInputChange = (e, { name }) => {
+        switch (name) {
+            case "videoChatRequired":
+                input.videoChatSetting = VideoChatSetting.REQUIRED;
+                break;
+            case "videoChatOptional":
+                input.videoChatSetting = VideoChatSetting.OPTIONAL;
+                break;
+            case "videoChatDisabled":
+                input.videoChatSetting = VideoChatSetting.DISABLED;
+                break;
+        }
+        setInput({ ...input });
     };
 
     const onSubmit = async () => {
@@ -254,6 +272,42 @@ const QueueForm = (props: QueueFormProps) => {
                             <label htmlFor="rate-length">question(s)</label>
                         </Form.Group>
                     )}
+
+                    <Form.Field required>
+                        <label htmlFor="video-radio">Video Chat</label>
+                        <Form.Group id="video-radio">
+                            <Form.Radio
+                                label="Require Link"
+                                checked={
+                                    input.videoChatSetting ===
+                                    VideoChatSetting.REQUIRED
+                                }
+                                name="videoChatRequired"
+                                disabled={loading}
+                                onChange={handleVideoChatInputChange}
+                            />
+                            <Form.Radio
+                                label="Allow Link"
+                                checked={
+                                    input.videoChatSetting ===
+                                    VideoChatSetting.OPTIONAL
+                                }
+                                name="videoChatOptional"
+                                disabled={loading}
+                                onChange={handleVideoChatInputChange}
+                            />
+                            <Form.Radio
+                                label="No Link"
+                                checked={
+                                    input.videoChatSetting ===
+                                    VideoChatSetting.DISABLED
+                                }
+                                name="videoChatDisabled"
+                                disabled={loading}
+                                onChange={handleVideoChatInputChange}
+                            />
+                        </Form.Group>
+                    </Form.Field>
 
                     <Button
                         color="blue"
