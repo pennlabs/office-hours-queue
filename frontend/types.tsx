@@ -10,8 +10,6 @@ export interface Course {
     semesterPretty: string;
     archived: boolean;
     inviteOnly: boolean;
-    videoChatEnabled: boolean;
-    requireVideoChatUrlOnQuestions: boolean;
     isMember: boolean;
 }
 
@@ -71,6 +69,13 @@ export interface BaseQueue {
     questionsActive: number;
     questionsAsked: number;
     staffActive: number;
+    videoChatSetting: VideoChatSetting;
+}
+
+export enum VideoChatSetting {
+    REQUIRED = "REQUIRED",
+    OPTIONAL = "OPTIONAL",
+    NONE = "NONE",
 }
 
 export type Queue =
