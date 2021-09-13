@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import unified from "unified";
-import parse from "remark-parse";
-import remark2react from "remark-react";
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import rehypeReact from "remark-rehype";
 
 import { Grid, Checkbox, Header, Segment } from "semantic-ui-react";
 import { diffLines } from "diff";
@@ -10,6 +10,8 @@ type mdLine = {
     content: string;
     color: string;
 };
+
+const processor = unified().use(remarkParse).use(rehypeReact);
 
 export default function Changelog() {
     const initial: mdLine = {
@@ -62,14 +64,7 @@ export default function Changelog() {
                                 padding: "1em",
                             }}
                         >
-                            <>
-                                {
-                                    unified()
-                                        .use(parse)
-                                        .use(remark2react)
-                                        .processSync(part.content).result
-                                }
-                            </>
+                            <>{processor.processSync(part.content)}</>
                         </div>
                     ))}
                 </>
@@ -78,12 +73,17 @@ export default function Changelog() {
             setDisplay(
                 <div style={{ display: "block", padding: "1em" }}>
                     <>
-                        {
-                            unified()
-                                .use(parse)
-                                .use(remark2react)
-                                .processSync(mdLine).result
-                        }
+                        {mdLine.map((part) => (
+                            <div
+                                style={{
+                                    backgroundColor: part.color,
+                                    display: "block",
+                                    padding: "1em",
+                                }}
+                            >
+                                <>{processor.processSync(part.content)}</>
+                            </div>
+                        ))}
                     </>
                 </div>
             );
