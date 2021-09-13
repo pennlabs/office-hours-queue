@@ -6,7 +6,7 @@ applications:
     image: pennlabs/office-hours-queue-backend
     secret: office-hours-queue
     cmd: ["/usr/local/bin/asgi-run"]
-    replicas: 8
+    replicas: 4
     ingress:
       hosts:
         - host: ohq.io
@@ -21,7 +21,7 @@ applications:
   - name: django-wsgi
     image: pennlabs/office-hours-queue-backend
     secret: office-hours-queue
-    replicas: 16
+    replicas: 8
     ingress:
       hosts:
         - host: ohq.io
