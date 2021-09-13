@@ -108,8 +108,8 @@ export async function sendMassInvites(
     if (!res.ok) {
         const error = await res.json();
         throw {
-            payload,
-            error,
+            payload: JSON.stringify(payload),
+            error: JSON.stringify(error),
         };
     }
 }
@@ -284,8 +284,8 @@ export async function createAnnouncement(
     if (!res.ok) {
         const error = await res.json();
         throw {
-            payload,
-            error,
+            payload: JSON.stringify(payload),
+            error: JSON.stringify(error),
         };
     }
 }
@@ -313,8 +313,8 @@ export async function createQuestion(
     if (!res.ok) {
         const error = await res.json();
         throw {
-            payload,
-            error,
+            payload: JSON.stringify(payload),
+            error: JSON.stringify(error),
         };
     }
 }
@@ -331,8 +331,8 @@ export async function createQueue(
     if (!res.ok) {
         const error = await res.json();
         throw {
-            payload,
-            error,
+            payload: JSON.stringify(payload),
+            error: JSON.stringify(error),
         };
     }
 }
@@ -354,8 +354,8 @@ export async function finishQuestion(
     if (!res.ok) {
         const error = await res.json();
         throw {
-            payload,
-            error,
+            payload: JSON.stringify(payload),
+            error: JSON.stringify(error),
         };
     }
 }
