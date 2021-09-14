@@ -190,6 +190,7 @@ class Queue(models.Model):
     description = models.TextField()
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     archived = models.BooleanField(default=False)
+    require_video_chat_url_on_questions = models.BooleanField(default=False)
 
     # Estimated wait time for the queue, in minutes
     estimated_wait_time = models.IntegerField(default=-1)
