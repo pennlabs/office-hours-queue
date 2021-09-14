@@ -8,6 +8,13 @@ export function isValidEmail(email: string) {
 
 export function isValidVideoChatURL(url: string) {
     try {
+        // URL constructor does not prevent "http://www.zoom.us Meeting ID: ..."
+        const pattern = /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$/;
+
+        if (!pattern.test(url)) {
+            return false;
+        }
+
         const urlObject = new URL(url);
         return ALLOWED_LINKS.reduce(
             (acc: boolean, link: string) =>
