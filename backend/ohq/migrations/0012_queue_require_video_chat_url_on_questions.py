@@ -7,7 +7,7 @@ def populate_require_url_in_queue(apps, schema_editor):
     Queue = apps.get_model("ohq", "Queue")
     for queue in Queue.objects.all():
         queue.video_chat_setting = (
-            "required" if queue.course.require_video_chat_url_on_questions else "disabled"
+            "REQUIRED" if queue.course.require_video_chat_url_on_questions else "DISABLED"
         )
         queue.save()
 
