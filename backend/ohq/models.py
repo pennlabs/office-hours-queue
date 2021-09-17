@@ -205,6 +205,8 @@ class Queue(models.Model):
     rate_limit_questions = models.IntegerField(blank=True, null=True)
     rate_limit_minutes = models.IntegerField(blank=True, null=True)
 
+    require_video_chat_url_on_questions = models.BooleanField(default=False)
+
     class Meta:
         constraints = [models.UniqueConstraint(fields=["course", "name"], name="unique_queue_name")]
 
