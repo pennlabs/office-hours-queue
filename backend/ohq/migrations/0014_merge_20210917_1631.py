@@ -6,9 +6,8 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ohq', '0012_queue_require_video_chat_url_on_questions'),
-        ('ohq', '0013_auto_20210917_1630'),
+        ("ohq", "0012_queue_require_video_chat_url_on_questions"),
+        ("ohq", "0013_auto_20210917_1630"),
     ]
 
-    operations = [
-    ]
+    operations = []
