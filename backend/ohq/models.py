@@ -186,6 +186,15 @@ class Queue(models.Model):
     A single office hours queue for a class.
     """
 
+    VIDEO_REQUIRED = "REQUIRED"
+    VIDEO_OPTIONAL = "OPTIONAL"
+    VIDEO_DISABLED = "DISABLED"
+    VIDEO_CHOICES = [
+        (VIDEO_REQUIRED, "required"),
+        (VIDEO_OPTIONAL, "optional"),
+        (VIDEO_DISABLED, "disabled"),
+    ]
+
     name = models.CharField(max_length=255)
     description = models.TextField()
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
@@ -205,7 +214,9 @@ class Queue(models.Model):
     rate_limit_questions = models.IntegerField(blank=True, null=True)
     rate_limit_minutes = models.IntegerField(blank=True, null=True)
 
-    require_video_chat_url_on_questions = models.BooleanField(default=False)
+    video_chat_setting = models.CharField(
+        max_length=100, choices=VIDEO_CHOICES, default="VIDEO_OPTIONAL"
+    )
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["course", "name"], name="unique_queue_name")]
