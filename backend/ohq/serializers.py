@@ -154,6 +154,7 @@ class QueueSerializer(CourseRouteMixin):
             "rate_limit_length",
             "rate_limit_questions",
             "rate_limit_minutes",
+            "video_chat_setting",
         )
         read_only_fields = ("estimated_wait_time",)
 
