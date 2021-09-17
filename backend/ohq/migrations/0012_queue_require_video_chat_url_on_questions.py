@@ -3,6 +3,15 @@
 from django.db import migrations, models
 
 
+def populate_require_url_in_queue(apps, schema_editor):
+    Queue = apps.get_model("ohq", "Queue")
+    for queue in Queue.objects.all():
+        queue.video_chat_setting = (
+            "required" if queue.course.require_video_chat_url_on_questions else "disabled"
+        )
+        queue.save()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -12,7 +21,16 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name="queue",
-            name="require_video_chat_url_on_questions",
-            field=models.BooleanField(default=False),
+            name="video_chat_setting",
+            field=models.CharField(
+                choices=[
+                    ("REQUIRED", "required"),
+                    ("OPTIONAL", "optional"),
+                    ("DISABLED", "disabled"),
+                ],
+                default="VIDEO_OPTIONAL",
+                max_length=100,
+            ),
         ),
+        migrations.RunPython(populate_require_url_in_queue),
     ]
