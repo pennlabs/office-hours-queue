@@ -215,7 +215,7 @@ class Queue(models.Model):
     rate_limit_minutes = models.IntegerField(blank=True, null=True)
 
     video_chat_setting = models.CharField(
-        max_length=100, choices=VIDEO_CHOICES, default="VIDEO_OPTIONAL"
+        max_length=8, choices=VIDEO_CHOICES, default=VIDEO_OPTIONAL
     )
 
     class Meta:
