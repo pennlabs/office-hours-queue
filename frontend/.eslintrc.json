@@ -7,7 +7,7 @@
     },
     "rules": {
         "prettier/prettier": "error",
-        "import/extensions": [".js", ".jsx", ".ts", ".tsx"],
+        "import/extensions": 0,
         "quotes": ["error", "double", "avoid-escape"],
         "no-unused-vars": [
             "error",
