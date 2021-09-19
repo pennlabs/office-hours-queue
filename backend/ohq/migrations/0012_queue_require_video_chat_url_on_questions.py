@@ -3,12 +3,19 @@
 from django.db import migrations, models
 
 
+def get_video_chat_setting(queue):
+    if queue.course.require_video_chat_url_on_questions:
+        return "REQUIRED"
+    elif queue.course.video_chat_enabled:
+        return "OPTIONAL"
+    else:
+        return "DISABLED"
+
+
 def populate_require_url_in_queue(apps, schema_editor):
     Queue = apps.get_model("ohq", "Queue")
     for queue in Queue.objects.all():
-        queue.video_chat_setting = (
-            "REQUIRED" if queue.course.require_video_chat_url_on_questions else "DISABLED"
-        )
+        queue.video_chat_setting = get_video_chat_setting(queue)
         queue.save()
 
 
