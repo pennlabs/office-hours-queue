@@ -22,12 +22,6 @@ interface CourseFormProps {
     tags: Tag[];
 }
 
-const videoChatNum = (course) => {
-    if (course.requireVideoChatUrlOnQuestions) return 0;
-    if (course.videoChatEnabled) return 1;
-    return 2;
-};
-
 type TagMap = {
     [tag: string]: number;
 };
@@ -52,8 +46,6 @@ const CourseForm = (props: CourseFormProps) => {
 
     const [input, setInput] = useState({
         inviteOnly: course.inviteOnly,
-        requireVideoChatUrlOnQuestions: course.requireVideoChatUrlOnQuestions,
-        videoChatEnabled: course.videoChatEnabled,
         department: course.department,
         courseCode: course.courseCode,
         courseTitle: course.courseTitle,
@@ -67,7 +59,6 @@ const CourseForm = (props: CourseFormProps) => {
     const [deletedTags, setDeletedTags] = useState<string[]>([]);
     const [addedTags, setAddedTags] = useState<string[]>([]);
 
-    const [check, setCheck] = useState(videoChatNum(course));
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState(false);
     const [archiveError, setArchiveError] = useState(false);
@@ -84,10 +75,9 @@ const CourseForm = (props: CourseFormProps) => {
                 input.courseTitle === course.courseTitle &&
                 input.inviteOnly === course.inviteOnly &&
                 input.semester === course.semester &&
-                check === videoChatNum(course) &&
                 addedTags.length === 0 &&
                 deletedTags.length === 0),
-        [input, course, check, addedTags, deletedTags]
+        [input, course, addedTags, deletedTags]
     );
 
     // default recommended tags
@@ -101,33 +91,6 @@ const CourseForm = (props: CourseFormProps) => {
     const handleInputChange = (e, { name, value }) => {
         input[name] = name === "inviteOnly" ? !input[name] : value;
         setInput({ ...input });
-    };
-
-    const handleVideoChatInputChange = (e, { name }) => {
-        switch (name) {
-            case "requireVideoChatUrlOnQuestions": {
-                input[name] = true;
-                input.videoChatEnabled = true;
-                setInput(input);
-                setCheck(videoChatNum(input));
-                break;
-            }
-            case "videoChatEnabled": {
-                input[name] = true;
-                input.requireVideoChatUrlOnQuestions = false;
-                setInput(input);
-                setCheck(videoChatNum(input));
-                break;
-            }
-            case "disableVideoChat": {
-                input.requireVideoChatUrlOnQuestions = false;
-                input.videoChatEnabled = false;
-                setInput(input);
-                setCheck(videoChatNum(input));
-                break;
-            }
-            default:
-        }
     };
 
     const onSubmit = async () => {
@@ -301,32 +264,6 @@ const CourseForm = (props: CourseFormProps) => {
                     onCreateOption={handleCreateTag}
                     onChange={handleTagChange}
                 />
-            </Form.Field>
-            <Form.Field required>
-                <label htmlFor="video-radio">Video Chat</label>
-                <Form.Group id="video-radio">
-                    <Form.Radio
-                        label="Require Link"
-                        checked={check === 0}
-                        name="requireVideoChatUrlOnQuestions"
-                        disabled={loading}
-                        onChange={handleVideoChatInputChange}
-                    />
-                    <Form.Radio
-                        label="Allow Link"
-                        checked={check === 1}
-                        name="videoChatEnabled"
-                        disabled={loading}
-                        onChange={handleVideoChatInputChange}
-                    />
-                    <Form.Radio
-                        label="No Link"
-                        checked={check === 2}
-                        name="disableVideoChat"
-                        disabled={loading}
-                        onChange={handleVideoChatInputChange}
-                    />
-                </Form.Group>
             </Form.Field>
             <Form.Field required>
                 <label htmlFor="invite-only">Invite Only?</label>

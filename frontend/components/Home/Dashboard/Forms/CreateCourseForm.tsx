@@ -24,11 +24,9 @@ const semesterOptions = async (inputValue: string) => {
 };
 interface CreateCourseFormProps {
     changeFunc: (a: any, b: any) => void; // TODO: restrict this
-    check: number;
-    vcChangeFunc: (a: any, b: any) => void; // TODO: restrict this
 }
 const CreateCourseForm = (props: CreateCourseFormProps) => {
-    const { changeFunc, check, vcChangeFunc } = props;
+    const { changeFunc } = props;
     return (
         <Form>
             <Form.Field required>
@@ -78,29 +76,6 @@ const CreateCourseForm = (props: CreateCourseFormProps) => {
                         })
                     }
                 />
-            </Form.Field>
-            <Form.Field required>
-                <label htmlFor="video-radio">Video Chat</label>
-                <Form.Group id="video-radio">
-                    <Form.Radio
-                        label="Require Link"
-                        checked={check === 0}
-                        name="requireVideoChatUrlOnQuestions"
-                        onChange={vcChangeFunc}
-                    />
-                    <Form.Radio
-                        label="Allow Link"
-                        checked={check === 1}
-                        name="videoChatEnabled"
-                        onChange={vcChangeFunc}
-                    />
-                    <Form.Radio
-                        label="No Link"
-                        checked={check === 2}
-                        name="disableVideoChat"
-                        onChange={vcChangeFunc}
-                    />
-                </Form.Group>
             </Form.Field>
             <Form.Field required>
                 <label htmlFor="invite-only">Invite Only?</label>

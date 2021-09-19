@@ -68,7 +68,7 @@ const QuestionCard = (props: QuestionCardProps) => {
         <div>
             <EditQuestionModal
                 open={openEdit}
-                course={course}
+                queue={queue}
                 question={question}
                 setOpen={setOpenEdit}
                 toastFunc={toastFunc}

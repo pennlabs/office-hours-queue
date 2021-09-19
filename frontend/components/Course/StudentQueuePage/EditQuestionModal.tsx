@@ -3,12 +3,12 @@ import * as React from "react";
 import { Modal, Form, Button } from "semantic-ui-react";
 import Select from "react-select";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
-import { Course, Question, Tag } from "../../../types";
+import { Question, Queue, Tag, VideoChatSetting } from "../../../types";
 import { logException } from "../../../utils/sentry";
 import { isValidVideoChatURL } from "../../../utils";
 
 interface EditQuestionModalProps {
-    course: Course;
+    queue: Queue;
     question: Question;
     open: boolean;
     setOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -25,7 +25,7 @@ interface EditQuestionFormState {
 }
 
 const EditQuestionModal = (props: EditQuestionModalProps) => {
-    const { question, course, open, setOpen, mutate, toastFunc, tags } = props;
+    const { question, queue, open, setOpen, mutate, toastFunc, tags } = props;
 
     const charLimit: number = 250;
     const [input, setInput] = useState<EditQuestionFormState>({
@@ -40,13 +40,13 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
     const isValid = useMemo(
         () =>
             input.text &&
-            (!course.requireVideoChatUrlOnQuestions ||
+            (!(queue.videoChatSetting === VideoChatSetting.REQUIRED) ||
                 (input.videoChatUrl &&
                     isValidVideoChatURL(input.videoChatUrl))) &&
             (question.text !== input.text ||
                 JSON.stringify(question.tags) !== JSON.stringify(input.tags) ||
                 question.videoChatUrl !== input.videoChatUrl),
-        [input, course, question]
+        [input, queue, question]
     );
 
     const handleInputChange = (e, { name, value }) => {
@@ -87,7 +87,7 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
     };
 
     const onSubmit = async () => {
-        if (!course.requireVideoChatUrlOnQuestions && !course.videoChatEnabled)
+        if (queue.videoChatSetting === VideoChatSetting.DISABLED)
             delete input.videoChatUrl;
         try {
             await mutate(question.id, input);
@@ -133,10 +133,14 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
                             {`Characters: ${charCount}/${charLimit}`}
                         </div>
                     </Form.Field>
-                    {(course.requireVideoChatUrlOnQuestions ||
-                        course.videoChatEnabled) && (
+                    {!(
+                        queue.videoChatSetting === VideoChatSetting.DISABLED
+                    ) && (
                         <Form.Field
-                            required={course.requireVideoChatUrlOnQuestions}
+                            required={
+                                queue.videoChatSetting ===
+                                VideoChatSetting.REQUIRED
+                            }
                         >
                             <label htmlFor="form-vid-url">Video Chat URL</label>
                             <Form.Input
