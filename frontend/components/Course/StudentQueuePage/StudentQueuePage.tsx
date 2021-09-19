@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Grid, Message } from "semantic-ui-react";
 import { WSContext } from "@pennlabs/rest-live-hooks";
 import StudentQueues from "./StudentQueues";

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import { useState, useContext } from "react";
 import { Form, Button, Icon, Popup } from "semantic-ui-react";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";

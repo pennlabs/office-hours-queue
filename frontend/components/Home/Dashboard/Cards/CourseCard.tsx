@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Segment, Header, Dropdown, Icon } from "semantic-ui-react";
 import Link from "next/link";
 import { UserMembership, Kind } from "../../../../types";

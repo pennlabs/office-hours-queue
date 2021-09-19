@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { Grid, Message } from "semantic-ui-react";
 import { WSContext } from "@pennlabs/rest-live-hooks";
 import Alert from "@material-ui/lab/Alert";

@@ -1,6 +1,5 @@
 // TODO: sort by time asked
 
-import React from "react";
 import { Segment, Grid, Table, Pagination } from "semantic-ui-react";
 import {
     useQuestions,

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Segment, Form, Header, Button } from "semantic-ui-react";
 import Select from "react-select";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";

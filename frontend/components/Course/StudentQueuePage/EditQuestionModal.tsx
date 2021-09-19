@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
+import * as React from "react";
 import { Modal, Form, Button } from "semantic-ui-react";
 import Select from "react-select";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Modal, Button } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import { Queue, Question } from "../../../types";
