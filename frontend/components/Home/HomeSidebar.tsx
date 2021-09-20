@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import { Segment, Menu, Grid, Image } from "semantic-ui-react";
 import Link from "next/link";

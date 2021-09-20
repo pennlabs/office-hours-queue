@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import "./CourseForm.module.css";
 
 import { Form, Button, Modal } from "semantic-ui-react";

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import Head from "next/head";
 import "semantic-ui-css/semantic.min.css";
 import "../styles/index.css";
