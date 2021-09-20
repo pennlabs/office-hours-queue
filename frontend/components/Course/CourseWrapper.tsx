@@ -1,13 +1,5 @@
 import { useContext, MutableRefObject } from "react";
-import * as React from "react";
-import {
-    Grid,
-    Segment,
-    Header,
-    Icon,
-    ButtonProps,
-    Popup,
-} from "semantic-ui-react";
+import { Grid, Segment, Header, Icon, Popup } from "semantic-ui-react";
 import CourseSidebar from "./CourseSidebar";
 
 import { AuthUserContext } from "../../context/auth";
@@ -48,10 +40,7 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
         isAprilFirst ? aolAudio : bellAudio
     );
 
-    const toggleNotifs = (
-        event: React.MouseEvent<HTMLButtonElement>,
-        data: ButtonProps
-    ) => {
+    const toggleNotifs = () => {
         setNotifs(!notifs);
         localStorage.setItem("notifs", !notifs ? "true" : "false");
         document.body.focus();
