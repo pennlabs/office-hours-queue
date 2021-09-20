@@ -1,4 +1,3 @@
-import React from "react";
 import "../../../Course/CourseSettings/CourseForm.module.css";
 
 import { Form } from "semantic-ui-react";
