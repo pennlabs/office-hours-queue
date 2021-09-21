@@ -137,7 +137,11 @@ const QuestionCard = (props: QuestionCardProps) => {
                                             </span>
                                         ) : (
                                             <span>
-                                                Started{" "}
+                                                $
+                                                {fullName(
+                                                    question.respondedToBy!
+                                                )}{" "}
+                                                answered{" "}
                                                 {moment
                                                     .duration(
                                                         moment().diff(
@@ -254,9 +258,7 @@ const QuestionCard = (props: QuestionCardProps) => {
                                                 question.respondedToBy!
                                                     .username === user.username
                                                     ? "Rejoin Call"
-                                                    : `Join Call (with ${fullName(
-                                                          question.respondedToBy!
-                                                      )})`
+                                                    : "Join Call"
                                             }
                                             disabled={isLoading()}
                                         />
