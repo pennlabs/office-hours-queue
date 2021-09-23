@@ -137,11 +137,7 @@ const QuestionCard = (props: QuestionCardProps) => {
                                             </span>
                                         ) : (
                                             <span>
-                                                $
-                                                {fullName(
-                                                    question.respondedToBy!
-                                                )}{" "}
-                                                answered{" "}
+                                                Asked{" "}
                                                 {moment
                                                     .duration(
                                                         moment().diff(
@@ -152,6 +148,12 @@ const QuestionCard = (props: QuestionCardProps) => {
                                                     )
                                                     .humanize()}{" "}
                                                 ago
+                                                {question.respondedToBy!
+                                                    .username !==
+                                                    user.username &&
+                                                    `, ${fullName(
+                                                        question.respondedToBy!
+                                                    )} is answering`}
                                             </span>
                                         )
                                     }
