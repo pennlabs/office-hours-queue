@@ -82,8 +82,6 @@ courses = [
         "semester": {"year": 2020, "term": Semester.TERM_FALL},
         "archived": False,
         "invite_only": True,
-        "video_chat_enabled": True,
-        "require_video_chat_url_on_questions": True,
     },
     {
         "course_code": "700",
