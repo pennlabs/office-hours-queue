@@ -294,21 +294,22 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     onClick={() => setMessageModalOpen(true)}
                                 />
                             )}
-                            {question.respondedToBy!.username !==
-                                user.username && (
-                                <span
-                                    style={{
-                                        marginLeft: "0.5em",
-                                        fontSize: 11,
-                                    }}
-                                >
-                                    <i>
-                                        {`${fullName(
-                                            question.respondedToBy!
-                                        )} is answering...`}
-                                    </i>
-                                </span>
-                            )}
+                            {question.respondedToBy &&
+                                question.respondedToBy.username !==
+                                    user.username && (
+                                    <span
+                                        style={{
+                                            marginLeft: "0.5em",
+                                            fontSize: 11,
+                                        }}
+                                    >
+                                        <i>
+                                            {`${fullName(
+                                                question.respondedToBy!
+                                            )} is answering...`}
+                                        </i>
+                                    </span>
+                                )}
                         </Grid.Column>
                         <Grid.Column
                             width={5}
