@@ -6,16 +6,10 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ohq', '0012_queue_require_video_chat_url_on_questions'),
+        ("ohq", "0012_queue_require_video_chat_url_on_questions"),
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='course',
-            name='require_video_chat_url_on_questions',
-        ),
-        migrations.RemoveField(
-            model_name='course',
-            name='video_chat_enabled',
-        ),
+        migrations.RemoveField(model_name="course", name="require_video_chat_url_on_questions",),
+        migrations.RemoveField(model_name="course", name="video_chat_enabled",),
     ]
