@@ -137,7 +137,7 @@ const QuestionCard = (props: QuestionCardProps) => {
                                             </span>
                                         ) : (
                                             <span>
-                                                Asked{" "}
+                                                Started{" "}
                                                 {moment
                                                     .duration(
                                                         moment().diff(
@@ -148,12 +148,6 @@ const QuestionCard = (props: QuestionCardProps) => {
                                                     )
                                                     .humanize()}{" "}
                                                 ago
-                                                {question.respondedToBy!
-                                                    .username !==
-                                                    user.username &&
-                                                    `, ${fullName(
-                                                        question.respondedToBy!
-                                                    )} is answering`}
                                             </span>
                                         )
                                     }
@@ -299,6 +293,21 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     content="Message"
                                     onClick={() => setMessageModalOpen(true)}
                                 />
+                            )}
+                            {question.respondedToBy!.username !==
+                                user.username && (
+                                <span
+                                    style={{
+                                        marginLeft: "0.5em",
+                                        fontSize: 11,
+                                    }}
+                                >
+                                    <i>
+                                        {`${fullName(
+                                            question.respondedToBy!
+                                        )} is answering...`}
+                                    </i>
+                                </span>
                             )}
                         </Grid.Column>
                         <Grid.Column
