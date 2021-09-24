@@ -280,7 +280,7 @@ class Command(BaseCommand):
                 obj.first_name = first
                 obj.last_name = last
                 obj.is_staff = True
-                obj.set_password("password")
+                obj.set_password("pennlabs")
                 obj.save()
                 user_objs.append(obj)
 
