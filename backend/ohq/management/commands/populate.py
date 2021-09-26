@@ -410,6 +410,7 @@ class Command(BaseCommand):
                     archived=q["archived"],
                     estimated_wait_time=q["estimated_wait_time"],
                     active=q["active"],
+                    video_chat_setting=q["video_chat_setting"],
                 )
 
                 respondedToCount = 0
