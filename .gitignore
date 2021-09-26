@@ -27,6 +27,7 @@ postgres
 # React
 node_modules/
 .next/
+.log
 
 # Firebase credentials
 ohq-firebase-*.json

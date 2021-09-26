@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Grid, Segment, Header, Form, Button } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Snackbar from "@material-ui/core/Snackbar";
@@ -168,7 +168,8 @@ const CreateQueue = (props: CreateQueueProps) => {
                                 onChange={() =>
                                     setInput({
                                         ...input,
-                                        rateLimitEnabled: !input.rateLimitEnabled,
+                                        rateLimitEnabled:
+                                            !input.rateLimitEnabled,
                                     })
                                 }
                             />

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, MutableRefObject } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Menu, Label } from "semantic-ui-react";
 import { useQuestions } from "../../../hooks/data-fetching/course";
 import {
@@ -39,14 +39,8 @@ const QuestionNotifier = ({
 };
 
 export const QueueMenuItem = (props: QueueMenuItemProps) => {
-    const {
-        queue,
-        courseId,
-        initialQuestions,
-        active,
-        setActiveQueue,
-        play,
-    } = props;
+    const { queue, courseId, initialQuestions, active, setActiveQueue, play } =
+        props;
 
     const { data: questions } = useQuestions(
         courseId,

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Modal, List, Button } from "semantic-ui-react";
+import { useState } from "react";
+import { Modal, Button } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import { Queue, Question } from "../../../types";
 import { clearQueue } from "../../../hooks/data-fetching/course";

@@ -1,4 +1,3 @@
-import React, { MutableRefObject } from "react";
 import Head from "next/head";
 import { Grid } from "semantic-ui-react";
 import { WebsocketProvider } from "@pennlabs/rest-live-hooks";
@@ -30,14 +29,8 @@ interface QueuePageProps extends CoursePageProps {
 }
 
 const QueuePage = (props: QueuePageProps) => {
-    const {
-        course,
-        leadership,
-        queues,
-        questionmap,
-        tags,
-        announcements,
-    } = props;
+    const { course, leadership, queues, questionmap, tags, announcements } =
+        props;
     return (
         <WebsocketProvider
             url="/api/ws/subscribe/"

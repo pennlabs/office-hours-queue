@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Segment, Header, Grid, Table } from "semantic-ui-react";
 import _ from "lodash";
 import Snackbar from "@material-ui/core/Snackbar";
@@ -51,10 +51,8 @@ const Roster = (props: RosterProps) => {
 
     /* STATE */
     const [filteredUsers, setFilteredUsers] = useState(memberships);
-    const {
-        data: invitedMembersData,
-        mutate: invitedMutate,
-    } = useInvitedMembers(courseId, invites);
+    const { data: invitedMembersData, mutate: invitedMutate } =
+        useInvitedMembers(courseId, invites);
 
     // invitedMembersData is non null because initialData is provided
     // and the key stays the same
@@ -183,14 +181,6 @@ const Roster = (props: RosterProps) => {
             open: true,
             success: true,
             message: "Invitation successfully revoked",
-        });
-    };
-
-    const setInviteResendToast = () => {
-        setToast({
-            open: true,
-            success: true,
-            message: "Invitation successfully resent",
         });
     };
 

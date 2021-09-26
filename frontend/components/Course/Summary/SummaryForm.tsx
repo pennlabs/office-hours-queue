@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Form, Button } from "semantic-ui-react";
 import TextField from "@material-ui/core/TextField";
 import { QuestionStatus } from "../../../types";
