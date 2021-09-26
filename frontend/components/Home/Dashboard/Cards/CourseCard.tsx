@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Segment, Header, Dropdown, Icon } from "semantic-ui-react";
 import Link from "next/link";
 import { UserMembership, Kind } from "../../../../types";
@@ -13,10 +13,6 @@ const CourseCard = (props: CourseCardProps) => {
     const { membership, setOpenLeave, setLeaveMembership } = props;
     const { course } = membership;
     const [hover, setHover] = useState(false);
-
-    const path = {
-        pathname: `/courses/${course.id}`,
-    };
 
     const handleLeave = () => {
         if (setLeaveMembership && setOpenLeave) {

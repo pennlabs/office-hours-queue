@@ -1,5 +1,4 @@
 import { Tab, Segment, Header } from "semantic-ui-react";
-import React from "react";
 import { useHeatmapData } from "../../../../hooks/data-fetching/analytics";
 import { Metric } from "../../../../types";
 import Heatmap from "./Heatmap";
@@ -10,14 +9,10 @@ interface AveragesProps {
 }
 
 export default function Averages({ courseId, queueId }: AveragesProps) {
-    const {
-        data: questionsData,
-        isValidating: questionsValidating,
-    } = useHeatmapData(courseId, queueId, Metric.HEATMAP_QUESTIONS);
-    const {
-        data: waitTimesData,
-        isValidating: waitValidating,
-    } = useHeatmapData(courseId, queueId, Metric.HEATMAP_WAIT);
+    const { data: questionsData, isValidating: questionsValidating } =
+        useHeatmapData(courseId, queueId, Metric.HEATMAP_QUESTIONS);
+    const { data: waitTimesData, isValidating: waitValidating } =
+        useHeatmapData(courseId, queueId, Metric.HEATMAP_WAIT);
 
     return (
         <>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Modal, Button } from "semantic-ui-react";
 import { mutateResourceFunction } from "@pennlabs/rest-hooks/dist/types";
 import CreateCourseForm from "../Forms/CreateCourseForm";

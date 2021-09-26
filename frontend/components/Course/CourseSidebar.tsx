@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import {
     Segment,
     Menu,
@@ -185,6 +185,7 @@ const CourseSidebar = (props: CourseSidebarProps) => {
                 <a
                     href="https://airtable.com/shrIZxIjyAE3gOUSg"
                     target="_blank"
+                    rel="noreferrer"
                 >
                     <p>Feedback</p>
                 </a>

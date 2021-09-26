@@ -1,9 +1,4 @@
-import React, {
-    useState,
-    useEffect,
-    useContext,
-    MutableRefObject,
-} from "react";
+import { useState, useEffect, useContext } from "react";
 import {
     Accordion,
     Dropdown,

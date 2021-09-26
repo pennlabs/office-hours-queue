@@ -1,4 +1,3 @@
-import React from "react";
 import { NextPageContext } from "next";
 import { AuthProps } from "../context/auth";
 import { User } from "../types";

@@ -1,4 +1,3 @@
-import React from "react";
 import { Dropdown, Popup } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import { staffRoleOptions } from "../../../utils/enums";

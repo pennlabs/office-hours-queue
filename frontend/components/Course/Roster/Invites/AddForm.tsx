@@ -1,5 +1,3 @@
-import React from "react";
-
 import { Form } from "semantic-ui-react";
 import { roleOptions } from "../../../../utils/enums";
 

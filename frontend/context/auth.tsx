@@ -1,4 +1,5 @@
-import React, { createContext } from "react";
+import { createContext } from "react";
+import * as React from "react";
 import { NextPageContext, NextPage } from "next";
 import nextRedirect from "../utils/redirect";
 import { doApiRequest } from "../utils/fetch";
