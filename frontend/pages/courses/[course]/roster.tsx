@@ -1,4 +1,3 @@
-import React from "react";
 import Head from "next/head";
 import { Grid } from "semantic-ui-react";
 import { NextPageContext } from "next";
@@ -61,9 +60,9 @@ RosterPage.getInitialProps = async (
     let invites: MembershipInvite[];
 
     const response = await doMultipleSuccessRequests([
-        { path: `/courses/${query.course}/`, data },
-        { path: `/courses/${query.course}/members/`, data },
-        { path: `/courses/${query.course}/invites/`, data },
+        { path: `/api/courses/${query.course}/`, data },
+        { path: `/api/courses/${query.course}/members/`, data },
+        { path: `/api/courses/${query.course}/invites/`, data },
     ]);
 
     if (response.success) {

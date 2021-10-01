@@ -1,4 +1,3 @@
-import React from "react";
 import Head from "next/head";
 import { Grid } from "semantic-ui-react";
 import { NextPageContext } from "next";
@@ -54,10 +53,10 @@ SummaryPage.getInitialProps = async (
     let questionListResult: QuestionListResult;
 
     const response = await doMultipleSuccessRequests([
-        { path: `/courses/${query.course}/`, data },
-        { path: `/courses/${query.course}/members/`, data },
+        { path: `/api/courses/${query.course}/`, data },
+        { path: `/api/courses/${query.course}/members/`, data },
         {
-            path: `/courses/${query.course}/questions/?order_by=-time_asked`,
+            path: `/api/courses/${query.course}/questions/?order_by=-time_asked`,
             data,
         },
     ]);

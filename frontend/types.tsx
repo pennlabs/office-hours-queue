@@ -1,3 +1,5 @@
+import { MutableRefObject } from "react";
+
 export interface Course {
     id: number;
     courseCode: string;
@@ -8,8 +10,6 @@ export interface Course {
     semesterPretty: string;
     archived: boolean;
     inviteOnly: boolean;
-    videoChatEnabled: boolean;
-    requireVideoChatUrlOnQuestions: boolean;
     isMember: boolean;
 }
 
@@ -35,7 +35,7 @@ export interface Membership {
 
 export interface MembershipInvite {
     id: number;
-    kind: string;
+    kind: Kind;
     email: string;
 }
 
@@ -69,6 +69,13 @@ export interface BaseQueue {
     questionsActive: number;
     questionsAsked: number;
     staffActive: number;
+    videoChatSetting: VideoChatSetting;
+}
+
+export enum VideoChatSetting {
+    REQUIRED = "REQUIRED",
+    OPTIONAL = "OPTIONAL",
+    DISABLED = "DISABLED",
 }
 
 export type Queue =
@@ -132,25 +139,6 @@ export interface QuestionMap {
     [queueId: number]: Question[];
 }
 
-export type mutateFunction<D> = (
-    data?: D,
-    shouldRevalidate?: boolean
-) => Promise<D | undefined>;
-
-export interface Identifiable {
-    id: number;
-}
-
-export type mutateResourceFunction<D> = (
-    data?: Partial<D>,
-    method?: string
-) => Promise<D | undefined>;
-export type mutateResourceListFunction<D extends Identifiable> = (
-    id: number,
-    data: Partial<D> | null,
-    method?: string
-) => Promise<D[] | undefined>;
-
 export interface Toast {
     message: string;
     success: boolean;
@@ -201,3 +189,5 @@ export enum DayOfWeek {
     "Friday" = 6,
     "Saturday" = 7,
 }
+
+export type NotificationProps = MutableRefObject<(string) => void>;

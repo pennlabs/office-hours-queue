@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
     Segment,
     Header,
@@ -11,7 +11,7 @@ import {
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import EditQuestionModal from "./EditQuestionModal";
 import DeleteQuestionModal from "./DeleteQuestionModal";
-import { Question, Course, Queue, QuestionStatus, Tag } from "../../../types";
+import { Question, Course, Queue, Tag } from "../../../types";
 import {
     useQuestionPosition,
     finishQuestion,
@@ -39,7 +39,7 @@ const QuestionCard = (props: QuestionCardProps) => {
         lastQuestionsMutate,
         tags,
     } = props;
-    const [positionData, , , ,] = useQuestionPosition(
+    const { data: positionData } = useQuestionPosition(
         course.id,
         queue.id,
         question.id
@@ -68,7 +68,7 @@ const QuestionCard = (props: QuestionCardProps) => {
         <div>
             <EditQuestionModal
                 open={openEdit}
-                course={course}
+                queue={queue}
                 question={question}
                 setOpen={setOpenEdit}
                 toastFunc={toastFunc}

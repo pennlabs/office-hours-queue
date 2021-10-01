@@ -1,16 +1,17 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Grid } from "semantic-ui-react";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
+import { mutateResourceFunction } from "@pennlabs/rest-hooks/dist/types";
 import CourseCard from "./Cards/CourseCard";
 import AddCard from "./Cards/AddCard";
 import ModalAddStudentCourse from "./Modals/ModalAddStudentCourse";
 import ModalLeaveStudentCourse from "./Modals/ModalLeaveStudentCourse";
-import { mutateFunction, Toast, UserMembership } from "../../../types";
+import { Toast, UserMembership } from "../../../types";
 
 interface StudentCoursesProps {
     memberships: UserMembership[];
-    mutate: mutateFunction<UserMembership[]>;
+    mutate: mutateResourceFunction<UserMembership[]>;
 }
 const StudentCourses = (props: StudentCoursesProps) => {
     const { mutate, memberships } = props;

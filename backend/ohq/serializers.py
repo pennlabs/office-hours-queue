@@ -72,8 +72,6 @@ class CourseSerializer(serializers.ModelSerializer):
             "semester_pretty",
             "archived",
             "invite_only",
-            "video_chat_enabled",
-            "require_video_chat_url_on_questions",
             "is_member",
         )
 
@@ -92,8 +90,6 @@ class CourseCreateSerializer(serializers.ModelSerializer):
             "semester",
             "archived",
             "invite_only",
-            "video_chat_enabled",
-            "require_video_chat_url_on_questions",
             "created_role",
         )
 
@@ -129,6 +125,9 @@ class MembershipInviteSerializer(CourseRouteMixin):
         model = MembershipInvite
         fields = ("id", "email", "kind", "time_created")
 
+    def validate_email(self, value):
+        return value.lower()
+
 
 class QueueSerializer(CourseRouteMixin):
     questions_active = serializers.IntegerField(default=0, read_only=True)
@@ -151,6 +150,7 @@ class QueueSerializer(CourseRouteMixin):
             "rate_limit_length",
             "rate_limit_questions",
             "rate_limit_minutes",
+            "video_chat_setting",
         )
         read_only_fields = ("estimated_wait_time",)
 
@@ -333,7 +333,7 @@ class UserPrivateSerializer(serializers.ModelSerializer):
 
     profile = ProfileSerializer(read_only=False, required=False)
     membership_set = MembershipPrivateSerializer(many=True, read_only=True)
-    groups = serializers.StringRelatedField(many=True)
+    groups = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = get_user_model()

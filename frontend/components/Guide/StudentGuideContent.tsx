@@ -1,5 +1,4 @@
-import React from "react";
-import { Segment, Divider, List } from "semantic-ui-react";
+import { Segment, List } from "semantic-ui-react";
 
 import { CenteredImage } from "./utils";
 

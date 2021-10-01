@@ -1,4 +1,5 @@
-import React, { createContext } from "react";
+import { createContext } from "react";
+import * as React from "react";
 import { NextPageContext, NextPage } from "next";
 import nextRedirect from "../utils/redirect";
 import { doApiRequest } from "../utils/fetch";
@@ -31,7 +32,7 @@ export function withAuth<T>(
             headers: ctx.req ? { cookie: ctx.req.headers.cookie } : undefined,
         };
 
-        const res = await doApiRequest("/accounts/me/", headers);
+        const res = await doApiRequest("/api/accounts/me/", headers);
         let user: User | undefined;
         if (res.ok) {
             user = await res.json();

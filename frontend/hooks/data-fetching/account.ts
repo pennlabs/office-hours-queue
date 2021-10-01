@@ -1,20 +1,20 @@
-import useSWR from "swr";
-import { parsePhoneNumberFromString } from "libphonenumber-js/max";
+import _ from "lodash";
+import { useResource } from "@pennlabs/rest-hooks";
 import { User } from "../../types";
 import { doApiRequest } from "../../utils/fetch";
+import { logException } from "../../utils/sentry";
 
-export function useAccountInfo(
-    initialUser
-): [
-    User,
-    any,
-    boolean,
-    (data?: any, shouldRevalidate?: boolean) => Promise<any>
-] {
-    const { data, error, isValidating, mutate } = useSWR("/accounts/me/", {
-        initialData: initialUser,
-    });
-    return [data, error, isValidating, mutate];
+export function useAccountInfo(initialUser?: User) {
+    const { data, error, isValidating, mutate } = useResource(
+        "/api/accounts/me/",
+        {
+            initialData: initialUser,
+        }
+    );
+    if (data) {
+        return { data, error, isValidating, mutate: () => mutate() };
+    }
+    throw new Error("Could not get user account info");
 }
 
 export async function validateSMS(code) {
@@ -23,7 +23,7 @@ export async function validateSMS(code) {
             smsVerificationCode: code,
         },
     };
-    const res = await doApiRequest("/accounts/me/", {
+    const res = await doApiRequest("/api/accounts/me/", {
         method: "PATCH",
         body: payload,
     });
@@ -35,7 +35,7 @@ export async function validateSMS(code) {
 }
 
 export async function resendSMSVerification() {
-    const res = await doApiRequest("/accounts/me/resend/", {
+    const res = await doApiRequest("/api/accounts/me/resend/", {
         method: "POST",
     });
 
@@ -45,27 +45,22 @@ export async function resendSMSVerification() {
 }
 
 export async function updateUser(payload: Partial<User>) {
-    const processedPayload: Partial<User> = payload;
-    if (processedPayload.profile && payload.profile?.phoneNumber) {
-        // TODO: Better error handling
-
-        const parsedNumber = parsePhoneNumberFromString(
-            String(payload.profile.phoneNumber),
-            "US"
-        )?.number;
-
-        if (!parsedNumber) {
-            throw new Error("phone parsing failed");
-        }
-
-        processedPayload.profile.phoneNumber = parsedNumber as string;
+    const processedPayload: Partial<User> = _.cloneDeep(payload);
+    if (
+        processedPayload.profile &&
+        !processedPayload.profile.smsNotificationsEnabled
+    ) {
+        delete processedPayload.profile.phoneNumber;
     }
-    const res = await doApiRequest("/accounts/me/", {
+
+    const res = await doApiRequest("/api/accounts/me/", {
         method: "PATCH",
         body: processedPayload,
     });
 
     if (!res.ok) {
-        throw new Error("update user failed");
+        const error = await res.json();
+        logException(error);
+        throw new Error("Update user failed");
     }
 }

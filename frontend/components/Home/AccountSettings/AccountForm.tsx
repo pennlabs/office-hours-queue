@@ -1,7 +1,9 @@
-import React, { useState, useContext } from "react";
+import { useState, useContext } from "react";
 import { Form, Button, Icon, Popup } from "semantic-ui-react";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
+import { parsePhoneNumberFromString } from "libphonenumber-js/max";
+import _ from "lodash";
 import { AuthUserContext } from "../../../context/auth";
 import VerificationModal from "./VerificationModal";
 import { User, Toast } from "../../../types";
@@ -9,16 +11,20 @@ import {
     updateUser,
     useAccountInfo,
 } from "../../../hooks/data-fetching/account";
-import { logException } from "../../../utils/sentry";
 
 const AccountForm = () => {
     const { user: initialUser } = useContext(AuthUserContext);
 
-    const [user, , , mutate]: [User, any, any, any] = useAccountInfo(
-        initialUser
-    );
+    const { data: user, mutate } = useAccountInfo(initialUser);
 
-    const [input] = useState(JSON.parse(JSON.stringify(user)));
+    const [input, setInput] = useState<User>({
+        ...user,
+        profile: {
+            smsNotificationsEnabled: user.profile.smsNotificationsEnabled,
+            smsVerified: user.profile.smsVerified,
+            phoneNumber: user.profile.phoneNumber ?? "",
+        },
+    });
 
     const [showNumber, setShowNumber] = useState(
         user.profile.smsNotificationsEnabled
@@ -34,7 +40,8 @@ const AccountForm = () => {
         return (
             !input.firstName ||
             !input.lastName ||
-            !input.profile.phoneNumber ||
+            (input.profile.smsNotificationsEnabled &&
+                !input.profile.phoneNumber) ||
             (input.firstName === user.firstName &&
                 input.lastName === user.lastName &&
                 input.profile.smsNotificationsEnabled ===
@@ -51,13 +58,31 @@ const AccountForm = () => {
         } else {
             input[name] = value;
         }
+        setInput({ ...input });
         setShowNumber(input.profile.smsNotificationsEnabled);
         setDisabled(isDisabled());
     };
 
     const onSubmit = async () => {
         try {
-            await updateUser(input);
+            const processedInput = _.cloneDeep(input);
+            if (input.profile.smsNotificationsEnabled) {
+                const parsedNumber = parsePhoneNumberFromString(
+                    // Phone number must not be undefined because of
+                    // isDisabled check
+                    input.profile.phoneNumber!,
+                    "US"
+                )?.number;
+
+                if (!parsedNumber) {
+                    throw new Error("Cannot parse phone number");
+                }
+
+                processedInput.profile.phoneNumber = parsedNumber as string;
+                setInput(processedInput);
+            }
+
+            await updateUser(processedInput);
             mutate();
             setToast({
                 success: true,
@@ -66,14 +91,16 @@ const AccountForm = () => {
             setToastOpen(true);
             setDisabled(true);
 
-            if (input.profile.phoneNumber !== user.profile.phoneNumber) {
+            if (
+                processedInput.profile.smsNotificationsEnabled &&
+                processedInput.profile.phoneNumber !== user.profile.phoneNumber
+            ) {
                 setSmsOpen(true);
             }
         } catch (e) {
-            logException(e);
             setToast({
                 success: false,
-                message: "There was an error updating your account",
+                message: e.toString(),
             });
             setToastOpen(true);
         }
@@ -95,7 +122,7 @@ const AccountForm = () => {
                     <label htmlFor="form-email">Email Address</label>
                     <Form.Input
                         id="form-email"
-                        defaultValue={input.email}
+                        value={input.email}
                         disabled
                         onChange={handleInputChange}
                     />
@@ -105,7 +132,7 @@ const AccountForm = () => {
                     <Form.Input
                         id="form-first-name"
                         placeholder="First Name"
-                        defaultValue={input.firstName}
+                        value={input.firstName}
                         name="firstName"
                         onChange={handleInputChange}
                     />
@@ -115,7 +142,7 @@ const AccountForm = () => {
                     <Form.Input
                         id="form-last-name"
                         placeholder="Last Name"
-                        defaultValue={input.lastName}
+                        value={input.lastName}
                         name="lastName"
                         onChange={handleInputChange}
                     />
@@ -123,7 +150,7 @@ const AccountForm = () => {
                 <Form.Field>
                     <Form.Checkbox
                         name="smsNotificationsEnabled"
-                        defaultChecked={input.profile.smsNotificationsEnabled}
+                        checked={input.profile.smsNotificationsEnabled}
                         onChange={handleInputChange}
                         label={[
                             "Enable SMS Notifications ",
@@ -143,7 +170,7 @@ const AccountForm = () => {
                         <Form.Input
                             id="form-cell-no"
                             placeholder="9876543210"
-                            defaultValue={input.profile.phoneNumber}
+                            value={input.profile.phoneNumber}
                             name="phoneNumber"
                             onChange={handleInputChange}
                             action={

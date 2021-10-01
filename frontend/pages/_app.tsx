@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect } from "react";
 import Head from "next/head";
 import "semantic-ui-css/semantic.min.css";
 import "../styles/index.css";
@@ -7,6 +7,13 @@ import { doApiRequest } from "../utils/fetch";
 import withGA from "../utils/ga/withGA";
 
 const MyApp = ({ Component, pageProps }) => {
+    useEffect(() => {
+        if (!("Notification" in window)) {
+            console.log("This browser does not support desktop notification");
+        } else {
+            Notification.requestPermission();
+        }
+    }, []);
     return (
         <SWRConfig
             value={{

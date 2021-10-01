@@ -1,4 +1,4 @@
-import React, { useContext, MutableRefObject } from "react";
+import { useContext } from "react";
 import { Grid, Message } from "semantic-ui-react";
 import { WSContext } from "@pennlabs/rest-live-hooks";
 import StudentQueues from "./StudentQueues";
@@ -9,13 +9,20 @@ import {
     useCourse,
     useTags,
 } from "../../../hooks/data-fetching/course";
-import { Announcement, Course, Queue, QuestionMap, Tag } from "../../../types";
+import {
+    Announcement,
+    Course,
+    Queue,
+    QuestionMap,
+    Tag,
+    NotificationProps,
+} from "../../../types";
 
 interface StudentQueuePageProps {
     course: Course;
     queues: Queue[];
     questionmap: QuestionMap;
-    play: MutableRefObject<() => void>;
+    play: NotificationProps;
     tags: Tag[];
     announcements: Announcement[];
 }
@@ -28,7 +35,7 @@ const StudentQueuePage = (props: StudentQueuePageProps) => {
         tags: rawTags,
         announcements,
     } = props;
-    const [course, , ,] = useCourse(rawCourse.id, rawCourse);
+    const { data: course } = useCourse(rawCourse.id, rawCourse);
     const { data: queues, mutate } = useQueues(course!.id, rawQueues);
     const { data: tags } = useTags(rawCourse.id, rawTags);
 

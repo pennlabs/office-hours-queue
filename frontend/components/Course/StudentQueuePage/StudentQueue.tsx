@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import * as React from "react";
 import {
     Label,
     Header,
@@ -92,10 +93,10 @@ const StudentQueue = (props: StudentQueueProps) => {
         queue.id,
         rawQuestions
     );
-    const [lastQuestions, , , mutateLastQuestions] = useLastQuestions(
-        course.id,
-        queue.id
-    );
+    const {
+        data: lastQuestions,
+        mutate: mutateLastQuestions,
+    } = useLastQuestions(course.id, queue.id);
 
     if (!questions) {
         return (
@@ -218,8 +219,8 @@ const StudentQueue = (props: StudentQueueProps) => {
                             questions.length === 0 &&
                             !queue.rateLimitEnabled && (
                                 <QuestionForm
-                                    course={course}
-                                    queueId={queue.id}
+                                    queue={queue}
+                                    courseId={course.id}
                                     queueMutate={queueMutate}
                                     mutate={mutateQuestions}
                                     toastFunc={updateToast}
@@ -234,8 +235,8 @@ const StudentQueue = (props: StudentQueueProps) => {
                                     queueId={queue.id}
                                 >
                                     <QuestionForm
-                                        course={course}
-                                        queueId={queue.id}
+                                        queue={queue}
+                                        courseId={course.id}
                                         queueMutate={queueMutate}
                                         mutate={mutateQuestions}
                                         toastFunc={updateToast}

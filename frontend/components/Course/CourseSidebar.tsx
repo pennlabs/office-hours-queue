@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import { useContext } from "react";
 import {
     Segment,
     Menu,
@@ -26,7 +26,10 @@ interface CourseSidebarProps {
 const CourseSidebar = (props: CourseSidebarProps) => {
     const { course, leadership: leadershipRaw } = props;
     const courseId = course.id;
-    const [leadershipUnsorted, , , ,] = useLeadership(courseId, leadershipRaw);
+    const { leadership: leadershipUnsorted } = useLeadership(
+        courseId,
+        leadershipRaw
+    );
     const leadership = leadershipUnsorted.sort(leadershipSortFunc);
 
     const { user: initialUser } = useContext(AuthUserContext);
@@ -36,7 +39,7 @@ const CourseSidebar = (props: CourseSidebarProps) => {
         );
     }
 
-    const [leader, staff, , ,] = useStaff(courseId, initialUser);
+    const { leader, staff } = useStaff(courseId, initialUser);
 
     const noWrapStyle = {
         whiteSpace: "nowrap",

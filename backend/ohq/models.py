@@ -73,8 +73,6 @@ class Course(models.Model):
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
     archived = models.BooleanField(default=False)
     invite_only = models.BooleanField(default=False)
-    video_chat_enabled = models.BooleanField(default=False)
-    require_video_chat_url_on_questions = models.BooleanField(default=False)
     members = models.ManyToManyField(User, through="Membership", through_fields=("course", "user"))
 
     # MAX_NUMBER_COURSE_USERS = 1000
@@ -186,6 +184,15 @@ class Queue(models.Model):
     A single office hours queue for a class.
     """
 
+    VIDEO_REQUIRED = "REQUIRED"
+    VIDEO_OPTIONAL = "OPTIONAL"
+    VIDEO_DISABLED = "DISABLED"
+    VIDEO_CHOICES = [
+        (VIDEO_REQUIRED, "required"),
+        (VIDEO_OPTIONAL, "optional"),
+        (VIDEO_DISABLED, "disabled"),
+    ]
+
     name = models.CharField(max_length=255)
     description = models.TextField()
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
@@ -204,6 +211,10 @@ class Queue(models.Model):
     rate_limit_length = models.IntegerField(blank=True, null=True)
     rate_limit_questions = models.IntegerField(blank=True, null=True)
     rate_limit_minutes = models.IntegerField(blank=True, null=True)
+
+    video_chat_setting = models.CharField(
+        max_length=8, choices=VIDEO_CHOICES, default=VIDEO_OPTIONAL
+    )
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["course", "name"], name="unique_queue_name")]
@@ -281,15 +292,13 @@ class QueueStatistic(models.Model):
     METRIC_NUM_ANSWERED = "NUM_ANSWERED"
     METRIC_STUDENTS_HELPED = "STUDENTS_HELPED"
     METRIC_AVG_TIME_HELPING = "AVG_TIME_HELPING"
-    METRIC_LIST_WAIT_TIME_DAYS = "LIST_WAIT_TIME_DAYS"
     METRIC_CHOICES = [
         (METRIC_HEATMAP_WAIT, "Average wait-time heatmap"),
         (METRIC_HEATMAP_QUESTIONS_PER_TA, "Questions per TA heatmap"),
-        (METRIC_AVG_WAIT, "Average wait-time"),
-        (METRIC_NUM_ANSWERED, "Number of questions answered per week"),
-        (METRIC_STUDENTS_HELPED, "Students helped per week"),
+        (METRIC_AVG_WAIT, "Average wait-time per day"),
+        (METRIC_NUM_ANSWERED, "Number of questions answered per day"),
+        (METRIC_STUDENTS_HELPED, "Students helped per day"),
         (METRIC_AVG_TIME_HELPING, "Average time helping students"),
-        (METRIC_LIST_WAIT_TIME_DAYS, "List of wait times per day"),
     ]
 
     # for specific days during the week - used for heatmap and graphs where day is x-axis
@@ -318,7 +327,7 @@ class QueueStatistic(models.Model):
     hour = models.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(23)], blank=True, null=True
     )
-    date = models.DateField(blank=True, null=True)  # for weekly stats, set to the Sunday of week
+    date = models.DateField(blank=True, null=True)
 
     class Meta:
         constraints = [
@@ -357,7 +366,7 @@ class Announcement(models.Model):
     TA announcement within a class
     """
 
-    content = models.CharField(max_length=255)
+    content = models.TextField()
     author = models.ForeignKey(User, related_name="announcements", on_delete=models.CASCADE)
     time_updated = models.DateTimeField(auto_now=True)
     course = models.ForeignKey(Course, related_name="announcements", on_delete=models.CASCADE)

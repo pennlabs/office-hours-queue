@@ -1,14 +1,14 @@
-import React from "react";
 import { Modal, Button } from "semantic-ui-react";
+import { mutateResourceFunction } from "@pennlabs/rest-hooks/dist/types";
 import { leaveCourse } from "../../../../hooks/data-fetching/dashboard";
-import { mutateFunction, Toast, UserMembership } from "../../../../types";
+import { Toast, UserMembership } from "../../../../types";
 import { logException } from "../../../../utils/sentry";
 
 interface ModalLeaveStudentCourseProps {
     open: boolean;
     leaveMembership: UserMembership;
     closeFunc: () => void;
-    mutate: mutateFunction<UserMembership[]>;
+    mutate: mutateResourceFunction<UserMembership[]>;
     toastFunc: (toast: Toast) => void;
 }
 const ModalLeaveStudentCourse = (props: ModalLeaveStudentCourseProps) => {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Grid, Button } from "semantic-ui-react";
 import { useRouter, NextRouter } from "next/router";
 import AboutModal from "../common/AboutModal";

@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Grid, Header, Segment, Message } from "semantic-ui-react";
 import Alert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
@@ -6,10 +6,10 @@ import InstructorCourses from "./InstructorCourses";
 import StudentCourses from "./StudentCourses";
 import Footer from "../../common/Footer";
 import { AuthUserContext } from "../../../context/auth";
-import { Kind, UserMembership, mutateFunction } from "../../../types";
+import { Kind, UserMembership } from "../../../types";
 import { useMemberships } from "../../../hooks/data-fetching/dashboard";
 import { isLeadershipRole } from "../../../utils/enums";
-import { SPRING_2021_TRANSITION_MESSAGE_TOKEN } from "../../../constants";
+import { FALL_2021_TRANSITION_MESSAGE_TOKEN } from "../../../constants";
 
 // TODO: try to readd new user stuff, rip out loading stuff
 const Dashboard = () => {
@@ -19,18 +19,11 @@ const Dashboard = () => {
     }
     const [messageDisp, setMessageDisp] = useState(false);
     useEffect(() => {
-        const state = localStorage.getItem(
-            SPRING_2021_TRANSITION_MESSAGE_TOKEN
-        );
+        const state = localStorage.getItem(FALL_2021_TRANSITION_MESSAGE_TOKEN);
         setMessageDisp(state !== "true");
     }, []);
 
-    const [memberships, , , mutate]: [
-        UserMembership[],
-        any,
-        boolean,
-        mutateFunction<UserMembership[]>
-    ] = useMemberships(initialUser);
+    const { memberships, mutate } = useMemberships(initialUser);
 
     const getMemberships = (isStudent: boolean): UserMembership[] => {
         return memberships.filter((membership) => {
@@ -80,7 +73,7 @@ const Dashboard = () => {
                                     onDismiss={() => {
                                         setMessageDisp(false);
                                         localStorage.setItem(
-                                            SPRING_2021_TRANSITION_MESSAGE_TOKEN,
+                                            FALL_2021_TRANSITION_MESSAGE_TOKEN,
                                             "true"
                                         );
                                     }}
@@ -88,8 +81,9 @@ const Dashboard = () => {
                                     header="Welcome back!"
                                     content={
                                         <>
-                                            Fall 2020 courses have been archived
-                                            in preparation for Spring 2021.
+                                            Spring and Summer 2021 courses have
+                                            been archived in preparation for
+                                            Fall 2021.
                                             <br />
                                             Please contact us at contact@ohq.io
                                             if this is an error.

@@ -1,13 +1,16 @@
 from django.core.management.base import BaseCommand
-from django.db.models import Avg, F
 from django.utils import timezone
 
-from ohq.models import Question, Queue, QueueStatistic
+from ohq.models import Question, Queue
+from ohq.statistics import (
+    calculate_avg_queue_wait,
+    calculate_avg_time_helping,
+    calculate_num_questions_ans,
+    calculate_num_students_helped,
+)
 
 
 class Command(BaseCommand):
-    help = "Calculates the average wait time for queues each day"
-
     def add_arguments(self, parser):
         parser.add_argument("--hist", action="store_true", help="Calculate all historic statistics")
 
@@ -29,18 +32,11 @@ class Command(BaseCommand):
                 )
 
             while iter_date <= yesterday:
-                avg = queue_questions.filter(
-                    time_asked__date=iter_date, time_response_started__isnull=False
-                ).aggregate(avg_wait=Avg(F("time_response_started") - F("time_asked")))
 
-                wait = avg["avg_wait"]
-
-                QueueStatistic.objects.update_or_create(
-                    queue=queue,
-                    metric=QueueStatistic.METRIC_LIST_WAIT_TIME_DAYS,
-                    date=iter_date,
-                    defaults={"value": wait.seconds if wait else 0},
-                )
+                calculate_avg_queue_wait(queue, iter_date)
+                calculate_avg_time_helping(queue, iter_date)
+                calculate_num_questions_ans(queue, iter_date)
+                calculate_num_students_helped(queue, iter_date)
 
                 iter_date += timezone.timedelta(days=1)
 

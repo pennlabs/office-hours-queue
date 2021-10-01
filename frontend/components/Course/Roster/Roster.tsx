@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Segment, Header, Grid, Table } from "semantic-ui-react";
 import _ from "lodash";
 import Snackbar from "@material-ui/core/Snackbar";
@@ -31,7 +31,7 @@ const Roster = (props: RosterProps) => {
         column: string;
     };
 
-    const [membershipsData, , , membershipsMutate] = useMembers(
+    const { data: membershipsData, mutate: membershipsMutate } = useMembers(
         courseId,
         rawMemberships
     );
@@ -47,14 +47,14 @@ const Roster = (props: RosterProps) => {
         );
     }
 
-    const [leader, , ,] = useStaff(courseId, initialUser);
+    const { leader } = useStaff(courseId, initialUser);
 
     /* STATE */
     const [filteredUsers, setFilteredUsers] = useState(memberships);
-    const [invitedMembersData, , , invitedMutate] = useInvitedMembers(
-        courseId,
-        invites
-    );
+    const {
+        data: invitedMembersData,
+        mutate: invitedMutate,
+    } = useInvitedMembers(courseId, invites);
 
     // invitedMembersData is non null because initialData is provided
     // and the key stays the same
@@ -186,14 +186,6 @@ const Roster = (props: RosterProps) => {
         });
     };
 
-    const setInviteResendToast = () => {
-        setToast({
-            open: true,
-            success: true,
-            message: "Invitation successfully resent",
-        });
-    };
-
     const setChangeRoleToast = () => {
         setToast({
             open: true,
@@ -212,7 +204,7 @@ const Roster = (props: RosterProps) => {
 
     const onInviteSuccess = async () => {
         setRosterUpdateToast();
-        await invitedMutate(-1, {}, "GET"); // Re-validate.
+        await invitedMutate(-1, {}, { method: "GET" }); // Re-validate.
     };
 
     const onRemoveSuccess = async (name) => {

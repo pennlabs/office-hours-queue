@@ -1,4 +1,3 @@
-import React, { MutableRefObject } from "react";
 import Head from "next/head";
 import { Grid } from "semantic-ui-react";
 import { WebsocketProvider } from "@pennlabs/rest-live-hooks";
@@ -17,6 +16,7 @@ import {
     Membership,
     Question,
     QuestionMap,
+    NotificationProps,
 } from "../../../types";
 import InstructorQueuePage from "../../../components/Course/InstructorQueuePage/InstructorQueuePage";
 import StudentQueuePage from "../../../components/Course/StudentQueuePage/StudentQueuePage";
@@ -53,9 +53,12 @@ const QueuePage = (props: QueuePageProps) => {
                 <CourseWrapper
                     course={course}
                     leadership={leadership}
+                    notificationUI={true}
                     render={(
                         staff: boolean,
-                        play: MutableRefObject<() => void>
+                        play: NotificationProps,
+                        notifs: boolean,
+                        setNotifs: (boolean) => void
                     ) => {
                         return (
                             <div>
@@ -66,6 +69,8 @@ const QueuePage = (props: QueuePageProps) => {
                                         queues={queues}
                                         questionmap={questionmap}
                                         play={play}
+                                        notifs={notifs}
+                                        setNotifs={setNotifs}
                                         tags={tags}
                                     />
                                 )}
@@ -103,11 +108,11 @@ QueuePage.getInitialProps = async (
     let announcements: Announcement[];
 
     const response = await doMultipleSuccessRequests([
-        { path: `/courses/${query.course}/`, data },
-        { path: `/courses/${query.course}/members/`, data },
-        { path: `/courses/${query.course}/queues/`, data },
-        { path: `/courses/${query.course}/tags/`, data },
-        { path: `/courses/${query.course}/announcements/`, data },
+        { path: `/api/courses/${query.course}/`, data },
+        { path: `/api/courses/${query.course}/members/`, data },
+        { path: `/api/courses/${query.course}/queues/`, data },
+        { path: `/api/courses/${query.course}/tags/`, data },
+        { path: `/api/courses/${query.course}/announcements/`, data },
     ]);
 
     if (response.success) {
@@ -120,7 +125,7 @@ QueuePage.getInitialProps = async (
             );
         }
     } else {
-        nextRedirect(context, () => true, "/404");
+        nextRedirect(context, () => true, `/?signup=${query.course}`);
         // this will never hit
         throw new Error("Next redirects: Unreachable");
     }
@@ -131,7 +136,7 @@ QueuePage.getInitialProps = async (
     const rawQuestions: Question[][] = await Promise.all(
         queues.map((queue) =>
             doApiRequest(
-                `/courses/${query.course}/queues/${queue.id}/questions/`,
+                `/api/courses/${query.course}/queues/${queue.id}/questions/`,
                 data
             ).then((res) => res.json())
         )

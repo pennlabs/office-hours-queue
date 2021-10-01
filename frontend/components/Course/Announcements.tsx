@@ -1,9 +1,4 @@
-import React, {
-    useState,
-    useEffect,
-    useContext,
-    MutableRefObject,
-} from "react";
+import { useState, useEffect, useContext } from "react";
 import {
     Accordion,
     Dropdown,
@@ -14,7 +9,7 @@ import {
     Button,
 } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
-import { Announcement, BaseUser } from "../../types";
+import { Announcement, BaseUser, NotificationProps } from "../../types";
 import { AuthUserContext } from "../../context/auth";
 import {
     useAnnouncements,
@@ -25,7 +20,7 @@ interface AnnouncementsProps {
     courseId: number;
     initialAnnouncements: Announcement[];
     staff: boolean;
-    play: MutableRefObject<() => void>;
+    play: NotificationProps;
 }
 
 interface ModalProps {
@@ -270,7 +265,7 @@ export default function Announcements(props: AnnouncementsProps) {
         const unread = calcNumUnread(announcements!, latestRead, user!);
         setNumUnread(unread);
         if (!staff && unread > 0) {
-            play.current();
+            play.current(`You have ${unread} unread announcements`);
         }
     }, [announcements, latestRead, play, staff, user]);
 
