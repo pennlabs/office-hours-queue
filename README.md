@@ -25,7 +25,8 @@ Navigate to `/backend`. Then,
   - b. `pipenv shell`
   - c. `python manage.py createsuperuser`
   - d. `python manage.py migrate`
-  - e. Ensure `python manage.py test` passes all tests.
+  - e. `python manage.py populate` to populate the database with dummy data
+  - f. Ensure `python manage.py test` passes all tests.
   Note that you might have to run migrations or reinstall dependencies if the Pipfile or models have been changed upstream.
   
 1. `docker-compose up` (run this before doing any of the manage.py commands)
