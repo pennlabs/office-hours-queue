@@ -151,6 +151,8 @@ class QueueSerializer(CourseRouteMixin):
             "rate_limit_questions",
             "rate_limit_minutes",
             "video_chat_setting",
+            "pin",
+            "is_pin_enabled",
         )
         read_only_fields = ("estimated_wait_time",)
 
@@ -163,11 +165,15 @@ class QueueSerializer(CourseRouteMixin):
         user = self.context["request"].user
         membership = Membership.objects.get(course=instance.course, user=user)
 
+        if (membership.is_ta and "active" in validated_data and validated_data["active"] == True
+                and instance.is_pin_enabled):
+                validated_data["pin"] = "" # TODO: randomly generate the pin
+
         if membership.is_leadership:  # User is a Head TA+
             return super().update(instance, validated_data)
-        else:  # User is a TA
-            if "active" in validated_data:
-                instance.active = validated_data["active"]
+        
+        if "active" in validated_data:
+            instance.active = validated_data["active"]
 
         instance.save()
         return instance
