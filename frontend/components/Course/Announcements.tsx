@@ -9,12 +9,14 @@ import {
     Button,
 } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
+import styled from "styled-components";
 import { Announcement, BaseUser, NotificationProps } from "../../types";
 import { AuthUserContext } from "../../context/auth";
 import {
     useAnnouncements,
     createAnnouncement,
 } from "../../hooks/data-fetching/course";
+import { mediaMaxWidth } from "../../styles/variables";
 
 interface AnnouncementsProps {
     courseId: number;
@@ -251,6 +253,12 @@ const calcNumUnread = (
     return unread;
 };
 
+const CreateNewText = styled.span`
+    ${mediaMaxWidth("400px")} {
+        font-size: 0;
+    }
+`;
+
 export default function Announcements(props: AnnouncementsProps) {
     const { courseId, initialAnnouncements, staff, play } = props;
     const { user } = useContext(AuthUserContext);
@@ -335,7 +343,7 @@ export default function Announcements(props: AnnouncementsProps) {
                             primary
                         >
                             <Icon name="plus" />
-                            Create New
+                            <CreateNewText>Create New</CreateNewText>
                         </Button>
                     )}
                     <Accordion.Content active={open}>
