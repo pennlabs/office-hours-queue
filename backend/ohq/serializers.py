@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
+import random, string
 
 from ohq.models import (
     Announcement,
@@ -167,7 +168,8 @@ class QueueSerializer(CourseRouteMixin):
 
         if (membership.is_ta and "active" in validated_data and validated_data["active"] == True
                 and instance.is_pin_enabled):
-                validated_data["pin"] = "" # TODO: randomly generate the pin
+                alphaNumericSet = ''.join((string.ascii_lowercase, string.digits, string.ascii_lowercase))
+                validated_data["pin"] = ''.join(random.choice(alphaNumericSet) for _ in range (5))
 
         if membership.is_leadership:  # User is a Head TA+
             return super().update(instance, validated_data)
