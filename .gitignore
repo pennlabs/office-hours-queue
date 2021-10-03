@@ -31,3 +31,7 @@ node_modules/
 
 # Firebase credentials
 ohq-firebase-*.json
+frontend/.eslintignore
+
+# yarn error
+frontend/yarn-error.log

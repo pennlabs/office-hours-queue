@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import rehypeReact from "remark-rehype";
+import rehypeStringify from "rehype-stringify";
+import ReactHtmlParser from "react-html-parser";
 
 import { Grid, Checkbox, Header, Segment } from "semantic-ui-react";
 import { diffLines } from "diff";
@@ -11,7 +13,10 @@ type mdLine = {
     color: string;
 };
 
-const processor = unified().use(remarkParse).use(rehypeReact);
+const processor = unified()
+    .use(remarkParse)
+    .use(rehypeReact)
+    .use(rehypeStringify);
 
 export default function Changelog() {
     const initial: mdLine = {
@@ -64,7 +69,11 @@ export default function Changelog() {
                                 padding: "1em",
                             }}
                         >
-                            <>{processor.processSync(part.content)}</>
+                            <>
+                                {ReactHtmlParser(
+                                    processor.processSync(part.content)
+                                )}
+                            </>
                         </div>
                     ))}
                 </>
@@ -73,25 +82,40 @@ export default function Changelog() {
             setDisplay(
                 <div style={{ display: "block", padding: "1em" }}>
                     <>
-                        {mdLine.map((part) => (
-                            <div
-                                style={{
-                                    backgroundColor: part.color,
-                                    display: "block",
-                                    padding: "1em",
-                                }}
-                            >
-                                <>{processor.processSync(part.content)}</>
-                            </div>
-                        ))}
+                        {mdLine.map(
+                            (part) =>
+                                part.color !== "#FF000070" && (
+                                    <div
+                                        style={{
+                                            backgroundColor: "#00000000",
+                                            display: "block",
+                                            padding: "1em",
+                                        }}
+                                    >
+                                        <>
+                                            {ReactHtmlParser(
+                                                processor.processSync(
+                                                    part.content
+                                                )
+                                            )}
+                                        </>
+                                    </div>
+                                )
+                        )}
                     </>
                 </div>
             );
         }
     }, [buttonToggle, mdLine]);
     return (
-        <Grid.Column width={13} style={{ padding: "2rem" }}>
-            <Grid.Row style={{ marginTop: "1rem", paddingLeft: "1em" }}>
+        <Grid.Column width={13} style={{ padding: "1rem" }}>
+            <Grid.Row
+                style={{
+                    marginTop: "1rem",
+                    paddingLeft: "1.5em",
+                    paddingTop: "1.5em",
+                }}
+            >
                 <Grid.Column>
                     <Header as="h2">
                         <Header.Content>Change Log</Header.Content>

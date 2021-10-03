@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Segment, Menu, Grid, Image } from "semantic-ui-react";
+import { Segment, Menu, Grid, Image, Container } from "semantic-ui-react";
 import Link from "next/link";
 
 import { useRouter } from "next/router";
@@ -13,7 +13,7 @@ const Sidebar = () => {
     const [showAboutModal, setShowAboutModal] = useState(false);
 
     return (
-        <Grid.Column width={3}>
+        <Grid.Column width={3} className={`${styles["about-sidebar"]}`}>
             <Segment basic>
                 <Link href="/" as="/">
                     <Image
@@ -49,19 +49,6 @@ const Sidebar = () => {
                             color="blue"
                         />
                     </Link>
-                    <Link href="/changelog" as="/changelog">
-                        <Menu.Item
-                            style={{
-                                whiteSpace: "nowrap",
-                                textOverflow: "ellipsis",
-                                overflow: "hidden",
-                            }}
-                            name="Change Log"
-                            icon="file text"
-                            active={router.pathname === "/changelog"}
-                            color="blue"
-                        />
-                    </Link>
                     <Link href="/faq" as="/faq">
                         <Menu.Item
                             style={{
@@ -76,6 +63,20 @@ const Sidebar = () => {
                         />
                     </Link>
                     <SignOutButton />
+                    <Container className={`${styles["about-changelog"]}`} />
+                    <Link href="/changelog" as="/changelog">
+                        <Menu.Item
+                            style={{
+                                whiteSpace: "nowrap",
+                                textOverflow: "ellipsis",
+                                overflow: "hidden",
+                            }}
+                            name="Changes"
+                            icon="file text"
+                            active={router.pathname === "/changelog"}
+                            color="blue"
+                        />
+                    </Link>
                 </Menu>
             </Segment>
             <div
