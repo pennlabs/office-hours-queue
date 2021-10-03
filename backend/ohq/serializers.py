@@ -167,8 +167,7 @@ class QueueSerializer(CourseRouteMixin):
         membership = Membership.objects.get(course=instance.course, user=user)
 
         # generate a random pin when the queue is opened and the queue has pin enabled
-        if ("active" in validated_data and validated_data["active"] == True
-                and instance.is_pin_enabled):
+        if ("active" in validated_data and validated_data["active"] and instance.is_pin_enabled):
             alphaNumericSet = ''.join((string.ascii_lowercase, string.digits, string.ascii_lowercase))
             validated_data["pin"] = ''.join(random.choice(alphaNumericSet) for _ in range (5))
 
