@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import * as React from "react";
 import { Modal, Button } from "semantic-ui-react";
 import AddForm from "./AddForm";
 import { sendMassInvites } from "../../../../hooks/data-fetching/course";

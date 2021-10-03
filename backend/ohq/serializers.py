@@ -72,8 +72,6 @@ class CourseSerializer(serializers.ModelSerializer):
             "semester_pretty",
             "archived",
             "invite_only",
-            "video_chat_enabled",
-            "require_video_chat_url_on_questions",
             "is_member",
         )
 
@@ -92,8 +90,6 @@ class CourseCreateSerializer(serializers.ModelSerializer):
             "semester",
             "archived",
             "invite_only",
-            "video_chat_enabled",
-            "require_video_chat_url_on_questions",
             "created_role",
         )
 
@@ -154,6 +150,7 @@ class QueueSerializer(CourseRouteMixin):
             "rate_limit_length",
             "rate_limit_questions",
             "rate_limit_minutes",
+            "video_chat_setting",
         )
         read_only_fields = ("estimated_wait_time",)
 

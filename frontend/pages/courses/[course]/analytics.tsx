@@ -1,4 +1,3 @@
-import React from "react";
 import Head from "next/head";
 import { Grid } from "semantic-ui-react";
 import { NextPageContext } from "next";
@@ -9,7 +8,7 @@ import { withProtectPage } from "../../../utils/protectpage";
 import { doMultipleSuccessRequests } from "../../../utils/fetch";
 import { isLeadershipRole } from "../../../utils/enums";
 import nextRedirect from "../../../utils/redirect";
-import { CoursePageProps, Course, Membership, Queue } from "../../../types";
+import { Course, Membership, Queue } from "../../../types";
 import Analytics from "../../../components/Course/Analytics/Analytics";
 
 interface AnalyticsPageProps {

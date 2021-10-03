@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import * as React from "react";
 import {
     Label,
     Header,
@@ -218,8 +219,8 @@ const StudentQueue = (props: StudentQueueProps) => {
                             questions.length === 0 &&
                             !queue.rateLimitEnabled && (
                                 <QuestionForm
-                                    course={course}
-                                    queueId={queue.id}
+                                    queue={queue}
+                                    courseId={course.id}
                                     queueMutate={queueMutate}
                                     mutate={mutateQuestions}
                                     toastFunc={updateToast}
@@ -234,8 +235,8 @@ const StudentQueue = (props: StudentQueueProps) => {
                                     queueId={queue.id}
                                 >
                                     <QuestionForm
-                                        course={course}
-                                        queueId={queue.id}
+                                        queue={queue}
+                                        courseId={course.id}
                                         queueMutate={queueMutate}
                                         mutate={mutateQuestions}
                                         toastFunc={updateToast}
