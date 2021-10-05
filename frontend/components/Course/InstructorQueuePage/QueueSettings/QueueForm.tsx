@@ -221,7 +221,7 @@ const QueueForm = (props: QueueFormProps) => {
                     </Form.Field>
                     <Form.Field>
                         <label htmlFor="form-desc">Question Template</label>
-                        <Form.Input
+                        <Form.TextArea
                             id="form-desc"
                             defaultValue={input.questionTemplate}
                             name="questionTemplate"
