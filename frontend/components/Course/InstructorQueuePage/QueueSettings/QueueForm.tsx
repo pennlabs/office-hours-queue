@@ -50,7 +50,7 @@ const QueueForm = (props: QueueFormProps) => {
     const [input, setInput] = useState<QueueFormInput>({
         name: queue.name,
         description: queue.description,
-        question_template: queue.question_template,
+        questionTemplate: queue.questionTemplate,
         queueId: queue.id,
         videoChatSetting: queue.videoChatSetting,
         rateLimitEnabled: queue.rateLimitEnabled,
@@ -73,7 +73,7 @@ const QueueForm = (props: QueueFormProps) => {
         input.description.length
     );
     const [templCharCount, setTemplCharCount] = useState(
-        input.question_template.length
+        input.questionTemplate.length
     );
 
     const isDisabled = useMemo(() => {
@@ -99,7 +99,7 @@ const QueueForm = (props: QueueFormProps) => {
         let isSame =
             input.name === queue.name &&
             input.description === queue.description &&
-            input.question_template === queue.question_template &&
+            input.questionTemplate === queue.questionTemplate &&
             input.videoChatSetting === queue.videoChatSetting;
         if (input.rateLimitEnabled !== queue.rateLimitEnabled) {
             isSame = false;
@@ -118,7 +118,7 @@ const QueueForm = (props: QueueFormProps) => {
     /* HANDLER FUNCTIONS */
     const handleInputChange = (e, { name, value }) => {
         if (name === "description" && value.length > 500) return;
-        if (name === "question_template" && value.length > 500) return;
+        if (name === "questionTemplate" && value.length > 500) return;
         if (name === "name" && value.length > 100) return;
 
         input[name] = value;
@@ -140,7 +140,7 @@ const QueueForm = (props: QueueFormProps) => {
 
         setInput({ ...input });
         setDescCharCount(input.description.length);
-        setTemplCharCount(input.question_template.length);
+        setTemplCharCount(input.questionTemplate.length);
         setNameCharCount(input.name.length);
     };
 
@@ -223,8 +223,8 @@ const QueueForm = (props: QueueFormProps) => {
                         <label htmlFor="form-desc">Question Template</label>
                         <Form.Input
                             id="form-desc"
-                            defaultValue={input.question_template}
-                            name="question_template"
+                            defaultValue={input.questionTemplate}
+                            name="questionTemplate"
                             disabled={loading}
                             onChange={handleInputChange}
                         />

@@ -47,7 +47,7 @@ const CreateQueue = (props: CreateQueueProps) => {
     const [input, setInput] = useState<QueueFormInput>({
         name: "",
         description: "",
-        question_template: "",
+        questionTemplate: "",
         videoChatSetting: VideoChatSetting.DISABLED,
         rateLimitEnabled: false,
         rateLimitLength: undefined,
@@ -167,7 +167,7 @@ const CreateQueue = (props: CreateQueueProps) => {
                             </label>
                             <Form.Input
                                 id="form-question-template"
-                                name="question_template"
+                                name="questionTemplate"
                                 disabled={mutateLoading}
                                 onChange={handleInputChange}
                             />
