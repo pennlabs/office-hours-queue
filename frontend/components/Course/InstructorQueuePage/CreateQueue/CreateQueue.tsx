@@ -17,6 +17,7 @@ interface CreateQueueProps {
 interface QueueFormInput {
     name: string;
     description: string;
+    questionTemplate: string;
     videoChatSetting: VideoChatSetting;
     rateLimitEnabled: boolean;
     rateLimitLength?: number;
@@ -46,6 +47,7 @@ const CreateQueue = (props: CreateQueueProps) => {
     const [input, setInput] = useState<QueueFormInput>({
         name: "",
         description: "",
+        question_template: "",
         videoChatSetting: VideoChatSetting.DISABLED,
         rateLimitEnabled: false,
         rateLimitLength: undefined,
@@ -159,7 +161,17 @@ const CreateQueue = (props: CreateQueueProps) => {
                                 onChange={handleInputChange}
                             />
                         </Form.Field>
-
+                        <Form.Field>
+                            <label htmlFor="form-question-template">
+                                Question Template
+                            </label>
+                            <Form.Input
+                                id="form-question-template"
+                                name="question_template"
+                                disabled={mutateLoading}
+                                onChange={handleInputChange}
+                            />
+                        </Form.Field>
                         <Form.Field>
                             <Form.Checkbox
                                 name="rateLimitEnabled"

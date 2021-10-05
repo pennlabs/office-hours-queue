@@ -25,7 +25,7 @@ interface QuestionFormState {
 const QuestionForm = (props: QuestionFormProps) => {
     const { courseId, queue, tags } = props;
     const [input, setInput] = useState<QuestionFormState>({
-        text: "",
+        text: queue.question_template,
         tags: [],
     });
     const charLimit: number = 250;

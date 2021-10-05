@@ -140,6 +140,7 @@ class QueueSerializer(CourseRouteMixin):
             "id",
             "name",
             "description",
+            "question_template",
             "archived",
             "estimated_wait_time",
             "active",

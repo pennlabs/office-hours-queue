@@ -195,6 +195,7 @@ class Queue(models.Model):
 
     name = models.CharField(max_length=255)
     description = models.TextField()
+    question_template = models.TextField()
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     archived = models.BooleanField(default=False)
 

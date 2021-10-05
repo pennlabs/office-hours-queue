@@ -22,6 +22,9 @@ courses = [
             {
                 "name": "Kevin-related Questions",
                 "description": "Have a question about Kevin? Ask here!",
+                "question_template": 
+                    """Tell us your favorite leg of Kevin: 
+                    Tell us your favorite arm of Kevin:""",
                 "archived": False,
                 "estimated_wait_time": 100,
                 "active": True,
@@ -51,6 +54,7 @@ courses = [
             {
                 "name": "Questions that Armaan has for Davis",
                 "description": "Code Coverage is important!",
+                "question_template": "",
                 "archived": False,
                 "estimated_wait_time": 1,
                 "active": True,
@@ -78,6 +82,7 @@ courses = [
         "department": "ART",
         "course_title": "The Crayola Perspective",
         "description": "Crayons! Markers! Learn to use these technical tools and gain new skills!",
+        
         "queues": [],
         "semester": {"year": 2020, "term": Semester.TERM_FALL},
         "archived": False,
@@ -92,6 +97,7 @@ courses = [
             {
                 "name": "Goldman Sachs Questions",
                 "description": "Free as in easy to get into? Or free as in I don't get paid?",
+                "question_template": "How much money are you willing to sell yourself out for: ",
                 "archived": False,
                 "estimated_wait_time": 10,
                 "active": True,
@@ -155,6 +161,7 @@ courses = [
             {
                 "name": "Vibing Questions",
                 "description": "Good Vibes? Join Here",
+                "question_template": "",
                 "archived": False,
                 "estimated_wait_time": 20,
                 "active": True,
@@ -190,6 +197,7 @@ courses = [
             {
                 "name": "Other Questions",
                 "description": "Questions for not so good vibes",
+                "question_template": "",
                 "archived": False,
                 "estimated_wait_time": 30,
                 "active": True,
@@ -406,6 +414,7 @@ class Command(BaseCommand):
                 newQueue, _ = Queue.objects.get_or_create(
                     name=q["name"],
                     description=q["description"],
+                    question_template=q["question_template"],
                     course=newCourse,
                     archived=q["archived"],
                     estimated_wait_time=q["estimated_wait_time"],
