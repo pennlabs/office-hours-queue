@@ -39,5 +39,5 @@ Navigate to `/frontend`. Then,
   - a. `yarn install`
 1. `yarn dev`
 
-Finally, you should be able to authenticate at [localhost:8000/admin](localhost:8000/admin) and use the application at [localhost:3000](localhost:3000)! 🎉
+Finally, you should be able to authenticate at [localhost:8000/admin](http://localhost:8000/admin) and use the application at [localhost:3000](http://localhost:3000)! 🎉
 
