@@ -132,6 +132,7 @@ courses = [
             {
                 "name": "Morgan Stanley Questions",
                 "description": "Wall Street 2 EZ",
+                "question_template": "",
                 "archived": False,
                 "estimated_wait_time": 0,
                 "active": True,
@@ -141,6 +142,7 @@ courses = [
             {
                 "name": "Questions for Rejects - Will always be closed",
                 "description": "Drop the class",
+                "question_template": "",
                 "archived": False,
                 "estimated_wait_time": 0,
                 "active": False,
@@ -224,6 +226,7 @@ courses = [
             {
                 "name": "We are archiving the bad vibes",
                 "description": "No bad vibes allowed",
+                "question_template": "",
                 "archived": True,
                 "estimated_wait_time": 0,
                 "active": False,
