@@ -22,9 +22,7 @@ courses = [
             {
                 "name": "Kevin-related Questions",
                 "description": "Have a question about Kevin? Ask here!",
-                "question_template": 
-                    """Tell us your favorite leg of Kevin: 
-                    Tell us your favorite arm of Kevin:""",
+                "question_template": "Tell us your favorite leg of Kevin: \nTell us your favorite arm of Kevin:",
                 "archived": False,
                 "estimated_wait_time": 100,
                 "active": True,
