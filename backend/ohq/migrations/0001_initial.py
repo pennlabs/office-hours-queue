@@ -68,7 +68,6 @@ class Migration(migrations.Migration):
                 ),
                 ("name", models.CharField(max_length=255)),
                 ("description", models.TextField()),
-                ("queue_template", models.TextField()),
                 ("archived", models.BooleanField(default=False)),
                 ("estimated_wait_time", models.IntegerField(default=0)),
                 ("active", models.BooleanField(default=False)),
