@@ -22,7 +22,7 @@ courses = [
             {
                 "name": "Kevin-related Questions",
                 "description": "Have a question about Kevin? Ask here!",
-                "question_template": "Tell us your favorite leg of Kevin: \nTell us your favorite arm of Kevin:",
+                "question_template": "Favorite leg of Kevin: \nFavorite arm of Kevin:",
                 "archived": False,
                 "estimated_wait_time": 100,
                 "active": True,
@@ -80,7 +80,6 @@ courses = [
         "department": "ART",
         "course_title": "The Crayola Perspective",
         "description": "Crayons! Markers! Learn to use these technical tools and gain new skills!",
-        
         "queues": [],
         "semester": {"year": 2020, "term": Semester.TERM_FALL},
         "archived": False,
