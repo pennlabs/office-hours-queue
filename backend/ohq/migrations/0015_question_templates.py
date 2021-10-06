@@ -9,6 +9,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name="queue", name="question_template", field=models.TextField(blank=True),
+            model_name="queue", name="question_template", field=models.TextField(blank=True, default=""),
         ),
     ]
