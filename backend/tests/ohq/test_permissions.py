@@ -255,7 +255,7 @@ class QueueTestCase(TestCase):
             "create",
             "post",
             reverse("ohq:queue-list", args=[self.course.id]),
-            {"name": "new", "description": "description"},
+            {"name": "new", "description": "description", "question_template": "template"},
         )
 
     @parameterized.expand(users, name_func=get_test_name)
