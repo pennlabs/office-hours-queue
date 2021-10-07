@@ -15,14 +15,18 @@ class MigrationTest(TransactionTestCase):
     migrate_from = None  # need to be defined by subclasses
     migrate_to = None  # need to be defined by subclasses
 
+    @property
+    def app(self):
+        return "ohq"
+
     def setUp(self):
         super().setUp()
         assert (
             self.migrate_to and self.migrate_from
         ), f"TestCase {type(self).__name} must define migrate_to and migrate_from properties"
 
-        self.migrate_from = [("ohq", self.migrate_from)]
-        self.migrate_to = [("ohq", self.migrate_to)]
+        self.migrate_from = [(self.app, self.migrate_from)]
+        self.migrate_to = [(self.app, self.migrate_to)]
         self.executor = MigrationExecutor(connection)
         self.pre_migration = self.executor.loader.project_state(self.migrate_from).apps
 
@@ -33,7 +37,7 @@ class MigrationTest(TransactionTestCase):
         self.addCleanup(self.force_migrate)
 
         # perform final migration setup
-        self.setUpBeforeMigration(self.pre_migration_app)
+        self.setUpBeforeMigration(self.pre_migration)
 
         # Finally apply the migration
         self.executor.loader.build_graph()
