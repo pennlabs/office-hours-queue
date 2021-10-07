@@ -63,6 +63,7 @@ export interface BaseQueue {
     course: number;
     name: string;
     description: string;
+    questionTemplate: string;
     active: boolean;
     archived: boolean;
     estimatedWaitTime: number;
