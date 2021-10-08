@@ -171,15 +171,21 @@ const QuestionCard = (props: QuestionCardProps) => {
                 tertiary={question.timeResponseStarted !== null}
                 style={{ overflowWrap: "anywhere" }}
             >
-                {question.text}
                 {question.studentDescriptor !== "" && (
-                    <>
-                        <br />
-                        <Header as="h5">Student Description</Header>
-                        {question.studentDescriptor}
-                    </>
+                    <Header as="h5">Question</Header>
                 )}
+                {question.text}
             </Segment>
+            {question.studentDescriptor !== "" && (
+                <Segment
+                    attached
+                    tertiary={question.timeResponseStarted !== null}
+                    style={{ overflowWrap: "anywhere" }}
+                >
+                    <Header as="h5">Student Description</Header>
+                    {question.studentDescriptor}
+                </Segment>
+            )}
             <Segment attached="bottom" secondary textAlign="right">
                 <Grid>
                     <Grid.Row columns="equal">

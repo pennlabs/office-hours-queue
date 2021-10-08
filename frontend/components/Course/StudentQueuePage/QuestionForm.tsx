@@ -137,7 +137,7 @@ const QuestionForm = (props: QuestionFormProps) => {
                         <Form.TextArea
                             id="form-stud-desc"
                             name="studentDescriptor"
-                            placeholder="placeholder"
+                            placeholder="right of the door wearing a red hoodie"
                             value={input.studentDescriptor}
                             onChange={handleInputChange}
                         />
