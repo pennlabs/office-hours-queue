@@ -41,3 +41,10 @@ Navigate to `/frontend`. Then,
 
 Finally, you should be able to authenticate at [localhost:8000/admin](http://localhost:8000/admin) and use the application at [localhost:3000](http://localhost:3000)! 🎉
 
+### Integration testing
+Users from the populate script all have password `pennlabs`.
+
+0. Run manually
+  - a. Navigate to `/frontend`
+  - b. `yarn cypress open`
+  - c. Double-click on `question.spec.ts`
