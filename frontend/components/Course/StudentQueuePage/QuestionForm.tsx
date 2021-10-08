@@ -20,7 +20,7 @@ interface QuestionFormState {
     text: string;
     tags: { name: string }[];
     videoChatUrl?: string;
-    studentDescriptor: string;
+    studentDescriptor?: string;
 }
 
 const QuestionForm = (props: QuestionFormProps) => {
@@ -28,13 +28,10 @@ const QuestionForm = (props: QuestionFormProps) => {
     const [input, setInput] = useState<QuestionFormState>({
         text: queue.questionTemplate,
         tags: [],
-        studentDescriptor: "",
     });
     const charLimit: number = 250;
     const [textCharCount, setTextCharCount] = useState(0);
-    const [studDescCharCount, setStudDescCharCount] = useState(
-        input.studentDescriptor.length
-    );
+    const [studDescCharCount, setStudDescCharCount] = useState(0);
     const [disabled, setDisabled] = useState(true);
     const [validURL, setValidURL] = useState(true);
     const [createPending, setCreatePending] = useState(false);
@@ -46,7 +43,7 @@ const QuestionForm = (props: QuestionFormProps) => {
         input[name] = nextValue;
         setInput({ ...input });
         setTextCharCount(input.text.length);
-        setStudDescCharCount(input.studentDescriptor.length);
+        setStudDescCharCount((input.studentDescriptor ?? "").length);
         setDisabled(
             !input.text ||
                 (queue.videoChatSetting === VideoChatSetting.REQUIRED &&

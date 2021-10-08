@@ -171,12 +171,12 @@ const QuestionCard = (props: QuestionCardProps) => {
                 tertiary={question.timeResponseStarted !== null}
                 style={{ overflowWrap: "anywhere" }}
             >
-                {question.studentDescriptor !== "" && (
+                {question.studentDescriptor && (
                     <Header as="h5">Question</Header>
                 )}
                 {question.text}
             </Segment>
-            {question.studentDescriptor !== "" && (
+            {question.studentDescriptor && (
                 <Segment
                     attached
                     tertiary={question.timeResponseStarted !== null}

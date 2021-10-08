@@ -22,7 +22,7 @@ interface EditQuestionFormState {
     text: string;
     tags: Tag[];
     videoChatUrl?: string;
-    studentDescriptor: string;
+    studentDescriptor?: string;
 }
 
 const EditQuestionModal = (props: EditQuestionModalProps) => {
@@ -34,11 +34,11 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
         text: question.text || "",
         tags: question.tags || [],
         videoChatUrl: question.videoChatUrl,
-        studentDescriptor: question.studentDescriptor || "",
+        studentDescriptor: question.studentDescriptor,
     });
     const [textCharCount, setTextCharCount] = useState(input.text.length);
     const [studDescCharCount, setStudDescCharCount] = useState(
-        input.studentDescriptor.length
+        (input.studentDescriptor ?? "").length
     );
     const loading: boolean = false;
 
@@ -61,7 +61,7 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
         input[name] = value;
         setInput({ ...input });
         setTextCharCount(input.text.length);
-        setStudDescCharCount(input.studentDescriptor.length);
+        setStudDescCharCount((input.studentDescriptor ?? "").length);
     };
 
     const handleTagChange = (_, event) => {
