@@ -1,6 +1,6 @@
 import { useContext, MutableRefObject } from "react";
 import { Grid, Segment, Header, Icon, Popup } from "semantic-ui-react";
-import CourseSidebar from "./CourseSidebar";
+import CourseSidebar from "./CourseSidebarNav";
 
 import { AuthUserContext } from "../../context/auth";
 import { useCourse, useStaff } from "../../hooks/data-fetching/course";
@@ -9,6 +9,7 @@ import * as aolAudio from "./InstructorQueuePage/aol.mp3";
 import Footer from "../common/Footer";
 import { usePlayer } from "../../hooks/player";
 import { Course as CourseType, Membership } from "../../types";
+import CourseSidebarInstructorList from "./CourseSidebarInstructorList";
 
 interface CourseProps {
     render: (
@@ -47,11 +48,17 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
     };
 
     return course ? (
-        <>
-            <CourseSidebar course={course} leadership={leadership} />
+        <Grid.Row>
+            <Grid.Column width={4}>
+                <CourseSidebar course={course} />
+            </Grid.Column>
             <Grid.Column
-                width={13}
-                style={{ display: "flex", flexDirection: "column" }}
+                width={12}
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    float: "right",
+                }}
             >
                 {course.department && (
                     <Grid columns="equal" style={{ marginBottom: "-2rem" }}>
@@ -140,7 +147,15 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                 </Segment>
                 <Footer />
             </Grid.Column>
-        </>
+            <Grid.Column style={{ clear: "left" }} width={4}>
+                {leadership && (
+                    <CourseSidebarInstructorList
+                        courseId={course.id}
+                        leadership={leadership}
+                    />
+                )}
+            </Grid.Column>
+        </Grid.Row>
     ) : (
         <></>
     );
