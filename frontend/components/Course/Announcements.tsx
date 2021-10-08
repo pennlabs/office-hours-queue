@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
     Accordion,
     Dropdown,
@@ -15,6 +15,7 @@ import {
     useAnnouncements,
     createAnnouncement,
 } from "../../hooks/data-fetching/course";
+import ResponsiveIconButton from "../common/ui/ResponsiveIconButton";
 
 interface AnnouncementsProps {
     courseId: number;
@@ -325,18 +326,26 @@ export default function Announcements(props: AnnouncementsProps) {
                         {numUnread} Unread)
                     </Accordion.Title>
                     {staff && (
-                        <Button
-                            style={{
-                                position: "absolute",
-                                right: "0.8rem",
-                                top: "0.5rem",
-                            }}
+                        // <Button
+                        //     style={{
+                        //         position: "absolute",
+                        //         right: "0.8rem",
+                        //         top: "0.5rem",
+                        //     }}
+                        //     onClick={() => setNewState(true)}
+                        //     primary
+                        // >
+                        //     <Icon name="plus" />
+                        //     Create New
+                        // </Button>
+                        <ResponsiveIconButton
                             onClick={() => setNewState(true)}
                             primary
-                        >
-                            <Icon name="plus" />
-                            Create New
-                        </Button>
+                            icon={<Icon name="plus" />}
+                            labelPosition="left"
+                            mobileProps={{ compact: true }}
+                            text="Create New"
+                        />
                     )}
                     <Accordion.Content active={open}>
                         {announcements!.map((a) => (
