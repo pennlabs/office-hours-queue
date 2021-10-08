@@ -326,24 +326,16 @@ export default function Announcements(props: AnnouncementsProps) {
                         {numUnread} Unread)
                     </Accordion.Title>
                     {staff && (
-                        // <Button
-                        //     style={{
-                        //         position: "absolute",
-                        //         right: "0.8rem",
-                        //         top: "0.5rem",
-                        //     }}
-                        //     onClick={() => setNewState(true)}
-                        //     primary
-                        // >
-                        //     <Icon name="plus" />
-                        //     Create New
-                        // </Button>
                         <ResponsiveIconButton
                             onClick={() => setNewState(true)}
                             primary
                             icon={<Icon name="plus" />}
-                            labelPosition="left"
-                            mobileProps={{ compact: true }}
+                            desktopProps={{ labelPosition: "left" }}
+                            style={{
+                                position: "absolute",
+                                right: "0.8rem",
+                                top: "0.5rem",
+                            }}
                             text="Create New"
                         />
                     )}
