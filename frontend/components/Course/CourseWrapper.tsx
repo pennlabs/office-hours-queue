@@ -48,7 +48,8 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
     };
 
     return course ? (
-        <Grid.Row>
+        // Need to override semantic UI Grid.Row's display: flex for instructor list to clear the row
+        <Grid.Row style={{ display: "block" }}>
             <Grid.Column width={4}>
                 <CourseSidebar course={course} />
             </Grid.Column>
