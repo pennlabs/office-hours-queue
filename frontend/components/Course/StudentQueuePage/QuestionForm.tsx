@@ -20,6 +20,7 @@ interface QuestionFormState {
     text: string;
     tags: { name: string }[];
     videoChatUrl?: string;
+    studentDescriptor: string;
 }
 
 const QuestionForm = (props: QuestionFormProps) => {
@@ -27,19 +28,25 @@ const QuestionForm = (props: QuestionFormProps) => {
     const [input, setInput] = useState<QuestionFormState>({
         text: queue.questionTemplate,
         tags: [],
+        studentDescriptor: "",
     });
     const charLimit: number = 250;
-    const [charCount, setCharCount] = useState(0);
+    const [textCharCount, setTextCharCount] = useState(0);
+    const [studDescCharCount, setStudDescCharCount] = useState(
+        input.studentDescriptor.length
+    );
     const [disabled, setDisabled] = useState(true);
     const [validURL, setValidURL] = useState(true);
     const [createPending, setCreatePending] = useState(false);
 
     const handleInputChange = (e, { name, value }) => {
         if (name === "text" && value.length > charLimit) return;
+        if (name === "studentDescriptor" && value.length > charLimit) return;
         const nextValue = name === "videoChatUrl" ? value.trim() : value;
         input[name] = nextValue;
         setInput({ ...input });
-        setCharCount(input.text.length);
+        setTextCharCount(input.text.length);
+        setStudDescCharCount(input.studentDescriptor.length);
         setDisabled(
             !input.text ||
                 (queue.videoChatSetting === VideoChatSetting.REQUIRED &&
@@ -118,10 +125,32 @@ const QuestionForm = (props: QuestionFormProps) => {
                         <div
                             style={{
                                 textAlign: "right",
-                                color: charCount < charLimit ? "" : "crimson",
+                                color:
+                                    textCharCount < charLimit ? "" : "crimson",
                             }}
                         >
-                            {`Characters: ${charCount}/${charLimit}`}
+                            {`Characters: ${textCharCount}/${charLimit}`}
+                        </div>
+                    </Form.Field>
+                    <Form.Field>
+                        <label htmlFor="form-desc">Student Description</label>
+                        <Form.TextArea
+                            id="form-stud-desc"
+                            name="studentDescriptor"
+                            placeholder="placeholder"
+                            value={input.studentDescriptor}
+                            onChange={handleInputChange}
+                        />
+                        <div
+                            style={{
+                                textAlign: "right",
+                                color:
+                                    studDescCharCount < charLimit
+                                        ? ""
+                                        : "crimson",
+                            }}
+                        >
+                            {`Characters: ${studDescCharCount}/${charLimit}`}
                         </div>
                     </Form.Field>
                     {(queue.videoChatSetting === VideoChatSetting.REQUIRED ||

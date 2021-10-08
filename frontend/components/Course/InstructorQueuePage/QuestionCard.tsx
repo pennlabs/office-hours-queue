@@ -172,6 +172,13 @@ const QuestionCard = (props: QuestionCardProps) => {
                 style={{ overflowWrap: "anywhere" }}
             >
                 {question.text}
+                {question.studentDescriptor !== "" && (
+                    <>
+                        <br />
+                        <Header as="h5">Student Description</Header>
+                        {question.studentDescriptor}
+                    </>
+                )}
             </Segment>
             <Segment attached="bottom" secondary textAlign="right">
                 <Grid>

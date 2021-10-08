@@ -22,6 +22,7 @@ interface EditQuestionFormState {
     text: string;
     tags: Tag[];
     videoChatUrl?: string;
+    studentDescriptor: string;
 }
 
 const EditQuestionModal = (props: EditQuestionModalProps) => {
@@ -33,8 +34,12 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
         text: question.text || "",
         tags: question.tags || [],
         videoChatUrl: question.videoChatUrl,
+        studentDescriptor: question.studentDescriptor || "",
     });
-    const [charCount, setCharCount] = useState(input.text.length);
+    const [textCharCount, setTextCharCount] = useState(input.text.length);
+    const [studDescCharCount, setStudDescCharCount] = useState(
+        input.studentDescriptor.length
+    );
     const loading: boolean = false;
 
     const isValid = useMemo(
@@ -44,6 +49,7 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
                 (input.videoChatUrl &&
                     isValidVideoChatURL(input.videoChatUrl))) &&
             (question.text !== input.text ||
+                question.studentDescriptor !== input.studentDescriptor ||
                 JSON.stringify(question.tags) !== JSON.stringify(input.tags) ||
                 question.videoChatUrl !== input.videoChatUrl),
         [input, queue, question]
@@ -51,9 +57,11 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
 
     const handleInputChange = (e, { name, value }) => {
         if (name === "text" && value.length > charLimit) return;
+        if (name === "studentDescriptor" && value.length > charLimit) return;
         input[name] = value;
         setInput({ ...input });
-        setCharCount(input.text.length);
+        setTextCharCount(input.text.length);
+        setStudDescCharCount(input.studentDescriptor.length);
     };
 
     const handleTagChange = (_, event) => {
@@ -106,8 +114,9 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
             text: question.text,
             tags: question.tags || [],
             videoChatUrl: question.videoChatUrl,
+            studentDescriptor: question.studentDescriptor,
         });
-        setCharCount(question.text.length);
+        setTextCharCount(question.text.length);
     };
 
     return (
@@ -127,10 +136,32 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
                         <div
                             style={{
                                 textAlign: "right",
-                                color: charCount < charLimit ? "" : "crimson",
+                                color:
+                                    textCharCount < charLimit ? "" : "crimson",
                             }}
                         >
-                            {`Characters: ${charCount}/${charLimit}`}
+                            {`Characters: ${textCharCount}/${charLimit}`}
+                        </div>
+                    </Form.Field>
+                    <Form.Field>
+                        <label htmlFor="form-desc">Student Description</label>
+                        <Form.TextArea
+                            id="form-stud-desc"
+                            name="studentDescriptor"
+                            placeholder="placeholder"
+                            value={input.studentDescriptor}
+                            onChange={handleInputChange}
+                        />
+                        <div
+                            style={{
+                                textAlign: "right",
+                                color:
+                                    studDescCharCount < charLimit
+                                        ? ""
+                                        : "crimson",
+                            }}
+                        >
+                            {`Characters: ${studDescCharCount}/${charLimit}`}
                         </div>
                     </Form.Field>
                     {!(
