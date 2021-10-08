@@ -47,4 +47,4 @@ Users from the populate script all have password `pennlabs`.
 0. Run manually
   - a. Navigate to `/frontend`
   - b. `yarn cypress open`
-  - c. Double-click on `question.spec.ts`
+  - c. Click on `question.spec.ts`
