@@ -1,5 +1,6 @@
 import { useContext, MutableRefObject } from "react";
 import { Grid, Segment, Header, Icon, Popup } from "semantic-ui-react";
+import { useMediaQuery } from "@material-ui/core";
 import CourseSidebar from "./CourseSidebarNav";
 
 import { AuthUserContext } from "../../context/auth";
@@ -47,18 +48,21 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
         document.body.focus();
     };
 
+    const isMobile = useMediaQuery("(max-width: 600px)"); // TODO: use variable
+
     return course ? (
         // Need to override semantic UI Grid.Row's display: flex for instructor list to clear the row
         <Grid.Row style={{ display: "block" }}>
-            <Grid.Column width={4}>
+            <Grid.Column width={3}>
                 <CourseSidebar course={course} />
             </Grid.Column>
             <Grid.Column
-                width={12}
+                width={13}
                 style={{
                     display: "flex",
                     flexDirection: "column",
                     float: "right",
+                    ...(!isMobile && { height: "100%" }),
                 }}
             >
                 {course.department && (
@@ -148,7 +152,7 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                 </Segment>
                 <Footer />
             </Grid.Column>
-            <Grid.Column style={{ clear: "left" }} width={4}>
+            <Grid.Column style={{ clear: "left" }} width={3}>
                 {leadership && (
                     <CourseSidebarInstructorList
                         courseId={course.id}
