@@ -173,6 +173,41 @@ class QueueSerializerTestCase(TestCase):
         self.queue.refresh_from_db()
         self.assertEqual(new_name, self.queue.name)
 
+    def test_generate_pin(self):
+        """
+        Pin is generated when queue is opened
+        """
+
+        # queue without pin enabled shouldn't generate pin
+        self.client.force_authenticate(user=self.head_ta)
+        old_pin = self.queue.pin
+        self.client.patch(
+            reverse("ohq:queue-detail", args=[self.course.id, self.queue.id]), {"active": True}
+        )
+        self.queue.refresh_from_db()
+        self.assertEquals(old_pin, self.queue.pin)
+
+        # queue with pin enabled generates pin
+        self.queue.is_pin_enabled = True
+        self.queue.active = False
+        self.queue.save()
+        self.client.patch(
+            reverse("ohq:queue-detail", args=[self.course.id, self.queue.id]), {"active": True}
+        )
+        self.queue.refresh_from_db()
+        self.assertNotEquals(old_pin, self.queue.pin)
+
+        self.queue.active = False
+        self.queue.save()
+        old_pin = self.queue.pin
+        self.client.force_authenticate(user=self.ta)
+        self.client.patch(
+            reverse("ohq:queue-detail", args=[self.course.id, self.queue.id]), {"active": True}
+        )
+        self.queue.refresh_from_db()
+        self.assertNotEquals(old_pin, self.queue.pin)
+
+
 
 @patch("ohq.serializers.sendUpNextNotificationTask.delay")
 class QuestionSerializerTestCase(TestCase):
