@@ -185,6 +185,7 @@ const CourseSidebar = (props: CourseSidebarProps) => {
                 <a
                     href="https://airtable.com/shrIZxIjyAE3gOUSg"
                     target="_blank"
+                    rel="noreferrer"
                 >
                     <p>Feedback</p>
                 </a>

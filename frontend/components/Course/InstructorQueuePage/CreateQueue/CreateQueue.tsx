@@ -168,7 +168,8 @@ const CreateQueue = (props: CreateQueueProps) => {
                                 onChange={() =>
                                     setInput({
                                         ...input,
-                                        rateLimitEnabled: !input.rateLimitEnabled,
+                                        rateLimitEnabled:
+                                            !input.rateLimitEnabled,
                                     })
                                 }
                             />

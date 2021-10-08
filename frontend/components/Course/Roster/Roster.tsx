@@ -51,10 +51,8 @@ const Roster = (props: RosterProps) => {
 
     /* STATE */
     const [filteredUsers, setFilteredUsers] = useState(memberships);
-    const {
-        data: invitedMembersData,
-        mutate: invitedMutate,
-    } = useInvitedMembers(courseId, invites);
+    const { data: invitedMembersData, mutate: invitedMutate } =
+        useInvitedMembers(courseId, invites);
 
     // invitedMembersData is non null because initialData is provided
     // and the key stays the same

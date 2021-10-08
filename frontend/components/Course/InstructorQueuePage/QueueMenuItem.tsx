@@ -39,14 +39,8 @@ const QuestionNotifier = ({
 };
 
 export const QueueMenuItem = (props: QueueMenuItemProps) => {
-    const {
-        queue,
-        courseId,
-        initialQuestions,
-        active,
-        setActiveQueue,
-        play,
-    } = props;
+    const { queue, courseId, initialQuestions, active, setActiveQueue, play } =
+        props;
 
     const { data: questions } = useQuestions(
         courseId,
