@@ -6,18 +6,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ohq', '0015_question_templates'),
+        ("ohq", "0015_question_templates"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='queue',
-            name='is_pin_enabled',
-            field=models.BooleanField(default=False),
+            model_name="queue", name="is_pin_enabled", field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='queue',
-            name='pin',
-            field=models.CharField(blank=True, default='', max_length=5, null=True),
+            model_name="queue",
+            name="pin",
+            field=models.CharField(blank=True, default="", max_length=5, null=True),
         ),
     ]

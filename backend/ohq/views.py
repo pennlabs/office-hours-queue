@@ -269,7 +269,7 @@ class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
 
             if num_questions_asked >= queue.rate_limit_questions:
                 return JsonResponse({"detail": "rate limited"}, status=429)
-        if (queue.is_pin_enabled and queue.pin != request.data.get("pin")):
+        if queue.is_pin_enabled and queue.pin != request.data.get("pin"):
             return JsonResponse({"detail": "incorrect pin"}, status=409)
 
         return super().create(request, *args, **kwargs)
@@ -392,10 +392,9 @@ class QueueViewSet(viewsets.ModelViewSet):
         )
 
         membership = Membership.objects.get(course=self.kwargs["course_pk"], user=self.request.user)
-        queue_objs = Queue.objects if membership != None and membership.is_ta else Queue.objects.defer("pin") 
 
         qs = (
-            queue_objs.filter(course=self.kwargs["course_pk"], archived=False)
+            Queue.objects.filter(course=self.kwargs["course_pk"], archived=False)
             .annotate(
                 questions_active=Subquery(questions_active[:1], output_field=IntegerField()),
                 questions_asked=Subquery(questions_asked[:1]),
@@ -403,6 +402,7 @@ class QueueViewSet(viewsets.ModelViewSet):
             )
             .order_by("id")
         )
+
         return prefetch(qs, self.serializer_class)
 
     @action(methods=["POST"], detail=True)

@@ -1,10 +1,12 @@
+import random
+import string
+
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
-import random, string
 
 from ohq.models import (
     Announcement,
@@ -134,6 +136,7 @@ class QueueSerializer(CourseRouteMixin):
     questions_active = serializers.IntegerField(default=0, read_only=True)
     questions_asked = serializers.IntegerField(default=0, read_only=True)
     staff_active = serializers.IntegerField(default=0, read_only=True)
+    pin = serializers.SerializerMethodField()
 
     class Meta:
         model = Queue
@@ -168,20 +171,32 @@ class QueueSerializer(CourseRouteMixin):
         membership = Membership.objects.get(course=instance.course, user=user)
 
         # generate a random pin when the queue is opened and the queue has pin enabled
-        if ("active" in validated_data and validated_data["active"] and instance.is_pin_enabled):
-            validated_data["pin"] = ''.join(random.choices(string.ascii_letters + string.digits, k=5))
+        if "active" in validated_data and validated_data["active"] and instance.is_pin_enabled:
+            validated_data["pin"] = "".join(
+                random.choices(string.ascii_letters + string.digits, k=5)
+            )
 
         if membership.is_leadership:  # User is a Head TA+
             return super().update(instance, validated_data)
-        
+
         if "active" in validated_data:
             instance.active = validated_data["active"]
-        
+
         if "pin" in validated_data:
             instance.pin = validated_data["pin"]
 
         instance.save()
         return instance
+
+    def get_pin(self, instance):
+        # only TAs can get pin
+        user = self.context["request"].user
+        membership = Membership.objects.get(course=instance.course, user=user)
+
+        if membership is None or not membership.is_ta:
+            return None
+
+        return instance.pin
 
 
 class TagSerializer(CourseRouteMixin):

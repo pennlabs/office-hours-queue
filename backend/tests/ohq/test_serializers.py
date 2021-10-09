@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from unittest.mock import patch
 
@@ -126,12 +127,21 @@ class QueueSerializerTestCase(TestCase):
         )
         self.name = "Queue"
         self.queue = Queue.objects.create(name=self.name, course=self.course)
+        self.pin = "AAAAA"
+        self.pin_queue_name = "Pin Queue"
+        self.pin_queue = Queue.objects.create(
+            name=self.pin_queue_name, course=self.course, is_pin_enabled=True, pin=self.pin
+        )
         self.head_ta = User.objects.create(username="head_ta")
         self.ta = User.objects.create(username="ta")
+        self.student = User.objects.create(username="student")
         Membership.objects.create(
             course=self.course, user=self.head_ta, kind=Membership.KIND_HEAD_TA
         )
         Membership.objects.create(course=self.course, user=self.ta, kind=Membership.KIND_TA)
+        Membership.objects.create(
+            course=self.course, user=self.student, kind=Membership.KIND_STUDENT
+        )
 
     def test_update_active_ta(self):
         """
@@ -175,9 +185,8 @@ class QueueSerializerTestCase(TestCase):
 
     def test_generate_pin(self):
         """
-        Pin is generated when queue is opened
+        Ensure pin is generated when queue is opened
         """
-
         # queue without pin enabled shouldn't generate pin
         self.client.force_authenticate(user=self.head_ta)
         old_pin = self.queue.pin
@@ -207,6 +216,25 @@ class QueueSerializerTestCase(TestCase):
         self.queue.refresh_from_db()
         self.assertNotEquals(old_pin, self.queue.pin)
 
+    def test_get_pin(self):
+        """ 
+        Ensure only TAs can get pin in queue detail
+        """
+        # student should not get pin
+        self.client.force_authenticate(user=self.student)
+        response = self.client.get(
+            reverse("ohq:queue-detail", args=[self.course.id, self.pin_queue.id])
+        )
+        content = json.loads(response.content)
+        self.assertTrue(content["pin"] is None)
+
+        # TAs should get pin
+        self.client.force_authenticate(user=self.ta)
+        response = self.client.get(
+            reverse("ohq:queue-detail", args=[self.course.id, self.pin_queue.id])
+        )
+        content = json.loads(response.content)
+        self.assertEquals(content["pin"], self.pin)
 
 
 @patch("ohq.serializers.sendUpNextNotificationTask.delay")
