@@ -133,27 +133,29 @@ const QuestionForm = (props: QuestionFormProps) => {
                             {`Characters: ${textCharCount}/${textCharLimit}`}
                         </div>
                     </Form.Field>
-                    <Form.Field>
-                        <label htmlFor="form-desc">Describe Yourself</label>
-                        <Form.TextArea
-                            id="form-stud-desc"
-                            name="studentDescriptor"
-                            placeholder="right of the door wearing a red hoodie"
-                            value={input.studentDescriptor}
-                            onChange={handleInputChange}
-                        />
-                        <div
-                            style={{
-                                textAlign: "right",
-                                color:
-                                    studDescCharCount < studDescCharLimit
-                                        ? ""
-                                        : "crimson",
-                            }}
-                        >
-                            {`Characters: ${studDescCharCount}/${studDescCharLimit}`}
-                        </div>
-                    </Form.Field>
+                    {queue.videoChatSetting !== VideoChatSetting.REQUIRED && (
+                        <Form.Field>
+                            <label htmlFor="form-desc">Describe Yourself</label>
+                            <Form.TextArea
+                                id="form-stud-desc"
+                                name="studentDescriptor"
+                                placeholder="right of the door wearing a red hoodie"
+                                value={input.studentDescriptor}
+                                onChange={handleInputChange}
+                            />
+                            <div
+                                style={{
+                                    textAlign: "right",
+                                    color:
+                                        studDescCharCount < studDescCharLimit
+                                            ? ""
+                                            : "crimson",
+                                }}
+                            >
+                                {`Characters: ${studDescCharCount}/${studDescCharLimit}`}
+                            </div>
+                        </Form.Field>
+                    )}
                     {(queue.videoChatSetting === VideoChatSetting.REQUIRED ||
                         queue.videoChatSetting ===
                             VideoChatSetting.OPTIONAL) && (
