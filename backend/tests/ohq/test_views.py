@@ -254,11 +254,11 @@ class QuestionViewTestCase(TestCase):
 
         self.client.post(
             reverse("ohq:question-list", args=[self.course.id, self.pin_queue.id]),
-            {"text": "Help me", "tags": [], "pin": "AAAAA"}
+            {"text": "Help me", "tags": [], "pin": self.pin}
         )
         self.assertEqual (1, Question.objects.all().count())
 
-        # queue with pin enabled does not require pin in post data
+        # queue without pin enabled does not require pin in post data
         self.client.post(
             reverse("ohq:question-list", args=[self.course.id, self.no_limit_queue.id]),
             {"text": "Help me", "tags": []}
