@@ -28,7 +28,8 @@ interface EditQuestionFormState {
 const EditQuestionModal = (props: EditQuestionModalProps) => {
     const { question, queue, open, setOpen, mutate, toastFunc, tags } = props;
 
-    const charLimit: number = 250;
+    const textCharLimit: number = 250;
+    const studDescCharLimit: number = 100;
     const [input, setInput] = useState<EditQuestionFormState>({
         questionId: question.id,
         text: question.text || "",
@@ -56,8 +57,9 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
     );
 
     const handleInputChange = (e, { name, value }) => {
-        if (name === "text" && value.length > charLimit) return;
-        if (name === "studentDescriptor" && value.length > charLimit) return;
+        if (name === "text" && value.length > textCharLimit) return;
+        if (name === "studentDescriptor" && value.length > studDescCharLimit)
+            return;
         input[name] = value;
         setInput({ ...input });
         setTextCharCount(input.text.length);
@@ -137,14 +139,16 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
                             style={{
                                 textAlign: "right",
                                 color:
-                                    textCharCount < charLimit ? "" : "crimson",
+                                    textCharCount < textCharLimit
+                                        ? ""
+                                        : "crimson",
                             }}
                         >
-                            {`Characters: ${textCharCount}/${charLimit}`}
+                            {`Characters: ${textCharCount}/${textCharLimit}`}
                         </div>
                     </Form.Field>
                     <Form.Field>
-                        <label htmlFor="form-desc">Student Description</label>
+                        <label htmlFor="form-desc">Describe Yourself</label>
                         <Form.TextArea
                             id="form-stud-desc"
                             name="studentDescriptor"
@@ -157,12 +161,12 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
                             style={{
                                 textAlign: "right",
                                 color:
-                                    studDescCharCount < charLimit
+                                    studDescCharCount < studDescCharLimit
                                         ? ""
                                         : "crimson",
                             }}
                         >
-                            {`Characters: ${studDescCharCount}/${charLimit}`}
+                            {`Characters: ${studDescCharCount}/${studDescCharLimit}`}
                         </div>
                     </Form.Field>
                     {!(

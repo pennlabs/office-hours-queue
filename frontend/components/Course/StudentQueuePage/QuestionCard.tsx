@@ -126,7 +126,7 @@ const QuestionCard = (props: QuestionCardProps) => {
                     tertiary={question.timeResponseStarted !== null}
                     style={{ overflowWrap: "anywhere" }}
                 >
-                    <Header as="h5">Student Description</Header>
+                    <Header as="h5">Describe Yourself</Header>
                     {question.studentDescriptor}
                 </Segment>
             )}

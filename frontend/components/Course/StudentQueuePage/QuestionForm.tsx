@@ -29,7 +29,8 @@ const QuestionForm = (props: QuestionFormProps) => {
         text: queue.questionTemplate,
         tags: [],
     });
-    const charLimit: number = 250;
+    const textCharLimit: number = 250;
+    const studDescCharLimit: number = 100;
     const [textCharCount, setTextCharCount] = useState(0);
     const [studDescCharCount, setStudDescCharCount] = useState(0);
     const [disabled, setDisabled] = useState(true);
@@ -37,8 +38,9 @@ const QuestionForm = (props: QuestionFormProps) => {
     const [createPending, setCreatePending] = useState(false);
 
     const handleInputChange = (e, { name, value }) => {
-        if (name === "text" && value.length > charLimit) return;
-        if (name === "studentDescriptor" && value.length > charLimit) return;
+        if (name === "text" && value.length > textCharLimit) return;
+        if (name === "studentDescriptor" && value.length > studDescCharLimit)
+            return;
         const nextValue = name === "videoChatUrl" ? value.trim() : value;
         input[name] = nextValue;
         setInput({ ...input });
@@ -123,14 +125,16 @@ const QuestionForm = (props: QuestionFormProps) => {
                             style={{
                                 textAlign: "right",
                                 color:
-                                    textCharCount < charLimit ? "" : "crimson",
+                                    textCharCount < textCharLimit
+                                        ? ""
+                                        : "crimson",
                             }}
                         >
-                            {`Characters: ${textCharCount}/${charLimit}`}
+                            {`Characters: ${textCharCount}/${textCharLimit}`}
                         </div>
                     </Form.Field>
                     <Form.Field>
-                        <label htmlFor="form-desc">Student Description</label>
+                        <label htmlFor="form-desc">Describe Yourself</label>
                         <Form.TextArea
                             id="form-stud-desc"
                             name="studentDescriptor"
@@ -142,12 +146,12 @@ const QuestionForm = (props: QuestionFormProps) => {
                             style={{
                                 textAlign: "right",
                                 color:
-                                    studDescCharCount < charLimit
+                                    studDescCharCount < studDescCharLimit
                                         ? ""
                                         : "crimson",
                             }}
                         >
-                            {`Characters: ${studDescCharCount}/${charLimit}`}
+                            {`Characters: ${studDescCharCount}/${studDescCharLimit}`}
                         </div>
                     </Form.Field>
                     {(queue.videoChatSetting === VideoChatSetting.REQUIRED ||
