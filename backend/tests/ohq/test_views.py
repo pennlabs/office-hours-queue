@@ -132,7 +132,9 @@ class QuestionViewTestCase(TestCase):
             rate_limit_questions=2,
         )
         self.pin = "AAAAA"
-        self.pin_queue = Queue.objects.create(name="Pin Queue", course=self.course, is_pin_enabled=True, pin=self.pin)
+        self.pin_queue = Queue.objects.create(
+            name="Pin Queue", course=self.course, is_pin_enabled=True, pin=self.pin
+        )
         self.no_limit_queue = Queue.objects.create(name="No Rate Limit Queue", course=self.course)
         self.ta = User.objects.create(username="ta")
         self.student = User.objects.create(username="student")
@@ -235,32 +237,32 @@ class QuestionViewTestCase(TestCase):
         )
         self.assertEqual(0, json.loads(res.content)["wait_time_mins"])
 
-    def test_create_with_pin (self) :
+    def test_create_with_pin(self):
         self.client.force_authenticate(user=self.student)
         Question.objects.all().delete()
 
         # correct pin is required in queues with pin_enabled
         self.client.post(
             reverse("ohq:question-list", args=[self.course.id, self.pin_queue.id]),
-            {"text": "Help me", "tags": []}
+            {"text": "Help me", "tags": []},
         )
-        self.assertEqual (0, Question.objects.all().count())
+        self.assertEqual(0, Question.objects.all().count())
 
         self.client.post(
             reverse("ohq:question-list", args=[self.course.id, self.pin_queue.id]),
-            {"text": "Help me", "tags": [], "pin": "BBBBB"}
+            {"text": "Help me", "tags": [], "pin": "BBBBB"},
         )
-        self.assertEqual (0, Question.objects.all().count())
+        self.assertEqual(0, Question.objects.all().count())
 
         self.client.post(
             reverse("ohq:question-list", args=[self.course.id, self.pin_queue.id]),
-            {"text": "Help me", "tags": [], "pin": self.pin}
+            {"text": "Help me", "tags": [], "pin": self.pin},
         )
-        self.assertEqual (1, Question.objects.all().count())
+        self.assertEqual(1, Question.objects.all().count())
 
         # queue without pin enabled does not require pin in post data
         self.client.post(
             reverse("ohq:question-list", args=[self.course.id, self.no_limit_queue.id]),
-            {"text": "Help me", "tags": []}
+            {"text": "Help me", "tags": []},
         )
-        self.assertEqual (2, Question.objects.all().count())
+        self.assertEqual(2, Question.objects.all().count())
