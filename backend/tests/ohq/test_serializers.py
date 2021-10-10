@@ -217,7 +217,7 @@ class QueueSerializerTestCase(TestCase):
         self.assertNotEquals(old_pin, self.queue.pin)
 
     def test_get_pin(self):
-        """ 
+        """
         Ensure only TAs can get pin in queue detail
         """
         # student should not get pin

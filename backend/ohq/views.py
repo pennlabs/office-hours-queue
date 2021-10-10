@@ -391,8 +391,6 @@ class QueueViewSet(viewsets.ModelViewSet):
             .values("count")
         )
 
-        membership = Membership.objects.get(course=self.kwargs["course_pk"], user=self.request.user)
-
         qs = (
             Queue.objects.filter(course=self.kwargs["course_pk"], archived=False)
             .annotate(
