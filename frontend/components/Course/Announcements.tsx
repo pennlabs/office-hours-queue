@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
     Accordion,
     Dropdown,
@@ -15,6 +15,7 @@ import {
     useAnnouncements,
     createAnnouncement,
 } from "../../hooks/data-fetching/course";
+import ResponsiveIconButton from "../common/ui/ResponsiveIconButton";
 
 interface AnnouncementsProps {
     courseId: number;
@@ -325,18 +326,18 @@ export default function Announcements(props: AnnouncementsProps) {
                         {numUnread} Unread)
                     </Accordion.Title>
                     {staff && (
-                        <Button
+                        <ResponsiveIconButton
+                            onClick={() => setNewState(true)}
+                            primary
+                            icon={<Icon name="plus" />}
+                            desktopProps={{ labelPosition: "left" }}
                             style={{
                                 position: "absolute",
                                 right: "0.8rem",
                                 top: "0.5rem",
                             }}
-                            onClick={() => setNewState(true)}
-                            primary
-                        >
-                            <Icon name="plus" />
-                            Create New
-                        </Button>
+                            text="Create New"
+                        />
                     )}
                     <Accordion.Content active={open}>
                         {announcements!.map((a) => (
