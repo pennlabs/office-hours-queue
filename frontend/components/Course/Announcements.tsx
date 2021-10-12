@@ -227,12 +227,13 @@ const AnnouncementMessage = ({
                         style={{
                             whiteSpace: "break-spaces",
                             wordBreak: "break-word",
+                            marginBottom: "0px",
                         }}
                     >
                         {announcement.content}
                     </p>
                     <br />
-                    <p style={{ color: "#666666" }}>
+                    <p style={{ color: "#666666", marginTop: "0px" }}>
                         Posted{" "}
                         {new Date(announcement.timeUpdated).toLocaleString(
                             "en-us"
