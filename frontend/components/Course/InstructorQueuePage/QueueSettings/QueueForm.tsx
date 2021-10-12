@@ -19,6 +19,8 @@ interface QueueFormInput {
     questionTemplate: string;
     queueId: number;
     videoChatSetting: VideoChatSetting;
+    fstTimer: number;
+    sndTimer: number;
     rateLimitEnabled: boolean;
     rateLimitLength?: number;
     rateLimitQuestions?: number;
@@ -51,6 +53,8 @@ const QueueForm = (props: QueueFormProps) => {
         name: queue.name,
         description: queue.description,
         questionTemplate: queue.questionTemplate,
+        fstTimer: queue.fstTimer,
+        sndTimer: queue.sndTimer,
         queueId: queue.id,
         videoChatSetting: queue.videoChatSetting,
         rateLimitEnabled: queue.rateLimitEnabled,
