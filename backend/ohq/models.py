@@ -199,6 +199,11 @@ class Queue(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     archived = models.BooleanField(default=False)
 
+    # Two timers to alert TAs when they should be finishing up the call, in minutes.
+    # Defaults to zero minutes, meaning no timer.
+    fst_timer = models.IntegerField(default=0)
+    snd_timer = models.IntegerField(default=0)
+
     # Estimated wait time for the queue, in minutes
     estimated_wait_time = models.IntegerField(default=-1)
     active = models.BooleanField(default=False)

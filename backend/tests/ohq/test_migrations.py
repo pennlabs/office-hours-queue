@@ -83,3 +83,29 @@ class TestQuestionTemplatesMigration(MigrationTest):
 
         # The question_template is "" by default
         self.assertIs(queue.question_template, "")
+
+class TestQueueTimersMigration(MigrationTest):
+    migrate_from = "0015_question_templates"
+    migrate_to = "0016_queue_timers"
+
+    def setUpBeforeMigration(self, pre_migration):
+        self.semester = pre_migration.get_model(self.app, "Semester").objects.create(
+            year=2020, term=Semester.TERM_SUMMER
+        )
+        self.course = pre_migration.get_model(self.app, "Course").objects.create(
+            course_code="000", department="Penn Labs", semester=self.semester
+        )
+        self.queue = pre_migration.get_model(self.app, "Queue").objects.create(
+            name="Queue", course=self.course
+        )
+
+    def test_question_templates_migrated(self):
+        queue = self.post_migration.get_model(self.app, "Queue").objects.get(id=self.queue.id)
+
+        # The queue created before migration now has both timers
+        self.assertIs(hasattr(queue, "fst_timer"), True)
+        self.assertIs(hasattr(queue, "snd_timer"), True)
+
+        # Both timers are None.
+        self.assertIs(queue.fst_timer, 0)
+        self.assertIs(queue.snd_timer, 0)
