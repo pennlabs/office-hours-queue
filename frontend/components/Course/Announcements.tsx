@@ -223,7 +223,14 @@ const AnnouncementMessage = ({
                 <Icon name="comment alternate outline" />
                 <Message.Content style={{ paddingBottom: "1rem" }}>
                     <Message.Header>{`From ${announcement.author.firstName}`}</Message.Header>
-                    {announcement.content}
+                    <p
+                        style={{
+                            whiteSpace: "break-spaces",
+                            wordBreak: "break-word",
+                        }}
+                    >
+                        {announcement.content}
+                    </p>
                     <br />
                     <p style={{ color: "#666666" }}>
                         Posted{" "}
