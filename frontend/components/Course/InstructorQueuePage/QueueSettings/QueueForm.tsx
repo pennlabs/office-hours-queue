@@ -42,6 +42,8 @@ const castInt = (n: string): number | undefined => {
 
 const QueueForm = (props: QueueFormProps) => {
     /* STATE */
+    const descCharLimit: number = 1000;
+    const templCharLimit: number = 1000;
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -117,8 +119,9 @@ const QueueForm = (props: QueueFormProps) => {
 
     /* HANDLER FUNCTIONS */
     const handleInputChange = (e, { name, value }) => {
-        if (name === "description" && value.length > 500) return;
-        if (name === "questionTemplate" && value.length > 500) return;
+        if (name === "description" && value.length > descCharLimit) return;
+        if (name === "questionTemplate" && value.length > templCharLimit)
+            return;
         if (name === "name" && value.length > 100) return;
 
         input[name] = value;
@@ -213,10 +216,13 @@ const QueueForm = (props: QueueFormProps) => {
                         <div
                             style={{
                                 textAlign: "right",
-                                color: descCharCount < 500 ? "" : "crimson",
+                                color:
+                                    descCharCount < descCharLimit
+                                        ? ""
+                                        : "crimson",
                             }}
                         >
-                            {`Characters: ${descCharCount}/500`}
+                            {`Characters: ${descCharCount}/${descCharLimit}`}
                         </div>
                     </Form.Field>
                     <Form.Field>
@@ -231,10 +237,13 @@ const QueueForm = (props: QueueFormProps) => {
                         <div
                             style={{
                                 textAlign: "right",
-                                color: templCharCount < 500 ? "" : "crimson",
+                                color:
+                                    templCharCount < templCharLimit
+                                        ? ""
+                                        : "crimson",
                             }}
                         >
-                            {`Characters: ${templCharCount}/500`}
+                            {`Characters: ${templCharCount}/${templCharLimit}`}
                         </div>
                     </Form.Field>
                     <Form.Field>
