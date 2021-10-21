@@ -28,7 +28,7 @@ const QuestionForm = (props: QuestionFormProps) => {
         text: queue.questionTemplate,
         tags: [],
     });
-    const charLimit: number = 250;
+    const charLimit: number = 1000;
     const [charCount, setCharCount] = useState(0);
     const [disabled, setDisabled] = useState(true);
     const [validURL, setValidURL] = useState(true);
