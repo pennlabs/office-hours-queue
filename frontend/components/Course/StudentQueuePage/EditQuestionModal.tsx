@@ -6,6 +6,7 @@ import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import { Question, Queue, Tag, VideoChatSetting } from "../../../types";
 import { logException } from "../../../utils/sentry";
 import { isValidVideoChatURL } from "../../../utils";
+import { STUD_DESC_CHAR_LIMIT, TEXT_CHAR_LIMIT } from "../../../constants";
 
 interface EditQuestionModalProps {
     queue: Queue;
@@ -22,19 +23,22 @@ interface EditQuestionFormState {
     text: string;
     tags: Tag[];
     videoChatUrl?: string;
+    studentDescriptor: string;
 }
 
 const EditQuestionModal = (props: EditQuestionModalProps) => {
     const { question, queue, open, setOpen, mutate, toastFunc, tags } = props;
-
-    const charLimit: number = 250;
     const [input, setInput] = useState<EditQuestionFormState>({
         questionId: question.id,
         text: question.text || "",
         tags: question.tags || [],
         videoChatUrl: question.videoChatUrl,
+        studentDescriptor: question.studentDescriptor || "",
     });
-    const [charCount, setCharCount] = useState(input.text.length);
+    const [textCharCount, setTextCharCount] = useState(input.text.length);
+    const [studDescCharCount, setStudDescCharCount] = useState(
+        input.studentDescriptor.length
+    );
     const loading: boolean = false;
 
     const isValid = useMemo(
@@ -44,16 +48,20 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
                 (input.videoChatUrl &&
                     isValidVideoChatURL(input.videoChatUrl))) &&
             (question.text !== input.text ||
+                question.studentDescriptor !== input.studentDescriptor ||
                 JSON.stringify(question.tags) !== JSON.stringify(input.tags) ||
                 question.videoChatUrl !== input.videoChatUrl),
         [input, queue, question]
     );
 
     const handleInputChange = (e, { name, value }) => {
-        if (name === "text" && value.length > charLimit) return;
+        if (name === "text" && value.length > TEXT_CHAR_LIMIT) return;
+        if (name === "studentDescriptor" && value.length > STUD_DESC_CHAR_LIMIT)
+            return;
         input[name] = value;
         setInput({ ...input });
-        setCharCount(input.text.length);
+        setTextCharCount(input.text.length);
+        setStudDescCharCount(input.studentDescriptor.length);
     };
 
     const handleTagChange = (_, event) => {
@@ -106,8 +114,9 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
             text: question.text,
             tags: question.tags || [],
             videoChatUrl: question.videoChatUrl,
+            studentDescriptor: question.studentDescriptor || "",
         });
-        setCharCount(question.text.length);
+        setTextCharCount(question.text.length);
     };
 
     return (
@@ -127,12 +136,39 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
                         <div
                             style={{
                                 textAlign: "right",
-                                color: charCount < charLimit ? "" : "crimson",
+                                color:
+                                    textCharCount < TEXT_CHAR_LIMIT
+                                        ? ""
+                                        : "crimson",
                             }}
                         >
-                            {`Characters: ${charCount}/${charLimit}`}
+                            {`Characters: ${textCharCount}/${TEXT_CHAR_LIMIT}`}
                         </div>
                     </Form.Field>
+                    {queue.videoChatSetting !== VideoChatSetting.REQUIRED && (
+                        <Form.Field>
+                            <label htmlFor="form-desc">Describe Yourself</label>
+                            <Form.TextArea
+                                id="form-stud-desc"
+                                name="studentDescriptor"
+                                disabled={loading}
+                                placeholder="Beside the window, wearing a red hoodie"
+                                value={input.studentDescriptor}
+                                onChange={handleInputChange}
+                            />
+                            <div
+                                style={{
+                                    textAlign: "right",
+                                    color:
+                                        studDescCharCount < STUD_DESC_CHAR_LIMIT
+                                            ? ""
+                                            : "crimson",
+                                }}
+                            >
+                                {`Characters: ${studDescCharCount}/${STUD_DESC_CHAR_LIMIT}`}
+                            </div>
+                        </Form.Field>
+                    )}
                     {!(
                         queue.videoChatSetting === VideoChatSetting.DISABLED
                     ) && (
