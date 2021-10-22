@@ -112,6 +112,7 @@ export interface Question {
     tags: Tag[];
     note: string;
     resolvedNote: boolean;
+    studentDescriptor?: string;
     // this is a marker field for subscribe requests
     // it should never have a value
     // eslint-disable-next-line

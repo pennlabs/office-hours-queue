@@ -6,6 +6,7 @@ import { isValidVideoChatURL } from "../../../utils";
 import { createQuestion } from "../../../hooks/data-fetching/course";
 import { Question, Queue, Tag, VideoChatSetting } from "../../../types";
 import { logException } from "../../../utils/sentry";
+import { STUD_DESC_CHAR_LIMIT, TEXT_CHAR_LIMIT } from "../../../constants";
 
 interface QuestionFormProps {
     courseId: number;
@@ -20,6 +21,7 @@ interface QuestionFormState {
     text: string;
     tags: { name: string }[];
     videoChatUrl?: string;
+    studentDescriptor: string;
 }
 
 const QuestionForm = (props: QuestionFormProps) => {
@@ -27,19 +29,23 @@ const QuestionForm = (props: QuestionFormProps) => {
     const [input, setInput] = useState<QuestionFormState>({
         text: queue.questionTemplate,
         tags: [],
+        studentDescriptor: "",
     });
-    const charLimit: number = 1000;
-    const [charCount, setCharCount] = useState(0);
+    const [textCharCount, setTextCharCount] = useState(0);
+    const [studDescCharCount, setStudDescCharCount] = useState(0);
     const [disabled, setDisabled] = useState(true);
     const [validURL, setValidURL] = useState(true);
     const [createPending, setCreatePending] = useState(false);
 
     const handleInputChange = (e, { name, value }) => {
-        if (name === "text" && value.length > charLimit) return;
+        if (name === "text" && value.length > TEXT_CHAR_LIMIT) return;
+        if (name === "studentDescriptor" && value.length > STUD_DESC_CHAR_LIMIT)
+            return;
         const nextValue = name === "videoChatUrl" ? value.trim() : value;
         input[name] = nextValue;
         setInput({ ...input });
-        setCharCount(input.text.length);
+        setTextCharCount(input.text.length);
+        setStudDescCharCount(input.studentDescriptor.length);
         setDisabled(
             !input.text ||
                 (queue.videoChatSetting === VideoChatSetting.REQUIRED &&
@@ -118,12 +124,38 @@ const QuestionForm = (props: QuestionFormProps) => {
                         <div
                             style={{
                                 textAlign: "right",
-                                color: charCount < charLimit ? "" : "crimson",
+                                color:
+                                    textCharCount < TEXT_CHAR_LIMIT
+                                        ? ""
+                                        : "crimson",
                             }}
                         >
-                            {`Characters: ${charCount}/${charLimit}`}
+                            {`Characters: ${textCharCount}/${TEXT_CHAR_LIMIT}`}
                         </div>
                     </Form.Field>
+                    {queue.videoChatSetting !== VideoChatSetting.REQUIRED && (
+                        <Form.Field>
+                            <label htmlFor="form-desc">Describe Yourself</label>
+                            <Form.TextArea
+                                id="form-stud-desc"
+                                name="studentDescriptor"
+                                placeholder="Beside the window, wearing a red hoodie"
+                                value={input.studentDescriptor}
+                                onChange={handleInputChange}
+                            />
+                            <div
+                                style={{
+                                    textAlign: "right",
+                                    color:
+                                        studDescCharCount < STUD_DESC_CHAR_LIMIT
+                                            ? ""
+                                            : "crimson",
+                                }}
+                            >
+                                {`Characters: ${studDescCharCount}/${STUD_DESC_CHAR_LIMIT}`}
+                            </div>
+                        </Form.Field>
+                    )}
                     {(queue.videoChatSetting === VideoChatSetting.REQUIRED ||
                         queue.videoChatSetting ===
                             VideoChatSetting.OPTIONAL) && (
