@@ -56,10 +56,10 @@ const Dashboard = () => {
             {memberships && (
                 <Grid padded stackable>
                     <Grid.Row>
-                        <Segment basic padded>
-                            <Header as="h2">
-                                <Header.Content>Student Courses</Header.Content>
-                            </Header>
+                        <Segment basic>
+                            <Segment basic>
+                                <Header as="h2">Student Courses</Header>
+                            </Segment>
                         </Segment>
                         {messageDisp && (
                             <div
@@ -100,12 +100,12 @@ const Dashboard = () => {
                     {showInstructorCourses && (
                         <>
                             <Grid.Row>
-                                <Segment basic padded>
-                                    <Header as="h2">
-                                        <Header.Content>
+                                <Segment basic>
+                                    <Segment basic>
+                                        <Header as="h2">
                                             Instructor Courses
-                                        </Header.Content>
-                                    </Header>
+                                        </Header>
+                                    </Segment>
                                 </Segment>
                             </Grid.Row>
                             <InstructorCourses
