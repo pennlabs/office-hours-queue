@@ -54,8 +54,8 @@ const Dashboard = () => {
             style={{ display: "flex", flexDirection: "column" }}
         >
             {memberships && (
-                <Grid padded stackable>
-                    <Grid.Row>
+                <Grid padded stackable container>
+                    <Grid.Row padded>
                         <Segment basic padded>
                             <Header as="h2">
                                 <Header.Content>Student Courses</Header.Content>

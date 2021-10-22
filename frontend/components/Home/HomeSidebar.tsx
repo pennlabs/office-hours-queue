@@ -13,7 +13,7 @@ const Sidebar = () => {
     const [showAboutModal, setShowAboutModal] = useState(false);
 
     return (
-        <Grid.Column width={3}>
+        <Grid.Column width={3} top>
             <Segment basic>
                 <Link href="/" as="/">
                     <Image
