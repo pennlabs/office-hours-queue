@@ -122,7 +122,14 @@ const StudentQueue = (props: StudentQueueProps) => {
         <>
             <Header as="h3" style={{ flexGrow: 0 }}>
                 {queue.name}
-                <Header.Subheader>{queue.description}</Header.Subheader>
+                <Header.Subheader
+                    style={{
+                        whiteSpace: "break-spaces",
+                        wordBreak: "break-word",
+                    }}
+                >
+                    {queue.description}
+                </Header.Subheader>
             </Header>
             <Grid>
                 {(queue.active ||
