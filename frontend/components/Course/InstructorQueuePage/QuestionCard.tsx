@@ -170,7 +170,7 @@ const QuestionCard = (props: QuestionCardProps) => {
                 {question.studentDescriptor && (
                     <div
                         style={{
-                            paddingTop: "0.5rem",
+                            paddingTop: "0.25rem",
                             fontStyle: "italic",
                         }}
                     >

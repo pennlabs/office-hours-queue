@@ -6,6 +6,7 @@ import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import { Question, Queue, Tag, VideoChatSetting } from "../../../types";
 import { logException } from "../../../utils/sentry";
 import { isValidVideoChatURL } from "../../../utils";
+import { STUD_DESC_CHAR_LIMIT, TEXT_CHAR_LIMIT } from "../../../constants";
 
 interface EditQuestionModalProps {
     queue: Queue;
@@ -22,23 +23,21 @@ interface EditQuestionFormState {
     text: string;
     tags: Tag[];
     videoChatUrl?: string;
-    studentDescriptor?: string;
+    studentDescriptor: string;
 }
 
 const EditQuestionModal = (props: EditQuestionModalProps) => {
     const { question, queue, open, setOpen, mutate, toastFunc, tags } = props;
-    const textCharLimit: number = 1000;
-    const studDescCharLimit: number = 100;
     const [input, setInput] = useState<EditQuestionFormState>({
         questionId: question.id,
         text: question.text || "",
         tags: question.tags || [],
         videoChatUrl: question.videoChatUrl,
-        studentDescriptor: question.studentDescriptor,
+        studentDescriptor: question.studentDescriptor || "",
     });
     const [textCharCount, setTextCharCount] = useState(input.text.length);
     const [studDescCharCount, setStudDescCharCount] = useState(
-        (input.studentDescriptor ?? "").length
+        input.studentDescriptor.length
     );
     const loading: boolean = false;
 
@@ -56,13 +55,13 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
     );
 
     const handleInputChange = (e, { name, value }) => {
-        if (name === "text" && value.length > textCharLimit) return;
-        if (name === "studentDescriptor" && value.length > studDescCharLimit)
+        if (name === "text" && value.length > TEXT_CHAR_LIMIT) return;
+        if (name === "studentDescriptor" && value.length > STUD_DESC_CHAR_LIMIT)
             return;
         input[name] = value;
         setInput({ ...input });
         setTextCharCount(input.text.length);
-        setStudDescCharCount((input.studentDescriptor ?? "").length);
+        setStudDescCharCount(input.studentDescriptor.length);
     };
 
     const handleTagChange = (_, event) => {
@@ -115,7 +114,7 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
             text: question.text,
             tags: question.tags || [],
             videoChatUrl: question.videoChatUrl,
-            studentDescriptor: question.studentDescriptor,
+            studentDescriptor: question.studentDescriptor || "",
         });
         setTextCharCount(question.text.length);
     };
@@ -138,12 +137,12 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
                             style={{
                                 textAlign: "right",
                                 color:
-                                    textCharCount < textCharLimit
+                                    textCharCount < TEXT_CHAR_LIMIT
                                         ? ""
                                         : "crimson",
                             }}
                         >
-                            {`Characters: ${textCharCount}/${textCharLimit}`}
+                            {`Characters: ${textCharCount}/${TEXT_CHAR_LIMIT}`}
                         </div>
                     </Form.Field>
                     {queue.videoChatSetting !== VideoChatSetting.REQUIRED && (
@@ -153,7 +152,7 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
                                 id="form-stud-desc"
                                 name="studentDescriptor"
                                 disabled={loading}
-                                placeholder="right of the door wearing a red hoodie"
+                                placeholder="Beside the window, wearing a red hoodie"
                                 value={input.studentDescriptor}
                                 onChange={handleInputChange}
                             />
@@ -161,12 +160,12 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
                                 style={{
                                     textAlign: "right",
                                     color:
-                                        studDescCharCount < studDescCharLimit
+                                        studDescCharCount < STUD_DESC_CHAR_LIMIT
                                             ? ""
                                             : "crimson",
                                 }}
                             >
-                                {`Characters: ${studDescCharCount}/${studDescCharLimit}`}
+                                {`Characters: ${studDescCharCount}/${STUD_DESC_CHAR_LIMIT}`}
                             </div>
                         </Form.Field>
                     )}
