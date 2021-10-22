@@ -172,8 +172,7 @@ class QueueSerializer(CourseRouteMixin):
         # generate a random pin when the queue is opened and the queue has pin enabled
         if "active" in validated_data and validated_data["active"] and instance.pin_enabled:
             validated_data["pin"] = get_random_string(
-                length=5,
-                allowed_chars=string.ascii_letters + string.digits
+                length=5, allowed_chars=string.ascii_letters + string.digits
             )
 
         if membership.is_leadership:  # User is a Head TA+
