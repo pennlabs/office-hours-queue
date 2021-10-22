@@ -130,7 +130,7 @@ class QueueSerializerTestCase(TestCase):
         self.pin = "AAAAA"
         self.pin_queue_name = "Pin Queue"
         self.pin_queue = Queue.objects.create(
-            name=self.pin_queue_name, course=self.course, is_pin_enabled=True, pin=self.pin
+            name=self.pin_queue_name, course=self.course, pin_enabled=True, pin=self.pin
         )
         self.head_ta = User.objects.create(username="head_ta")
         self.ta = User.objects.create(username="ta")
@@ -197,7 +197,7 @@ class QueueSerializerTestCase(TestCase):
         self.assertEquals(old_pin, self.queue.pin)
 
         # queue with pin enabled generates pin
-        self.queue.is_pin_enabled = True
+        self.queue.pin_enabled = True
         self.queue.active = False
         self.queue.save()
         self.client.patch(

@@ -269,7 +269,7 @@ class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
 
             if num_questions_asked >= queue.rate_limit_questions:
                 return JsonResponse({"detail": "rate limited"}, status=429)
-        if queue.is_pin_enabled and queue.pin != request.data.get("pin"):
+        if queue.pin_enabled and queue.pin != request.data.get("pin"):
             return JsonResponse({"detail": "incorrect pin"}, status=409)
 
         return super().create(request, *args, **kwargs)

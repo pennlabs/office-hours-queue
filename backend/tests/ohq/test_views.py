@@ -133,7 +133,7 @@ class QuestionViewTestCase(TestCase):
         )
         self.pin = "AAAAA"
         self.pin_queue = Queue.objects.create(
-            name="Pin Queue", course=self.course, is_pin_enabled=True, pin=self.pin
+            name="Pin Queue", course=self.course, pin_enabled=True, pin=self.pin
         )
         self.no_limit_queue = Queue.objects.create(name="No Rate Limit Queue", course=self.course)
         self.ta = User.objects.create(username="ta")

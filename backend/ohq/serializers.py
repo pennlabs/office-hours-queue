@@ -157,7 +157,7 @@ class QueueSerializer(CourseRouteMixin):
             "rate_limit_minutes",
             "video_chat_setting",
             "pin",
-            "is_pin_enabled",
+            "pin_enabled",
         )
         read_only_fields = ("estimated_wait_time",)
 
@@ -171,9 +171,10 @@ class QueueSerializer(CourseRouteMixin):
         membership = Membership.objects.get(course=instance.course, user=user)
 
         # generate a random pin when the queue is opened and the queue has pin enabled
-        if "active" in validated_data and validated_data["active"] and instance.is_pin_enabled:
-            validated_data["pin"] = "".join(
-                random.choices(string.ascii_letters + string.digits, k=5)
+        if "active" in validated_data and validated_data["active"] and instance.pin_enabled:
+            validated_data["pin"] = get_random_string(
+                length=5,
+                allowed_chars=string.ascii_letters + string.digits
             )
 
         if membership.is_leadership:  # User is a Head TA+
@@ -191,7 +192,7 @@ class QueueSerializer(CourseRouteMixin):
     def get_pin(self, instance):
         # only TAs can get pin
         user = self.context["request"].user
-        membership = Membership.objects.get(course=instance.course, user=user)
+        membership = Membership.objects.filter(course=instance.course, user=user).first()
 
         if membership is None or not membership.is_ta:
             return None
