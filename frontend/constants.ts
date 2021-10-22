@@ -3,6 +3,8 @@ export const QUEUE_STATUS_POLL_INTERVAL = 30000;
 export const STAFF_QUESTION_POLL_INTERVAL = 30000;
 export const STUDENT_QUESTION_POS_POLL_INTERVAL = 10000;
 export const STUDENT_QUOTA_POLL_INTERVAL = 60000;
+export const TEXT_CHAR_LIMIT = 1000;
+export const STUD_DESC_CHAR_LIMIT = 100;
 export const ALLOWED_LINKS = [
     "zoom.us",
     "zoom.com",
@@ -20,3 +22,5 @@ export const ANALYTICS_SURVEY_SHOWN_SPRING_2021_END_TOKEN =
     "__analytics_survey_sp_2021_end_shown";
 export const FALL_2021_TRANSITION_MESSAGE_TOKEN =
     "__fall_2021_transition_message_shown";
+
+export const MOBILE_BP = "600px";
