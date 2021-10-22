@@ -27,8 +27,7 @@ interface EditQuestionFormState {
 
 const EditQuestionModal = (props: EditQuestionModalProps) => {
     const { question, queue, open, setOpen, mutate, toastFunc, tags } = props;
-
-    const textCharLimit: number = 250;
+    const textCharLimit: number = 1000;
     const studDescCharLimit: number = 100;
     const [input, setInput] = useState<EditQuestionFormState>({
         questionId: question.id,

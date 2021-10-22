@@ -29,7 +29,7 @@ const QuestionForm = (props: QuestionFormProps) => {
         text: queue.questionTemplate,
         tags: [],
     });
-    const textCharLimit: number = 250;
+    const textCharLimit: number = 1000;
     const studDescCharLimit: number = 100;
     const [textCharCount, setTextCharCount] = useState(0);
     const [studDescCharCount, setStudDescCharCount] = useState(0);

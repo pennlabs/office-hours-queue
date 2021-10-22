@@ -181,7 +181,7 @@ const QuestionCard = (props: QuestionCardProps) => {
             <Segment
                 attached
                 tertiary={question.timeResponseStarted !== null}
-                style={{ overflowWrap: "anywhere" }}
+                style={{ whiteSpace: "break-spaces", wordBreak: "break-word" }}
             >
                 {question.text}
             </Segment>
