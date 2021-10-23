@@ -11,6 +11,7 @@ import Footer from "../common/Footer";
 import { usePlayer } from "../../hooks/player";
 import { Course as CourseType, Membership } from "../../types";
 import CourseSidebarInstructorList from "./CourseSidebarInstructorList";
+import { MOBILE_BP } from "../../constants";
 
 interface CourseProps {
     render: (
@@ -48,7 +49,7 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
         document.body.focus();
     };
 
-    const isMobile = useMediaQuery("(max-width: 600px)"); // TODO: use variable
+    const isMobile = useMediaQuery(`(max-width: ${MOBILE_BP})`);
 
     return course ? (
         // Need to override semantic UI Grid.Row's display: flex for instructor list to clear the row
@@ -62,7 +63,7 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                     display: "flex",
                     flexDirection: "column",
                     float: "right",
-                    ...(!isMobile && { height: "100%" }),
+                    ...(!isMobile && { minHeight: "100%" }),
                 }}
             >
                 {course.department && (
@@ -150,7 +151,7 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                 <Segment basic>
                     {render(staff, play, notifs, setNotifs)}
                 </Segment>
-                <Footer />
+                {!isMobile && <Footer />}
             </Grid.Column>
             <Grid.Column style={{ clear: "left" }} width={3}>
                 {leadership && (

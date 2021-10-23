@@ -23,4 +23,4 @@ export const ANALYTICS_SURVEY_SHOWN_SPRING_2021_END_TOKEN =
 export const FALL_2021_TRANSITION_MESSAGE_TOKEN =
     "__fall_2021_transition_message_shown";
 
-export const MOBILE_BP = "600px";
+export const MOBILE_BP = "766px";
