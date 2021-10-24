@@ -10,8 +10,6 @@ export interface Course {
     semesterPretty: string;
     archived: boolean;
     inviteOnly: boolean;
-    videoChatEnabled: boolean;
-    requireVideoChatUrlOnQuestions: boolean;
     isMember: boolean;
 }
 
@@ -65,12 +63,20 @@ export interface BaseQueue {
     course: number;
     name: string;
     description: string;
+    questionTemplate: string;
     active: boolean;
     archived: boolean;
     estimatedWaitTime: number;
     questionsActive: number;
     questionsAsked: number;
     staffActive: number;
+    videoChatSetting: VideoChatSetting;
+}
+
+export enum VideoChatSetting {
+    REQUIRED = "REQUIRED",
+    OPTIONAL = "OPTIONAL",
+    DISABLED = "DISABLED",
 }
 
 export type Queue =
@@ -106,6 +112,7 @@ export interface Question {
     tags: Tag[];
     note: string;
     resolvedNote: boolean;
+    studentDescriptor?: string;
     // this is a marker field for subscribe requests
     // it should never have a value
     // eslint-disable-next-line

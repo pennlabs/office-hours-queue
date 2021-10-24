@@ -22,6 +22,7 @@ courses = [
             {
                 "name": "Kevin-related Questions",
                 "description": "Have a question about Kevin? Ask here!",
+                "question_template": "Favorite leg of Kevin: \nFavorite arm of Kevin:",
                 "archived": False,
                 "estimated_wait_time": 100,
                 "active": True,
@@ -35,13 +36,12 @@ courses = [
                         "should_send_up_soon_notification": True,
                     },
                 ],
+                "video_chat_setting": Queue.VIDEO_REQUIRED,
             },
         ],
         "semester": {"year": 2020, "term": Semester.TERM_FALL},
         "archived": False,
         "invite_only": False,
-        "video_chat_enabled": False,
-        "require_video_chat_url_on_questions": True,
     },
     {
         "course_code": "101",
@@ -52,6 +52,7 @@ courses = [
             {
                 "name": "Questions that Armaan has for Davis",
                 "description": "Code Coverage is important!",
+                "question_template": "",
                 "archived": False,
                 "estimated_wait_time": 1,
                 "active": True,
@@ -67,13 +68,12 @@ courses = [
                         "should_send_up_soon_notification": False,
                     },
                 ],
+                "video_chat_setting": Queue.VIDEO_REQUIRED,
             },
         ],
         "semester": {"year": 2020, "term": Semester.TERM_SUMMER},
         "archived": False,
         "invite_only": False,
-        "video_chat_enabled": False,
-        "require_video_chat_url_on_questions": True,
     },
     {
         "course_code": "200",
@@ -84,8 +84,6 @@ courses = [
         "semester": {"year": 2020, "term": Semester.TERM_FALL},
         "archived": False,
         "invite_only": True,
-        "video_chat_enabled": True,
-        "require_video_chat_url_on_questions": True,
     },
     {
         "course_code": "700",
@@ -96,6 +94,7 @@ courses = [
             {
                 "name": "Goldman Sachs Questions",
                 "description": "Free as in easy to get into? Or free as in I don't get paid?",
+                "question_template": "How much money are you willing to sell yourself out for: ",
                 "archived": False,
                 "estimated_wait_time": 10,
                 "active": True,
@@ -125,29 +124,32 @@ courses = [
                         "should_send_up_soon_notification": False,
                     },
                 ],
+                "video_chat_setting": Queue.VIDEO_REQUIRED,
             },
             {
                 "name": "Morgan Stanley Questions",
                 "description": "Wall Street 2 EZ",
+                "question_template": "",
                 "archived": False,
                 "estimated_wait_time": 0,
                 "active": True,
                 "questions": [],
+                "video_chat_setting": Queue.VIDEO_REQUIRED,
             },
             {
                 "name": "Questions for Rejects - Will always be closed",
                 "description": "Drop the class",
+                "question_template": "",
                 "archived": False,
                 "estimated_wait_time": 0,
                 "active": False,
                 "questions": [],
+                "video_chat_setting": Queue.VIDEO_REQUIRED,
             },
         ],
         "semester": {"year": 2020, "term": Semester.TERM_SUMMER},
         "archived": False,
         "invite_only": False,
-        "video_chat_enabled": False,
-        "require_video_chat_url_on_questions": True,
     },
     {
         "course_code": "621",
@@ -158,6 +160,7 @@ courses = [
             {
                 "name": "Vibing Questions",
                 "description": "Good Vibes? Join Here",
+                "question_template": "",
                 "archived": False,
                 "estimated_wait_time": 20,
                 "active": True,
@@ -188,10 +191,12 @@ courses = [
                         "should_send_up_soon_notification": False,
                     },
                 ],
+                "video_chat_setting": Queue.VIDEO_REQUIRED,
             },
             {
                 "name": "Other Questions",
                 "description": "Questions for not so good vibes",
+                "question_template": "",
                 "archived": False,
                 "estimated_wait_time": 30,
                 "active": True,
@@ -213,21 +218,22 @@ courses = [
                         "should_send_up_soon_notification": True,
                     },
                 ],
+                "video_chat_setting": Queue.VIDEO_REQUIRED,
             },
             {
                 "name": "We are archiving the bad vibes",
                 "description": "No bad vibes allowed",
+                "question_template": "",
                 "archived": True,
                 "estimated_wait_time": 0,
                 "active": False,
                 "questions": [],
+                "video_chat_setting": Queue.VIDEO_REQUIRED,
             },
         ],
         "semester": {"year": 2020, "term": Semester.TERM_SPRING},
         "archived": False,
         "invite_only": True,
-        "video_chat_enabled": False,
-        "require_video_chat_url_on_questions": True,
     },
     {
         "course_code": "500",
@@ -238,8 +244,6 @@ courses = [
         "archived": True,
         "queues": [],
         "invite_only": False,
-        "video_chat_enabled": True,
-        "require_video_chat_url_on_questions": True,
     },
 ]
 
@@ -284,14 +288,13 @@ class Command(BaseCommand):
                 obj.first_name = first
                 obj.last_name = last
                 obj.is_staff = True
+                obj.set_password("pennlabs")
                 obj.save()
                 user_objs.append(obj)
 
         # create TJeff as superuser
         tjeff = user_objs[3]
         tjeff.is_superuser = True
-        tjeff.set_password("password")
-        tjeff.is_staff = True
         tjeff.save()
 
         # create profiles for each user
@@ -411,10 +414,12 @@ class Command(BaseCommand):
                 newQueue, _ = Queue.objects.get_or_create(
                     name=q["name"],
                     description=q["description"],
+                    question_template=q["question_template"],
                     course=newCourse,
                     archived=q["archived"],
                     estimated_wait_time=q["estimated_wait_time"],
                     active=q["active"],
+                    video_chat_setting=q["video_chat_setting"],
                 )
 
                 respondedToCount = 0

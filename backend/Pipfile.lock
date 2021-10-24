@@ -524,11 +524,11 @@
         },
         "openpyxl": {
             "hashes": [
-                "sha256:4f2770348c029ce9433316ced8f91ed37d2a605e654f8bfdc93a3524561a8ce2",
-                "sha256:52150a09b660fe444af7abe2592b156c14e324526b1968a57705525547317a7f"
+                "sha256:40f568b9829bf9e446acfffce30250ac1fa39035124d55fc024025c41481c90f",
+                "sha256:8f3b11bd896a95468a4ab162fc4fcd260d46157155d1f8bfaabb99d88cfcf79f"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==3.0.8"
+            "version": "==3.0.9"
         },
         "phonenumbers": {
             "hashes": [

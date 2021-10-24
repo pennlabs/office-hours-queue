@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import { ReactElement } from "react";
 import NextErrorComponent from "next/error";
 import { NextPageContext } from "next";
 

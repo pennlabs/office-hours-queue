@@ -73,8 +73,6 @@ class Course(models.Model):
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
     archived = models.BooleanField(default=False)
     invite_only = models.BooleanField(default=False)
-    video_chat_enabled = models.BooleanField(default=False)
-    require_video_chat_url_on_questions = models.BooleanField(default=False)
     members = models.ManyToManyField(User, through="Membership", through_fields=("course", "user"))
 
     # MAX_NUMBER_COURSE_USERS = 1000
@@ -186,10 +184,22 @@ class Queue(models.Model):
     A single office hours queue for a class.
     """
 
+    VIDEO_REQUIRED = "REQUIRED"
+    VIDEO_OPTIONAL = "OPTIONAL"
+    VIDEO_DISABLED = "DISABLED"
+    VIDEO_CHOICES = [
+        (VIDEO_REQUIRED, "required"),
+        (VIDEO_OPTIONAL, "optional"),
+        (VIDEO_DISABLED, "disabled"),
+    ]
+
     name = models.CharField(max_length=255)
     description = models.TextField()
+    question_template = models.TextField(blank=True, default="")
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     archived = models.BooleanField(default=False)
+    pin_enabled = models.BooleanField(default=False)
+    pin = models.CharField(max_length=5, blank=True, null=True)
 
     # Estimated wait time for the queue, in minutes
     estimated_wait_time = models.IntegerField(default=-1)
@@ -204,6 +214,10 @@ class Queue(models.Model):
     rate_limit_length = models.IntegerField(blank=True, null=True)
     rate_limit_questions = models.IntegerField(blank=True, null=True)
     rate_limit_minutes = models.IntegerField(blank=True, null=True)
+
+    video_chat_setting = models.CharField(
+        max_length=8, choices=VIDEO_CHOICES, default=VIDEO_OPTIONAL
+    )
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["course", "name"], name="unique_queue_name")]
@@ -267,6 +281,7 @@ class Question(models.Model):
 
     should_send_up_soon_notification = models.BooleanField(default=False)
     tags = models.ManyToManyField(Tag, blank=True)
+    student_descriptor = models.CharField(max_length=255, blank=True, null=True)
 
 
 class QueueStatistic(models.Model):

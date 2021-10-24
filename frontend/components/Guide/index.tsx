@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Grid, Header, Menu } from "semantic-ui-react";
 
 import InstructorGuide from "./InstructorGuide";
