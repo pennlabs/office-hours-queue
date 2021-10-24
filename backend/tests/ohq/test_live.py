@@ -2,15 +2,12 @@ from asgiref.sync import sync_to_async
 from channels.auth import AuthMiddlewareStack
 from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
-from django.test import AsyncClient, TransactionTestCase
+from django.test import TransactionTestCase
 from django.urls import reverse
-from django.utils import timezone
-from djangorestframework_camel_case.util import camelize
-from rest_live.testing import APICommunicator, async_test, get_headers_for_user
 from rest_framework.test import APIClient
+from rest_live.testing import APICommunicator, async_test, get_headers_for_user
 
 from ohq.models import Course, Membership, Question, Queue, Semester
-from ohq.serializers import QuestionSerializer
 from ohq.urls import realtime_router
 
 

@@ -321,7 +321,7 @@ class QuestionSerializer(QueueRouteMixin):
             )
 
             for question in asked_questions:
-                save_handler(sender=Question, instance=question, dispatch_uid=f"rest-live")
+                save_handler(sender=Question, instance=question, dispatch_uid="rest-live")
 
         return instance
 
