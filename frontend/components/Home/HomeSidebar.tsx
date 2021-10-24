@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Segment, Menu, Grid, Image, Container } from "semantic-ui-react";
+import { Segment, Menu, Grid, Image } from "semantic-ui-react";
 import Link from "next/link";
 
 import { useRouter } from "next/router";
@@ -62,8 +62,6 @@ const Sidebar = () => {
                             color="blue"
                         />
                     </Link>
-                    <SignOutButton />
-                    <Container className={`${styles["about-changelog"]}`} />
                     <Link href="/changelog" as="/changelog">
                         <Menu.Item
                             style={{
@@ -71,12 +69,13 @@ const Sidebar = () => {
                                 textOverflow: "ellipsis",
                                 overflow: "hidden",
                             }}
-                            name="Changes"
+                            name="Updates"
                             icon="file text"
                             active={router.pathname === "/changelog"}
                             color="blue"
                         />
                     </Link>
+                    <SignOutButton />
                 </Menu>
             </Segment>
             <div
