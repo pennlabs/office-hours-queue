@@ -48,8 +48,8 @@ jobs:
           POSTGRES_DB: postgres
           POSTGRES_PASSWORD: postgres
         options: "--health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5"
-  publish-backend:
-    name: Publish backend
+  build-backend:
+    name: Build backend
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -59,20 +59,21 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
-          key: buildx-publish-backend
-      - uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          key: buildx-build-backend
       - name: Build/Publish
         uses: docker/build-push-action@v2
         with:
           context: backend
           file: backend/Dockerfile
-          push: ${{ github.ref == 'refs/heads/master' }}
+          push: false
           cache-from: type=local,src=/tmp/.buildx-cache,type=registry,ref=pennlabs/office-hours-queue-backend:latest
           cache-to: type=local,dest=/tmp/.buildx-cache
           tags: pennlabs/office-hours-queue-backend:latest,pennlabs/office-hours-queue-backend:${{ github.sha }}
+          outputs: type=docker,dest=/tmp/image.tar
+      - uses: actions/upload-artifact@v2
+        with:
+          name: build-backend
+          path: /tmp/image.tar
     needs: django-check
   react-check:
     name: React Check
@@ -103,8 +104,8 @@ jobs:
           yarn run codecov -p $ROOT -F frontend
     container:
       image: node:14
-  publish-frontend:
-    name: Publish frontend
+  build-frontend:
+    name: Build frontend
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -114,21 +115,92 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
-          key: buildx-publish-frontend
-      - uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          key: buildx-build-frontend
       - name: Build/Publish
         uses: docker/build-push-action@v2
         with:
           context: frontend
           file: frontend/Dockerfile
-          push: ${{ github.ref == 'refs/heads/master' }}
+          push: false
           cache-from: type=local,src=/tmp/.buildx-cache,type=registry,ref=pennlabs/office-hours-queue-frontend:latest
           cache-to: type=local,dest=/tmp/.buildx-cache
           tags: pennlabs/office-hours-queue-frontend:latest,pennlabs/office-hours-queue-frontend:${{ github.sha }}
+          outputs: type=docker,dest=/tmp/image.tar
+      - uses: actions/upload-artifact@v2
+        with:
+          name: build-frontend
+          path: /tmp/image.tar
     needs: react-check
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+      - name: Load docker images
+        run: |-
+          docker load --input build-backend/image.tar
+          docker load --input build-frontend/image.tar
+      - name: Run docker compose
+        run: |-
+          mkdir -p /tmp/test-results
+          docker-compose -f docker-compose.test.yaml up -d
+      - name: Wait for backend
+        run: |-
+          for try in {1..20}; do
+            docker-compose -f docker-compose.test.yaml exec -T backend python manage.py migrate --check && break
+            sleep 5
+          done
+      - name: Populate backend
+        run: docker-compose -f docker-compose.test.yaml exec -T backend python manage.py populate
+      - name: Run integration tests
+        run: docker-compose -f docker-compose.test.yaml exec -T frontend yarn integration
+      - name: Delete artifacts when no longer needed
+        if: failure() || github.ref != 'refs/heads/master'
+        uses: geekyeggo/delete-artifact@v1
+        with:
+          name: |-
+            build-backend
+            build-frontend
+      - name: Print logs on failure
+        if: failure()
+        run: docker-compose -f docker-compose.test.yaml logs
+      - name: Upload artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: cypress-output
+          path: /tmp/test-results
+    env:
+      GIT_SHA: ${{ github.sha }}
+    needs:
+      - build-backend
+      - build-frontend
+  post-integration-publish:
+    name: Publish Images
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+      - uses: geekyeggo/delete-artifact@v1
+        with:
+          name: |-
+            build-backend
+            build-frontend
+      - name: Load docker images
+        run: |-
+          docker load --input build-backend/image.tar
+          docker load --input build-frontend/image.tar
+      - uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Push docker images
+        run: |-
+          docker push -a pennlabs/office-hours-queue-backend
+          docker push -a pennlabs/office-hours-queue-frontend
+    needs: integration-tests
   deploy:
     runs-on: ubuntu-latest
     container:
@@ -172,5 +244,4 @@ jobs:
           DO_AUTH_TOKEN: ${{ secrets.DO_AUTH_TOKEN }}
           REPOSITORY: ${{ github.repository }}
     needs:
-      - publish-backend
-      - publish-frontend
+      - post-integration-publish

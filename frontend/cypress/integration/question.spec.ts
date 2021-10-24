@@ -22,7 +22,7 @@ describe("Question Tests", () => {
         ).toString()}`;
 
         cy.login("bfranklin", "pennlabs");
-        cy.visit("localhost:3000/");
+        cy.visit("/");
 
         cy.getCookie("csrftoken").its("value").should("exist");
         cy.getCookie("sessionid").its("value").should("exist");
@@ -35,7 +35,7 @@ describe("Question Tests", () => {
                         cy.clearCookies();
 
                         cy.login("tjefferson", "pennlabs");
-                        cy.visit("localhost:3000/");
+                        cy.visit("/");
 
                         cy.getCookie("csrftoken")
                             .then((cookie) => cookie.value)
@@ -97,7 +97,7 @@ describe("Question Tests", () => {
         ).toString()}`;
 
         cy.login("bfranklin", "pennlabs");
-        cy.visit("localhost:3000/");
+        cy.visit("/");
         cy.contains("LABS 621").click();
         cy.get("textarea").type(questionString);
         cy.get("input").type("https://upenn.zoom.us/j/6017796013");
@@ -106,7 +106,7 @@ describe("Question Tests", () => {
 
         cy.logout();
         cy.login("tjefferson", "pennlabs");
-        cy.visit("localhost:3000/");
+        cy.visit("/");
 
         cy.contains("LABS 621").click();
         cy.contains(questionString, { timeout: 5000 }).should("be.visible");
