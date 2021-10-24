@@ -1,3 +1,6 @@
+frontend/package-lock.json
+frontend/yarn-error.log
+
 # IDE files
 .vscode/
 .idea/

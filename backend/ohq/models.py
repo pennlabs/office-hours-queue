@@ -198,6 +198,8 @@ class Queue(models.Model):
     question_template = models.TextField(blank=True, default="")
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     archived = models.BooleanField(default=False)
+    pin_enabled = models.BooleanField(default=False)
+    pin = models.CharField(max_length=5, blank=True, null=True)
 
     # Estimated wait time for the queue, in minutes
     estimated_wait_time = models.IntegerField(default=-1)
