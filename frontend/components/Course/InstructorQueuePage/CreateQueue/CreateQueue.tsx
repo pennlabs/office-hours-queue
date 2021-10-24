@@ -23,6 +23,8 @@ interface QueueFormInput {
     rateLimitLength?: number;
     rateLimitQuestions?: number;
     rateLimitMinutes?: number;
+    pin?: string;
+    pinEnabled: boolean;
 }
 
 enum RateLimitFields {
@@ -53,6 +55,8 @@ const CreateQueue = (props: CreateQueueProps) => {
         rateLimitLength: undefined,
         rateLimitQuestions: undefined,
         rateLimitMinutes: undefined,
+        pin: undefined,
+        pinEnabled: true,
     });
 
     const handleVideoChatInputChange = (e, { name }) => {
@@ -114,6 +118,11 @@ const CreateQueue = (props: CreateQueueProps) => {
             input[name] = castInt(input[name]);
             setValidLenRate(input[name] >= 0);
         }
+        setInput({ ...input });
+    };
+
+    const handlePinInputChange = (e, { name }) => {
+        input.pinEnabled = name === "pinRequired";
         setInput({ ...input });
     };
 
@@ -266,6 +275,26 @@ const CreateQueue = (props: CreateQueueProps) => {
                                     name="videoChatDisabled"
                                     disabled={mutateLoading}
                                     onChange={handleVideoChatInputChange}
+                                />
+                            </Form.Group>
+                        </Form.Field>
+
+                        <Form.Field required>
+                            <label htmlFor="pin-radio">PIN</label>
+                            <Form.Group id="pin-radio">
+                                <Form.Radio
+                                    label="Require Pin"
+                                    checked={input.pinEnabled}
+                                    name="pinRequired"
+                                    disabled={mutateLoading}
+                                    onChange={handlePinInputChange}
+                                />
+                                <Form.Radio
+                                    label="No Pin"
+                                    checked={!input.pinEnabled}
+                                    name="pinDisabled"
+                                    disabled={mutateLoading}
+                                    onChange={handlePinInputChange}
                                 />
                             </Form.Group>
                         </Form.Field>

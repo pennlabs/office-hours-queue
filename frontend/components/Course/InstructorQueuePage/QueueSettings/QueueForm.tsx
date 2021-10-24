@@ -23,6 +23,8 @@ interface QueueFormInput {
     rateLimitLength?: number;
     rateLimitQuestions?: number;
     rateLimitMinutes?: number;
+    pin?: string;
+    pinEnabled: boolean;
 }
 
 enum RateLimitFields {
@@ -65,6 +67,8 @@ const QueueForm = (props: QueueFormProps) => {
         rateLimitQuestions: queue.rateLimitEnabled
             ? queue.rateLimitQuestions
             : undefined,
+        pin: queue.pin,
+        pinEnabled: queue.pinEnabled,
     });
     const [validQuestionRate, setValidQuestionRate] = useState(true);
     const [validMinsRate, setValidMinsRate] = useState(true);
@@ -102,7 +106,8 @@ const QueueForm = (props: QueueFormProps) => {
             input.name === queue.name &&
             input.description === queue.description &&
             input.questionTemplate === queue.questionTemplate &&
-            input.videoChatSetting === queue.videoChatSetting;
+            input.videoChatSetting === queue.videoChatSetting &&
+            input.pinEnabled === queue.pinEnabled;
         if (input.rateLimitEnabled !== queue.rateLimitEnabled) {
             isSame = false;
         } else if (input.rateLimitEnabled && queue.rateLimitEnabled) {
@@ -159,6 +164,11 @@ const QueueForm = (props: QueueFormProps) => {
                 input.videoChatSetting = VideoChatSetting.DISABLED;
                 break;
         }
+        setInput({ ...input });
+    };
+
+    const handlePinInputChange = (e, { name }) => {
+        input.pinEnabled = name === "pinRequired";
         setInput({ ...input });
     };
 
@@ -340,6 +350,26 @@ const QueueForm = (props: QueueFormProps) => {
                                 name="videoChatDisabled"
                                 disabled={loading}
                                 onChange={handleVideoChatInputChange}
+                            />
+                        </Form.Group>
+                    </Form.Field>
+
+                    <Form.Field required>
+                        <label htmlFor="pin-radio">PIN</label>
+                        <Form.Group id="pin-radio">
+                            <Form.Radio
+                                label="Require Pin"
+                                checked={input.pinEnabled}
+                                name="pinRequired"
+                                disabled={loading}
+                                onChange={handlePinInputChange}
+                            />
+                            <Form.Radio
+                                label="No Pin"
+                                checked={!input.pinEnabled}
+                                name="pinDisabled"
+                                disabled={loading}
+                                onChange={handlePinInputChange}
                             />
                         </Form.Group>
                     </Form.Field>
