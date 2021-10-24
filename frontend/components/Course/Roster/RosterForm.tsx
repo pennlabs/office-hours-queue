@@ -33,7 +33,7 @@ const RosterForm = (props: RosterFormProps) => {
     return (
         <Grid columns="equal" stackable>
             <Grid.Row stackable>
-                <Grid.Column only="computer mobile">
+                <Grid.Column>
                     <Form>
                         <Form.Group>
                             <Form.Field>

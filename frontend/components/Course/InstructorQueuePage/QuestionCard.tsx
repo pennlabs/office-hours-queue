@@ -326,7 +326,6 @@ const QuestionCard = (props: QuestionCardProps) => {
                         <Grid.Column
                             width={5}
                             textAlign="right"
-                            only="computer mobile"
                             style={{
                                 fontSize: "10px",
                                 whiteSpace: "nowrap",

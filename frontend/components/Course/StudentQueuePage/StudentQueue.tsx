@@ -136,7 +136,7 @@ const StudentQueue = (props: StudentQueueProps) => {
                     queue.questionsActive ||
                     queue.questionsAsked) && (
                     <Grid.Row columns="equal">
-                        <Grid.Column only="computer mobile">
+                        <Grid.Column>
                             {(queue.active || queue.questionsAsked) && (
                                 <Label
                                     content={`${
