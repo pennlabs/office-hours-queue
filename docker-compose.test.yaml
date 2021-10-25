@@ -19,7 +19,7 @@ services:
       - "--entrypoints.web.address=:80"
     ports:
       - "80:80"
-      - "5432:5432"
+      - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
   backend:
