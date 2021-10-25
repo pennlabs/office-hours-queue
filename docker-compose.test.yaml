@@ -19,7 +19,7 @@ services:
       - "--entrypoints.web.address=:80"
     ports:
       - "80:80"
-      - "8080:8080"
+      - "5432:5432"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
   backend:
@@ -49,10 +49,10 @@ services:
       - "traefik.http.routers.frontend.rule=Host(`traefik`)"
       - "traefik.http.routers.frontend.entrypoints=web"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
-    volumes:
-      - type: bind
-        source: /tmp/test-results
-        target: /app/test-results
+    # volumes:
+    #   - type: bind
+    #     source: /tmp/test-results
+    #     target: /app/test-results
     # https://github.com/cypress-io/cypress/issues/350
     ipc: host
   ws:

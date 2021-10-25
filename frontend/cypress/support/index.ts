@@ -15,13 +15,8 @@
 
 // Import commands.js using ES2015 syntax:
 import "./commands";
+// import './console'
+import "@cypress/code-coverage/support";
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
-
-declare namespace Cypress {
-    interface Chainable<T> {
-        login(): Chainable<void>;
-        logout(): Chainable<void>;
-    }
-}

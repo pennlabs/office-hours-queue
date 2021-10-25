@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "dev": "NODE_ENV=development node server.js",
-        "build": "next build",
+        "build": "env NODE_ENV=production next build",
         "start": "NODE_ENV=production node server.js",
         "test": "echo no tests yet",
         "codecov": "echo no codecov",
@@ -14,6 +14,7 @@
         "integration": "./test.sh"
     },
     "dependencies": {
+        "@cypress/code-coverage": "3.9.11",
         "@material-ui/core": "^4.11.0",
         "@material-ui/lab": "^4.0.0-alpha.56",
         "@pennlabs/rest-hooks": "^0.1.8",
@@ -41,12 +42,10 @@
         "semantic-ui-react": "^1.1.0",
         "swr": "^0.3.11",
         "testing-library": "^0.0.2",
-        "typescript": "^4.4.4",
         "uifx": "^2.0.7",
         "url-loader": "^4.1.0"
     },
     "devDependencies": {
-        "@cypress/code-coverage": "3.9.11",
         "@types/lodash": "^4.14.172",
         "@types/node": "^16.11.4",
         "@types/react": "^16.9.43",
