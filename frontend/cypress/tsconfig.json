@@ -8,11 +8,10 @@
     ],
     "types": [
       "cypress",
-      "node"
     ],
     "isolatedModules": false
   },
   "include": [
     "**/*.ts"
-, "support/commands.js"  ]
+  ]
 }
