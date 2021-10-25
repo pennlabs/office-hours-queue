@@ -42,6 +42,8 @@ channels-redis = "*"
 uvicorn = {extras = ["standard"],version = "*"}
 gunicorn = "*"
 drf-renderer-xlsx = "*"
+to = "*"
+install = "*"
 
 [requires]
 python_version = "3"

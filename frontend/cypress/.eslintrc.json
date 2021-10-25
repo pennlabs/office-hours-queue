@@ -1,0 +1,8 @@
+{
+    "plugins": [
+      "cypress"
+    ],
+    "globals": {
+        "cy": true
+    }
+}
