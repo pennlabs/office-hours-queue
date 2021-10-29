@@ -11,7 +11,7 @@
         "lint": "eslint . --ext .tsx --ext .ts && tsc -b tsconfig.json",
         "lint-fix": "eslint . --ext .tsx --ext .ts --fix",
         "precommit": "lint-staged",
-        "integration": "./test.sh"
+        "integration": "chmod +x test.sh && ./test.sh"
     },
     "dependencies": {
         "@material-ui/core": "^4.11.0",
