@@ -2,6 +2,7 @@ import { useContext, useState, useEffect } from "react";
 import { Grid, Header, Segment, Message } from "semantic-ui-react";
 import Alert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
+import { useMediaQuery } from "@material-ui/core";
 import InstructorCourses from "./InstructorCourses";
 import StudentCourses from "./StudentCourses";
 import Footer from "../../common/Footer";
@@ -9,7 +10,10 @@ import { AuthUserContext } from "../../../context/auth";
 import { Kind, UserMembership } from "../../../types";
 import { useMemberships } from "../../../hooks/data-fetching/dashboard";
 import { isLeadershipRole } from "../../../utils/enums";
-import { FALL_2021_TRANSITION_MESSAGE_TOKEN } from "../../../constants";
+import {
+    FALL_2021_TRANSITION_MESSAGE_TOKEN,
+    MOBILE_BP,
+} from "../../../constants";
 
 // TODO: try to readd new user stuff, rip out loading stuff
 const Dashboard = () => {
@@ -129,7 +133,7 @@ const Dashboard = () => {
                     {toast.message}
                 </Alert>
             </Snackbar>
-            <Footer />
+            <Footer showFeedback={useMediaQuery(`(max-width: ${MOBILE_BP})`)} />
         </Grid.Column>
     );
 };
