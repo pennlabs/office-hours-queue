@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ohq', '0016_auto_20211008_2136'),
+        ("ohq", "0016_auto_20211008_2136"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='queue',
-            name='pin',
+            model_name="queue",
+            name="pin",
             field=models.CharField(blank=True, max_length=5, null=True),
         ),
     ]
