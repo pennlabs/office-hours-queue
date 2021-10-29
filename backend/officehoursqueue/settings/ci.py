@@ -3,7 +3,7 @@ import os
 from officehoursqueue.settings.base import *  # noqa: F401, F403
 from officehoursqueue.settings.base import PLATFORM_ACCOUNTS
 
-DEBUG = True
+DEBUG = False
 
 TEST_RUNNER = "xmlrunner.extra.djangotestrunner.XMLTestRunner"
 TEST_OUTPUT_VERBOSE = 2

@@ -1,5 +1,4 @@
 from django.db.models import Avg, Case, Count, F, When
-from django.db.models.fields import FloatField
 from django.db.models.functions import TruncDate
 
 from ohq.models import Question, QueueStatistic
