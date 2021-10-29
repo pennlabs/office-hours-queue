@@ -40,7 +40,7 @@ const RosterForm = (props: RosterFormProps) => {
         >
             <div>
                 <Form>
-                    <Form.Group>
+                    <Form.Group widths="equal">
                         <Form.Field>
                             <Form.Dropdown
                                 selection
