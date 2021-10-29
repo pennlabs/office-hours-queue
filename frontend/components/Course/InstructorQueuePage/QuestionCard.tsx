@@ -172,6 +172,7 @@ const QuestionCard = (props: QuestionCardProps) => {
                         style={{
                             paddingTop: "0.25rem",
                             fontStyle: "italic",
+                            overflowWrap: "anywhere",
                         }}
                     >
                         {question.studentDescriptor}
