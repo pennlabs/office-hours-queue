@@ -96,7 +96,7 @@ def calculate_questions_per_ta_heatmap(queue, weekday, hour):
             questions=Count("date", distinct=False), tas=Count("responded_to_by", distinct=True),
         )
         .annotate(
-            q_per_ta=Case(When(tas=0, then=F("questions")), default=1.0 * F("questions") / F("tas"), output_field=FloatField())
+            q_per_ta=Case(When(tas=0, then=F("questions")), default=1.0 * F("questions") / F("tas"))
         )
         .aggregate(avg=Avg(F("q_per_ta")))
     )
