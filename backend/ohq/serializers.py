@@ -176,7 +176,7 @@ class QueueSerializer(CourseRouteMixin):
 
         if membership.is_leadership:  # User is a Head TA+
             return super().update(instance, validated_data)
-        
+
         if "active" in validated_data:
             instance.active = validated_data["active"]
 
@@ -198,7 +198,7 @@ class QueueSerializer(CourseRouteMixin):
 
     def to_representation(self, instance):
         # get the original representation
-        rep = super (QueueSerializer, self).to_representation(instance)
+        rep = super(QueueSerializer, self).to_representation(instance)
 
         user = self.context["request"].user
         membership = Membership.objects.filter(course=instance.course, user=user).first()
@@ -207,7 +207,6 @@ class QueueSerializer(CourseRouteMixin):
             rep.pop("pin")
 
         return rep
-
 
 
 class TagSerializer(CourseRouteMixin):

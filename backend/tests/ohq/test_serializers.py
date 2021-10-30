@@ -231,7 +231,8 @@ class QueueSerializerTestCase(TestCase):
         manual_update_pin = "BBBBB"
         self.client.force_authenticate(user=self.ta)
         self.client.patch(
-            reverse("ohq:queue-detail", args=[self.course.id, self.queue.id]), {"pin": manual_update_pin}
+            reverse("ohq:queue-detail", args=[self.course.id, self.queue.id]),
+            {"pin": manual_update_pin},
         )
         self.queue.refresh_from_db()
         self.assertEquals(manual_update_pin, self.queue.pin)
@@ -240,7 +241,8 @@ class QueueSerializerTestCase(TestCase):
         self.queue.save()
         self.client.force_authenticate(user=self.student)
         self.client.patch(
-            reverse("ohq:queue-detail", args=[self.course.id, self.queue.id]), {"pin": manual_update_pin}
+            reverse("ohq:queue-detail", args=[self.course.id, self.queue.id]),
+            {"pin": manual_update_pin},
         )
         self.queue.refresh_from_db()
         self.assertNotEquals(manual_update_pin, self.queue.pin)
