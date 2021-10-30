@@ -148,6 +148,7 @@ class QueueSerializerTestCase(TestCase):
         Ensure TAs can open and close a queue.
         """
 
+        # TAs+ can activate queue but not students
         self.assertFalse(self.queue.active)
         self.client.force_authenticate(user=self.ta)
         self.client.patch(
@@ -155,6 +156,14 @@ class QueueSerializerTestCase(TestCase):
         )
         self.queue.refresh_from_db()
         self.assertTrue(self.queue.active)
+
+        self.queue.active = False
+        self.queue.save()
+        self.client.force_authenticate(user=self.student)
+        self.client.patch(
+            reverse("ohq:queue-detail", args=[self.course.id, self.queue.id]), {"active": True}
+        )
+        self.assertFalse(self.queue.active)
 
     def test_update_other_ta(self):
         """
@@ -196,7 +205,7 @@ class QueueSerializerTestCase(TestCase):
         self.queue.refresh_from_db()
         self.assertEquals(old_pin, self.queue.pin)
 
-        # queue with pin enabled generates pin
+        # queue with pin enabled generates new pin
         self.queue.pin_enabled = True
         self.queue.active = False
         self.queue.save()
@@ -216,6 +225,27 @@ class QueueSerializerTestCase(TestCase):
         self.queue.refresh_from_db()
         self.assertNotEquals(old_pin, self.queue.pin)
 
+        # TAs+ (but not student) can change pin
+        self.queue.pin_enabled = True
+        self.queue.save()
+        manual_update_pin = "BBBBB"
+        self.client.force_authenticate(user=self.ta)
+        self.client.patch(
+            reverse("ohq:queue-detail", args=[self.course.id, self.queue.id]), {"pin": manual_update_pin}
+        )
+        self.queue.refresh_from_db()
+        self.assertEquals(manual_update_pin, self.queue.pin)
+
+        self.queue.pin = self.pin
+        self.queue.save()
+        self.client.force_authenticate(user=self.student)
+        self.client.patch(
+            reverse("ohq:queue-detail", args=[self.course.id, self.queue.id]), {"pin": manual_update_pin}
+        )
+        self.queue.refresh_from_db()
+        self.assertNotEquals(manual_update_pin, self.queue.pin)
+        self.assertEquals(self.pin, self.queue.pin)
+
     def test_get_pin(self):
         """
         Ensure only TAs can get pin in queue detail
@@ -226,7 +256,7 @@ class QueueSerializerTestCase(TestCase):
             reverse("ohq:queue-detail", args=[self.course.id, self.pin_queue.id])
         )
         content = json.loads(response.content)
-        self.assertTrue(content["pin"] is None)
+        self.assertTrue("pin" not in content)
 
         # TAs should get pin
         self.client.force_authenticate(user=self.ta)
