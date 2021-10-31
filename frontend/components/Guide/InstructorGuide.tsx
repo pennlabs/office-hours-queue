@@ -1,4 +1,3 @@
-import React from "react";
 import { Segment, List } from "semantic-ui-react";
 
 import {

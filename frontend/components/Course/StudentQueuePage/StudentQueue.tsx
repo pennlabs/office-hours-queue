@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import * as React from "react";
 import {
     Label,
     Header,
@@ -121,7 +122,14 @@ const StudentQueue = (props: StudentQueueProps) => {
         <>
             <Header as="h3" style={{ flexGrow: 0 }}>
                 {queue.name}
-                <Header.Subheader>{queue.description}</Header.Subheader>
+                <Header.Subheader
+                    style={{
+                        whiteSpace: "break-spaces",
+                        wordBreak: "break-word",
+                    }}
+                >
+                    {queue.description}
+                </Header.Subheader>
             </Header>
             <Grid>
                 {(queue.active ||
@@ -218,8 +226,8 @@ const StudentQueue = (props: StudentQueueProps) => {
                             questions.length === 0 &&
                             !queue.rateLimitEnabled && (
                                 <QuestionForm
-                                    course={course}
-                                    queueId={queue.id}
+                                    queue={queue}
+                                    courseId={course.id}
                                     queueMutate={queueMutate}
                                     mutate={mutateQuestions}
                                     toastFunc={updateToast}
@@ -234,8 +242,8 @@ const StudentQueue = (props: StudentQueueProps) => {
                                     queueId={queue.id}
                                 >
                                     <QuestionForm
-                                        course={course}
-                                        queueId={queue.id}
+                                        queue={queue}
+                                        courseId={course.id}
                                         queueMutate={queueMutate}
                                         mutate={mutateQuestions}
                                         toastFunc={updateToast}

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import Head from "next/head";
 import "semantic-ui-css/semantic.min.css";
 import "../styles/index.css";
@@ -10,7 +10,7 @@ import { askNotificationPermissions } from "../hooks/notifcation";
 const MyApp = ({ Component, pageProps }) => {
     useEffect(() => {
         askNotificationPermissions();
-    });
+    }, []);
     return (
         <SWRConfig
             value={{

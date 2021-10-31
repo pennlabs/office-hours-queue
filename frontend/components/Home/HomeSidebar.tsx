@@ -1,16 +1,20 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import { Segment, Menu, Grid, Image } from "semantic-ui-react";
 import Link from "next/link";
+import { useMediaQuery } from "@material-ui/core";
 
 import { useRouter } from "next/router";
 import SignOutButton from "../SignOut";
 import styles from "../../styles/landingpage.module.css";
 import AboutModal from "../common/AboutModal";
+import Feedback from "../common/Feedback";
+import { MOBILE_BP } from "../../constants";
 
 const Sidebar = () => {
     const router = useRouter();
     const [showAboutModal, setShowAboutModal] = useState(false);
+    const isMobile = useMediaQuery(`(max-width: ${MOBILE_BP})`);
 
     return (
         <Grid.Column width={3}>
@@ -65,17 +69,11 @@ const Sidebar = () => {
                     <SignOutButton />
                 </Menu>
             </Segment>
-            <div
-                role="button"
-                className={`${styles.about} ${styles["about-dashboard"]}`}
-            >
-                <a
-                    href="https://airtable.com/shrIZxIjyAE3gOUSg"
-                    target="_blank"
-                >
-                    <p>Feedback</p>
-                </a>
-            </div>
+            {!isMobile && (
+                <div role="button" className={`${styles["about-dashboard"]}`}>
+                    <Feedback />
+                </div>
+            )}
             <AboutModal
                 open={showAboutModal}
                 closeFunc={() => setShowAboutModal(false)}

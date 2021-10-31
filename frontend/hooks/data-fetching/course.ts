@@ -106,7 +106,11 @@ export async function sendMassInvites(
     });
 
     if (!res.ok) {
-        throw new Error("Could not send invites");
+        const error = await res.json();
+        throw {
+            payload: JSON.stringify(payload),
+            error: JSON.stringify(error),
+        };
     }
 }
 
@@ -278,7 +282,11 @@ export async function createAnnouncement(
         body: payload,
     });
     if (!res.ok) {
-        throw new Error("Unable to create announcement");
+        const error = await res.json();
+        throw {
+            payload: JSON.stringify(payload),
+            error: JSON.stringify(error),
+        };
     }
 }
 
@@ -303,7 +311,11 @@ export async function createQuestion(
     );
 
     if (!res.ok) {
-        throw res;
+        const error = await res.json();
+        throw {
+            payload: JSON.stringify(payload),
+            error: JSON.stringify(error),
+        };
     }
 }
 
@@ -317,7 +329,11 @@ export async function createQueue(
     });
 
     if (!res.ok) {
-        throw new Error("Unable to create queue");
+        const error = await res.json();
+        throw {
+            payload: JSON.stringify(payload),
+            error: JSON.stringify(error),
+        };
     }
 }
 
@@ -336,6 +352,10 @@ export async function finishQuestion(
     );
 
     if (!res.ok) {
-        throw new Error("Unable to finish question");
+        const error = await res.json();
+        throw {
+            payload: JSON.stringify(payload),
+            error: JSON.stringify(error),
+        };
     }
 }

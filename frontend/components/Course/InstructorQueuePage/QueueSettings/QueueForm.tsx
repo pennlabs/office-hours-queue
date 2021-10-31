@@ -1,9 +1,9 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Form, Button, Modal } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
-import { Queue } from "../../../../types";
+import { Queue, VideoChatSetting } from "../../../../types";
 import { logException } from "../../../../utils/sentry";
 
 // TODO: error check PATCH
@@ -16,7 +16,9 @@ interface QueueFormProps {
 interface QueueFormInput {
     name: string;
     description: string;
+    questionTemplate: string;
     queueId: number;
+    videoChatSetting: VideoChatSetting;
     rateLimitEnabled: boolean;
     rateLimitLength?: number;
     rateLimitQuestions?: number;
@@ -40,6 +42,8 @@ const castInt = (n: string): number | undefined => {
 
 const QueueForm = (props: QueueFormProps) => {
     /* STATE */
+    const descCharLimit: number = 1000;
+    const templCharLimit: number = 1000;
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -48,7 +52,9 @@ const QueueForm = (props: QueueFormProps) => {
     const [input, setInput] = useState<QueueFormInput>({
         name: queue.name,
         description: queue.description,
+        questionTemplate: queue.questionTemplate,
         queueId: queue.id,
+        videoChatSetting: queue.videoChatSetting,
         rateLimitEnabled: queue.rateLimitEnabled,
         rateLimitLength: queue.rateLimitEnabled
             ? queue.rateLimitLength
@@ -67,6 +73,9 @@ const QueueForm = (props: QueueFormProps) => {
     const [nameCharCount, setNameCharCount] = useState(input.name.length);
     const [descCharCount, setDescCharCount] = useState(
         input.description.length
+    );
+    const [templCharCount, setTemplCharCount] = useState(
+        input.questionTemplate.length
     );
 
     const isDisabled = useMemo(() => {
@@ -91,7 +100,9 @@ const QueueForm = (props: QueueFormProps) => {
 
         let isSame =
             input.name === queue.name &&
-            input.description === queue.description;
+            input.description === queue.description &&
+            input.questionTemplate === queue.questionTemplate &&
+            input.videoChatSetting === queue.videoChatSetting;
         if (input.rateLimitEnabled !== queue.rateLimitEnabled) {
             isSame = false;
         } else if (input.rateLimitEnabled && queue.rateLimitEnabled) {
@@ -108,7 +119,9 @@ const QueueForm = (props: QueueFormProps) => {
 
     /* HANDLER FUNCTIONS */
     const handleInputChange = (e, { name, value }) => {
-        if (name === "description" && value.length > 500) return;
+        if (name === "description" && value.length > descCharLimit) return;
+        if (name === "questionTemplate" && value.length > templCharLimit)
+            return;
         if (name === "name" && value.length > 100) return;
 
         input[name] = value;
@@ -130,7 +143,23 @@ const QueueForm = (props: QueueFormProps) => {
 
         setInput({ ...input });
         setDescCharCount(input.description.length);
+        setTemplCharCount(input.questionTemplate.length);
         setNameCharCount(input.name.length);
+    };
+
+    const handleVideoChatInputChange = (e, { name }) => {
+        switch (name) {
+            case "videoChatRequired":
+                input.videoChatSetting = VideoChatSetting.REQUIRED;
+                break;
+            case "videoChatOptional":
+                input.videoChatSetting = VideoChatSetting.OPTIONAL;
+                break;
+            case "videoChatDisabled":
+                input.videoChatSetting = VideoChatSetting.DISABLED;
+                break;
+        }
+        setInput({ ...input });
     };
 
     const onSubmit = async () => {
@@ -177,7 +206,7 @@ const QueueForm = (props: QueueFormProps) => {
                     </Form.Field>
                     <Form.Field>
                         <label htmlFor="form-desc">Description</label>
-                        <Form.Input
+                        <Form.TextArea
                             id="form-desc"
                             defaultValue={input.description}
                             name="description"
@@ -187,10 +216,34 @@ const QueueForm = (props: QueueFormProps) => {
                         <div
                             style={{
                                 textAlign: "right",
-                                color: descCharCount < 500 ? "" : "crimson",
+                                color:
+                                    descCharCount < descCharLimit
+                                        ? ""
+                                        : "crimson",
                             }}
                         >
-                            {`Characters: ${descCharCount}/500`}
+                            {`Characters: ${descCharCount}/${descCharLimit}`}
+                        </div>
+                    </Form.Field>
+                    <Form.Field>
+                        <label htmlFor="form-desc">Question Template</label>
+                        <Form.TextArea
+                            id="form-desc"
+                            defaultValue={input.questionTemplate}
+                            name="questionTemplate"
+                            disabled={loading}
+                            onChange={handleInputChange}
+                        />
+                        <div
+                            style={{
+                                textAlign: "right",
+                                color:
+                                    templCharCount < templCharLimit
+                                        ? ""
+                                        : "crimson",
+                            }}
+                        >
+                            {`Characters: ${templCharCount}/${templCharLimit}`}
                         </div>
                     </Form.Field>
                     <Form.Field>
@@ -254,6 +307,42 @@ const QueueForm = (props: QueueFormProps) => {
                             <label htmlFor="rate-length">question(s)</label>
                         </Form.Group>
                     )}
+
+                    <Form.Field required>
+                        <label htmlFor="video-radio">Video Chat</label>
+                        <Form.Group id="video-radio">
+                            <Form.Radio
+                                label="Require Link"
+                                checked={
+                                    input.videoChatSetting ===
+                                    VideoChatSetting.REQUIRED
+                                }
+                                name="videoChatRequired"
+                                disabled={loading}
+                                onChange={handleVideoChatInputChange}
+                            />
+                            <Form.Radio
+                                label="Allow Link"
+                                checked={
+                                    input.videoChatSetting ===
+                                    VideoChatSetting.OPTIONAL
+                                }
+                                name="videoChatOptional"
+                                disabled={loading}
+                                onChange={handleVideoChatInputChange}
+                            />
+                            <Form.Radio
+                                label="No Link"
+                                checked={
+                                    input.videoChatSetting ===
+                                    VideoChatSetting.DISABLED
+                                }
+                                name="videoChatDisabled"
+                                disabled={loading}
+                                onChange={handleVideoChatInputChange}
+                            />
+                        </Form.Group>
+                    </Form.Field>
 
                     <Button
                         color="blue"

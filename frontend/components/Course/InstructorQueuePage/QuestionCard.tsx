@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
     Button,
     Grid,
@@ -94,82 +94,95 @@ const QuestionCard = (props: QuestionCardProps) => {
                 mutate={mutateQuestion}
             />
             <Segment attached="top" color="blue" clearing>
-                <Grid columns="equal">
-                    <Grid.Row>
-                        <Grid.Column textAlign="left">
-                            <Header
-                                as="h5"
-                                style={{
-                                    whiteSpace: "nowrap",
-                                    textOverflow: "ellipsis",
-                                    overflow: "hidden",
-                                }}
-                            >
-                                <Popup
-                                    trigger={<span>{fullName(askedBy)}</span>}
-                                    content={`${fullName(askedBy)} (${
-                                        askedBy.email
-                                    })`}
-                                    basic
-                                    inverted
-                                    position="right center"
-                                />
-                            </Header>
-                        </Grid.Column>
-                        <Grid.Column>
-                            <Header as="h5" color="blue" textAlign="right">
-                                <Popup
-                                    trigger={
-                                        question.timeResponseStarted ===
-                                        null ? (
-                                            <span>
-                                                Asked{" "}
-                                                {moment
-                                                    .duration(
-                                                        moment().diff(
-                                                            moment(
-                                                                question.timeAsked
-                                                            )
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                    }}
+                >
+                    <div>
+                        <Header
+                            as="h5"
+                            style={{
+                                whiteSpace: "nowrap",
+                                textOverflow: "ellipsis",
+                                overflow: "hidden",
+                            }}
+                        >
+                            <Popup
+                                trigger={<span>{fullName(askedBy)}</span>}
+                                content={`${fullName(askedBy)} (${
+                                    askedBy.email
+                                })`}
+                                basic
+                                inverted
+                                position="right center"
+                            />
+                        </Header>
+                    </div>
+                    <div>
+                        <Header as="h5" color="blue" textAlign="right">
+                            <Popup
+                                trigger={
+                                    question.timeResponseStarted === null ? (
+                                        <span>
+                                            Asked{" "}
+                                            {moment
+                                                .duration(
+                                                    moment().diff(
+                                                        moment(
+                                                            question.timeAsked
                                                         )
                                                     )
-                                                    .humanize()}{" "}
-                                                ago
-                                            </span>
-                                        ) : (
-                                            <span>
-                                                Started{" "}
-                                                {moment
-                                                    .duration(
-                                                        moment().diff(
-                                                            moment(
-                                                                question.timeResponseStarted
-                                                            )
+                                                )
+                                                .humanize()}{" "}
+                                            ago
+                                        </span>
+                                    ) : (
+                                        <span>
+                                            Started{" "}
+                                            {moment
+                                                .duration(
+                                                    moment().diff(
+                                                        moment(
+                                                            question.timeResponseStarted
                                                         )
                                                     )
-                                                    .humanize()}{" "}
-                                                ago
-                                            </span>
-                                        )
-                                    }
-                                    content={timeString(
-                                        question.timeResponseStarted
-                                            ? question.timeResponseStarted
-                                            : question.timeAsked,
-                                        false
-                                    )}
-                                    basic
-                                    inverted
-                                    position="left center"
-                                />
-                            </Header>
-                        </Grid.Column>
-                    </Grid.Row>
-                </Grid>
+                                                )
+                                                .humanize()}{" "}
+                                            ago
+                                        </span>
+                                    )
+                                }
+                                content={timeString(
+                                    question.timeResponseStarted
+                                        ? question.timeResponseStarted
+                                        : question.timeAsked,
+                                    false
+                                )}
+                                basic
+                                inverted
+                                position="left center"
+                            />
+                        </Header>
+                    </div>
+                </div>
+                {question.studentDescriptor && (
+                    <div
+                        style={{
+                            paddingTop: "0.25rem",
+                            fontStyle: "italic",
+                            overflowWrap: "anywhere",
+                        }}
+                    >
+                        {question.studentDescriptor}
+                    </div>
+                )}
             </Segment>
             <Segment
                 attached
                 tertiary={question.timeResponseStarted !== null}
-                style={{ overflowWrap: "anywhere" }}
+                style={{ whiteSpace: "break-spaces", wordBreak: "break-word" }}
             >
                 {question.text}
             </Segment>
@@ -254,9 +267,7 @@ const QuestionCard = (props: QuestionCardProps) => {
                                                 question.respondedToBy!
                                                     .username === user.username
                                                     ? "Rejoin Call"
-                                                    : `Join Call (with ${fullName(
-                                                          question.respondedToBy!
-                                                      )})`
+                                                    : "Join Call"
                                             }
                                             disabled={isLoading()}
                                         />
@@ -296,6 +307,22 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     onClick={() => setMessageModalOpen(true)}
                                 />
                             )}
+                            {question.respondedToBy &&
+                                question.respondedToBy.username !==
+                                    user.username && (
+                                    <span
+                                        style={{
+                                            marginLeft: "0.5em",
+                                            fontSize: 11,
+                                        }}
+                                    >
+                                        <i>
+                                            {`${fullName(
+                                                question.respondedToBy!
+                                            )} is answering...`}
+                                        </i>
+                                    </span>
+                                )}
                         </Grid.Column>
                         <Grid.Column
                             width={5}

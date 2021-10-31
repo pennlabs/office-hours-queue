@@ -1,3 +1,5 @@
+import string
+
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
@@ -72,8 +74,6 @@ class CourseSerializer(serializers.ModelSerializer):
             "semester_pretty",
             "archived",
             "invite_only",
-            "video_chat_enabled",
-            "require_video_chat_url_on_questions",
             "is_member",
         )
 
@@ -92,8 +92,6 @@ class CourseCreateSerializer(serializers.ModelSerializer):
             "semester",
             "archived",
             "invite_only",
-            "video_chat_enabled",
-            "require_video_chat_url_on_questions",
             "created_role",
         )
 
@@ -137,6 +135,7 @@ class QueueSerializer(CourseRouteMixin):
     questions_active = serializers.IntegerField(default=0, read_only=True)
     questions_asked = serializers.IntegerField(default=0, read_only=True)
     staff_active = serializers.IntegerField(default=0, read_only=True)
+    pin = serializers.SerializerMethodField()
 
     class Meta:
         model = Queue
@@ -144,6 +143,7 @@ class QueueSerializer(CourseRouteMixin):
             "id",
             "name",
             "description",
+            "question_template",
             "archived",
             "estimated_wait_time",
             "active",
@@ -154,6 +154,9 @@ class QueueSerializer(CourseRouteMixin):
             "rate_limit_length",
             "rate_limit_questions",
             "rate_limit_minutes",
+            "video_chat_setting",
+            "pin",
+            "pin_enabled",
         )
         read_only_fields = ("estimated_wait_time",)
 
@@ -166,14 +169,33 @@ class QueueSerializer(CourseRouteMixin):
         user = self.context["request"].user
         membership = Membership.objects.get(course=instance.course, user=user)
 
+        # generate a random pin when the queue is opened and the queue has pin enabled
+        if "active" in validated_data and validated_data["active"] and instance.pin_enabled:
+            validated_data["pin"] = get_random_string(
+                length=5, allowed_chars=string.ascii_letters + string.digits
+            )
+
         if membership.is_leadership:  # User is a Head TA+
             return super().update(instance, validated_data)
-        else:  # User is a TA
-            if "active" in validated_data:
-                instance.active = validated_data["active"]
+
+        if "active" in validated_data:
+            instance.active = validated_data["active"]
+
+        if "pin" in validated_data:
+            instance.pin = validated_data["pin"]
 
         instance.save()
         return instance
+
+    def get_pin(self, instance):
+        # only TAs can get pin
+        user = self.context["request"].user
+        membership = Membership.objects.filter(course=instance.course, user=user).first()
+
+        if membership is None or not membership.is_ta:
+            return None
+
+        return instance.pin
 
 
 class TagSerializer(CourseRouteMixin):
@@ -204,6 +226,7 @@ class QuestionSerializer(QueueRouteMixin):
             "tags",
             "note",
             "resolved_note",
+            "student_descriptor",
         )
         read_only_fields = (
             "time_asked",
@@ -275,6 +298,8 @@ class QuestionSerializer(QueueRouteMixin):
                         instance.tags.add(tag)
                     except ObjectDoesNotExist:
                         continue
+            if "student_descriptor" in validated_data:
+                instance.student_descriptor = validated_data["student_descriptor"]
             # If a student modifies a question, discard any note added by a TA and mark as resolved
             instance.note = ""
             instance.resolved_note = True
@@ -299,8 +324,6 @@ class QuestionSerializer(QueueRouteMixin):
             except ObjectDoesNotExist:
                 continue
         return question
-        validated_data["note"] = ""
-        return super().create(validated_data)
 
 
 class MembershipPrivateSerializer(CourseRouteMixin):
@@ -336,7 +359,7 @@ class UserPrivateSerializer(serializers.ModelSerializer):
 
     profile = ProfileSerializer(read_only=False, required=False)
     membership_set = MembershipPrivateSerializer(many=True, read_only=True)
-    groups = serializers.StringRelatedField(many=True)
+    groups = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = get_user_model()

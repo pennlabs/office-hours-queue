@@ -1,7 +1,8 @@
-import React, { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Grid, Header, Segment, Message } from "semantic-ui-react";
 import Alert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
+import { useMediaQuery } from "@material-ui/core";
 import InstructorCourses from "./InstructorCourses";
 import StudentCourses from "./StudentCourses";
 import Footer from "../../common/Footer";
@@ -9,7 +10,10 @@ import { AuthUserContext } from "../../../context/auth";
 import { Kind, UserMembership } from "../../../types";
 import { useMemberships } from "../../../hooks/data-fetching/dashboard";
 import { isLeadershipRole } from "../../../utils/enums";
-import { SPRING_2021_TRANSITION_MESSAGE_TOKEN } from "../../../constants";
+import {
+    FALL_2021_TRANSITION_MESSAGE_TOKEN,
+    MOBILE_BP,
+} from "../../../constants";
 
 // TODO: try to readd new user stuff, rip out loading stuff
 const Dashboard = () => {
@@ -19,9 +23,7 @@ const Dashboard = () => {
     }
     const [messageDisp, setMessageDisp] = useState(false);
     useEffect(() => {
-        const state = localStorage.getItem(
-            SPRING_2021_TRANSITION_MESSAGE_TOKEN
-        );
+        const state = localStorage.getItem(FALL_2021_TRANSITION_MESSAGE_TOKEN);
         setMessageDisp(state !== "true");
     }, []);
 
@@ -56,12 +58,12 @@ const Dashboard = () => {
             style={{ display: "flex", flexDirection: "column" }}
         >
             {memberships && (
-                <Grid padded stackable>
+                <Grid padded stackable container>
                     <Grid.Row>
-                        <Segment basic padded>
-                            <Header as="h2">
-                                <Header.Content>Student Courses</Header.Content>
-                            </Header>
+                        <Segment basic>
+                            <Segment basic>
+                                <Header as="h2">Student Courses</Header>
+                            </Segment>
                         </Segment>
                         {messageDisp && (
                             <div
@@ -75,7 +77,7 @@ const Dashboard = () => {
                                     onDismiss={() => {
                                         setMessageDisp(false);
                                         localStorage.setItem(
-                                            SPRING_2021_TRANSITION_MESSAGE_TOKEN,
+                                            FALL_2021_TRANSITION_MESSAGE_TOKEN,
                                             "true"
                                         );
                                     }}
@@ -83,8 +85,9 @@ const Dashboard = () => {
                                     header="Welcome back!"
                                     content={
                                         <>
-                                            Fall 2020 courses have been archived
-                                            in preparation for Spring 2021.
+                                            Spring and Summer 2021 courses have
+                                            been archived in preparation for
+                                            Fall 2021.
                                             <br />
                                             Please contact us at contact@ohq.io
                                             if this is an error.
@@ -101,12 +104,12 @@ const Dashboard = () => {
                     {showInstructorCourses && (
                         <>
                             <Grid.Row>
-                                <Segment basic padded>
-                                    <Header as="h2">
-                                        <Header.Content>
+                                <Segment basic>
+                                    <Segment basic>
+                                        <Header as="h2">
                                             Instructor Courses
-                                        </Header.Content>
-                                    </Header>
+                                        </Header>
+                                    </Segment>
                                 </Segment>
                             </Grid.Row>
                             <InstructorCourses
@@ -130,7 +133,7 @@ const Dashboard = () => {
                     {toast.message}
                 </Alert>
             </Snackbar>
-            <Footer />
+            <Footer showFeedback={useMediaQuery(`(max-width: ${MOBILE_BP})`)} />
         </Grid.Column>
     );
 };

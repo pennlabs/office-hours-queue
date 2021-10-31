@@ -1,13 +1,7 @@
-import React, { useContext, MutableRefObject } from "react";
-import {
-    Grid,
-    Segment,
-    Header,
-    Icon,
-    ButtonProps,
-    Popup,
-} from "semantic-ui-react";
-import CourseSidebar from "./CourseSidebar";
+import { useContext, MutableRefObject } from "react";
+import { Grid, Segment, Header, Icon, Popup } from "semantic-ui-react";
+import { useMediaQuery } from "@material-ui/core";
+import CourseSidebar from "./CourseSidebarNav";
 
 import { AuthUserContext } from "../../context/auth";
 import { useCourse, useStaff } from "../../hooks/data-fetching/course";
@@ -16,6 +10,8 @@ import * as aolAudio from "./InstructorQueuePage/aol.mp3";
 import Footer from "../common/Footer";
 import { usePlayer } from "../../hooks/player";
 import { Course as CourseType, Membership } from "../../types";
+import CourseSidebarInstructorList from "./CourseSidebarInstructorList";
+import { MOBILE_BP } from "../../constants";
 
 interface CourseProps {
     render: (
@@ -47,21 +43,28 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
         isAprilFirst ? aolAudio : bellAudio
     );
 
-    const toggleNotifs = (
-        event: React.MouseEvent<HTMLButtonElement>,
-        data: ButtonProps
-    ) => {
+    const toggleNotifs = () => {
         setNotifs(!notifs);
         localStorage.setItem("notifs", !notifs ? "true" : "false");
         document.body.focus();
     };
 
+    const isMobile = useMediaQuery(`(max-width: ${MOBILE_BP})`);
+
     return course ? (
-        <>
-            <CourseSidebar course={course} leadership={leadership} />
+        // Need to override semantic UI Grid.Row's display: flex for instructor list to clear the row
+        <Grid.Row style={{ display: "block" }}>
+            <Grid.Column width={3}>
+                <CourseSidebar course={course} />
+            </Grid.Column>
             <Grid.Column
                 width={13}
-                style={{ display: "flex", flexDirection: "column" }}
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    float: "right",
+                    ...(!isMobile && { minHeight: "100%" }),
+                }}
             >
                 {course.department && (
                     <Grid columns="equal" style={{ marginBottom: "-2rem" }}>
@@ -149,9 +152,17 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                 <Segment basic>
                     {render(staff, play, notifs, setNotifs)}
                 </Segment>
-                <Footer />
+                {!isMobile && <Footer />}
             </Grid.Column>
-        </>
+            <Grid.Column style={{ clear: "left" }} width={3}>
+                {leadership && (
+                    <CourseSidebarInstructorList
+                        courseId={course.id}
+                        leadership={leadership}
+                    />
+                )}
+            </Grid.Column>
+        </Grid.Row>
     ) : (
         <></>
     );

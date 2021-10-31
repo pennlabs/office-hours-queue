@@ -1,9 +1,4 @@
-import React, {
-    useState,
-    useEffect,
-    useContext,
-    MutableRefObject,
-} from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
     Accordion,
     Dropdown,
@@ -20,6 +15,7 @@ import {
     useAnnouncements,
     createAnnouncement,
 } from "../../hooks/data-fetching/course";
+import ResponsiveIconButton from "../common/ui/ResponsiveIconButton";
 
 interface AnnouncementsProps {
     courseId: number;
@@ -227,9 +223,17 @@ const AnnouncementMessage = ({
                 <Icon name="comment alternate outline" />
                 <Message.Content style={{ paddingBottom: "1rem" }}>
                     <Message.Header>{`From ${announcement.author.firstName}`}</Message.Header>
-                    {announcement.content}
+                    <p
+                        style={{
+                            whiteSpace: "break-spaces",
+                            wordBreak: "break-word",
+                            marginBottom: "0px",
+                        }}
+                    >
+                        {announcement.content}
+                    </p>
                     <br />
-                    <p style={{ color: "#666666" }}>
+                    <p style={{ color: "#666666", marginTop: "0px" }}>
                         Posted{" "}
                         {new Date(announcement.timeUpdated).toLocaleString(
                             "en-us"
@@ -330,18 +334,18 @@ export default function Announcements(props: AnnouncementsProps) {
                         {numUnread} Unread)
                     </Accordion.Title>
                     {staff && (
-                        <Button
+                        <ResponsiveIconButton
+                            onClick={() => setNewState(true)}
+                            primary
+                            icon={<Icon name="plus" />}
+                            desktopProps={{ labelPosition: "left" }}
                             style={{
                                 position: "absolute",
                                 right: "0.8rem",
                                 top: "0.5rem",
                             }}
-                            onClick={() => setNewState(true)}
-                            primary
-                        >
-                            <Icon name="plus" />
-                            Create New
-                        </Button>
+                            text="Create New"
+                        />
                     )}
                     <Accordion.Content active={open}>
                         {announcements!.map((a) => (
