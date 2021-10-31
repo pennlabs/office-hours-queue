@@ -135,7 +135,6 @@ class QueueSerializer(CourseRouteMixin):
     questions_active = serializers.IntegerField(default=0, read_only=True)
     questions_asked = serializers.IntegerField(default=0, read_only=True)
     staff_active = serializers.IntegerField(default=0, read_only=True)
-    pin = serializers.SerializerMethodField()
 
     class Meta:
         model = Queue
@@ -187,15 +186,17 @@ class QueueSerializer(CourseRouteMixin):
         instance.save()
         return instance
 
-    def get_pin(self, instance):
-        # only TAs can get pin
+    def to_representation(self, instance):
+        # get the original representation
+        rep = super(QueueSerializer, self).to_representation(instance)
+
         user = self.context["request"].user
         membership = Membership.objects.filter(course=instance.course, user=user).first()
 
         if membership is None or not membership.is_ta:
-            return None
+            rep.pop("pin")
 
-        return instance.pin
+        return rep
 
 
 class TagSerializer(CourseRouteMixin):
