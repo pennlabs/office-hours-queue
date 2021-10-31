@@ -71,6 +71,8 @@ export interface BaseQueue {
     questionsAsked: number;
     staffActive: number;
     videoChatSetting: VideoChatSetting;
+    pinEnabled: boolean;
+    pin?: string;
 }
 
 export enum VideoChatSetting {

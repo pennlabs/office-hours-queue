@@ -337,6 +337,28 @@ export async function createQueue(
     }
 }
 
+export async function partialUpdateQueue(
+    courseId: number,
+    queueId: number,
+    payload: Partial<Queue>
+): Promise<void> {
+    const res = await doApiRequest(
+        `/api/courses/${courseId}/queues/${queueId}/`,
+        {
+            method: "PATCH",
+            body: payload,
+        }
+    );
+
+    if (!res.ok) {
+        const error = await res.json();
+        throw {
+            payload: JSON.stringify(payload),
+            error: JSON.stringify(error),
+        };
+    }
+}
+
 export async function finishQuestion(
     courseId: number,
     queueId: number,

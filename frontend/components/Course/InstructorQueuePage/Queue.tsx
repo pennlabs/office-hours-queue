@@ -1,11 +1,23 @@
 import { useState, useEffect, useMemo } from "react";
-import { Header, Label, Grid, Message, Button, Icon } from "semantic-ui-react";
+import {
+    Header,
+    Label,
+    Grid,
+    Message,
+    Button,
+    Icon,
+    Form,
+} from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Select from "react-select";
 import Questions from "./Questions";
 import ClearQueueModal from "./ClearQueueModal";
 import { Queue as QueueType, Question, Tag } from "../../../types";
-import { useQuestions } from "../../../hooks/data-fetching/course";
+import {
+    useQuestions,
+    partialUpdateQueue,
+} from "../../../hooks/data-fetching/course";
+import { PIN_CHAR_LIMIT } from "../../../constants";
 
 interface QueueProps {
     courseId: number;
@@ -31,7 +43,8 @@ const Queue = (props: QueueProps) => {
         setNotifs,
         tags,
     } = props;
-    const { id: queueId, active, estimatedWaitTime } = queue;
+    const { id: queueId, active, estimatedWaitTime, pin } = queue;
+    const [pinState, setPinState] = useState<string | undefined>(queue.pin);
     const [filteredTags, setFilteredTags] = useState<string[]>([]);
     const { data: questions, mutate: mutateQuestions } = useQuestions(
         courseId,
@@ -56,6 +69,17 @@ const Queue = (props: QueueProps) => {
     );
 
     const [clearModalOpen, setClearModalOpen] = useState(false);
+
+    const handlePinChange = (_, { value }) => {
+        if (value.length <= PIN_CHAR_LIMIT) {
+            setPinState(value);
+        }
+    };
+
+    const handlePinSubmit = async () => {
+        await partialUpdateQueue(courseId, queueId, { pin: pinState });
+        await mutate(pin, { pin: pinState });
+    };
 
     const handleTagChange = (_, event) => {
         if (event.action === "select-option") {
@@ -87,18 +111,36 @@ const Queue = (props: QueueProps) => {
                 mutate={mutateQuestions}
                 closeFunc={() => setClearModalOpen(false)}
             />
-            <Header as="h3">
-                {queue.name}
-                <Header.Subheader
-                    style={{
-                        whiteSpace: "break-spaces",
-                        wordBreak: "break-word",
-                    }}
-                >
-                    {queue.description}
-                </Header.Subheader>
-            </Header>
             <Grid>
+                <Grid.Row columns="equal">
+                    <Grid.Column>
+                        <Header as="h3">
+                            {queue.name}
+                            <Header.Subheader
+                                style={{
+                                    whiteSpace: "break-spaces",
+                                    wordBreak: "break-word",
+                                }}
+                            >
+                                {queue.description}
+                            </Header.Subheader>
+                        </Header>
+                    </Grid.Column>
+                    <Grid.Column textAlign="right" floated="right">
+                        {queue.pinEnabled && (
+                            <Form onSubmit={handlePinSubmit}>
+                                <Form.Input
+                                    name="changePin"
+                                    value={pinState}
+                                    onChange={handlePinChange}
+                                />
+                                <Button onClick={handlePinSubmit}>
+                                    Submit
+                                </Button>
+                            </Form>
+                        )}
+                    </Grid.Column>
+                </Grid.Row>
                 <Grid.Row columns="equal">
                     <Grid.Column only="computer mobile">
                         {questions.length !== 0 && (
