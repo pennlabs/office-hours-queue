@@ -29,11 +29,11 @@ Cypress.Commands.add("login", (username, password) => {
     cy.get("[name=username]").type(username);
     cy.get("[name=password]").type(password);
     cy.contains("Log in").click();
-    cy.contains("OHQ");
+    cy.contains("Office Hours Queue");
 });
 
 Cypress.Commands.add("logout", () => {
     cy.visit("/admin/");
     cy.contains("Log out").click();
-    cy.contains("OHQ");
+    cy.contains("Logged out");
 });
