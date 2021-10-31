@@ -1,7 +1,7 @@
 import { logException } from "./sentry";
 
 export function browserSupportsNotifications() {
-    return "Notification" in window;
+    return typeof window !== "undefined" && "Notification" in window;
 }
 
 export function askNotificationPermissions() {
