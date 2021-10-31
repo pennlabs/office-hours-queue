@@ -27,7 +27,3 @@ export function playNotification(message: string) {
 export function checkPermissions() {
     return localStorage && localStorage.getItem("notifs") === "false";
 }
-
-export function getPermissions() {
-    return typeof Notification !== "undefined" && Notification.permission;
-}
