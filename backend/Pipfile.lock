@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "e8bf2e8085f121a5a18d8e9206c345a86209dc6a909423bfc4fe60ec4f889d54"
+            "sha256": "f2744f2dc83319f5d054f7d27f00d0cedc65391a49741dbca449876ed444a78a"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -307,11 +307,11 @@
         },
         "django-labs-accounts": {
             "hashes": [
-                "sha256:32cf0f705c53fb4624eea7326c77e37706f496462bb4125fb488547a3af187b2",
-                "sha256:fa537531f019c7668251455b1e586bcd6aa1dfb748198a6c1a5ef96972b6eae4"
+                "sha256:34ab79e9399f23c1d71d8468ed5602e1ac8ad370a2ae47bdd7e59f782bb407c9",
+                "sha256:4b0ab092773b00f4e8335f8310381c9d66aafb1d37d7b4aaa22b76339a6f0af0"
             ],
             "index": "pypi",
-            "version": "==0.8.0"
+            "version": "==0.7.1"
         },
         "django-phonenumber-field": {
             "extras": [
@@ -1147,7 +1147,7 @@
                 "sha256:9c2ea1e62d871267b78307fe511c0838ba0da28698c5732d54e2790bf3ba9899",
                 "sha256:e17d6e2b81095c9db0a03a8025a957f334d6ea30b26f9ec70805411e5c7c81f2"
             ],
-            "markers": "python_version < '4' and python_full_version >= '3.6.1'",
+            "markers": "python_version < '4.0' and python_full_version >= '3.6.1'",
             "version": "==5.9.3"
         },
         "mccabe": {

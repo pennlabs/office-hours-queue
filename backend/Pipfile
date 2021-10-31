@@ -26,7 +26,7 @@ django-cors-headers = "*"
 pyyaml = "*"
 uritemplate = "*"
 uwsgi = "*"
-django-labs-accounts = "*"
+django-labs-accounts = "==0.7.1"
 django-phonenumber-field = {extras = ["phonenumbers"],version = "*"}
 drf-nested-routers = "*"
 django-email-tools = "*"
