@@ -38,30 +38,28 @@ const RosterForm = (props: RosterFormProps) => {
                 justifyContent: "space-between",
             }}
         >
-            <div>
-                <Form>
-                    <Form.Group widths="equal">
-                        <Form.Field>
-                            <Form.Dropdown
-                                selection
-                                clearable
-                                placeholder="Filter..."
-                                name="role"
-                                onChange={handleInputChange}
-                                options={roleOptions}
-                            />
-                        </Form.Field>
-                        <Form.Field>
-                            <Form.Input
-                                icon="search"
-                                placeholder="Search..."
-                                name="search"
-                                onChange={handleInputChange}
-                            />
-                        </Form.Field>
-                    </Form.Group>
-                </Form>
-            </div>
+            <Form>
+                <Form.Group widths="equal">
+                    <Form.Field>
+                        <Form.Dropdown
+                            selection
+                            clearable
+                            placeholder="Filter..."
+                            name="role"
+                            onChange={handleInputChange}
+                            options={roleOptions}
+                        />
+                    </Form.Field>
+                    <Form.Field>
+                        <Form.Input
+                            icon="search"
+                            placeholder="Search..."
+                            name="search"
+                            onChange={handleInputChange}
+                        />
+                    </Form.Field>
+                </Form.Group>
+            </Form>
             <div>
                 {showInviteButton && (
                     <Button
