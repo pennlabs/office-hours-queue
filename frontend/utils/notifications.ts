@@ -1,7 +1,11 @@
 import { logException } from "./sentry";
 
+export function browserSupportsNotifications() {
+    return "Notification" in window;
+}
+
 export function askNotificationPermissions() {
-    if ("Notification" in window) {
+    if (browserSupportsNotifications()) {
         try {
             Notification.requestPermission();
         } catch (e) {
@@ -11,7 +15,7 @@ export function askNotificationPermissions() {
 }
 
 export function playNotification(message: string) {
-    if ("Notification" in window) {
+    if (browserSupportsNotifications()) {
         try {
             /* eslint-disable-next-line */
             new Notification("Alert", {
