@@ -35,9 +35,13 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:  # pragma: no cover
-    import debug_toolbar
+    try:
+        import debug_toolbar
+    except ImportError:
+        debug_toolbar = None
 
-    urlpatterns = [
-        path("__debug__/", include(debug_toolbar.urls)),
-        path("emailpreview/", include("email_tools.urls")),
-    ] + urlpatterns
+    if debug_toolbar is not None:
+        urlpatterns = [
+            path("__debug__/", include(debug_toolbar.urls)),
+            path("emailpreview/", include("email_tools.urls")),
+        ] + urlpatterns

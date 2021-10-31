@@ -1,0 +1,36 @@
+Arguments: 
+  /usr/local/bin/node /Users/gautam/.yarn/bin/yarn.js add typing_extensions
+
+PATH: 
+  /Users/gautam/.pyenv/shims:/Users/gautam/.yarn/bin:/Users/gautam/.config/yarn/global/node_modules/.bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/mysql/bin/:/Applications/VMware Fusion.app/Contents/Public:/Library/Apple/usr/bin
+
+Yarn version: 
+  1.22.15
+
+Node version: 
+  12.18.0
+
+Platform: 
+  darwin x64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/typing_extensions: Not found
+      at Request.params.callback [as _callback] (/Users/gautam/.yarn/lib/cli.js:67031:18)
+      at Request.self.callback (/Users/gautam/.yarn/lib/cli.js:140885:22)
+      at Request.emit (events.js:315:20)
+      at Request.<anonymous> (/Users/gautam/.yarn/lib/cli.js:141857:10)
+      at Request.emit (events.js:315:20)
+      at IncomingMessage.<anonymous> (/Users/gautam/.yarn/lib/cli.js:141779:12)
+      at Object.onceWrapper (events.js:421:28)
+      at IncomingMessage.emit (events.js:327:22)
+      at endReadableNT (_stream_readable.js:1221:12)
+      at processTicksAndRejections (internal/process/task_queues.js:84:21)
+
+npm manifest: 
+  No manifest
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

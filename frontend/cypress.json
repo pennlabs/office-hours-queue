@@ -1,0 +1,5 @@
+{
+    "baseUrl": "http://traefik",
+    "retries": 3,
+    "video": false
+}

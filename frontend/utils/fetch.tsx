@@ -1,9 +1,9 @@
+import getConfig from "next/config";
 import getCsrf from "../csrf";
 
-export const SITE_ORIGIN =
-    process.env.NODE_ENV === "production"
-        ? `https://${process.env.DOMAIN || "ohq.io"}`
-        : `http://localhost:${process.env.PORT || 3000}`;
+const { publicRuntimeConfig } = getConfig();
+
+export const { SITE_ORIGIN } = publicRuntimeConfig;
 
 export const API_BASE_URL = `${SITE_ORIGIN}`;
 

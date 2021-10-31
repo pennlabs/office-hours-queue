@@ -3,7 +3,9 @@
     "plugins": ["prettier"],
     "extends": ["airbnb", "react-app", "prettier", "prettier/react"],
     "env": {
-        "browser": true
+        "browser": true,
+        "es6": true,
+        "node": true
     },
     "rules": {
         "prettier/prettier": "error",

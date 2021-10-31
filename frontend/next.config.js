@@ -21,4 +21,12 @@ module.exports = {
 
         return config;
     },
+    publicRuntimeConfig: {
+        // If DOMAIN starts with http, use it directly, otherwise add https
+        SITE_ORIGIN: process.env.DOMAIN
+            ? process.env.DOMAIN.startsWith('http')
+                ? process.env.DOMAIN
+                : `https://${process.env.DOMAIN}`
+            : `http://localhost:${process.env.PORT || 3000}`
+    },
 };
