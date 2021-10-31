@@ -1,11 +1,11 @@
+import { logException } from "./sentry";
+
 export function askNotificationPermissions() {
-    if (!("Notification" in window)) {
-        console.log("This browser does not support desktop notification");
-    } else {
+    if ("Notification" in window) {
         try {
             Notification.requestPermission();
-        } catch {
-            console.log("Notifications API not supported on this device");
+        } catch (e) {
+            logException(e);
         }
     }
 }
@@ -19,7 +19,7 @@ export function playNotification(message: string) {
                 icon: "../favicon.ico",
             });
         } catch (e) {
-            console.log("Notifications API not supported on this device");
+            logException(e);
         }
     }
 }
