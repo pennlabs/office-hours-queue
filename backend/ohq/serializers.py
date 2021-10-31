@@ -186,16 +186,6 @@ class QueueSerializer(CourseRouteMixin):
         instance.save()
         return instance
 
-    # def get_pin(self, instance):
-    #     # only TAs can get pin
-    #     user = self.context["request"].user
-    #     membership = Membership.objects.filter(course=instance.course, user=user).first()
-
-    #     if membership is None or not membership.is_ta:
-    #         return None
-
-    #     return instance.pin
-
     def to_representation(self, instance):
         # get the original representation
         rep = super(QueueSerializer, self).to_representation(instance)
