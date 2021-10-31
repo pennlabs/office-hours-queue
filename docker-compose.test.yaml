@@ -37,6 +37,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=Host(`traefik`) && (PathPrefix(`/api`) || PathPrefix(`/admin`))"
+      - "traefik.http.routers.backend.priority=2"
       - "traefik.http.routers.backend.entrypoints=web"
       - "traefik.http.services.backend.loadbalancer.server.port=80"
   frontend:
@@ -47,6 +48,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`traefik`) && PathPrefix(`/`)"
+      - "traefik.http.routers.frontend.priority=1"
       - "traefik.http.routers.frontend.entrypoints=web"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
     volumes:
@@ -71,5 +73,6 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend_ws.rule=Host(`traefik`) && PathPrefix(`/api/ws`)"
+      - "traefik.http.routers.backend_ws.priority=3"
       - "traefik.http.routers.backend_ws.entrypoints=web"
       - "traefik.http.services.backend_ws.loadbalancer.server.port=80"
