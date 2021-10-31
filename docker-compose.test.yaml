@@ -46,7 +46,7 @@ services:
       DOMAIN: http://traefik
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`traefik`)"
+      - "traefik.http.routers.frontend.rule=Host(`traefik`) && PathPrefix(`/`)"
       - "traefik.http.routers.frontend.entrypoints=web"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
     volumes:
