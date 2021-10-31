@@ -1,7 +1,7 @@
 import UIfx from "uifx";
 import { useState, useRef, useEffect, Dispatch, SetStateAction } from "react";
 import { NotificationProps } from "../types";
-import { playNotification, checkPermissions } from "../utils/notifcation";
+import { playNotification, checkPermissions } from "../utils/notifications";
 
 export function usePlayer(
     audio: string

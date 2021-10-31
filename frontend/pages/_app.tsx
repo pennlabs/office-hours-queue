@@ -5,7 +5,7 @@ import "../styles/index.css";
 import { SWRConfig } from "swr";
 import { doApiRequest } from "../utils/fetch";
 import withGA from "../utils/ga/withGA";
-import { askNotificationPermissions } from "../utils/notifcation";
+import { askNotificationPermissions } from "../utils/notifications";
 
 const MyApp = ({ Component, pageProps }) => {
     useEffect(() => {
