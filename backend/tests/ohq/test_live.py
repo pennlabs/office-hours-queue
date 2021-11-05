@@ -1,6 +1,6 @@
 from asgiref.sync import sync_to_async
 from channels.auth import AuthMiddlewareStack
-from channels.db import database_sync_to_async
+from channels.db import database_sync_to_async as db
 from django.contrib.auth import get_user_model
 from django.test import TransactionTestCase
 from django.urls import reverse
@@ -16,28 +16,28 @@ User = get_user_model()
 
 class QuestionTest(TransactionTestCase):
     async def asyncSetUp(self):
-        self.semester = await database_sync_to_async(Semester.objects.create)(
+        self.semester = await db(Semester.objects.create)(
             year=2020, term=Semester.TERM_SUMMER
         )
-        self.course = await database_sync_to_async(Course.objects.create)(
+        self.course = await db(Course.objects.create)(
             course_code="000", department="TEST", course_title="Title", semester=self.semester
         )
-        self.queue = await database_sync_to_async(Queue.objects.create)(
+        self.queue = await db(Queue.objects.create)(
             name="Queue", course=self.course
         )
-        self.professor = await database_sync_to_async(User.objects.create)(username="professor")
-        self.professor_membership = await database_sync_to_async(Membership.objects.create)(
+        self.professor = await db(User.objects.create)(username="professor")
+        self.professor_membership = await db(Membership.objects.create)(
             course=self.course, user=self.professor, kind=Membership.KIND_PROFESSOR
         )
-        self.student1 = await database_sync_to_async(User.objects.create)(username="student1")
-        await database_sync_to_async(Membership.objects.create)(
+        self.student1 = await db(User.objects.create)(username="student1")
+        await db(Membership.objects.create)(
             course=self.course, user=self.student1, kind=Membership.KIND_STUDENT
         )
-        self.student2 = await database_sync_to_async(User.objects.create)(username="student2")
-        await database_sync_to_async(Membership.objects.create)(
+        self.student2 = await db(User.objects.create)(username="student2")
+        await db(Membership.objects.create)(
             course=self.course, user=self.student2, kind=Membership.KIND_STUDENT
         )
-        self.old_question = await database_sync_to_async(Question.objects.create)(
+        self.old_question = await db(Question.objects.create)(
             queue=self.queue, asked_by=self.student1, text="Help me",
         )
 
@@ -72,5 +72,16 @@ class QuestionTest(TransactionTestCase):
             {"text": "New question", "tags": []},
         )
 
+        question_position = 2
         response = await self.client.receive_json_from()
-        print(response)
+        self.assertEquals(question_position, response["instance"]["position"])
+
+        await sync_to_async(self.api_client.force_authenticate)(user=self.professor)
+        await sync_to_async(self.api_client.patch)(
+            reverse("ohq:question-detail", args=[self.course.id, self.queue.id, self.old_question.id]),
+            {"status": Question.STATUS_ACTIVE},
+        )
+        question_position -= 1
+
+        response = await self.client.receive_json_from()
+        self.assertEquals(question_position, response["instance"]["position"])

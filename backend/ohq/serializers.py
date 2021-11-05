@@ -315,6 +315,7 @@ class QuestionSerializer(QueueRouteMixin):
             Question.STATUS_ACTIVE,
             Question.STATUS_WITHDRAWN,
             Question.STATUS_REJECTED,
+            Question.STATUS_ANSWERED
         ]:
             asked_questions = Question.objects.filter(
                 queue=instance.queue, status=Question.STATUS_ASKED
