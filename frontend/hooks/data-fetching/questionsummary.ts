@@ -60,7 +60,7 @@ export const useQuestions = (
     courseId: number,
     initialQuestions: QuestionListResult
 ): QuestionsFilterResponse => {
-    const baseUrl = `/courses/${courseId}/questions/`;
+    const baseUrl = `/api/courses/${courseId}/questions/`;
 
     const {
         data,
@@ -78,7 +78,7 @@ export const useQuestions = (
     const filterString = summaryFilterToQuery(filterCopy);
 
     // get rid of trailing slash
-    let downloadUrl = `/api${baseUrl.slice(0, -1)}`;
+    let downloadUrl = baseUrl.slice(0, -1);
 
     // filter is empty will return "?"
     if (filterString.length === 1) {

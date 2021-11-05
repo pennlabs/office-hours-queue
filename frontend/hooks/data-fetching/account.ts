@@ -1,20 +1,19 @@
-import useSWR from "swr";
 import { parsePhoneNumberFromString } from "libphonenumber-js/max";
+import { useResource } from "@pennlabs/rest-hooks";
 import { User } from "../../types";
 import { doApiRequest } from "../../utils/fetch";
 
-export function useAccountInfo(
-    initialUser
-): [
-    User,
-    any,
-    boolean,
-    (data?: any, shouldRevalidate?: boolean) => Promise<any>
-] {
-    const { data, error, isValidating, mutate } = useSWR("/accounts/me/", {
-        initialData: initialUser,
-    });
-    return [data, error, isValidating, mutate];
+export function useAccountInfo(initialUser?: User) {
+    const { data, error, isValidating, mutate } = useResource(
+        "/api/accounts/me/",
+        {
+            initialData: initialUser,
+        }
+    );
+    if (data) {
+        return { data, error, isValidating, mutate: () => mutate() };
+    }
+    throw new Error("Could not get user account info");
 }
 
 export async function validateSMS(code) {
@@ -23,7 +22,7 @@ export async function validateSMS(code) {
             smsVerificationCode: code,
         },
     };
-    const res = await doApiRequest("/accounts/me/", {
+    const res = await doApiRequest("/api/accounts/me/", {
         method: "PATCH",
         body: payload,
     });
@@ -35,7 +34,7 @@ export async function validateSMS(code) {
 }
 
 export async function resendSMSVerification() {
-    const res = await doApiRequest("/accounts/me/resend/", {
+    const res = await doApiRequest("/api/accounts/me/resend/", {
         method: "POST",
     });
 
@@ -60,7 +59,7 @@ export async function updateUser(payload: Partial<User>) {
 
         processedPayload.profile.phoneNumber = parsedNumber as string;
     }
-    const res = await doApiRequest("/accounts/me/", {
+    const res = await doApiRequest("/api/accounts/me/", {
         method: "PATCH",
         body: processedPayload,
     });

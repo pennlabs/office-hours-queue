@@ -488,6 +488,23 @@ class MembershipViewSet(viewsets.ModelViewSet, RealtimeMixin):
 
         return prefetch(qs, self.serializer_class)
 
+    @action(detail=False)
+    def staff_active(self, request, course_pk):
+        """
+        Get's the active staff in a course
+        """
+
+        time_threshold = timezone.now() - timedelta(minutes=1)
+
+        staff_active = Membership.objects.filter(
+            Q(course=course_pk)
+            & ~Q(kind=Membership.KIND_STUDENT)
+            & Q(last_active__gt=time_threshold)
+        )
+
+        serializer = self.get_serializer(staff_active, many=True)
+        return Response(serializer.data)
+
 
 class MembershipInviteViewSet(viewsets.ModelViewSet):
     """
