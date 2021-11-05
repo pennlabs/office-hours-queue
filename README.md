@@ -27,6 +27,7 @@ Navigate to `/backend`. Then,
   - d. `python manage.py migrate`
   - e. `python manage.py populate` to populate the database with dummy data
   - f. Ensure `python manage.py test` passes all tests.
+    - Note: to run a specific test, you can run `python manage.py test tests.ohq.test_file.TestCase`. 
   Note that you might have to run migrations or reinstall dependencies if the Pipfile or models have been changed upstream.
   
 1. `docker-compose up` (run this before doing any of the manage.py commands)
