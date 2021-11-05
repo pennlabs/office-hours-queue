@@ -2,8 +2,13 @@ import { useState } from "react";
 import { Container } from "semantic-ui-react";
 
 import AboutModal from "./AboutModal";
+import Feedback from "./Feedback";
 
-export default function Footer() {
+interface FooterProps {
+    showFeedback?: boolean;
+}
+
+export default function Footer({ showFeedback }: FooterProps) {
     const [showModal, setShowModal] = useState(false);
     return (
         <>
@@ -31,6 +36,11 @@ export default function Footer() {
                 >
                     Friends
                 </span>
+                {showFeedback && (
+                    <div role="button" style={{ marginTop: "8px" }}>
+                        <Feedback />
+                    </div>
+                )}
             </Container>
             <AboutModal
                 open={showModal}
