@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Segment, Menu, Grid, Image, Container } from "semantic-ui-react";
+import { Segment, Menu, Grid, Image } from "semantic-ui-react";
 import Link from "next/link";
 import { useMediaQuery } from "@material-ui/core";
 
@@ -67,20 +67,6 @@ const Sidebar = () => {
                         />
                     </Link>
                     <SignOutButton />
-                    <Container className={`${styles["about-changelog"]}`} />
-                    <Link href="/changelog" as="/changelog">
-                        <Menu.Item
-                            style={{
-                                whiteSpace: "nowrap",
-                                textOverflow: "ellipsis",
-                                overflow: "hidden",
-                            }}
-                            name="Changes"
-                            icon="file text"
-                            active={router.pathname === "/changelog"}
-                            color="blue"
-                        />
-                    </Link>
                 </Menu>
             </Segment>
             {!isMobile && (

@@ -14,9 +14,6 @@
 }
 
 @media only screen and (min-width: 768px) {
-    .about-changelog {
-        height: calc(100vh - 310px);
-    }
     .about-dashboard {
         position: fixed;
         bottom: 0;
