@@ -221,6 +221,12 @@ class MembershipPermission(permissions.BasePermission):
         # TODO: make sure Head TAs+ can't delete professors
         # and professors can't delete themselves
         if view.action in ["update", "partial_update"]:
+            # TAs can only modify the timer
+            if obj.user == request.user and [*request.data] == ["timer_seconds"]:
+                return membership.is_ta
+            # TAs can't modify other TAs' timers
+            if obj.user != request.user and "timer_seconds" in request.data:
+                return False
             return membership.is_leadership
 
     def has_permission(self, request, view):
