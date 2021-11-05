@@ -16,15 +16,11 @@ User = get_user_model()
 
 class QuestionTest(TransactionTestCase):
     async def asyncSetUp(self):
-        self.semester = await db(Semester.objects.create)(
-            year=2020, term=Semester.TERM_SUMMER
-        )
+        self.semester = await db(Semester.objects.create)(year=2020, term=Semester.TERM_SUMMER)
         self.course = await db(Course.objects.create)(
             course_code="000", department="TEST", course_title="Title", semester=self.semester
         )
-        self.queue = await db(Queue.objects.create)(
-            name="Queue", course=self.course
-        )
+        self.queue = await db(Queue.objects.create)(name="Queue", course=self.course)
         self.professor = await db(User.objects.create)(username="professor")
         self.professor_membership = await db(Membership.objects.create)(
             course=self.course, user=self.professor, kind=Membership.KIND_PROFESSOR
@@ -78,7 +74,9 @@ class QuestionTest(TransactionTestCase):
 
         await sync_to_async(self.api_client.force_authenticate)(user=self.professor)
         await sync_to_async(self.api_client.patch)(
-            reverse("ohq:question-detail", args=[self.course.id, self.queue.id, self.old_question.id]),
+            reverse(
+                "ohq:question-detail", args=[self.course.id, self.queue.id, self.old_question.id]
+            ),
             {"status": Question.STATUS_ACTIVE},
         )
         question_position -= 1
