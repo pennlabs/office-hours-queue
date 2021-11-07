@@ -22,6 +22,7 @@ interface QuestionFormState {
     tags: { name: string }[];
     videoChatUrl?: string;
     studentDescriptor: string;
+    pin?: string;
 }
 
 const QuestionForm = (props: QuestionFormProps) => {
@@ -96,6 +97,8 @@ const QuestionForm = (props: QuestionFormProps) => {
             let message: string;
             if (e.status === 429) {
                 message = "Exceeded question quota for queue";
+            } else if (e.status === 409) {
+                message = "Incorrect pin";
             } else {
                 message = "Unable to create question";
                 logException(e);
@@ -113,6 +116,17 @@ const QuestionForm = (props: QuestionFormProps) => {
             </Segment>
             <Segment attached secondary>
                 <Form>
+                    {queue.pinEnabled && (
+                        <Form.Field required>
+                            <label htmlFor="form-pin">Pin</label>
+                            <Form.Input
+                                id="form-pin"
+                                name="pin"
+                                value={input.pin}
+                                onChange={handleInputChange}
+                            />
+                        </Form.Field>
+                    )}
                     <Form.Field required>
                         <label htmlFor="form-question">Question</label>
                         <Form.TextArea

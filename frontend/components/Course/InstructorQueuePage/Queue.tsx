@@ -134,9 +134,6 @@ const Queue = (props: QueueProps) => {
                                     value={pinState}
                                     onChange={handlePinChange}
                                 />
-                                <Button onClick={handlePinSubmit}>
-                                    Submit
-                                </Button>
                             </Form>
                         )}
                     </Grid.Column>
