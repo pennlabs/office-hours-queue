@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, MutableRefObject } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Header, Label, Grid, Message, Button, Icon } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Select from "react-select";
@@ -14,7 +14,8 @@ interface QueueProps {
     mutate: mutateResourceListFunction<QueueType>;
     leader: boolean;
     editFunc: () => void;
-    play: MutableRefObject<() => void>;
+    notifs: boolean;
+    setNotifs: (boolean) => void;
     tags: Tag[];
 }
 
@@ -26,7 +27,8 @@ const Queue = (props: QueueProps) => {
         mutate,
         leader,
         editFunc,
-        play,
+        notifs,
+        setNotifs,
         tags,
     } = props;
     const { id: queueId, active, estimatedWaitTime } = queue;
@@ -87,11 +89,18 @@ const Queue = (props: QueueProps) => {
             />
             <Header as="h3">
                 {queue.name}
-                <Header.Subheader>{queue.description}</Header.Subheader>
+                <Header.Subheader
+                    style={{
+                        whiteSpace: "break-spaces",
+                        wordBreak: "break-word",
+                    }}
+                >
+                    {queue.description}
+                </Header.Subheader>
             </Header>
             <Grid>
                 <Grid.Row columns="equal">
-                    <Grid.Column only="computer mobile">
+                    <Grid.Column>
                         {questions.length !== 0 && (
                             <Label
                                 content={`${questions.length} user${
@@ -194,11 +203,7 @@ const Queue = (props: QueueProps) => {
                 </Grid.Row>
                 {!active && questions.length > 0 && (
                     <Grid.Row columns="equal">
-                        <Grid.Column
-                            textAlign="right"
-                            floated="right"
-                            only="computer mobile"
-                        >
+                        <Grid.Column textAlign="right" floated="right">
                             <Button
                                 content="Clear Queue"
                                 fluid
@@ -216,7 +221,8 @@ const Queue = (props: QueueProps) => {
                             questions={filteredQuestions}
                             mutate={mutateQuestions}
                             active={active}
-                            play={play}
+                            notifs={notifs}
+                            setNotifs={setNotifs}
                         />
                     </Grid.Column>
                 </Grid.Row>

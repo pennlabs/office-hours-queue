@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button, Form, Modal, Segment } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import { Question, QuestionStatus } from "../../../types";
@@ -67,7 +67,6 @@ const RejectQuestionModal = (props: RejectQuestionModalProps) => {
             closeFunc();
         } catch (e) {
             logException(e);
-            console.log(e);
         }
     };
 

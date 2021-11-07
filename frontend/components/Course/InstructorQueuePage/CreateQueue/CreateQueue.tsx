@@ -1,10 +1,10 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Grid, Segment, Header, Form, Button } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 import { createQueue } from "../../../../hooks/data-fetching/course";
-import { Queue } from "../../../../types";
+import { Queue, VideoChatSetting } from "../../../../types";
 import { logException } from "../../../../utils/sentry";
 
 interface CreateQueueProps {
@@ -17,6 +17,8 @@ interface CreateQueueProps {
 interface QueueFormInput {
     name: string;
     description: string;
+    questionTemplate: string;
+    videoChatSetting: VideoChatSetting;
     rateLimitEnabled: boolean;
     rateLimitLength?: number;
     rateLimitQuestions?: number;
@@ -45,11 +47,28 @@ const CreateQueue = (props: CreateQueueProps) => {
     const [input, setInput] = useState<QueueFormInput>({
         name: "",
         description: "",
+        questionTemplate: "",
+        videoChatSetting: VideoChatSetting.DISABLED,
         rateLimitEnabled: false,
         rateLimitLength: undefined,
         rateLimitQuestions: undefined,
         rateLimitMinutes: undefined,
     });
+
+    const handleVideoChatInputChange = (e, { name }) => {
+        switch (name) {
+            case "videoChatRequired":
+                input.videoChatSetting = VideoChatSetting.REQUIRED;
+                break;
+            case "videoChatOptional":
+                input.videoChatSetting = VideoChatSetting.OPTIONAL;
+                break;
+            case "videoChatDisabled":
+                input.videoChatSetting = VideoChatSetting.DISABLED;
+                break;
+        }
+        setInput({ ...input });
+    };
 
     const isDisabled = useMemo(() => {
         let invalidInps = !input.name || !input.description;
@@ -142,7 +161,17 @@ const CreateQueue = (props: CreateQueueProps) => {
                                 onChange={handleInputChange}
                             />
                         </Form.Field>
-
+                        <Form.Field>
+                            <label htmlFor="form-question-template">
+                                Question Template
+                            </label>
+                            <Form.Input
+                                id="form-question-template"
+                                name="questionTemplate"
+                                disabled={mutateLoading}
+                                onChange={handleInputChange}
+                            />
+                        </Form.Field>
                         <Form.Field>
                             <Form.Checkbox
                                 name="rateLimitEnabled"
@@ -204,6 +233,43 @@ const CreateQueue = (props: CreateQueueProps) => {
                                 <label htmlFor="rate-length">question(s)</label>
                             </Form.Group>
                         )}
+
+                        <Form.Field required>
+                            <label htmlFor="video-radio">Video Chat</label>
+                            <Form.Group id="video-radio">
+                                <Form.Radio
+                                    label="Require Link"
+                                    checked={
+                                        input.videoChatSetting ===
+                                        VideoChatSetting.REQUIRED
+                                    }
+                                    name="videoChatRequired"
+                                    disabled={mutateLoading}
+                                    onChange={handleVideoChatInputChange}
+                                />
+                                <Form.Radio
+                                    label="Allow Link"
+                                    checked={
+                                        input.videoChatSetting ===
+                                        VideoChatSetting.OPTIONAL
+                                    }
+                                    name="videoChatOptional"
+                                    disabled={mutateLoading}
+                                    onChange={handleVideoChatInputChange}
+                                />
+                                <Form.Radio
+                                    label="No Link"
+                                    checked={
+                                        input.videoChatSetting ===
+                                        VideoChatSetting.DISABLED
+                                    }
+                                    name="videoChatDisabled"
+                                    disabled={mutateLoading}
+                                    onChange={handleVideoChatInputChange}
+                                />
+                            </Form.Group>
+                        </Form.Field>
+
                         <Button
                             content="Create"
                             color="blue"
