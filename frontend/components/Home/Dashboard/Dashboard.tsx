@@ -2,6 +2,7 @@ import { useContext, useState, useEffect } from "react";
 import { Grid, Header, Segment, Message, Label } from "semantic-ui-react";
 import Alert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
+import { useMediaQuery } from "@material-ui/core";
 import InstructorCourses from "./InstructorCourses";
 import StudentCourses from "./StudentCourses";
 import Footer from "../../common/Footer";
@@ -9,7 +10,10 @@ import { AuthUserContext } from "../../../context/auth";
 import { Kind, UserMembership } from "../../../types";
 import { useMemberships } from "../../../hooks/data-fetching/dashboard";
 import { isLeadershipRole } from "../../../utils/enums";
-import { FALL_2021_TRANSITION_MESSAGE_TOKEN } from "../../../constants";
+import {
+    FALL_2021_TRANSITION_MESSAGE_TOKEN,
+    MOBILE_BP,
+} from "../../../constants";
 import ModalShowNewChanges from "./Modals/ModalShowNewChanges";
 
 // TODO: try to readd new user stuff, rip out loading stuff
@@ -71,7 +75,7 @@ const Dashboard = () => {
             style={{ display: "flex", flexDirection: "column" }}
         >
             {memberships && (
-                <Grid padded stackable>
+                <Grid padded stackable container>
                     <Grid.Row>
                         <Segment basic>
                             <Segment basic>
@@ -166,7 +170,7 @@ const Dashboard = () => {
                 </Alert>
             </Snackbar>
 
-            <Footer />
+            <Footer showFeedback={useMediaQuery(`(max-width: ${MOBILE_BP})`)} />
             <ModalShowNewChanges openModal={logModal} setOpen={setLogModal} />
         </Grid.Column>
     );
