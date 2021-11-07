@@ -107,7 +107,7 @@ export default function Changelog() {
         <Grid.Column width={13}>
             <Grid.Row>
                 <Segment basic>
-                    <Header as="h2">Updates</Header>
+                    <Header as="h2">Changelog</Header>
                 </Segment>
             </Grid.Row>
 

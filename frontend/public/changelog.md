@@ -1,3 +1,3 @@
-#### Oct 24
-
--   Added new updates tab to show new changes to OHQ.io!
+## 2021-11-07
+### Added
+-   Changelog feature to share updates to OHQ. Check here primarily for bug fixes. A more extensive guide on how to use OHQ features can be found in our [FAQ page](ohq.io/faq).
