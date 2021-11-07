@@ -112,23 +112,21 @@ export default function Changelog() {
             </Grid.Row>
 
             <Grid.Row>
-                <Segment basic>
-                    {showSlider && (
-                        <Segment compact basic>
-                            <Checkbox
-                                label="Show new changes"
-                                checked={buttonToggle}
-                                onChange={(event, data) =>
-                                    setButtonToggle(
-                                        data.checked ? data.checked : false
-                                    )
-                                }
-                                slider
-                            />
-                        </Segment>
-                    )}
-                    {display}
-                </Segment>
+                {showSlider && (
+                    <Segment compact basic>
+                        <Checkbox
+                            label="Show new changes"
+                            checked={buttonToggle}
+                            onChange={(event, data) =>
+                                setButtonToggle(
+                                    data.checked ? data.checked : false
+                                )
+                            }
+                            slider
+                        />
+                    </Segment>
+                )}
+                {display}
             </Grid.Row>
         </Grid.Column>
     );

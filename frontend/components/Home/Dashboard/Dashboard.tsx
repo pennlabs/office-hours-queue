@@ -1,5 +1,5 @@
 import { useContext, useState, useEffect } from "react";
-import { Grid, Header, Segment, Message, Label } from "semantic-ui-react";
+import { Grid, Header, Segment, Message } from "semantic-ui-react";
 import Alert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
 import { useMediaQuery } from "@material-ui/core";
@@ -153,20 +153,20 @@ const Dashboard = () => {
 
             <Snackbar
                 open={logOpen}
-                autoHideDuration={6000}
+                autoHideDuration={10000}
                 onClose={() => setLogOpen(false)}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
             >
-                <Alert severity="info" onClose={() => setLogOpen(false)}>
-                    <Label
-                        style={{ cursor: "pointer" }}
-                        color="blue"
-                        onClick={() => {
-                            setLogOpen(false);
-                            setLogModal(true);
-                        }}
-                    >
-                        {logToast.message}
-                    </Label>
+                <Alert
+                    severity="info"
+                    onClose={() => setLogOpen(false)}
+                    onClick={() => {
+                        setLogOpen(false);
+                        setLogModal(true);
+                    }}
+                    style={{ cursor: "pointer" }}
+                >
+                    {logToast.message}
                 </Alert>
             </Snackbar>
 
