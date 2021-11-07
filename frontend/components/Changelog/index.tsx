@@ -80,48 +80,41 @@ export default function Changelog() {
             );
         } else {
             setDisplay(
-                <div style={{ display: "block", padding: "1em" }}>
-                    <>
-                        {mdLine.map(
-                            (part) =>
-                                part.color !== "#FF000070" && (
-                                    <div
-                                        style={{
-                                            backgroundColor: "#00000000",
-                                            display: "block",
-                                            padding: "1em",
-                                        }}
-                                    >
-                                        <>
-                                            {ReactHtmlParser(
-                                                processor.processSync(
-                                                    part.content
-                                                )
-                                            )}
-                                        </>
-                                    </div>
-                                )
-                        )}
-                    </>
-                </div>
+                <>
+                    {mdLine.map(
+                        (part) =>
+                            part.color !== "#FF000070" && (
+                                <div
+                                    style={{
+                                        backgroundColor: "#00000000",
+                                        display: "block",
+                                        padding: "1em",
+                                    }}
+                                >
+                                    <>
+                                        {ReactHtmlParser(
+                                            processor.processSync(part.content)
+                                        )}
+                                    </>
+                                </div>
+                            )
+                    )}
+                </>
             );
         }
     }, [buttonToggle, mdLine]);
     return (
-        <Grid.Column width={13} style={{ padding: "1rem" }}>
-            <Grid.Row
-                style={{
-                    marginTop: "1rem",
-                    paddingLeft: "1.5em",
-                    paddingTop: "1.5em",
-                }}
-            >
-                <Grid.Column>
-                    <Header as="h2">
-                        <Header.Content>Change Log</Header.Content>
-                    </Header>
+        <Grid.Column width={13}>
+            <Grid.Row>
+                <Segment basic>
+                    <Header as="h2">Updates</Header>
+                </Segment>
+            </Grid.Row>
+
+            <Grid.Row>
+                <Segment basic>
                     {showSlider && (
-                        <Segment compact>
+                        <Segment compact basic>
                             <Checkbox
                                 label="Show new changes"
                                 checked={buttonToggle}
@@ -134,17 +127,8 @@ export default function Changelog() {
                             />
                         </Segment>
                     )}
-                </Grid.Column>
-            </Grid.Row>
-            <Grid.Row style={{ marginTop: "1rem", padding: "1em" }}>
-                <div
-                    style={{
-                        boxShadow: "0 0 2px grey",
-                        padding: "1em",
-                    }}
-                >
                     {display}
-                </div>
+                </Segment>
             </Grid.Row>
         </Grid.Column>
     );
