@@ -53,7 +53,6 @@ const QueuePage = (props: QueuePageProps) => {
                 <CourseWrapper
                     course={course}
                     leadership={leadership}
-                    notificationUI={true}
                     render={(
                         staff: boolean,
                         play: NotificationProps,

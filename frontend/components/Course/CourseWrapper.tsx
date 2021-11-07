@@ -12,6 +12,7 @@ import { usePlayer } from "../../hooks/player";
 import { Course as CourseType, Membership } from "../../types";
 import CourseSidebarInstructorList from "./CourseSidebarInstructorList";
 import { MOBILE_BP } from "../../constants";
+import { browserSupportsNotifications } from "../../utils/notifications";
 
 interface CourseProps {
     render: (
@@ -22,11 +23,10 @@ interface CourseProps {
     ) => JSX.Element;
     course: CourseType;
     leadership: Membership[];
-    notificationUI?: boolean;
 }
 
 const CourseWrapper = ({ render, ...props }: CourseProps) => {
-    const { course: rawCourse, leadership, notificationUI } = props;
+    const { course: rawCourse, leadership } = props;
     const { data: course } = useCourse(rawCourse.id, rawCourse);
 
     const { user: initialUser } = useContext(AuthUserContext);
@@ -79,7 +79,7 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                             </Segment>
                         </Grid.Column>
 
-                        {notificationUI && (
+                        {browserSupportsNotifications() && (
                             <Grid.Column>
                                 <Segment basic>
                                     <div
@@ -104,6 +104,7 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                                                     {notifs ? "ON" : "OFF"}
                                                 </div>
                                             }
+                                            size="mini"
                                         >
                                             <p>
                                                 Browser permissions are{" "}
@@ -119,7 +120,7 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                                             </p>
                                             {typeof Notification !==
                                                 "undefined" &&
-                                                Notification.permission ==
+                                                Notification.permission ===
                                                     "denied" && (
                                                     <p>
                                                         Enable notification
