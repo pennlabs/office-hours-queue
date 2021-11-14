@@ -1,6 +1,6 @@
 import math
 import re
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from django.contrib.auth import get_user_model
 from django.core.validators import ValidationError
@@ -19,6 +19,7 @@ from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 from rest_live.mixins import RealtimeMixin
+from schedule.models.events import EventManager, EventRelation, EventRelationManager
 
 from ohq.filters import QuestionSearchFilter, QueueStatisticFilter
 from ohq.invite import parse_and_send_invites
@@ -32,6 +33,7 @@ from ohq.models import (
     QueueStatistic,
     Semester,
     Tag,
+    Event,
 )
 from ohq.pagination import QuestionSearchPagination
 from ohq.permissions import (
@@ -41,11 +43,13 @@ from ohq.permissions import (
     MassInvitePermission,
     MembershipInvitePermission,
     MembershipPermission,
+    OccurrencePermission,
     QuestionPermission,
     QuestionSearchPermission,
     QueuePermission,
     QueueStatisticPermission,
     TagPermission,
+    EventPermission,
 )
 from ohq.schemas import MassInviteSchema
 from ohq.serializers import (
@@ -54,6 +58,7 @@ from ohq.serializers import (
     CourseSerializer,
     MembershipInviteSerializer,
     MembershipSerializer,
+    OccurenceSerializer,
     Profile,
     QuestionSerializer,
     QueueSerializer,
@@ -61,6 +66,7 @@ from ohq.serializers import (
     SemesterSerializer,
     TagSerializer,
     UserPrivateSerializer,
+    EventSerializer
 )
 from ohq.sms import sendSMSVerification
 
@@ -607,3 +613,50 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Announcement.objects.filter(course=self.kwargs["course_pk"])
+
+class EventViewSet(viewsets.ModelViewSet) :
+    """
+    retrieve:
+    Return an event.
+
+    list:
+    Return a list of events.
+
+    create:
+    Create a event.
+
+    update:
+    Update all fields in the announcement.
+    You must specify all of the fields or use a patch request.
+
+    partial_update:
+    Update certain fields in the announcement.
+    Only specify the fields that you want to change.
+
+    destroy:
+    Delete a announcement.
+    """
+    serializer_class = EventSerializer
+    permission_classes = [EventPermission | IsSuperuser]
+
+    def list(self, request, *args, **kwargs) :
+        return Event.objects.filter(pk__in = kwargs["events"])
+
+    
+
+class OccurenceViewSet(viewsets.ModelViewSet) :
+    serializer_class = OccurenceSerializer
+    permission_class = [OccurrencePermission | IsSuperuser]
+
+    def list(self, request, *args, **kwargs):
+        courses = Course.objects.filter(pk__in = kwargs["courses"])
+        occurrences = []
+        for course in courses:
+            events_for_course = EventRelationManager.get_events_for_object(course)
+            for event in events_for_course:
+                for occurrence in event.get_occurrences(kwargs["start"], kwargs["end"]):
+                    occurrences.append(occurrence)
+
+                    
+
+

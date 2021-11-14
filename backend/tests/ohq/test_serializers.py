@@ -538,3 +538,4 @@ class AnnouncementSerializerTestCase(TestCase):
         self.assertEqual(2, Announcement.objects.all().count())
         announcement = Announcement.objects.all().order_by("time_updated")[1]
         self.assertEqual(self.ta, announcement.author)
+

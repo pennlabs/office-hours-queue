@@ -1,7 +1,7 @@
 from django.db.models import Q
 from django_filters import rest_framework as filters
 
-from ohq.models import Question, QueueStatistic
+from ohq.models import Course, Question, QueueStatistic
 
 
 class QuestionSearchFilter(filters.FilterSet):
@@ -27,3 +27,7 @@ class QueueStatisticFilter(filters.FilterSet):
     class Meta:
         model = QueueStatistic
         fields = ["metric", "date"]
+
+class CourseFilter(filters.FilterSet): 
+    class Meta: 
+        model = Course

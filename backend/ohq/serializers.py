@@ -6,6 +6,8 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
+from schedule.models import Event, Rule, EventRelationManager
+from schedule.models.events import Occurrence
 
 from ohq.models import (
     Announcement,
@@ -432,7 +434,6 @@ class AnnouncementSerializer(CourseRouteMixin):
     """
     Serializer for announcements
     """
-
     author = UserSerializer(read_only=True)
 
     class Meta:
@@ -447,3 +448,41 @@ class AnnouncementSerializer(CourseRouteMixin):
     def update(self, instance, validated_data):
         validated_data["author"] = self.context["request"].user
         return super().update(instance, validated_data)
+
+class RuleSerializer(serializers.ModelSerializer):
+    """
+    Serializer for rules
+    """
+    class Meta:
+        model = Rule
+        fields = ("frequency")
+
+class EventSerializer(serializers.ModelSerializer):
+    """
+    Serializer for events
+    """
+
+    rule = RuleSerializer(read_only = False, required= False)
+
+    class Meta: 
+        model = Event
+        fields = ("start", "end", "title", "description", "rule", "end_recurring_period")
+
+    def create(self, validated_data):
+        course = Course.objects.get(pk=self.context["view"].kwargs["course_pk"])
+        event = super.create(validated_data)
+        EventRelationManager.create_relation(event, course)
+        return event
+
+class OccurenceSerializer(serializers.ModelSerializer):
+    """
+    Serializer for occurrence
+    """
+    event = EventSerializer(read_only = True, required = True)
+
+    class Meta: 
+        model = Occurrence
+        fields = ("title", "description", "start", "end", "cancelled", "original_start", "original_end")
+        read_only_fields = ("event")
+
+    
