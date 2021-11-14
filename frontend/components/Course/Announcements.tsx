@@ -1,9 +1,4 @@
-import React, {
-    useState,
-    useEffect,
-    useContext,
-    MutableRefObject,
-} from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
     Accordion,
     Dropdown,
@@ -14,18 +9,21 @@ import {
     Button,
 } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
-import { Announcement, BaseUser } from "../../types";
+import { useMediaQuery } from "@material-ui/core";
+import { Announcement, BaseUser, NotificationProps } from "../../types";
 import { AuthUserContext } from "../../context/auth";
 import {
     useAnnouncements,
     createAnnouncement,
 } from "../../hooks/data-fetching/course";
+import ResponsiveIconButton from "../common/ui/ResponsiveIconButton";
+import { MOBILE_BP } from "../../constants";
 
 interface AnnouncementsProps {
     courseId: number;
     initialAnnouncements: Announcement[];
     staff: boolean;
-    play: MutableRefObject<() => void>;
+    play: NotificationProps;
 }
 
 interface ModalProps {
@@ -176,6 +174,7 @@ const AnnouncementMessage = ({
     setDeleteState: (state: ModalState) => void;
     setEditState: (state: ModalState) => void;
 }) => {
+    const isMobile = useMediaQuery(`(max-width: ${MOBILE_BP})`);
     return (
         <>
             <Message icon>
@@ -224,12 +223,20 @@ const AnnouncementMessage = ({
                         </Dropdown.Menu>
                     </Dropdown>
                 )}
-                <Icon name="comment alternate outline" />
+                {!isMobile && <Icon name="comment alternate outline" />}
                 <Message.Content style={{ paddingBottom: "1rem" }}>
                     <Message.Header>{`From ${announcement.author.firstName}`}</Message.Header>
-                    {announcement.content}
+                    <p
+                        style={{
+                            whiteSpace: "break-spaces",
+                            wordBreak: "break-word",
+                            marginBottom: "0px",
+                        }}
+                    >
+                        {announcement.content}
+                    </p>
                     <br />
-                    <p style={{ color: "#666666" }}>
+                    <p style={{ color: "#666666", marginTop: "0px" }}>
                         Posted{" "}
                         {new Date(announcement.timeUpdated).toLocaleString(
                             "en-us"
@@ -270,7 +277,7 @@ export default function Announcements(props: AnnouncementsProps) {
         const unread = calcNumUnread(announcements!, latestRead, user!);
         setNumUnread(unread);
         if (!staff && unread > 0) {
-            play.current();
+            play.current(`You have ${unread} unread announcements`);
         }
     }, [announcements, latestRead, play, staff, user]);
 
@@ -330,18 +337,18 @@ export default function Announcements(props: AnnouncementsProps) {
                         {numUnread} Unread)
                     </Accordion.Title>
                     {staff && (
-                        <Button
+                        <ResponsiveIconButton
+                            onClick={() => setNewState(true)}
+                            primary
+                            icon={<Icon name="plus" />}
+                            desktopProps={{ labelPosition: "left" }}
                             style={{
                                 position: "absolute",
                                 right: "0.8rem",
                                 top: "0.5rem",
                             }}
-                            onClick={() => setNewState(true)}
-                            primary
-                        >
-                            <Icon name="plus" />
-                            Create New
-                        </Button>
+                            text="Create New"
+                        />
                     )}
                     <Accordion.Content active={open}>
                         {announcements!.map((a) => (

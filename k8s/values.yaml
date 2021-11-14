@@ -52,7 +52,7 @@ applications:
   - name: celery
     image: pennlabs/office-hours-queue-backend
     secret: office-hours-queue
-    cmd: ["celery","-A", "officehoursqueue", "worker", "-lINFO"]
+    cmd: ["celery", "-A", "officehoursqueue", "worker", "-lINFO"]
     extraEnv:
       - name: DJANGO_SETTINGS_MODULE
         value: officehoursqueue.settings.production
@@ -65,22 +65,17 @@ cronjobs:
     image: pennlabs/office-hours-queue-backend
     secret: office-hours-queue
     cmd: ["python", "manage.py", "calculatewaittimes"]
-  - name: queue-weekly-stat
+  - name: queue-daily-stat
     schedule: "0 8 * * *"
     image: pennlabs/office-hours-queue-backend
     secret: office-hours-queue
-    cmd: ["python", "manage.py", "queue_weekly_stat"]
+    cmd: ["python", "manage.py", "queue_daily_stat"]
   - name: queue-heatmap-stat
     schedule: "0 8 * * *"
     image: pennlabs/office-hours-queue-backend
     secret: office-hours-queue
     cmd: ["python", "manage.py", "queue_heatmap_stat"]
-  - name: calculate-wait-time-days
-    schedule: "0 8 * * *"
-    image: pennlabs/office-hours-queue-backend
-    secret: office-hours-queue
-    cmd: ["python", "manage.py", "wait_time_days"]
-    - name: calculate-course-stat
+  - name: calculate-course-stat
     schedule: "0 8 * * *"
     image: pennlabs/office-hours-queue-backend
     secret: office-hours-queue

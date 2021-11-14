@@ -1,8 +1,14 @@
-import React, { MutableRefObject, useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Grid, Message, Menu } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import StudentQueue from "./StudentQueue";
-import { Queue, Course, QuestionMap, Tag } from "../../../types";
+import {
+    Queue,
+    Course,
+    QuestionMap,
+    Tag,
+    NotificationProps,
+} from "../../../types";
 import { QueueMenuItem } from "./QueueMenuItem";
 
 interface StudentQueuesProps {
@@ -10,7 +16,7 @@ interface StudentQueuesProps {
     course: Course;
     queueMutate: mutateResourceListFunction<Queue>;
     questionmap: QuestionMap;
-    play: MutableRefObject<() => void>;
+    play: NotificationProps;
     tags: Tag[];
 }
 const StudentQueues = (props: StudentQueuesProps) => {

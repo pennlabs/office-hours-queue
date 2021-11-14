@@ -1,6 +1,7 @@
-import React, { useContext, MutableRefObject } from "react";
-import { Grid, Segment, Header, Icon, ButtonProps } from "semantic-ui-react";
-import CourseSidebar from "./CourseSidebar";
+import { useContext, MutableRefObject } from "react";
+import { Grid, Segment, Header, Icon, Popup } from "semantic-ui-react";
+import { useMediaQuery } from "@material-ui/core";
+import CourseSidebar from "./CourseSidebarNav";
 
 import { AuthUserContext } from "../../context/auth";
 import { useCourse, useStaff } from "../../hooks/data-fetching/course";
@@ -9,11 +10,16 @@ import * as aolAudio from "./InstructorQueuePage/aol.mp3";
 import Footer from "../common/Footer";
 import { usePlayer } from "../../hooks/player";
 import { Course as CourseType, Membership } from "../../types";
+import CourseSidebarInstructorList from "./CourseSidebarInstructorList";
+import { MOBILE_BP } from "../../constants";
+import { browserSupportsNotifications } from "../../utils/notifications";
 
 interface CourseProps {
     render: (
         staff: boolean,
-        play: MutableRefObject<(() => void) | undefined>
+        play: MutableRefObject<(string) => void | undefined>,
+        notifs?: boolean,
+        setNotifs?: (boolean) => void
     ) => JSX.Element;
     course: CourseType;
     leadership: Membership[];
@@ -32,25 +38,33 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
 
     const { staff } = useStaff(rawCourse.id, initialUser);
 
-    const isAprilFirst = true;
+    const isAprilFirst = false;
     const [notifs, setNotifs, play] = usePlayer(
         isAprilFirst ? aolAudio : bellAudio
     );
 
-    const toggleNotifs = (
-        event: React.MouseEvent<HTMLButtonElement>,
-        data: ButtonProps
-    ) => {
+    const toggleNotifs = () => {
         setNotifs(!notifs);
+        localStorage.setItem("notifs", !notifs ? "true" : "false");
         document.body.focus();
     };
 
+    const isMobile = useMediaQuery(`(max-width: ${MOBILE_BP})`);
+
     return course ? (
-        <>
-            <CourseSidebar course={course} leadership={leadership} />
+        // Need to override semantic UI Grid.Row's display: flex for instructor list to clear the row
+        <Grid.Row style={{ display: "block" }}>
+            <Grid.Column width={3}>
+                <CourseSidebar course={course} />
+            </Grid.Column>
             <Grid.Column
                 width={13}
-                style={{ display: "flex", flexDirection: "column" }}
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    float: "right",
+                    ...(!isMobile && { minHeight: "100%" }),
+                }}
             >
                 {course.department && (
                     <Grid columns="equal" style={{ marginBottom: "-2rem" }}>
@@ -65,50 +79,94 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                             </Segment>
                         </Grid.Column>
 
-                        <Grid.Column>
-                            <Segment basic>
-                                <div
-                                    style={{
-                                        float: "right",
-                                        paddingTop: "0.71rem",
-                                    }}
-                                >
+                        {browserSupportsNotifications() && (
+                            <Grid.Column>
+                                <Segment basic>
                                     <div
                                         style={{
-                                            display: "inline",
-                                            position: "relative",
-                                            top: "0.14rem",
-                                            fontSize: "1.29rem",
-                                            fontFamily: "Lato",
-                                            color: "#666666",
+                                            float: "right",
+                                            paddingTop: "0.71rem",
                                         }}
                                     >
-                                        Notifications are{" "}
-                                        {notifs ? "ON" : "OFF"}
+                                        {!isMobile && (
+                                            <Popup
+                                                trigger={
+                                                    <div
+                                                        style={{
+                                                            display: "inline",
+                                                            position:
+                                                                "relative",
+                                                            top: "0.14rem",
+                                                            fontSize: "1.29rem",
+                                                            fontFamily: "Lato",
+                                                            color: "#666666",
+                                                        }}
+                                                    >
+                                                        Notifications are{" "}
+                                                        {notifs ? "ON" : "OFF"}
+                                                    </div>
+                                                }
+                                                size="mini"
+                                            >
+                                                <p>
+                                                    Browser permissions are{" "}
+                                                    {typeof Notification !==
+                                                        "undefined" && (
+                                                        <strong>
+                                                            {
+                                                                Notification.permission
+                                                            }
+                                                        </strong>
+                                                    )}
+                                                    .
+                                                </p>
+                                                {typeof Notification !==
+                                                    "undefined" &&
+                                                    Notification.permission ===
+                                                        "denied" && (
+                                                        <p>
+                                                            Enable notification
+                                                            permisions to
+                                                            receive browser
+                                                            notifications.
+                                                        </p>
+                                                    )}
+                                            </Popup>
+                                        )}
+                                        <Icon
+                                            size="large"
+                                            style={{
+                                                paddingLeft: "0.71rem",
+                                                cursor: "pointer",
+                                                color: "rgba(0, 0, 0, 0.6)",
+                                            }}
+                                            name={
+                                                notifs
+                                                    ? "bell outline"
+                                                    : "bell slash outline"
+                                            }
+                                            onClick={toggleNotifs}
+                                        />
                                     </div>
-                                    <Icon
-                                        size="large"
-                                        style={{
-                                            paddingLeft: "0.71rem",
-                                            cursor: "pointer",
-                                            color: "rgba(0, 0, 0, 0.6)",
-                                        }}
-                                        name={
-                                            notifs
-                                                ? "bell outline"
-                                                : "bell slash outline"
-                                        }
-                                        onClick={toggleNotifs}
-                                    />
-                                </div>
-                            </Segment>
-                        </Grid.Column>
+                                </Segment>
+                            </Grid.Column>
+                        )}
                     </Grid>
                 )}
-                <Segment basic>{render(staff, play)}</Segment>
-                <Footer />
+                <Segment basic>
+                    {render(staff, play, notifs, setNotifs)}
+                </Segment>
+                {!isMobile && <Footer />}
             </Grid.Column>
-        </>
+            <Grid.Column style={{ clear: "left" }} width={3}>
+                {leadership && (
+                    <CourseSidebarInstructorList
+                        courseId={course.id}
+                        leadership={leadership}
+                    />
+                )}
+            </Grid.Column>
+        </Grid.Row>
     ) : (
         <></>
     );

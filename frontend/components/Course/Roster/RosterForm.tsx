@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Form, Button, Grid } from "semantic-ui-react";
+import { useState } from "react";
+import { Form, Button } from "semantic-ui-react";
 import { roleOptions } from "../../../utils/enums";
 
 interface RosterFormProps {
@@ -31,53 +31,53 @@ const RosterForm = (props: RosterFormProps) => {
     };
 
     return (
-        <Grid columns="equal" stackable>
-            <Grid.Row stackable>
-                <Grid.Column only="computer mobile">
-                    <Form>
-                        <Form.Group>
-                            <Form.Field>
-                                <Form.Dropdown
-                                    selection
-                                    clearable
-                                    placeholder="Filter..."
-                                    name="role"
-                                    onChange={handleInputChange}
-                                    options={roleOptions}
-                                />
-                            </Form.Field>
-                            <Form.Field>
-                                <Form.Input
-                                    icon="search"
-                                    placeholder="Search..."
-                                    name="search"
-                                    onChange={handleInputChange}
-                                />
-                            </Form.Field>
-                        </Form.Group>
-                    </Form>
-                </Grid.Column>
-                <Grid.Column textAlign="right" floated="right">
-                    {showInviteButton && (
-                        <Button
-                            content="Invite"
-                            color="blue"
-                            onClick={inviteFunc}
-                            icon="add user"
+        <div
+            style={{
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "space-between",
+            }}
+        >
+            <Form>
+                <Form.Group widths="equal">
+                    <Form.Field>
+                        <Form.Dropdown
+                            selection
+                            clearable
+                            placeholder="Filter..."
+                            name="role"
+                            onChange={handleInputChange}
+                            options={roleOptions}
                         />
-                    )}
-                    {showShowInvitedButton && (
-                        <Button
-                            content={
-                                invitedShown ? "Hide Invited" : "Show Invited"
-                            }
-                            color="grey"
-                            onClick={showInvitedFunc}
+                    </Form.Field>
+                    <Form.Field>
+                        <Form.Input
+                            icon="search"
+                            placeholder="Search..."
+                            name="search"
+                            onChange={handleInputChange}
                         />
-                    )}
-                </Grid.Column>
-            </Grid.Row>
-        </Grid>
+                    </Form.Field>
+                </Form.Group>
+            </Form>
+            <div>
+                {showInviteButton && (
+                    <Button
+                        content="Invite"
+                        color="blue"
+                        onClick={inviteFunc}
+                        icon="add user"
+                    />
+                )}
+                {showShowInvitedButton && (
+                    <Button
+                        content={invitedShown ? "Hide Invited" : "Show Invited"}
+                        color="grey"
+                        onClick={showInvitedFunc}
+                    />
+                )}
+            </div>
+        </div>
     );
 };
 

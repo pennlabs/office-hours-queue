@@ -1,4 +1,3 @@
-import React, { MutableRefObject } from "react";
 import Head from "next/head";
 import { Grid } from "semantic-ui-react";
 import { WebsocketProvider } from "@pennlabs/rest-live-hooks";
@@ -17,6 +16,7 @@ import {
     Membership,
     Question,
     QuestionMap,
+    NotificationProps,
 } from "../../../types";
 import InstructorQueuePage from "../../../components/Course/InstructorQueuePage/InstructorQueuePage";
 import StudentQueuePage from "../../../components/Course/StudentQueuePage/StudentQueuePage";
@@ -49,13 +49,15 @@ const QueuePage = (props: QueuePageProps) => {
             <Head>
                 <title>{`OHQ | ${course.department} ${course.courseCode}`}</title>
             </Head>
-            <Grid columns="equal" divided style={{ width: "100%" }} stackable>
+            <Grid divided style={{ width: "100%" }} stackable>
                 <CourseWrapper
                     course={course}
                     leadership={leadership}
                     render={(
                         staff: boolean,
-                        play: MutableRefObject<() => void>
+                        play: NotificationProps,
+                        notifs: boolean,
+                        setNotifs: (boolean) => void
                     ) => {
                         return (
                             <div>
@@ -66,6 +68,8 @@ const QueuePage = (props: QueuePageProps) => {
                                         queues={queues}
                                         questionmap={questionmap}
                                         play={play}
+                                        notifs={notifs}
+                                        setNotifs={setNotifs}
                                         tags={tags}
                                     />
                                 )}

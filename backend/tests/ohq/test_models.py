@@ -12,6 +12,7 @@ from ohq.models import (
     Queue,
     QueueStatistic,
     Semester,
+    Tag,
 )
 
 
@@ -24,6 +25,18 @@ class ProfileTestCase(TestCase):
 
     def test_str(self):
         self.assertEqual(str(self.user.profile), str(self.user))
+
+
+class TagTestCase(TestCase):
+    def setUp(self):
+        self.semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
+        self.course = Course.objects.create(
+            course_code="000", department="TEST", course_title="Title", semester=self.semester
+        )
+        self.tag = Tag.objects.create(name="Test Tag", course=self.course)
+
+    def test_str(self):
+        self.assertEqual(str(self.tag), f"{self.course}: Test Tag")
 
 
 class CourseTestCase(TestCase):
@@ -229,6 +242,7 @@ class QueueStatisticTestCase(TestCase):
             course_code="000", department="TEST", course_title="Title", semester=semester
         )
         self.queue = Queue.objects.create(name="Queue", course=course)
+
         self.heatmap_queue_statistic = QueueStatistic.objects.create(
             queue=self.queue,
             metric=QueueStatistic.METRIC_HEATMAP_WAIT,
@@ -237,11 +251,33 @@ class QueueStatisticTestCase(TestCase):
             hour=0,
         )
         today = timezone.datetime.today().date()
+
+        self.avg_wait_time_queue_statistic = QueueStatistic.objects.create(
+            queue=self.queue,
+            metric=QueueStatistic.METRIC_AVG_WAIT,
+            value=150.00,
+            date=today - timezone.timedelta(days=1),
+        )
+
+        self.num_questions_answered_queue_statistic = QueueStatistic.objects.create(
+            queue=self.queue,
+            metric=QueueStatistic.METRIC_NUM_ANSWERED,
+            value=10.00,
+            date=today - timezone.timedelta(days=1),
+        )
+
+        self.num_students_helped_queue_statistic = QueueStatistic.objects.create(
+            queue=self.queue,
+            metric=QueueStatistic.METRIC_STUDENTS_HELPED,
+            value=50.00,
+            date=today - timezone.timedelta(days=1),
+        )
+
         self.avg_time_helping_queue_statistic = QueueStatistic.objects.create(
             queue=self.queue,
             metric=QueueStatistic.METRIC_AVG_TIME_HELPING,
             value=120.00,
-            date=today - timezone.timedelta(days=(today.weekday() + 1) % 7),
+            date=today - timezone.timedelta(days=1),
         )
 
     def test_str(self):
@@ -251,6 +287,22 @@ class QueueStatisticTestCase(TestCase):
             f"{self.heatmap_queue_statistic.get_day_display()} "
             f"{self.heatmap_queue_statistic.hour}:00 - {self.heatmap_queue_statistic.hour+1}:00",
         )
+
+        self.assertEqual(
+            str(self.avg_wait_time_queue_statistic),
+            f"{self.queue}: {self.avg_wait_time_queue_statistic.get_metric_display()}",
+        )
+
+        self.assertEqual(
+            str(self.num_questions_answered_queue_statistic),
+            f"{self.queue}: {self.num_questions_answered_queue_statistic.get_metric_display()}",
+        )
+
+        self.assertEqual(
+            str(self.num_students_helped_queue_statistic),
+            f"{self.queue}: {self.num_students_helped_queue_statistic.get_metric_display()}",
+        )
+
         self.assertEqual(
             str(self.avg_time_helping_queue_statistic),
             f"{self.queue}: {self.avg_time_helping_queue_statistic.get_metric_display()}",
