@@ -14,6 +14,7 @@ import {
     FALL_2021_TRANSITION_MESSAGE_TOKEN,
     MOBILE_BP,
 } from "../../../constants";
+import ModalShowNewChanges from "./Modals/ModalShowNewChanges";
 
 // TODO: try to readd new user stuff, rip out loading stuff
 const Dashboard = () => {
@@ -51,6 +52,22 @@ const Dashboard = () => {
         getMemberships(false).length > 0 || canCreateCourse;
     const [toast] = useState({ message: "", success: true });
     const [toastOpen, setToastOpen] = useState(false);
+
+    const [logToast] = useState({
+        message: "View new changes to OHQ.io",
+        success: true,
+    });
+    const [logOpen, setLogOpen] = useState(false);
+    const [logModal, setLogModal] = useState(false);
+
+    useEffect(() => {
+        Promise.all([
+            fetch("./changelog.md").then((md) => md.text()),
+            `${window.localStorage.getItem("changelogsaved")}`,
+        ]).then(([updatedMd, savedMd]) => {
+            if (updatedMd !== savedMd) setLogOpen(true);
+        });
+    }, []);
 
     return (
         <Grid.Column
@@ -133,7 +150,28 @@ const Dashboard = () => {
                     {toast.message}
                 </Alert>
             </Snackbar>
+
+            <Snackbar
+                open={logOpen}
+                autoHideDuration={10000}
+                onClose={() => setLogOpen(false)}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            >
+                <Alert
+                    severity="info"
+                    onClose={() => setLogOpen(false)}
+                    onClick={() => {
+                        setLogOpen(false);
+                        setLogModal(true);
+                    }}
+                    style={{ cursor: "pointer" }}
+                >
+                    {logToast.message}
+                </Alert>
+            </Snackbar>
+
             <Footer showFeedback={useMediaQuery(`(max-width: ${MOBILE_BP})`)} />
+            <ModalShowNewChanges openModal={logModal} setOpen={setLogModal} />
         </Grid.Column>
     );
 };
