@@ -18,10 +18,14 @@ const processor = unified()
     .use(rehypeReact)
     .use(rehypeStringify);
 
+const TRANSPARENT = "#00000000";
+const GREEN = "#7CFC0070";
+const RED = "#FF000070";
+
 export default function Changelog() {
     const initial: mdLine = {
         content: "LOADING...",
-        color: "#00000000",
+        color: TRANSPARENT,
     };
     const [mdLine, setMdLine] = useState<mdLine[]>([initial]);
     const [showSlider, setShowSlider] = useState(false);
@@ -31,17 +35,17 @@ export default function Changelog() {
             fetch("./changelog.md").then((md) => md.text()),
             window.localStorage.getItem("changelogsaved") == null
                 ? ""
-                : window.localStorage.getItem("changelogsaved")!,
+                : window.localStorage.getItem("changelogsaved"),
         ]).then(([readIn, savedMd]) => {
             if (readIn !== savedMd) setShowSlider(true);
             const diff = diffLines(savedMd, readIn);
             const newMd: Array<mdLine> = [];
             diff.forEach((part) => {
-                let lineColor = "#00000000";
+                let lineColor = TRANSPARENT;
                 if (part.added) {
-                    lineColor = "#7CFC0070";
+                    lineColor = GREEN;
                 } else if (part.removed) {
-                    lineColor = "#FF000070";
+                    lineColor = RED;
                 }
                 newMd.push({
                     content: part.value,
@@ -83,10 +87,10 @@ export default function Changelog() {
                 <>
                     {mdLine.map(
                         (part) =>
-                            part.color !== "#FF000070" && (
+                            part.color !== RED && (
                                 <div
                                     style={{
-                                        backgroundColor: "#00000000",
+                                        backgroundColor: TRANSPARENT,
                                         display: "block",
                                         padding: "1em",
                                     }}

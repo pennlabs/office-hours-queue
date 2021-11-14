@@ -17,7 +17,7 @@ const Sidebar = () => {
     const isMobile = useMediaQuery(`(max-width: ${MOBILE_BP})`);
 
     return (
-        <Grid.Column width={3} className={`${styles["about-sidebar"]}`}>
+        <Grid.Column width={3}>
             <Segment basic>
                 <Link href="/" as="/">
                     <Image
