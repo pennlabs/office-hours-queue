@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { useState } from "react";
 import { Container } from "semantic-ui-react";
 
@@ -26,7 +25,7 @@ export default function Footer({ showFeedback }: FooterProps) {
                 >
                     Penn Labs
                 </a>{" "}
-                &{" "}
+                and{" "}
                 <span
                     role="button"
                     onClick={() => setShowModal(true)}
@@ -36,11 +35,7 @@ export default function Footer({ showFeedback }: FooterProps) {
                     }}
                 >
                     Friends
-                </span>{" "}
-                |{" "}
-                <Link href="/changelog">
-                    <a>Changelog</a>
-                </Link>
+                </span>
                 {showFeedback && (
                     <div role="button" style={{ marginTop: "8px" }}>
                         <Feedback />
