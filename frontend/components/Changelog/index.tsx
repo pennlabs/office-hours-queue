@@ -7,6 +7,7 @@ import ReactHtmlParser from "react-html-parser";
 
 import { Grid, Checkbox, Header, Segment } from "semantic-ui-react";
 import { diffLines } from "diff";
+import { CHANGELOG_TOKEN } from "../../constants";
 
 type mdLine = {
     content: string;
@@ -32,10 +33,10 @@ export default function Changelog() {
 
     useEffect(() => {
         Promise.all([
-            fetch("./changelog.md").then((md) => md.text()),
-            window.localStorage.getItem("changelogsaved") == null
+            fetch("./changelogfile.md").then((md) => md.text()),
+            window.localStorage.getItem(CHANGELOG_TOKEN) == null
                 ? ""
-                : window.localStorage.getItem("changelogsaved"),
+                : window.localStorage.getItem(CHANGELOG_TOKEN),
         ]).then(([readIn, savedMd]) => {
             if (readIn !== savedMd) setShowSlider(true);
             const diff = diffLines(savedMd, readIn);
@@ -53,7 +54,7 @@ export default function Changelog() {
                 });
             });
             setMdLine(newMd);
-            window.localStorage.setItem("changelogsaved", readIn);
+            window.localStorage.setItem(CHANGELOG_TOKEN, readIn);
         });
     }, []);
 

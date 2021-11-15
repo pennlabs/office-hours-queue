@@ -11,6 +11,7 @@ import { Kind, UserMembership } from "../../../types";
 import { useMemberships } from "../../../hooks/data-fetching/dashboard";
 import { isLeadershipRole } from "../../../utils/enums";
 import {
+    CHANGELOG_TOKEN,
     FALL_2021_TRANSITION_MESSAGE_TOKEN,
     MOBILE_BP,
 } from "../../../constants";
@@ -63,7 +64,7 @@ const Dashboard = () => {
     useEffect(() => {
         Promise.all([
             fetch("./changelog.md").then((md) => md.text()),
-            `${window.localStorage.getItem("changelogsaved")}`,
+            `${window.localStorage.getItem(CHANGELOG_TOKEN)}`,
         ]).then(([updatedMd, savedMd]) => {
             if (updatedMd !== savedMd) setLogOpen(true);
         });
