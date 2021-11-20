@@ -22,6 +22,8 @@ const LastQuestionCard = ({ question }: { question: Question }) => {
                 return "Not Specific";
             case "WRONG_QUEUE":
                 return "Wrong Queue";
+            case "MISSING_TEMPLATE":
+                return "Not Using Template";
             default:
                 return reason;
         }
