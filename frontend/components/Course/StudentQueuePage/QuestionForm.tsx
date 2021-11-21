@@ -22,7 +22,7 @@ interface QuestionFormState {
     tags: { name: string }[];
     videoChatUrl?: string;
     studentDescriptor: string;
-    pin?: string;
+    pin: string;
 }
 
 const QuestionForm = (props: QuestionFormProps) => {
@@ -31,6 +31,7 @@ const QuestionForm = (props: QuestionFormProps) => {
         text: queue.questionTemplate,
         tags: [],
         studentDescriptor: "",
+        pin: "",
     });
     const [textCharCount, setTextCharCount] = useState(0);
     const [studDescCharCount, setStudDescCharCount] = useState(0);
