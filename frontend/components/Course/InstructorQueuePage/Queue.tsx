@@ -44,7 +44,7 @@ const Queue = (props: QueueProps) => {
         tags,
     } = props;
     const { id: queueId, active, estimatedWaitTime, pin } = queue;
-    const [pinState, setPinState] = useState<string | undefined>(queue.pin);
+    const [pinState, setPinState] = useState<string | undefined>(pin);
     const [editingPin, setEditingPin] = useState<boolean>(false);
     const [filteredTags, setFilteredTags] = useState<string[]>([]);
     const { data: questions, mutate: mutateQuestions } = useQuestions(
@@ -80,7 +80,10 @@ const Queue = (props: QueueProps) => {
     const handlePinSubmit = async () => {
         if (editingPin) {
             await partialUpdateQueue(courseId, queueId, { pin: pinState });
-            await mutate(pin, { pin: pinState });
+        }
+        await mutate(pin, { pin: pinState });
+        if (!editingPin) {
+            setPinState(pin);
         }
         setEditingPin(!editingPin);
     };
