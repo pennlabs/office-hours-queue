@@ -155,7 +155,7 @@ const Queue = (props: QueueProps) => {
             </div>
             <Grid>
                 <Grid.Row columns="equal">
-                    <Grid.Column only="computer mobile">
+                    <Grid.Column>
                         {questions.length !== 0 && (
                             <Label
                                 content={`${questions.length} user${
@@ -258,11 +258,7 @@ const Queue = (props: QueueProps) => {
                 </Grid.Row>
                 {!active && questions.length > 0 && (
                     <Grid.Row columns="equal">
-                        <Grid.Column
-                            textAlign="right"
-                            floated="right"
-                            only="computer mobile"
-                        >
+                        <Grid.Column textAlign="right" floated="right">
                             <Button
                                 content="Clear Queue"
                                 fluid
