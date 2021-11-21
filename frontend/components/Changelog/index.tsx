@@ -8,8 +8,7 @@ import ReactHtmlParser from "react-html-parser";
 import { Grid, Checkbox, Header, Segment } from "semantic-ui-react";
 import { diffLines } from "diff";
 import { CHANGELOG_TOKEN } from "../../constants";
-// eslint-disable-next-line
-import readIn from "/changelogfile.md";
+import readIn from "./changelogfile.md";
 
 type mdLine = {
     content: string;
