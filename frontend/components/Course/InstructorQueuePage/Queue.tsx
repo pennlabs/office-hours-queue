@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
     Header,
     Label,
@@ -45,6 +45,7 @@ const Queue = (props: QueueProps) => {
     } = props;
     const { id: queueId, active, estimatedWaitTime, pin } = queue;
     const [pinState, setPinState] = useState<string | undefined>(queue.pin);
+    const [editingPin, setEditingPin] = useState<boolean>(false);
     const [filteredTags, setFilteredTags] = useState<string[]>([]);
     const { data: questions, mutate: mutateQuestions } = useQuestions(
         courseId,
@@ -77,8 +78,11 @@ const Queue = (props: QueueProps) => {
     };
 
     const handlePinSubmit = async () => {
-        await partialUpdateQueue(courseId, queueId, { pin: pinState });
-        await mutate(pin, { pin: pinState });
+        if (editingPin) {
+            await partialUpdateQueue(courseId, queueId, { pin: pinState });
+            await mutate(pin, { pin: pinState });
+        }
+        setEditingPin(!editingPin);
     };
 
     const handleTagChange = (_, event) => {
@@ -111,33 +115,45 @@ const Queue = (props: QueueProps) => {
                 mutate={mutateQuestions}
                 closeFunc={() => setClearModalOpen(false)}
             />
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                }}
+            >
+                <Header as="h3">
+                    {queue.name}
+                    <Header.Subheader
+                        style={{
+                            whiteSpace: "break-spaces",
+                            wordBreak: "break-word",
+                        }}
+                    >
+                        {queue.description}
+                    </Header.Subheader>
+                </Header>
+                {queue.pinEnabled && (
+                    <Form onSubmit={handlePinSubmit}>
+                        <Form.Group inline unstackable>
+                            <Form.Input
+                                name="changePin"
+                                label="Pin: "
+                                value={pinState}
+                                disabled={!editingPin}
+                                onChange={handlePinChange}
+                            />
+                            <Form.Button
+                                icon={
+                                    <Icon
+                                        name={editingPin ? "check" : "edit"}
+                                    />
+                                }
+                            />
+                        </Form.Group>
+                    </Form>
+                )}
+            </div>
             <Grid>
-                <Grid.Row columns="equal">
-                    <Grid.Column>
-                        <Header as="h3">
-                            {queue.name}
-                            <Header.Subheader
-                                style={{
-                                    whiteSpace: "break-spaces",
-                                    wordBreak: "break-word",
-                                }}
-                            >
-                                {queue.description}
-                            </Header.Subheader>
-                        </Header>
-                    </Grid.Column>
-                    <Grid.Column textAlign="right" floated="right">
-                        {queue.pinEnabled && (
-                            <Form onSubmit={handlePinSubmit}>
-                                <Form.Input
-                                    name="changePin"
-                                    value={pinState}
-                                    onChange={handlePinChange}
-                                />
-                            </Form>
-                        )}
-                    </Grid.Column>
-                </Grid.Row>
                 <Grid.Row columns="equal">
                     <Grid.Column only="computer mobile">
                         {questions.length !== 0 && (
