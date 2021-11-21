@@ -9,11 +9,11 @@ from ohq.models import CourseStatistic, Question, QueueStatistic
 User = get_user_model()
 
 
-def calculate_student_most_questions_asked(course, yesterday):
-    last_week = yesterday - timezone.timedelta(days=7)
+def course_calculate_student_most_questions_asked(course, last_sunday):
+    next_sunday = last_sunday + timezone.timedelta(days=7)
     student_most_questions = (
         Question.objects.filter(
-            queue__course=course, time_responded_to__gt=last_week, status=Question.STATUS_ANSWERED
+            queue__course=course, time_asked__gte=last_sunday, time_asked__lt=next_sunday
         )
         .values("asked_by")
         .annotate(questions_asked=Count("asked_by"))
@@ -29,16 +29,19 @@ def calculate_student_most_questions_asked(course, yesterday):
             course=course,
             user=user,
             metric=CourseStatistic.METRIC_STUDENT_QUESTIONS_ASKED,
-            date=yesterday,
+            date=last_sunday,
             defaults={"value": num_questions},
         )
 
 
-def calculate_student_most_time_being_helped(course, yesterday):
-    last_week = yesterday - timezone.timedelta(days=7)
+def course_calculate_student_most_time_being_helped(course, last_sunday):
+    next_sunday = last_sunday + timezone.timedelta(days=7)
     student_most_time = (
         Question.objects.filter(
-            queue__course=course, time_responded_to__gt=last_week, status=Question.STATUS_ANSWERED
+            queue__course=course,
+            time_responded_to__gte=last_sunday,
+            time_asked__lt=next_sunday,
+            status=Question.STATUS_ANSWERED,
         )
         .values("asked_by")
         .annotate(time_being_helped=Sum(F("time_responded_to") - F("time_response_started")))
@@ -54,16 +57,19 @@ def calculate_student_most_time_being_helped(course, yesterday):
             course=course,
             user=user,
             metric=CourseStatistic.METRIC_STUDENT_TIME_BEING_HELPED,
-            date=yesterday,
+            date=last_sunday,
             defaults={"value": time},
         )
 
 
-def calculate_instructor_most_questions_answered(course, yesterday):
-    last_week = yesterday - timezone.timedelta(days=7)
+def course_calculate_instructor_most_questions_answered(course, last_sunday):
+    next_sunday = last_sunday + timezone.timedelta(days=7)
     instructor_most_questions = (
         Question.objects.filter(
-            queue__course=course, time_responded_to__gt=last_week, status=Question.STATUS_ANSWERED
+            queue__course=course,
+            time_responded_to__gte=last_sunday,
+            time_asked__lt=next_sunday,
+            status=Question.STATUS_ANSWERED,
         )
         .values("responded_to_by")
         .annotate(questions_answered=Count("responded_to_by"))
@@ -79,16 +85,19 @@ def calculate_instructor_most_questions_answered(course, yesterday):
             course=course,
             user=user,
             metric=CourseStatistic.METRIC_INSTR_QUESTIONS_ANSWERED,
-            date=yesterday,
+            date=last_sunday,
             defaults={"value": num_questions},
         )
 
 
-def calculate_instructor_most_time_helping(course, yesterday):
-    last_week = yesterday - timezone.timedelta(days=7)
+def course_calculate_instructor_most_time_helping(course, last_sunday):
+    next_sunday = last_sunday + timezone.timedelta(days=7)
     instructor_most_time = (
         Question.objects.filter(
-            queue__course=course, time_responded_to__gt=last_week, status=Question.STATUS_ANSWERED
+            queue__course=course,
+            time_responded_to__gte=last_sunday,
+            time_asked__lt=next_sunday,
+            status=Question.STATUS_ANSWERED,
         )
         .values("responded_to_by")
         .annotate(time_answering=Sum(F("time_responded_to") - F("time_response_started")))
@@ -104,12 +113,12 @@ def calculate_instructor_most_time_helping(course, yesterday):
             course=course,
             user=user,
             metric=CourseStatistic.METRIC_INSTR_TIME_ANSWERING,
-            date=yesterday,
+            date=last_sunday,
             defaults={"value": time},
         )
 
 
-def calculate_avg_queue_wait(queue, date):
+def queue_calculate_avg_wait(queue, date):
     avg = Question.objects.filter(
         queue=queue, time_asked__date=date, time_response_started__isnull=False,
     ).aggregate(avg_wait=Avg(F("time_response_started") - F("time_asked")))
@@ -124,7 +133,7 @@ def calculate_avg_queue_wait(queue, date):
     )
 
 
-def calculate_avg_time_helping(queue, date):
+def queue_calculate_avg_time_helping(queue, date):
     avg = Question.objects.filter(
         queue=queue,
         status=Question.STATUS_ANSWERED,
@@ -142,7 +151,7 @@ def calculate_avg_time_helping(queue, date):
     )
 
 
-def calculate_wait_time_heatmap(queue, weekday, hour):
+def queue_calculate_wait_time_heatmap(queue, weekday, hour):
     interval_avg = Question.objects.filter(
         queue=queue,
         time_asked__week_day=weekday,
@@ -161,7 +170,7 @@ def calculate_wait_time_heatmap(queue, weekday, hour):
     )
 
 
-def calculate_num_questions_ans(queue, date):
+def queue_calculate_num_questions_ans(queue, date):
     num_questions = Question.objects.filter(
         queue=queue, status=Question.STATUS_ANSWERED, time_responded_to__date=date,
     ).count()
@@ -174,7 +183,7 @@ def calculate_num_questions_ans(queue, date):
     )
 
 
-def calculate_num_students_helped(queue, date):
+def queue_calculate_num_students_helped(queue, date):
     num_students = (
         Question.objects.filter(
             queue=queue, status=Question.STATUS_ANSWERED, time_responded_to__date=date,
@@ -191,7 +200,7 @@ def calculate_num_students_helped(queue, date):
     )
 
 
-def calculate_questions_per_ta_heatmap(queue, weekday, hour):
+def queue_calculate_questions_per_ta_heatmap(queue, weekday, hour):
     interval_stats = (
         Question.objects.filter(queue=queue, time_asked__week_day=weekday, time_asked__hour=hour)
         .annotate(date=TruncDate("time_asked"))
