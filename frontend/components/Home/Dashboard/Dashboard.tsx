@@ -16,7 +16,8 @@ import {
     MOBILE_BP,
 } from "../../../constants";
 import ModalShowNewChanges from "./Modals/ModalShowNewChanges";
-import updatedMd from "../../../public/changelogfile.md";
+// eslint-disable-next-line
+import updatedMd from "/changelogfile.md";
 
 // TODO: try to readd new user stuff, rip out loading stuff
 const Dashboard = () => {
