@@ -19,7 +19,7 @@ module.exports = {
             ],
         });
         config.module.rules.push({
-            test: /\.md/,
+            test: /\.md/i,
             type: "asset/source",
         });
 
