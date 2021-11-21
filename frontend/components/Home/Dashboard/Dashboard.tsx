@@ -16,6 +16,7 @@ import {
     MOBILE_BP,
 } from "../../../constants";
 import ModalShowNewChanges from "./Modals/ModalShowNewChanges";
+import updatedMd from "../../../public/changelogfile.md";
 
 // TODO: try to readd new user stuff, rip out loading stuff
 const Dashboard = () => {
@@ -62,12 +63,8 @@ const Dashboard = () => {
     const [logModal, setLogModal] = useState(false);
 
     useEffect(() => {
-        Promise.all([
-            fetch("./changelog.md").then((md) => md.text()),
-            `${window.localStorage.getItem(CHANGELOG_TOKEN)}`,
-        ]).then(([updatedMd, savedMd]) => {
-            if (updatedMd !== savedMd) setLogOpen(true);
-        });
+        const savedMd = `${window.localStorage.getItem(CHANGELOG_TOKEN)}`;
+        if (updatedMd !== savedMd) setLogOpen(true);
     }, []);
 
     return (

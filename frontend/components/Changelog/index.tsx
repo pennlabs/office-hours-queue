@@ -8,6 +8,7 @@ import ReactHtmlParser from "react-html-parser";
 import { Grid, Checkbox, Header, Segment } from "semantic-ui-react";
 import { diffLines } from "diff";
 import { CHANGELOG_TOKEN } from "../../constants";
+import readIn from "../../public/changelogfile.md";
 
 type mdLine = {
     content: string;
@@ -32,30 +33,27 @@ export default function Changelog() {
     const [showSlider, setShowSlider] = useState(false);
 
     useEffect(() => {
-        Promise.all([
-            fetch("./changelogfile.md").then((md) => md.text()),
+        const savedMd =
             window.localStorage.getItem(CHANGELOG_TOKEN) == null
                 ? ""
-                : window.localStorage.getItem(CHANGELOG_TOKEN),
-        ]).then(([readIn, savedMd]) => {
-            if (readIn !== savedMd) setShowSlider(true);
-            const diff = diffLines(savedMd, readIn);
-            const newMd: Array<mdLine> = [];
-            diff.forEach((part) => {
-                let lineColor = TRANSPARENT;
-                if (part.added) {
-                    lineColor = GREEN;
-                } else if (part.removed) {
-                    lineColor = RED;
-                }
-                newMd.push({
-                    content: part.value,
-                    color: lineColor,
-                });
+                : window.localStorage.getItem(CHANGELOG_TOKEN);
+        if (readIn !== savedMd) setShowSlider(true);
+        const diff = diffLines(savedMd, readIn);
+        const newMd: Array<mdLine> = [];
+        diff.forEach((part) => {
+            let lineColor = TRANSPARENT;
+            if (part.added) {
+                lineColor = GREEN;
+            } else if (part.removed) {
+                lineColor = RED;
+            }
+            newMd.push({
+                content: part.value,
+                color: lineColor,
             });
-            setMdLine(newMd);
-            window.localStorage.setItem(CHANGELOG_TOKEN, readIn);
         });
+        setMdLine(newMd);
+        window.localStorage.setItem(CHANGELOG_TOKEN, readIn);
     }, []);
 
     const [display, setDisplay] = useState(<div />);
