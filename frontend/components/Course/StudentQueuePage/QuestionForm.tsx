@@ -105,7 +105,8 @@ const QuestionForm = (props: QuestionFormProps) => {
 
     const onSubmit = async () => {
         setCreatePending(true);
-        await createQuestion(courseId, queue.id, input).then(handleSubmission);
+        const status = await createQuestion(courseId, queue.id, input);
+        handleSubmission(status);
         setCreatePending(false);
     };
 

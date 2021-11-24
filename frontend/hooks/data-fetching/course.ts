@@ -314,9 +314,9 @@ export async function createQuestion(
             const error = await res.json();
             logException(Error(JSON.stringify(error)), JSON.stringify(payload));
         }
-        return new Promise((resolve) => resolve(res.status));
+        return res.status;
     }
-    return new Promise((resolve) => resolve(undefined));
+    return undefined;
 }
 
 export async function createQueue(
