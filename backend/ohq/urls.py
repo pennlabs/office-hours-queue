@@ -16,6 +16,8 @@ from ohq.views import (
     SemesterViewSet,
     TagViewSet,
     UserView,
+    EventViewSet,
+    OccurenceViewSet
 )
 
 
@@ -24,6 +26,8 @@ app_name = "ohq"
 router = routers.SimpleRouter()
 router.register("semesters", SemesterViewSet, basename="semester")
 router.register("courses", CourseViewSet, basename="course")
+router.register("events", EventViewSet, basename="event")
+router.register("occurrences", OccurenceViewSet, basename="occurrence")
 
 course_router = routers.NestedSimpleRouter(router, "courses", lookup="course")
 course_router.register("queues", QueueViewSet, basename="queue")

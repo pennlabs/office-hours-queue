@@ -27,7 +27,3 @@ class QueueStatisticFilter(filters.FilterSet):
     class Meta:
         model = QueueStatistic
         fields = ["metric", "date"]
-
-class CourseFilter(filters.FilterSet): 
-    class Meta: 
-        model = Course

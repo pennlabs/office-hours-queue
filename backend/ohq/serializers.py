@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
-from schedule.models import Event, Rule, EventRelationManager
+from schedule.models import Event, Rule, EventRelationManager, EventRelation, Calendar
 from schedule.models.events import Occurrence
 
 from ohq.models import (
@@ -455,34 +455,71 @@ class RuleSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Rule
-        fields = ("frequency")
+        fields = ("frequency",)
 
 class EventSerializer(serializers.ModelSerializer):
     """
     Serializer for events
     """
 
-    rule = RuleSerializer(read_only = False, required= False)
+    rule = RuleSerializer(required= False)
+    course_id = serializers.IntegerField(required=True, write_only=True)
+    course = CourseSerializer(read_only=True)
 
     class Meta: 
         model = Event
-        fields = ("start", "end", "title", "description", "rule", "end_recurring_period")
+        fields = ("start", "end", "title", "description", "rule", "end_recurring_period", "course_id", "course")
+
+    def update(self, instance, validated_data):
+        # still needs to check permission (ask Kev)
+        print("updating.... updating.... ")
+        rule = None
+        if ("rule" in validated_data) : 
+            rule = Rule.objects.create(frequency=validated_data["rule"]["frequency"])
+            
+            validated_data.pop("rule")
+        
+        validated_data.pop("course_id")
+        super().update(instance, validated_data)
+        instance.rule = rule
+        instance.save()
+        print(instance.title)
+        print(instance.rule.frequence)
+        return instance
 
     def create(self, validated_data):
-        course = Course.objects.get(pk=self.context["view"].kwargs["course_pk"])
-        event = super.create(validated_data)
-        EventRelationManager.create_relation(event, course)
+        print("creating.... creating.... ")
+        course = Course.objects.get(pk=validated_data["course_id"])
+        rule = Rule.objects.create(frequency=validated_data["rule"]["frequency"])
+
+        validated_data.pop("rule")
+        validated_data.pop("course_id")
+        default_calendar = Calendar.objects.filter(name="DefaultCalendar").first()
+        if (default_calendar == None) :
+            default_calendar = Calendar.objects.create(name="DefaultCalendar")
+        validated_data["calendar"] = default_calendar
+        
+        # for some reason, super().create() doesn't automatically serialize Rule
+        event = super().create(validated_data)
+        event.rule = rule
+
+        erm = EventRelationManager()
+        erm.create_relation(event=event, content_object=course)
         return event
+
+
+
+    def get_course (self, instance) :
+        return EventRelation.objects.filter(Event=self).only("course")
 
 class OccurenceSerializer(serializers.ModelSerializer):
     """
     Serializer for occurrence
     """
-    event = EventSerializer(read_only = True, required = True)
+    event = EventSerializer(read_only = True)
 
     class Meta: 
         model = Occurrence
-        fields = ("title", "description", "start", "end", "cancelled", "original_start", "original_end")
-        read_only_fields = ("event")
+        fields = ("event", "title", "description", "start", "end", "cancelled", "original_start", "original_end")
+        read_only_fields = ("event",)
 
-    

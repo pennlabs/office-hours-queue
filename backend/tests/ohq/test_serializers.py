@@ -9,12 +9,14 @@ from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.test import APIClient
 
-from ohq.models import Announcement, Course, Membership, Question, Queue, Semester, Tag
+from ohq.models import Announcement, Course, Membership, Question, Queue, Semester, Tag, Event, Occurrence
 from ohq.serializers import (
     CourseCreateSerializer,
     MembershipSerializer,
     SemesterSerializer,
     UserPrivateSerializer,
+    EventSerializer,
+    OccurenceSerializer,
 )
 
 
@@ -539,3 +541,97 @@ class AnnouncementSerializerTestCase(TestCase):
         announcement = Announcement.objects.all().order_by("time_updated")[1]
         self.assertEqual(self.ta, announcement.author)
 
+class EventSerializerTestCase(TestCase) :
+    def setUp(self): 
+        self.client = APIClient()
+        self.semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
+        self.course = Course.objects.create(
+            course_code="000", department="Penn Labs", semester=self.semester
+        )
+        self.name = "Queue"
+        self.queue = Queue.objects.create(name=self.name, course=self.course)
+        self.head_ta = User.objects.create(username="head_ta")
+        self.ta = User.objects.create(username="ta")
+        self.student = User.objects.create(username="student")
+        Membership.objects.create(
+            course=self.course, user=self.head_ta, kind=Membership.KIND_HEAD_TA
+        )
+        Membership.objects.create(course=self.course, user=self.ta, kind=Membership.KIND_TA)
+        Membership.objects.create(course=self.course, user=self.student, kind=Membership.KIND_STUDENT)
+        self.announcement = Announcement.objects.create(
+            course=self.course, author=self.head_ta, content="Original announcement"
+        )
+    
+    def test_create(self) :
+        """ 
+        Ensure TAs can create Event
+        """
+        self.client.force_authenticate(user=self.ta)
+        startTime = "2019-08-24T14:15:22Z"
+        endTime = "2019-09-24T14:15:22Z"
+        self.client.post(
+            reverse("ohq:event-list"), {
+                "start": startTime,
+                "end": endTime,
+                "title": "TA session",
+                "rule": {
+                    "frequency": "WEEKLY"
+                },
+                "endRecurringPeriod": "2019-10-24T14:15:22Z",
+                "courseId": self.course.id,
+            }
+        )
+        self.assertEqual(1, Event.objects.all().count())
+        # student cannot create new event
+        self.client.force_authenticate(user=self.student)
+        self.client.post(
+            reverse("ohq:event-list"), {
+                "start": startTime,
+                "end": endTime,
+                "title": "TA session",
+                "rule": {
+                    "frequency": "WEEKLY"
+                },
+                "endRecurringPeriod": "2019-10-24T14:15:22Z",
+                "courseId": self.course.id,
+            }
+        )
+        self.assertEqual(1, Event.objects.all().count())
+
+    def test_update(self) :
+        """ 
+        Ensure TAs can update event
+        """
+        self.client.force_authenticate(user=self.ta)
+        startTime = "2019-08-24T14:15:22Z"
+        endTime = "2019-09-24T14:15:22Z"
+        self.client.post(
+            reverse("ohq:event-list"), {
+                "start": startTime,
+                "end": endTime,
+                "title": "TA session",
+                "rule": {
+                    "frequency": "WEEKLY"
+                },
+                "endRecurringPeriod": "2019-10-24T14:15:22Z",
+                "courseId": self.course.id,
+            }
+        )
+        self.assertEqual(1, Event.objects.all().count())
+        event = Event.objects.all().first()
+        print(event.title)
+        print(event.id)
+        response = self.client.patch(
+            reverse("ohq:event-detail", args=[event.id]), {
+                "title": "New TA Session", 
+                "courseId": self.course.id,
+                "rule": {"frequency": "MONTHLY"}
+            }
+        )
+        print (response)
+        event = Event.objects.all().first()
+        print("Total event count: ", Event.objects.all().count())
+        self.assertEquals(event.title, "New TA Session")
+        print(event.rule.frequency)
+        self.assertEquals(event.rule.frequency, "MONTHLY")
+        

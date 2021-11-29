@@ -3,6 +3,8 @@ from rest_framework import permissions
 
 from ohq.models import Course, Membership, Question
 
+import json
+
 
 # Hierarchy of permissions is usually:
 # Professor > Head TA > TA > Student > User
@@ -396,7 +398,10 @@ class TagPermission(permissions.BasePermission):
 
 class EventPermission(permissions.BasePermission) :
     def has_object_permission(self, request, view, obj):
-        membership = Membership.objects.get(course=view.kwargs["course_pk"], user=request.user)
+        course_pk = json.loads(request.body)["courseId"]
+    
+        course = Course.objects.get(pk=course_pk)
+        membership = Membership.objects.get(course=course, user=request.user)
 
         # Students+ can get an event
         if view.action == "retrieve":
@@ -407,12 +412,15 @@ class EventPermission(permissions.BasePermission) :
             return membership.is_leadership
 
     def has_permission(self, request, view):
+        course_pk = json.loads(request.body)["courseId"]
+        
         # Anonymous users can't do anything
         if not request.user.is_authenticated:
             return False
 
+        course = Course.objects.get(pk=course_pk)
         membership = Membership.objects.filter(
-            course=view.kwargs["course_pk"], user=request.user
+            course=course, user=request.user
         ).first()
 
         # Non-Students can't do anything
@@ -428,7 +436,8 @@ class EventPermission(permissions.BasePermission) :
 
 class OccurrencePermission(permissions.BasePermission) :
     def has_object_permission(self, request, view, obj):
-        membership = Membership.objects.get(course=view.kwargs["course_pk"], user=request.user)
+        course = Course.objects.get(course_code=request.body["course_id"])
+        membership = Membership.objects.filter(course=course, user=request.user).first()
 
         # Students+ can get an occurrence
         if view.action == "retrieve":
@@ -443,9 +452,8 @@ class OccurrencePermission(permissions.BasePermission) :
         if not request.user.is_authenticated:
             return False
 
-        membership = Membership.objects.filter(
-            course=view.kwargs["course_pk"], user=request.user
-        ).first()
+        course = Course.objects.get(course_code=request.body["course_id"])
+        membership = Membership.objects.filter(course=course, user=request.user).first()
 
         # Non-Students can't do anything
         if membership is None:

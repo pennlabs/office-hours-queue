@@ -18,8 +18,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
+from rest_framework import mixins
 from rest_live.mixins import RealtimeMixin
 from schedule.models.events import EventManager, EventRelation, EventRelationManager
+
 
 from ohq.filters import QuestionSearchFilter, QueueStatisticFilter
 from ohq.invite import parse_and_send_invites
@@ -639,12 +641,14 @@ class EventViewSet(viewsets.ModelViewSet) :
     serializer_class = EventSerializer
     permission_classes = [EventPermission | IsSuperuser]
 
-    def list(self, request, *args, **kwargs) :
-        return Event.objects.filter(pk__in = kwargs["events"])
+    # def list(self, request, *args, **kwargs) :
+    #     return Event.objects.filter(pk__in = kwargs["events"])
 
-    
+    def get_queryset(self):
+        return Event.objects.filter(pk=self.kwargs["pk"])
 
-class OccurenceViewSet(viewsets.ModelViewSet) :
+
+class OccurenceViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet) :
     serializer_class = OccurenceSerializer
     permission_class = [OccurrencePermission | IsSuperuser]
 
@@ -656,7 +660,7 @@ class OccurenceViewSet(viewsets.ModelViewSet) :
             for event in events_for_course:
                 for occurrence in event.get_occurrences(kwargs["start"], kwargs["end"]):
                     occurrences.append(occurrence)
-
+        return occurrences
                     
 
 
