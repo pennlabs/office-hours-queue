@@ -5,7 +5,6 @@ import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import { isValidVideoChatURL } from "../../../utils";
 import { createQuestion } from "../../../hooks/data-fetching/course";
 import { Question, Queue, Tag, VideoChatSetting } from "../../../types";
-import { logException } from "../../../utils/sentry";
 import { STUD_DESC_CHAR_LIMIT, TEXT_CHAR_LIMIT } from "../../../constants";
 
 interface QuestionFormProps {
@@ -85,24 +84,29 @@ const QuestionForm = (props: QuestionFormProps) => {
         }
     };
 
-    const onSubmit = async () => {
-        setCreatePending(true);
-        try {
-            await createQuestion(courseId, queue.id, input);
-            await props.mutate(-1, null);
-            await props.queueMutate(-1, null);
-            props.toastFunc("Question successfully added to queue", null);
-        } catch (e) {
-            let message: string;
-            if (e.status === 429) {
+    const handleSubmission = async (status: undefined | number) => {
+        let message: string;
+        if (status) {
+            if (status === 429) {
                 message = "Exceeded question quota for queue";
+            } else if (status === 409) {
+                message = "Incorrect pin";
             } else {
                 message = "Unable to create question";
-                logException(e);
             }
-            await props.mutate(-1, null);
             props.toastFunc(null, message);
+        } else {
+            message = "Question successfully added to queue";
+            props.toastFunc(message, null);
+            await props.queueMutate(-1, null);
         }
+        await props.mutate(-1, null);
+    };
+
+    const onSubmit = async () => {
+        setCreatePending(true);
+        const status = await createQuestion(courseId, queue.id, input);
+        handleSubmission(status);
         setCreatePending(false);
     };
 

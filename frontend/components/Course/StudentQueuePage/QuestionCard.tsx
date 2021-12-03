@@ -16,7 +16,6 @@ import {
     useQuestionPosition,
     finishQuestion,
 } from "../../../hooks/data-fetching/course";
-import { logException } from "../../../utils/sentry";
 
 interface QuestionCardProps {
     question: Question;
@@ -59,7 +58,6 @@ const QuestionCard = (props: QuestionCardProps) => {
         try {
             await finishQuestion(course.id, queue.id, question.id);
         } catch (e) {
-            logException(e);
             toastFunc(null, e);
         }
     };

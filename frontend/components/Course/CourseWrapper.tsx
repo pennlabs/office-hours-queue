@@ -88,47 +88,51 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                                             paddingTop: "0.71rem",
                                         }}
                                     >
-                                        <Popup
-                                            trigger={
-                                                <div
-                                                    style={{
-                                                        display: "inline",
-                                                        position: "relative",
-                                                        top: "0.14rem",
-                                                        fontSize: "1.29rem",
-                                                        fontFamily: "Lato",
-                                                        color: "#666666",
-                                                    }}
-                                                >
-                                                    Notifications are{" "}
-                                                    {notifs ? "ON" : "OFF"}
-                                                </div>
-                                            }
-                                            size="mini"
-                                        >
-                                            <p>
-                                                Browser permissions are{" "}
+                                        {!isMobile && (
+                                            <Popup
+                                                trigger={
+                                                    <div
+                                                        style={{
+                                                            display: "inline",
+                                                            position:
+                                                                "relative",
+                                                            top: "0.14rem",
+                                                            fontSize: "1.29rem",
+                                                            fontFamily: "Lato",
+                                                            color: "#666666",
+                                                        }}
+                                                    >
+                                                        Notifications are{" "}
+                                                        {notifs ? "ON" : "OFF"}
+                                                    </div>
+                                                }
+                                                size="mini"
+                                            >
+                                                <p>
+                                                    Browser permissions are{" "}
+                                                    {typeof Notification !==
+                                                        "undefined" && (
+                                                        <strong>
+                                                            {
+                                                                Notification.permission
+                                                            }
+                                                        </strong>
+                                                    )}
+                                                    .
+                                                </p>
                                                 {typeof Notification !==
-                                                    "undefined" && (
-                                                    <strong>
-                                                        {
-                                                            Notification.permission
-                                                        }
-                                                    </strong>
-                                                )}
-                                                .
-                                            </p>
-                                            {typeof Notification !==
-                                                "undefined" &&
-                                                Notification.permission ===
-                                                    "denied" && (
-                                                    <p>
-                                                        Enable notification
-                                                        permisions to receive
-                                                        browser notifications.
-                                                    </p>
-                                                )}
-                                        </Popup>
+                                                    "undefined" &&
+                                                    Notification.permission ===
+                                                        "denied" && (
+                                                        <p>
+                                                            Enable notification
+                                                            permisions to
+                                                            receive browser
+                                                            notifications.
+                                                        </p>
+                                                    )}
+                                            </Popup>
+                                        )}
                                         <Icon
                                             size="large"
                                             style={{
