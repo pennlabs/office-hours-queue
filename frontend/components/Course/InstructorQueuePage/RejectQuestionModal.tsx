@@ -13,7 +13,7 @@ const rejectOptions = [
     {
         key: "MISSING_TEMPLATE",
         value: "MISSING_TEMPLATE",
-        text: "Not Using Template",
+        text: "Didn't Follow Template",
     },
     { key: "OTHER", value: "OTHER", text: "Other" },
 ];

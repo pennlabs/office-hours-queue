@@ -23,7 +23,7 @@ const LastQuestionCard = ({ question }: { question: Question }) => {
             case "WRONG_QUEUE":
                 return "Wrong Queue";
             case "MISSING_TEMPLATE":
-                return "Not Using Template";
+                return "Didn't Follow Template";
             default:
                 return reason;
         }
