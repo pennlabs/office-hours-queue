@@ -1,12 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Menu, Label } from "semantic-ui-react";
-import { useQuestions } from "../../../hooks/data-fetching/course";
-import {
-    Question,
-    Queue,
-    QuestionStatus,
-    NotificationProps,
-} from "../../../types";
+import { Question, Queue, NotificationProps } from "../../../types";
 
 interface QueueMenuItemProps {
     queue: Queue;
@@ -17,7 +10,7 @@ interface QueueMenuItemProps {
     play: NotificationProps;
 }
 
-const QuestionNotifier = ({
+export const QuestionNotifier = ({
     question,
     play,
 }: {
@@ -38,28 +31,18 @@ const QuestionNotifier = ({
     return null;
 };
 
-export const QueueMenuItem = (props: QueueMenuItemProps) => {
-    const {
-        queue,
-        courseId,
-        initialQuestions,
-        active,
-        setActiveQueue,
-        play,
-    } = props;
-
-    const { data: questions } = useQuestions(
-        courseId,
-        queue.id,
-        initialQuestions || []
-    );
-
+export const NewQuestionNotifier = ({
+    questions,
+    play,
+}: {
+    questions: Question[] | undefined;
+    play: NotificationProps;
+}) => {
     const latestAsked = useRef(
         questions && questions[0]?.timeAsked
             ? new Date(questions[0].timeAsked)
             : new Date(0)
     );
-
     useEffect(() => {
         if (
             questions &&
@@ -75,31 +58,5 @@ export const QueueMenuItem = (props: QueueMenuItemProps) => {
         // questions is not stale because we check for deep equality
         // eslint-disable-next-line
     }, [JSON.stringify(questions), play]);
-
-    return (
-        <>
-            <Menu.Item
-                style={{ wordBreak: "break-word" }}
-                active={active}
-                onClick={() => setActiveQueue(queue.id)}
-            >
-                <Label color="teal">
-                    {
-                        questions!.filter(
-                            (q) =>
-                                q.status !== QuestionStatus.ACTIVE &&
-                                q.resolvedNote
-                        ).length
-                    }
-                </Label>
-                <Label color={queue.active ? "green" : "red"}>
-                    {queue.active ? "Open" : "Closed"}
-                </Label>
-                {queue.name}
-            </Menu.Item>
-            {questions!.map((q) => (
-                <QuestionNotifier question={q} play={play} key={q.id} />
-            ))}
-        </>
-    );
+    return null;
 };

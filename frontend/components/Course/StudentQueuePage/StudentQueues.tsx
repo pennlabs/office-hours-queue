@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { Grid, Message, Menu } from "semantic-ui-react";
+import { Grid, Message } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import StudentQueue from "./StudentQueue";
 import {
@@ -9,7 +9,7 @@ import {
     Tag,
     NotificationProps,
 } from "../../../types";
-import { QueueMenuItem } from "./QueueMenuItem";
+import { QueueList, User } from "../QueuePage/QueueList";
 
 interface StudentQueuesProps {
     queues: Queue[];
@@ -44,26 +44,15 @@ const StudentQueues = (props: StudentQueuesProps) => {
                     {currQueue && (
                         <>
                             <Grid.Column width={4}>
-                                <Menu
-                                    fluid
-                                    vertical
-                                    style={{
-                                        display: "flex",
-                                        minHeight: "20rem",
-                                    }}
-                                >
-                                    {dispQueues.map((q) => (
-                                        <QueueMenuItem
-                                            key={q.id}
-                                            queue={q}
-                                            courseId={course.id}
-                                            initialQuestions={questionmap[q.id]}
-                                            active={selQueue === q.id}
-                                            setActiveQueue={setSelQueue}
-                                            play={play}
-                                        />
-                                    ))}
-                                </Menu>
+                                <QueueList
+                                    dispQueues={dispQueues}
+                                    courseId={course.id}
+                                    play={play}
+                                    questionmap={questionmap}
+                                    selQueue={selQueue}
+                                    setSelQueue={setSelQueue}
+                                    user={User.Student}
+                                />
                             </Grid.Column>
                             <Grid.Column stretched width={12}>
                                 <StudentQueue

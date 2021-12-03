@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { Grid, Icon, Message, Menu, Button } from "semantic-ui-react";
+import { Grid, Icon, Message } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Queue from "./Queue";
 import {
@@ -8,7 +8,7 @@ import {
     Tag,
     NotificationProps,
 } from "../../../types";
-import { QueueMenuItem } from "./QueueMenuItem";
+import { QueueList, User } from "../QueuePage/QueueList";
 
 interface InstructorQueuesProps {
     suggestedQueueId?: number;
@@ -67,40 +67,17 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
             {currQueue && (
                 <>
                     <Grid.Column width={4}>
-                        <Menu
-                            fluid
-                            vertical
-                            style={{ display: "flex", minHeight: "20rem" }}
-                        >
-                            {dispQueues.map((q) => (
-                                <QueueMenuItem
-                                    key={q.id}
-                                    queue={q}
-                                    play={play}
-                                    courseId={courseId}
-                                    initialQuestions={questionmap[q.id]}
-                                    active={selQueue === q.id}
-                                    setActiveQueue={setSelQueue}
-                                />
-                            ))}
-
-                            {leader && (
-                                <Menu.Item
-                                    style={{
-                                        textAlign: "center",
-                                        marginTop: "auto",
-                                    }}
-                                >
-                                    <Button
-                                        size="tiny"
-                                        primary
-                                        onClick={createFunc}
-                                    >
-                                        Add Queue
-                                    </Button>
-                                </Menu.Item>
-                            )}
-                        </Menu>
+                        <QueueList
+                            dispQueues={dispQueues}
+                            courseId={courseId}
+                            play={play}
+                            questionmap={questionmap}
+                            selQueue={selQueue}
+                            setSelQueue={setSelQueue}
+                            user={User.Student}
+                            leader={leader}
+                            createFunc={createFunc}
+                        />
                     </Grid.Column>
                     <Grid.Column stretched width={12}>
                         <Queue
