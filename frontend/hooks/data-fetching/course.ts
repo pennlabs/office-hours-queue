@@ -24,6 +24,7 @@ import {
     ANNOUNCEMENTS_POLL_INTERVAL,
     STUDENT_QUOTA_POLL_INTERVAL,
 } from "../../constants";
+import { logException } from "../../utils/sentry";
 
 export const useCourse = (courseId: number, initialData?: Course) =>
     useResource(`/api/courses/${courseId}/`, {
@@ -107,10 +108,9 @@ export async function sendMassInvites(
 
     if (!res.ok) {
         const error = await res.json();
-        throw {
-            payload: JSON.stringify(payload),
-            error: JSON.stringify(error),
-        };
+        const errorObj = Error(JSON.stringify(error));
+        logException(errorObj, JSON.stringify(payload));
+        throw errorObj;
     }
 }
 
@@ -283,10 +283,9 @@ export async function createAnnouncement(
     });
     if (!res.ok) {
         const error = await res.json();
-        throw {
-            payload: JSON.stringify(payload),
-            error: JSON.stringify(error),
-        };
+        const errorObj = Error(JSON.stringify(error));
+        logException(errorObj, JSON.stringify(payload));
+        throw errorObj;
     }
 }
 
@@ -301,7 +300,7 @@ export async function createQuestion(
     courseId: number,
     queueId: number,
     payload: Partial<Omit<Question, "tags"> & { tags: Partial<Tag>[] }>
-): Promise<void> {
+): Promise<undefined | number> {
     const res = await doApiRequest(
         `/api/courses/${courseId}/queues/${queueId}/questions/`,
         {
@@ -311,12 +310,13 @@ export async function createQuestion(
     );
 
     if (!res.ok) {
-        const error = await res.json();
-        throw {
-            payload: JSON.stringify(payload),
-            error: JSON.stringify(error),
-        };
+        if (res.status !== 409 && res.status !== 429) {
+            const error = await res.json();
+            logException(Error(JSON.stringify(error)), JSON.stringify(payload));
+        }
+        return res.status;
     }
+    return undefined;
 }
 
 export async function createQueue(
@@ -330,10 +330,9 @@ export async function createQueue(
 
     if (!res.ok) {
         const error = await res.json();
-        throw {
-            payload: JSON.stringify(payload),
-            error: JSON.stringify(error),
-        };
+        const errorObj = Error(JSON.stringify(error));
+        logException(errorObj, JSON.stringify(payload));
+        throw errorObj;
     }
 }
 
@@ -375,9 +374,8 @@ export async function finishQuestion(
 
     if (!res.ok) {
         const error = await res.json();
-        throw {
-            payload: JSON.stringify(payload),
-            error: JSON.stringify(error),
-        };
+        const errorObj = Error(JSON.stringify(error));
+        logException(errorObj, JSON.stringify(payload));
+        throw errorObj;
     }
 }
