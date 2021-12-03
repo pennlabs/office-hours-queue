@@ -1,3 +1,4 @@
+from datetime import datetime
 from io import StringIO
 from unittest.mock import patch
 
@@ -673,7 +674,7 @@ class CourseStudentMostQuestionsAskedTestCase(TestCase):
             student7: 50,
         }
 
-        yesterday = timezone.localtime() - timezone.timedelta(days=1)
+        self.question_date = datetime(2021, 12, 1)
 
         # this command computes avg wait time yesterday
         for student in students:
@@ -684,10 +685,10 @@ class CourseStudentMostQuestionsAskedTestCase(TestCase):
                     queue=self.queue,
                     asked_by=student,
                     responded_to_by=ta,
-                    time_response_started=yesterday,
+                    time_response_started=self.question_date,
                     status=Question.STATUS_ACTIVE,
                 )
-                q1.time_asked = yesterday
+                q1.time_asked = self.question_date
                 q1.save()
 
                 q2 = Question.objects.create(
@@ -695,11 +696,11 @@ class CourseStudentMostQuestionsAskedTestCase(TestCase):
                     queue=self.queue,
                     asked_by=student,
                     responded_to_by=ta,
-                    time_response_started=yesterday,
-                    time_responded_to=yesterday + timezone.timedelta(seconds=100),
+                    time_response_started=self.question_date,
+                    time_responded_to=self.question_date + timezone.timedelta(seconds=100),
                     status=Question.STATUS_ANSWERED,
                 )
-                q2.time_asked = yesterday
+                q2.time_asked = self.question_date
                 q2.save()
 
                 q3 = Question.objects.create(
@@ -707,11 +708,11 @@ class CourseStudentMostQuestionsAskedTestCase(TestCase):
                     queue=self.queue,
                     asked_by=student,
                     responded_to_by=ta,
-                    time_response_started=yesterday,
-                    time_responded_to=yesterday,
+                    time_response_started=self.question_date,
+                    time_responded_to=self.question_date,
                     status=Question.STATUS_REJECTED,
                 )
-                q3.time_asked = yesterday
+                q3.time_asked = self.question_date
                 q3.save()
 
         # create questions that weren't in the last week
@@ -721,13 +722,13 @@ class CourseStudentMostQuestionsAskedTestCase(TestCase):
                 queue=self.queue,
                 asked_by=student1,
                 responded_to_by=ta,
-                time_response_started=yesterday - timezone.timedelta(days=9),
-                time_responded_to=yesterday
+                time_response_started=self.question_date - timezone.timedelta(days=9),
+                time_responded_to=self.question_date
                 - timezone.timedelta(days=9)
                 + timezone.timedelta(seconds=100),
                 status=Question.STATUS_ANSWERED,
             )
-            q4.time_asked = yesterday - timezone.timedelta(days=9, minutes=20)
+            q4.time_asked = self.question_date - timezone.timedelta(days=9, minutes=20)
             q4.save()
 
     def test_student_most_questions_computation(self):
@@ -735,15 +736,15 @@ class CourseStudentMostQuestionsAskedTestCase(TestCase):
 
         # Top 5 students who asked to most questions
         expected = {
-            student.pk: count
+            student.pk: count * 3
             for student, count in sorted(
                 self.num_questions_per_student.items(), key=lambda x: -x[1]
             )[:5]
         }
 
-        yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
+        last_sunday = datetime(2021, 11, 28)
         query = CourseStatistic.objects.filter(
-            metric=CourseStatistic.METRIC_STUDENT_QUESTIONS_ASKED, date=yesterday
+            metric=CourseStatistic.METRIC_STUDENT_QUESTIONS_ASKED, date=last_sunday
         )
         actual = {}
         for ele in query:
@@ -787,7 +788,7 @@ class CourseStudentMostTimeBeingHelpedTestCase(TestCase):
             student7: 100,
         }
 
-        yesterday = timezone.localtime() - timezone.timedelta(days=1)
+        self.question_date = datetime(2021, 12, 1)
 
         # this command computes avg wait time yesterday
         for student in students:
@@ -798,10 +799,10 @@ class CourseStudentMostTimeBeingHelpedTestCase(TestCase):
                     queue=self.queue,
                     asked_by=student,
                     responded_to_by=ta,
-                    time_response_started=yesterday,
+                    time_response_started=self.question_date,
                     status=Question.STATUS_ACTIVE,
                 )
-                q1.time_asked = yesterday
+                q1.time_asked = self.question_date
                 q1.save()
 
                 q2 = Question.objects.create(
@@ -809,12 +810,12 @@ class CourseStudentMostTimeBeingHelpedTestCase(TestCase):
                     queue=self.queue,
                     asked_by=student,
                     responded_to_by=ta,
-                    time_response_started=yesterday,
-                    time_responded_to=yesterday
+                    time_response_started=self.question_date,
+                    time_responded_to=self.question_date
                     + timezone.timedelta(seconds=self.time_per_question_student[student]),
                     status=Question.STATUS_ANSWERED,
                 )
-                q2.time_asked = yesterday
+                q2.time_asked = self.question_date
                 q2.save()
 
                 q3 = Question.objects.create(
@@ -822,11 +823,11 @@ class CourseStudentMostTimeBeingHelpedTestCase(TestCase):
                     queue=self.queue,
                     asked_by=student,
                     responded_to_by=ta,
-                    time_response_started=yesterday,
-                    time_responded_to=yesterday,
+                    time_response_started=self.question_date,
+                    time_responded_to=self.question_date,
                     status=Question.STATUS_REJECTED,
                 )
-                q3.time_asked = yesterday
+                q3.time_asked = self.question_date
                 q3.save()
 
         # create questions that weren't in the last week
@@ -836,18 +837,17 @@ class CourseStudentMostTimeBeingHelpedTestCase(TestCase):
                 queue=self.queue,
                 asked_by=student1,
                 responded_to_by=ta,
-                time_response_started=yesterday - timezone.timedelta(days=9),
-                time_responded_to=yesterday
+                time_response_started=self.question_date - timezone.timedelta(days=9),
+                time_responded_to=self.question_date
                 - timezone.timedelta(days=9)
                 + timezone.timedelta(seconds=100),
                 status=Question.STATUS_ANSWERED,
             )
-            q4.time_asked = yesterday - timezone.timedelta(days=9, minutes=20)
+            q4.time_asked = self.question_date - timezone.timedelta(days=9, minutes=20)
             q4.save()
 
     def test_student_most_time_being_helped_computation(self):
         call_command("course_stat")
-        yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
 
         # Top 5 students who spent the most time getting help
         total_time = {}
@@ -859,9 +859,9 @@ class CourseStudentMostTimeBeingHelpedTestCase(TestCase):
             for student, count in sorted(total_time.items(), key=lambda x: -x[1])[:5]
         }
 
-        yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
+        last_sunday = datetime(2021, 11, 28)
         query = CourseStatistic.objects.filter(
-            metric=CourseStatistic.METRIC_STUDENT_TIME_BEING_HELPED, date=yesterday
+            metric=CourseStatistic.METRIC_STUDENT_TIME_BEING_HELPED, date=last_sunday
         )
         actual = {}
         for ele in query:
@@ -888,7 +888,7 @@ class CourseInstructorMostQuestionsAnsweredTestCase(TestCase):
 
         self.num_questions_per_ta = {ta1: 21, ta2: 19, ta3: 15, ta4: 12, ta5: 11, ta6: 8, ta7: 50}
 
-        yesterday = timezone.localtime() - timezone.timedelta(days=1)
+        self.question_date = datetime(2021, 12, 1)
 
         # this command computes avg wait time yesterday
         for ta in tas:
@@ -899,10 +899,10 @@ class CourseInstructorMostQuestionsAnsweredTestCase(TestCase):
                     queue=self.queue,
                     asked_by=student,
                     responded_to_by=ta,
-                    time_response_started=yesterday,
+                    time_response_started=self.question_date,
                     status=Question.STATUS_ACTIVE,
                 )
-                q1.time_asked = yesterday
+                q1.time_asked = self.question_date
                 q1.save()
 
                 q2 = Question.objects.create(
@@ -910,11 +910,11 @@ class CourseInstructorMostQuestionsAnsweredTestCase(TestCase):
                     queue=self.queue,
                     asked_by=student,
                     responded_to_by=ta,
-                    time_response_started=yesterday,
-                    time_responded_to=yesterday + timezone.timedelta(seconds=100),
+                    time_response_started=self.question_date,
+                    time_responded_to=self.question_date + timezone.timedelta(seconds=100),
                     status=Question.STATUS_ANSWERED,
                 )
-                q2.time_asked = yesterday
+                q2.time_asked = self.question_date
                 q2.save()
 
                 q3 = Question.objects.create(
@@ -922,11 +922,11 @@ class CourseInstructorMostQuestionsAnsweredTestCase(TestCase):
                     queue=self.queue,
                     asked_by=student,
                     responded_to_by=ta,
-                    time_response_started=yesterday,
-                    time_responded_to=yesterday,
+                    time_response_started=self.question_date,
+                    time_responded_to=self.question_date,
                     status=Question.STATUS_REJECTED,
                 )
-                q3.time_asked = yesterday
+                q3.time_asked = self.question_date
                 q3.save()
 
         # create questions that weren't in the last week
@@ -936,33 +936,33 @@ class CourseInstructorMostQuestionsAnsweredTestCase(TestCase):
                 queue=self.queue,
                 asked_by=student,
                 responded_to_by=ta1,
-                time_response_started=yesterday - timezone.timedelta(days=9),
-                time_responded_to=yesterday
+                time_response_started=self.question_date - timezone.timedelta(days=9),
+                time_responded_to=self.question_date
                 - timezone.timedelta(days=9)
                 + timezone.timedelta(seconds=100),
                 status=Question.STATUS_ANSWERED,
             )
-            q4.time_asked = yesterday - timezone.timedelta(days=9, minutes=20)
+            q4.time_asked = self.question_date - timezone.timedelta(days=9, minutes=20)
             q4.save()
 
     def test_ta_most_questions_answered_computation(self):
         call_command("course_stat")
 
-        yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
-
+        last_sunday = datetime(2021, 11, 28)
         # Top 5 TAs who answered the most questions
         expected = {
             ta.pk: count
             for ta, count in sorted(self.num_questions_per_ta.items(), key=lambda x: -x[1])[:5]
         }
 
-        yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
         query = CourseStatistic.objects.filter(
-            metric=CourseStatistic.METRIC_INSTR_QUESTIONS_ANSWERED, date=yesterday
+            metric=CourseStatistic.METRIC_INSTR_QUESTIONS_ANSWERED, date=last_sunday
         )
+
         actual = {}
         for ele in query:
             actual[ele.user.pk] = int(ele.value)
+
         self.assertEqual(expected, actual)
 
 
@@ -994,7 +994,7 @@ class CourseInstructorMostTimeHelpingTestCase(TestCase):
             ta7: 400,
         }
 
-        yesterday = timezone.localtime() - timezone.timedelta(days=1)
+        self.question_date = datetime(2021, 12, 4)
 
         # this command computes avg wait time yesterday
         for ta in tas:
@@ -1005,10 +1005,10 @@ class CourseInstructorMostTimeHelpingTestCase(TestCase):
                     queue=self.queue,
                     asked_by=student,
                     responded_to_by=ta,
-                    time_response_started=yesterday,
+                    time_response_started=self.question_date,
                     status=Question.STATUS_ACTIVE,
                 )
-                q1.time_asked = yesterday
+                q1.time_asked = self.question_date
                 q1.save()
 
                 q2 = Question.objects.create(
@@ -1016,12 +1016,12 @@ class CourseInstructorMostTimeHelpingTestCase(TestCase):
                     queue=self.queue,
                     asked_by=student,
                     responded_to_by=ta,
-                    time_response_started=yesterday,
-                    time_responded_to=yesterday
+                    time_response_started=self.question_date,
+                    time_responded_to=self.question_date
                     + timezone.timedelta(seconds=self.time_per_question_ta[ta]),
                     status=Question.STATUS_ANSWERED,
                 )
-                q2.time_asked = yesterday
+                q2.time_asked = self.question_date
                 q2.save()
 
                 q3 = Question.objects.create(
@@ -1029,16 +1029,15 @@ class CourseInstructorMostTimeHelpingTestCase(TestCase):
                     queue=self.queue,
                     asked_by=student,
                     responded_to_by=ta,
-                    time_response_started=yesterday,
-                    time_responded_to=yesterday,
+                    time_response_started=self.question_date,
+                    time_responded_to=self.question_date,
                     status=Question.STATUS_REJECTED,
                 )
-                q3.time_asked = yesterday
+                q3.time_asked = self.question_date
                 q3.save()
 
     def test_instructor_most_time_helping_computation(self):
         call_command("course_stat")
-        yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
 
         # Top 5 students who spent the most time getting help
         total_time = {}
@@ -1049,9 +1048,10 @@ class CourseInstructorMostTimeHelpingTestCase(TestCase):
             ta.pk: count for ta, count in sorted(total_time.items(), key=lambda x: -x[1])[:5]
         }
 
-        yesterday = timezone.datetime.today().date() - timezone.timedelta(days=1)
+        last_sunday = datetime(2021, 11, 28)
+
         query = CourseStatistic.objects.filter(
-            metric=CourseStatistic.METRIC_INSTR_TIME_ANSWERING, date=yesterday
+            metric=CourseStatistic.METRIC_INSTR_TIME_ANSWERING, date=last_sunday
         )
         actual = {}
         for ele in query:

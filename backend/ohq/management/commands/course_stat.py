@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from ohq.models import Course, Question, Queue
+from ohq.models import Course, Question
 from ohq.statistics import (
     course_calculate_instructor_most_questions_answered,
     course_calculate_instructor_most_time_helping,
