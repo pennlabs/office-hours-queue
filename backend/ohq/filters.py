@@ -1,7 +1,7 @@
 from django.db.models import Q
 from django_filters import rest_framework as filters
 
-from ohq.models import Course, Question, QueueStatistic
+from ohq.models import Question, QueueStatistic
 
 
 class QuestionSearchFilter(filters.FilterSet):
