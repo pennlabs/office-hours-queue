@@ -8,6 +8,7 @@ import {
     Kind,
     Membership,
     MembershipInvite,
+    UserMembership,
     Question,
     Queue,
     Semester,
@@ -56,6 +57,15 @@ export const useInvitedMembers = (
         (id) => `/api/courses/${courseId}/invites/${id}/`,
         { initialData }
     );
+
+export const useMembership = (
+    courseId: number,
+    memberId: number,
+    initialData: UserMembership
+) =>
+    useResource(`/api/courses/${courseId}/members/${memberId}/`, {
+        initialData,
+    });
 
 export function useStaff(courseId: number, initialUser: User) {
     const { data, error, isValidating, mutate } = useResource(
