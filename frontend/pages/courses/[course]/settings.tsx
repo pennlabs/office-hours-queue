@@ -8,15 +8,23 @@ import { withProtectPage } from "../../../utils/protectpage";
 import { doMultipleSuccessRequests } from "../../../utils/fetch";
 import { isLeadershipRole } from "../../../utils/enums";
 import CourseSettings from "../../../components/Course/CourseSettings/CourseSettings";
-import { CoursePageProps, Course, Membership, Tag } from "../../../types";
+import {
+    CoursePageProps,
+    Course,
+    Membership,
+    Tag,
+    UserMembership,
+    User,
+} from "../../../types";
 import nextRedirect from "../../../utils/redirect";
 
 interface SettingsPageProps extends CoursePageProps {
     tags: Tag[];
+    membership: UserMembership;
 }
 
 const SettingsPage = (props: SettingsPageProps) => {
-    const { course, leadership, tags } = props;
+    const { course, leadership, tags, membership } = props;
     return (
         <>
             <Head>
@@ -27,7 +35,13 @@ const SettingsPage = (props: SettingsPageProps) => {
                     course={course}
                     leadership={leadership}
                     render={() => {
-                        return <CourseSettings course={course} tags={tags} />;
+                        return (
+                            <CourseSettings
+                                course={course}
+                                tags={tags}
+                                membership={membership}
+                            />
+                        );
                     }}
                 />
             </Grid>
@@ -46,15 +60,22 @@ SettingsPage.getInitialProps = async (
     let course: Course;
     let leadership: Membership[];
     let tags: Tag[];
+    let user: User;
+    let membership: UserMembership;
 
     const response = await doMultipleSuccessRequests([
         { path: `/api/courses/${query.course}/`, data },
         { path: `/api/courses/${query.course}/members/`, data },
         { path: `/api/courses/${query.course}/tags/`, data },
+        { path: "/api/accounts/me/", data },
     ]);
 
     if (response.success) {
-        [course, leadership, tags] = response.data;
+        [course, leadership, tags, user] = response.data;
+
+        membership = user.membershipSet.find(
+            (item) => item.course.id === course.id
+        )!;
 
         if (course.archived) {
             nextRedirect(
@@ -72,6 +93,7 @@ SettingsPage.getInitialProps = async (
         course,
         leadership: leadership.filter((m) => isLeadershipRole(m.kind)),
         tags,
+        membership,
     };
 };
 

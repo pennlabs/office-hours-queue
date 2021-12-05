@@ -1,14 +1,14 @@
 import { useEffect, useState, useMemo } from "react";
 import "./CourseForm.module.css";
 
-import { Form, Button, Modal } from "semantic-ui-react";
+import { Form, Button, Modal, Input } from "semantic-ui-react";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 import AsyncSelect from "react-select/async";
 import { useRouter } from "next/router";
 import CreatableSelect from "react-select/creatable";
 import { mutateResourceFunction } from "@pennlabs/rest-hooks/dist/types";
-import { Course, Semester, Tag } from "../../../types";
+import { Course, Semester, Tag, UserMembership, Kind } from "../../../types";
 import {
     getSemesters,
     createTag,
@@ -20,6 +20,8 @@ interface CourseFormProps {
     course: Course;
     mutateCourse: mutateResourceFunction<Course>;
     tags: Tag[];
+    membership: UserMembership;
+    mutateMembership: mutateResourceFunction<UserMembership>;
 }
 
 type TagMap = {
@@ -33,7 +35,13 @@ const toTagMap = (tags: Tag[]) =>
     }, {});
 
 const CourseForm = (props: CourseFormProps) => {
-    const { course, mutateCourse, tags: initialTags } = props;
+    const {
+        course,
+        mutateCourse,
+        tags: initialTags,
+        membership: membershipData,
+        mutateMembership,
+    } = props;
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const { data: tags, mutate: mutateTags } = useTags(course.id, initialTags);
@@ -52,6 +60,10 @@ const CourseForm = (props: CourseFormProps) => {
         semester: course.semester,
     });
 
+    const [alarmSeconds, setAlarmSeconds] = useState<Number>(
+        membershipData.timerSeconds
+    );
+
     const [oldTags, setOldTags] = useState<TagMap>(toTagMap(tags!));
     const [tagLabels, setTagLabels] = useState<string[]>(
         tags!.map((t) => t.name)
@@ -64,8 +76,8 @@ const CourseForm = (props: CourseFormProps) => {
     const [archiveError, setArchiveError] = useState(false);
     const [open, setOpen] = useState(false);
 
-    const disabled = useMemo(
-        () =>
+    const disabled = useMemo(() => {
+        return (
             !input.department ||
             !input.courseCode ||
             !input.courseTitle ||
@@ -76,9 +88,9 @@ const CourseForm = (props: CourseFormProps) => {
                 input.inviteOnly === course.inviteOnly &&
                 input.semester === course.semester &&
                 addedTags.length === 0 &&
-                deletedTags.length === 0),
-        [input, course, addedTags, deletedTags]
-    );
+                deletedTags.length === 0)
+        );
+    }, [input, course, addedTags, deletedTags, alarmSeconds]);
 
     // default recommended tags
     const tagOptions = [
@@ -89,14 +101,20 @@ const CourseForm = (props: CourseFormProps) => {
     /* HANDLER FUNCTIONS */
 
     const handleInputChange = (e, { name, value }) => {
-        input[name] = name === "inviteOnly" ? !input[name] : value;
-        setInput({ ...input });
+        console.log(membershipData);
+        if (name === "timer") {
+            setAlarmSeconds(value);
+        } else {
+            input[name] = name === "inviteOnly" ? !input[name] : value;
+            setInput({ ...input });
+        }
     };
 
     const onSubmit = async () => {
         try {
             setLoading(true);
             await mutateCourse(input);
+            await mutateMembership({ timerSeconds: alarmSeconds });
 
             const tagPromises: Promise<any>[] = [];
 
@@ -265,6 +283,21 @@ const CourseForm = (props: CourseFormProps) => {
                     onChange={handleTagChange}
                 />
             </Form.Field>
+            {membershipData.kind != Kind.STUDENT && (
+                <Form.Field>
+                    <label htmlFor="answering-timer">Answering Timer</label>
+                    <Input
+                        id="answering-timer-minutes"
+                        name="timer"
+                        disabled={loading}
+                        onChange={handleInputChange}
+                        label={{ basic: true, content: "min" }}
+                        labelPosition="right"
+                        defaultValue={membershipData.timerSeconds}
+                        style={{ width: "5%" }}
+                    />
+                </Form.Field>
+            )}
             <Form.Field required>
                 <label htmlFor="invite-only">Invite Only?</label>
                 <Form.Checkbox
