@@ -475,16 +475,18 @@ class EventSerializer(serializers.ModelSerializer):
         print("updating.... updating.... ")
         rule = None
         if ("rule" in validated_data) : 
+            print("rule is in validated data")
             rule = Rule.objects.create(frequency=validated_data["rule"]["frequency"])
-            
+            print("rule in creation", rule)
             validated_data.pop("rule")
         
         validated_data.pop("course_id")
         super().update(instance, validated_data)
+        
         instance.rule = rule
         instance.save()
         print(instance.title)
-        print(instance.rule.frequence)
+        print(instance.rule.frequency)
         return instance
 
     def create(self, validated_data):
@@ -502,7 +504,8 @@ class EventSerializer(serializers.ModelSerializer):
         # for some reason, super().create() doesn't automatically serialize Rule
         event = super().create(validated_data)
         event.rule = rule
-
+        event.save()
+        
         erm = EventRelationManager()
         erm.create_relation(event=event, content_object=course)
         return event
@@ -512,14 +515,13 @@ class EventSerializer(serializers.ModelSerializer):
     def get_course (self, instance) :
         return EventRelation.objects.filter(Event=self).only("course")
 
-class OccurenceSerializer(serializers.ModelSerializer):
+class OccurrenceSerializer(serializers.ModelSerializer):
     """
     Serializer for occurrence
+
     """
-    event = EventSerializer(read_only = True)
 
     class Meta: 
         model = Occurrence
-        fields = ("event", "title", "description", "start", "end", "cancelled", "original_start", "original_end")
-        read_only_fields = ("event",)
+        fields = ("event", "title", "description", "start", "end", "cancelled")
 

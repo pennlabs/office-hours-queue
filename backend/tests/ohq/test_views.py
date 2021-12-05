@@ -266,3 +266,45 @@ class QuestionViewTestCase(TestCase):
             {"text": "Help me", "tags": []},
         )
         self.assertEqual(2, Question.objects.all().count())
+
+class OccurrenceViewTestCase(TestCase) :
+    def setUp(self):
+        self.client = APIClient()
+        self.semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
+        self.course = Course.objects.create(
+            course_code="000", department="Penn Labs", semester=self.semester
+        )
+        self.head_ta = User.objects.create(username="head_ta")
+        self.ta = User.objects.create(username="ta")
+        self.student = User.objects.create(username="student")
+        Membership.objects.create(
+            course=self.course, user=self.head_ta, kind=Membership.KIND_HEAD_TA
+        )
+        Membership.objects.create(course=self.course, user=self.ta, kind=Membership.KIND_TA)
+        Membership.objects.create(course=self.course, user=self.student, kind=Membership.KIND_STUDENT)
+    
+    def test_list(self):
+        self.client.force_authenticate(user=self.ta)
+        startTime = "2021-12-05T12:41:37.558494"
+        endTime = "2021-12-05T12:41:37.558494"
+        self.client.post(
+            reverse("ohq:event-list"), {
+                "start": startTime,
+                "end": endTime,
+                "title": "TA session",
+                "rule": {
+                    "frequency": "WEEKLY"
+                },
+                "endRecurringPeriod": "2022-12-05T12:41:37.558494",
+                "courseId": self.course.id,
+            }
+        )
+        filter_start = "2021-10-05T12:41:37.558494"
+        filted_end = "2022-12-19T12:41:37.558494"
+        # Still needs to normalize timeline to UTC +0
+        response = self.client.get(
+            '/api/occurrences/?course='+str(self.course.id)+"&filter_start="+filter_start+"&filter_end="+filted_end
+        )
+        print(response.content)
+        occurrences = json.loads(response.content)
+        print(len(occurrences))

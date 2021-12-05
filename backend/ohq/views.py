@@ -1,6 +1,7 @@
 import math
 import re
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, tzinfo
+import pytz
 
 from django.contrib.auth import get_user_model
 from django.core.validators import ValidationError
@@ -20,6 +21,7 @@ from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 from rest_framework import mixins
 from rest_live.mixins import RealtimeMixin
+from rest_framework.schemas.openapi import AutoSchema
 from schedule.models.events import EventManager, EventRelation, EventRelationManager
 
 
@@ -60,7 +62,7 @@ from ohq.serializers import (
     CourseSerializer,
     MembershipInviteSerializer,
     MembershipSerializer,
-    OccurenceSerializer,
+    OccurrenceSerializer,
     Profile,
     QuestionSerializer,
     QueueSerializer,
@@ -68,7 +70,8 @@ from ohq.serializers import (
     SemesterSerializer,
     TagSerializer,
     UserPrivateSerializer,
-    EventSerializer
+    EventSerializer,
+    UserSerializer
 )
 from ohq.sms import sendSMSVerification
 
@@ -641,26 +644,73 @@ class EventViewSet(viewsets.ModelViewSet) :
     serializer_class = EventSerializer
     permission_classes = [EventPermission | IsSuperuser]
 
-    # def list(self, request, *args, **kwargs) :
-    #     return Event.objects.filter(pk__in = kwargs["events"])
+    def list(self, request, *args, **kwargs) :
+        return Event.objects.filter(pk__in = kwargs["events"])
 
     def get_queryset(self):
         return Event.objects.filter(pk=self.kwargs["pk"])
 
 
-class OccurenceViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet) :
-    serializer_class = OccurenceSerializer
+class OccurrenceSchema(AutoSchema):
+    def get_operation(self, path, method):
+        op = super().get_operation(path, method)
+        op['parameters'].append({
+            "name": "course",
+            "in": "query",
+            "required": True,
+            "description": "A series of api/occurrences/?course=1&course=2 - where the numbers are the course pks",
+            'schema': {'type': 'string'}
+        })
+        op['parameters'].append({
+            "name": "filter_start",
+            "in": "query",
+            "required": True,
+            "description": "The start date of the filter in ISO format in UTC+0<br>"+
+                            "e.g 2021-10-05T12:41:37.558494",
+            'schema': {'type': 'datetime'}
+        })
+        op['parameters'].append({
+            "name": "filter_end",
+            "in": "query",
+            "required": True,
+            "description": "The end date of the filter in ISO format in UTC+0<br>"+
+                            "e.g 2021-10-05T12:41:37.558494",
+            'schema': {'type': 'datetime'}
+        })
+        return op
+
+
+class OccurrenceViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet) :
+    """
+    list: 
+        parameters:
+            - courses: course
+    """
+    serializer_class = OccurrenceSerializer
     permission_class = [OccurrencePermission | IsSuperuser]
+    schema = OccurrenceSchema()
 
     def list(self, request, *args, **kwargs):
-        courses = Course.objects.filter(pk__in = kwargs["courses"])
+        # ensure timezone consitency
+        utc = pytz.UTC
+        courseIds = request.GET.getlist('course')
+        filter_start = datetime.fromisoformat(request.GET.get('filter_start')).replace(tzinfo = utc)
+        filter_end = datetime.fromisoformat(request.GET.get('filter_end')).replace(tzinfo=utc)
+        courses = Course.objects.filter(pk__in = courseIds)
+        
         occurrences = []
+        relManager = EventRelationManager()
         for course in courses:
-            events_for_course = EventRelationManager.get_events_for_object(course)
+            events_for_course = relManager.get_events_for_object(course)
             for event in events_for_course:
-                for occurrence in event.get_occurrences(kwargs["start"], kwargs["end"]):
+                print(event)
+                print("rule", event.rule)
+
+                for occurrence in event.get_occurrences(filter_start, filter_end):
                     occurrences.append(occurrence)
-        return occurrences
+
+        
+        print("occurrences size: ", len(occurrences))
+        serializer = OccurrenceSerializer(occurrences, many=True)
+        return Response(serializer.data)
                     
-
-

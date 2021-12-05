@@ -16,7 +16,7 @@ from ohq.serializers import (
     SemesterSerializer,
     UserPrivateSerializer,
     EventSerializer,
-    OccurenceSerializer,
+    OccurrenceSerializer,
 )
 
 
@@ -548,8 +548,6 @@ class EventSerializerTestCase(TestCase) :
         self.course = Course.objects.create(
             course_code="000", department="Penn Labs", semester=self.semester
         )
-        self.name = "Queue"
-        self.queue = Queue.objects.create(name=self.name, course=self.course)
         self.head_ta = User.objects.create(username="head_ta")
         self.ta = User.objects.create(username="ta")
         self.student = User.objects.create(username="student")
@@ -558,9 +556,6 @@ class EventSerializerTestCase(TestCase) :
         )
         Membership.objects.create(course=self.course, user=self.ta, kind=Membership.KIND_TA)
         Membership.objects.create(course=self.course, user=self.student, kind=Membership.KIND_STUDENT)
-        self.announcement = Announcement.objects.create(
-            course=self.course, author=self.head_ta, content="Original announcement"
-        )
     
     def test_create(self) :
         """ 
@@ -619,8 +614,6 @@ class EventSerializerTestCase(TestCase) :
         )
         self.assertEqual(1, Event.objects.all().count())
         event = Event.objects.all().first()
-        print(event.title)
-        print(event.id)
         response = self.client.patch(
             reverse("ohq:event-detail", args=[event.id]), {
                 "title": "New TA Session", 
@@ -628,10 +621,11 @@ class EventSerializerTestCase(TestCase) :
                 "rule": {"frequency": "MONTHLY"}
             }
         )
-        print (response)
         event = Event.objects.all().first()
-        print("Total event count: ", Event.objects.all().count())
         self.assertEquals(event.title, "New TA Session")
-        print(event.rule.frequency)
         self.assertEquals(event.rule.frequency, "MONTHLY")
+
+   
+    
+
         

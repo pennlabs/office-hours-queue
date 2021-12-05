@@ -407,9 +407,9 @@ class EventPermission(permissions.BasePermission) :
         if view.action == "retrieve":
             return True
 
-        # Head TAs+ can make changes
+        # TAs+ can make changes
         if view.action in ["destroy", "partial_update", "update"]:
-            return membership.is_leadership
+            return membership.is_ta
 
     def has_permission(self, request, view):
         course_pk = json.loads(request.body)["courseId"]
@@ -439,13 +439,8 @@ class OccurrencePermission(permissions.BasePermission) :
         course = Course.objects.get(course_code=request.body["course_id"])
         membership = Membership.objects.filter(course=course, user=request.user).first()
 
-        # Students+ can get an occurrence
-        if view.action == "retrieve":
-            return True
-
-        # Head TAs+ can make changes
-        if view.action in ["destroy", "partial_update", "update"]:
-            return membership.is_leadership
+        return membership.is_student or membership.is_leadership
+       
 
     def has_permission(self, request, view):
         # Anonymous users can't do anything
@@ -455,13 +450,6 @@ class OccurrencePermission(permissions.BasePermission) :
         course = Course.objects.get(course_code=request.body["course_id"])
         membership = Membership.objects.filter(course=course, user=request.user).first()
 
-        # Non-Students can't do anything
-        if membership is None:
-            return False
+        return membership.is_student or membership.is_leadership
 
-        if view.action in ["list", "retrieve"]:
-            return True
-
-        # TAs+ can make changes
-        if view.action in ["create", "destroy", "update", "partial_update"]:
-            return membership.is_ta
+       
