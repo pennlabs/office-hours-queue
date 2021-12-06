@@ -15,6 +15,7 @@ import {
     QuestionMap,
     Tag,
     NotificationProps,
+    UserMembership,
 } from "../../../types";
 
 interface InstructorQueuePageProps {
@@ -26,6 +27,7 @@ interface InstructorQueuePageProps {
     setNotifs: (boolean) => void;
     tags: Tag[];
     announcements: Announcement[];
+    membership: UserMembership;
 }
 
 enum PageStateEnum {
@@ -60,6 +62,7 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
         setNotifs,
         tags,
         announcements,
+        membership,
     } = props;
 
     /* STATE */
@@ -125,6 +128,7 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
                         notifs={notifs}
                         setNotifs={setNotifs}
                         tags={tags}
+                        membership={membership}
                     />
                 )}
                 {pageState.kind === PageStateEnum.SETTINGS && (

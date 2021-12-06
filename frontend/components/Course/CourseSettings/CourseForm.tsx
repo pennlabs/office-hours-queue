@@ -87,6 +87,7 @@ const CourseForm = (props: CourseFormProps) => {
                 input.courseTitle === course.courseTitle &&
                 input.inviteOnly === course.inviteOnly &&
                 input.semester === course.semester &&
+                alarmSeconds === membershipData.timerSeconds &&
                 addedTags.length === 0 &&
                 deletedTags.length === 0)
         );
@@ -294,7 +295,7 @@ const CourseForm = (props: CourseFormProps) => {
                         label={{ basic: true, content: "min" }}
                         labelPosition="right"
                         defaultValue={membershipData.timerSeconds}
-                        style={{ width: "5%" }}
+                        style={{ width: "7%" }}
                     />
                 </Form.Field>
             )}

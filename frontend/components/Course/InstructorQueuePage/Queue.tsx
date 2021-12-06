@@ -1,11 +1,17 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useContext } from "react";
 import { Header, Label, Grid, Message, Button, Icon } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Select from "react-select";
 import Questions from "./Questions";
 import ClearQueueModal from "./ClearQueueModal";
-import { Queue as QueueType, Question, Tag } from "../../../types";
+import {
+    Queue as QueueType,
+    Question,
+    Tag,
+    UserMembership,
+} from "../../../types";
 import { useQuestions } from "../../../hooks/data-fetching/course";
+import { AuthUserContext } from "../../../context/auth";
 
 interface QueueProps {
     courseId: number;
@@ -17,6 +23,7 @@ interface QueueProps {
     notifs: boolean;
     setNotifs: (boolean) => void;
     tags: Tag[];
+    membership: UserMembership;
 }
 
 const Queue = (props: QueueProps) => {
@@ -30,6 +37,7 @@ const Queue = (props: QueueProps) => {
         notifs,
         setNotifs,
         tags,
+        membership,
     } = props;
     const { id: queueId, active, estimatedWaitTime } = queue;
     const [filteredTags, setFilteredTags] = useState<string[]>([]);
@@ -38,6 +46,53 @@ const Queue = (props: QueueProps) => {
         queueId,
         rawQuestions
     );
+
+    const { user } = useContext(AuthUserContext);
+    if (!user) {
+        throw new Error(
+            "Invariant broken: withAuth must be used with component"
+        );
+    }
+
+    const answeredTime = useMemo(() => {
+        return questions &&
+            questions?.find(
+                (question) =>
+                    question.respondedToBy?.username === user!.username
+            )
+            ? new Date(
+                  questions!.find(
+                      (question) =>
+                          question.respondedToBy?.username === user!.username
+                  )!.timeResponseStarted!
+              )
+            : null;
+    }, [JSON.stringify(questions), user]);
+
+    const [minutes, setMinutes] = useState<Number>(
+        (membership.timerSeconds.valueOf() / 60) >> 0
+    );
+    const [seconds, setSeconds] = useState<Number>(
+        membership.timerSeconds.valueOf() % 60
+    );
+    const [timeUp, setTimeUp] = useState<Boolean>(false);
+
+    useEffect(() => {
+        setInterval(() => {
+            if (answeredTime) {
+                const totalSeconds =
+                    membership.timerSeconds.valueOf() * 60 -
+                    (new Date().getTime() - answeredTime.getTime()) / 1000;
+                if (totalSeconds > 0) {
+                    setSeconds(totalSeconds % 60 >> 0);
+                    setMinutes((totalSeconds - (totalSeconds % 60)) / 60);
+                    setTimeUp(false);
+                } else {
+                    setTimeUp(true);
+                }
+            }
+        }, 1000);
+    }, [membership, answeredTime]);
 
     useEffect(() => {
         mutateQuestions();
@@ -87,17 +142,39 @@ const Queue = (props: QueueProps) => {
                 mutate={mutateQuestions}
                 closeFunc={() => setClearModalOpen(false)}
             />
-            <Header as="h3">
-                {queue.name}
-                <Header.Subheader
-                    style={{
-                        whiteSpace: "break-spaces",
-                        wordBreak: "break-word",
-                    }}
-                >
-                    {queue.description}
-                </Header.Subheader>
-            </Header>
+            <Grid columns="equal">
+                <Grid.Column>
+                    <Header as="h3">
+                        {queue.name}
+                        <Header.Subheader
+                            style={{
+                                whiteSpace: "break-spaces",
+                                wordBreak: "break-word",
+                            }}
+                        >
+                            {queue.description}
+                        </Header.Subheader>
+                    </Header>
+                </Grid.Column>
+                {answeredTime && (
+                    <Grid.Column>
+                        <span style={{ float: "right" }}>
+                            <Label
+                                color={timeUp ? "red" : "green"}
+                                size="large"
+                            >
+                                {timeUp
+                                    ? "Time Up"
+                                    : `${
+                                          minutes < 10 ? `0${minutes}` : minutes
+                                      }:${
+                                          seconds < 10 ? `0${seconds}` : seconds
+                                      }`}
+                            </Label>
+                        </span>
+                    </Grid.Column>
+                )}
+            </Grid>
             <Grid>
                 <Grid.Row columns="equal">
                     <Grid.Column>

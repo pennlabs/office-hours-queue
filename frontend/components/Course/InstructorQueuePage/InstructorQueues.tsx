@@ -7,6 +7,7 @@ import {
     QuestionMap,
     Tag,
     NotificationProps,
+    UserMembership,
 } from "../../../types";
 import { QueueMenuItem } from "./QueueMenuItem";
 
@@ -23,6 +24,7 @@ interface InstructorQueuesProps {
     notifs: boolean;
     setNotifs: (boolean) => void;
     tags: Tag[];
+    membership: UserMembership;
 }
 const InstructorQueues = (props: InstructorQueuesProps) => {
     const {
@@ -38,6 +40,7 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
         setNotifs,
         tags,
         suggestedQueueId,
+        membership,
     } = props;
 
     const dispQueues = useMemo(() => {
@@ -114,6 +117,7 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
                             notifs={notifs}
                             setNotifs={setNotifs}
                             tags={tags}
+                            membership={membership}
                         />
                     </Grid.Column>
                 </>
