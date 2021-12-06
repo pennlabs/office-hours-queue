@@ -18,6 +18,8 @@ interface QueueFormInput {
     description: string;
     questionTemplate: string;
     videoChatSetting: VideoChatSetting;
+    fstTimer: number;
+    sndTimer: number;
     rateLimitEnabled: boolean;
     rateLimitLength?: number;
     rateLimitQuestions?: number;
@@ -48,6 +50,8 @@ const CreateQueue = (props: CreateQueueProps) => {
         description: "",
         questionTemplate: "",
         videoChatSetting: VideoChatSetting.DISABLED,
+        fstTimer: 0,
+        sndTimer: 0,
         rateLimitEnabled: false,
         rateLimitLength: undefined,
         rateLimitQuestions: undefined,
@@ -166,6 +170,28 @@ const CreateQueue = (props: CreateQueueProps) => {
                             <Form.Input
                                 id="form-question-template"
                                 name="questionTemplate"
+                                disabled={mutateLoading}
+                                onChange={handleInputChange}
+                            />
+                        </Form.Field>
+                        <Form.Field>
+                            <label htmlFor="form-fst-timer">
+                                First Timer (minutes)
+                            </label>
+                            <Form.Input
+                                id="form-fst-timer"
+                                name="fstTimer"
+                                disabled={mutateLoading}
+                                onChange={handleInputChange}
+                            />
+                        </Form.Field>
+                        <Form.Field>
+                            <label htmlFor="form-snd-timer">
+                                Second Timer (minutes)
+                            </label>
+                            <Form.Input
+                                id="form-snd-timer"
+                                name="sndTimer"
                                 disabled={mutateLoading}
                                 onChange={handleInputChange}
                             />
