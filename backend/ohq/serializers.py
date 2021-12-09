@@ -460,6 +460,8 @@ class RuleSerializer(serializers.ModelSerializer):
 class EventSerializer(serializers.ModelSerializer):
     """
     Serializer for events
+
+    For timezones, both the back and front end will be dealing with UTC+0
     """
 
     rule = RuleSerializer(required= False)
@@ -468,16 +470,13 @@ class EventSerializer(serializers.ModelSerializer):
 
     class Meta: 
         model = Event
-        fields = ("start", "end", "title", "description", "rule", "end_recurring_period", "course_id", "course")
+        fields = ("id", "start", "end", "title", "description", "rule", "end_recurring_period", "course_id", "course")
 
     def update(self, instance, validated_data):
         # still needs to check permission (ask Kev)
-        print("updating.... updating.... ")
         rule = None
-        if ("rule" in validated_data) : 
-            print("rule is in validated data")
+        if "rule" in validated_data : 
             rule = Rule.objects.create(frequency=validated_data["rule"]["frequency"])
-            print("rule in creation", rule)
             validated_data.pop("rule")
         
         validated_data.pop("course_id")
@@ -485,19 +484,19 @@ class EventSerializer(serializers.ModelSerializer):
         
         instance.rule = rule
         instance.save()
-        print(instance.title)
-        print(instance.rule.frequency)
         return instance
 
     def create(self, validated_data):
-        print("creating.... creating.... ")
+        print("creating event...")
         course = Course.objects.get(pk=validated_data["course_id"])
-        rule = Rule.objects.create(frequency=validated_data["rule"]["frequency"])
+        rule = None
+        if "rule" in validated_data :
+            rule = Rule.objects.create(frequency=validated_data["rule"]["frequency"])
+            validated_data.pop("rule")
 
-        validated_data.pop("rule")
         validated_data.pop("course_id")
         default_calendar = Calendar.objects.filter(name="DefaultCalendar").first()
-        if (default_calendar == None) :
+        if (default_calendar is None) :
             default_calendar = Calendar.objects.create(name="DefaultCalendar")
         validated_data["calendar"] = default_calendar
         
@@ -505,12 +504,10 @@ class EventSerializer(serializers.ModelSerializer):
         event = super().create(validated_data)
         event.rule = rule
         event.save()
-        
+
         erm = EventRelationManager()
         erm.create_relation(event=event, content_object=course)
         return event
-
-
 
     def get_course (self, instance) :
         return EventRelation.objects.filter(Event=self).only("course")
@@ -518,10 +515,13 @@ class EventSerializer(serializers.ModelSerializer):
 class OccurrenceSerializer(serializers.ModelSerializer):
     """
     Serializer for occurrence
-
     """
+    event = EventSerializer
 
     class Meta: 
         model = Occurrence
-        fields = ("event", "title", "description", "start", "end", "cancelled")
+        fields = ("id", "event", "title", "description", "start", "end", "cancelled")
+        read_only = ("event")
 
+
+    

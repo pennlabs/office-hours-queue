@@ -10,6 +10,7 @@ from rest_framework.test import APIClient
 
 from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester
 from ohq.serializers import UserPrivateSerializer
+from schedule.models import Occurrence, Event
 
 
 User = get_user_model()
@@ -285,12 +286,12 @@ class OccurrenceViewTestCase(TestCase) :
     
     def test_list(self):
         self.client.force_authenticate(user=self.ta)
-        startTime = "2021-12-05T12:41:37.558494"
-        endTime = "2021-12-05T12:41:37.558494"
+        start_time = "2021-12-05T12:41:37.558494"
+        end_time = "2021-12-06T12:41:37.558494"
         self.client.post(
             reverse("ohq:event-list"), {
-                "start": startTime,
-                "end": endTime,
+                "start": start_time,
+                "end": end_time,
                 "title": "TA session",
                 "rule": {
                     "frequency": "WEEKLY"
@@ -299,12 +300,68 @@ class OccurrenceViewTestCase(TestCase) :
                 "courseId": self.course.id,
             }
         )
-        filter_start = "2021-10-05T12:41:37.558494"
-        filted_end = "2022-12-19T12:41:37.558494"
-        # Still needs to normalize timeline to UTC +0
+        filter_start = "2021-12-05T12:40:37.558494"
+        filter_end = "2021-12-12T12:42:37.558494"
+        event = Event.objects.all().first()
+        print(event.rule)
         response = self.client.get(
-            '/api/occurrences/?course='+str(self.course.id)+"&filter_start="+filter_start+"&filter_end="+filted_end
+            '/api/occurrences/?course='+str(self.course.id)+"&filter_start="+filter_start+"&filter_end="+filter_end
         )
-        print(response.content)
         occurrences = json.loads(response.content)
-        print(len(occurrences))
+    
+        self.assertEquals(2, len(occurrences))
+
+    def test_cancel(self):
+        self.client.force_authenticate(user=self.ta)
+        start_time = "2021-12-05T12:41:37.558494"
+        end_time = "2021-12-06T12:41:37.558494"
+        self.client.post(
+            reverse("ohq:event-list"), {
+                "start": start_time,
+                "end": end_time,
+                "title": "TA session",
+                "endRecurringPeriod": "2022-12-05T12:41:37.558494",
+                "courseId": self.course.id,
+            }
+        )
+        event = Event.objects.all().first()
+        filter_start = "2021-12-05T12:40:37.558494"
+        filter_end = "2021-12-05T12:42:37.558494"
+        # create at least one occurrence
+        response = self.client.get(
+            '/api/occurrences/?course='+str(self.course.id)+"&filter_start="+filter_start+"&filter_end="+filter_end
+        )
+        occurrence = json.loads(response.content)[0]
+        self.client.patch(
+            reverse("ohq:occurrence-detail", args=[occurrence.id]), {
+                "event": event.id,
+                "start": occurrence.start,
+                "end": occurrence.end,
+                "cancelled": True
+            })
+        occurrence = event.get_occurrences(event.start - timedelta(1), event.start + timedelta(1))[0]
+        self.assertTrue(occurrence.cancelled)
+
+    def test_no_rule(self):
+        # events without rule occur only once
+        self.client.force_authenticate(user=self.ta)
+        start_time = "2021-12-05T12:41:37.558494"
+        end_time = "2021-12-06T12:41:37.558494"
+        self.client.post(
+            reverse("ohq:event-list"), {
+                "start": start_time,
+                "end": end_time,
+                "title": "TA session",
+                "endRecurringPeriod": "2022-12-05T12:41:37.558494",
+                "courseId": self.course.id,
+            }
+        )
+        filter_start = "2021-12-05T12:40:37.558494"
+        filter_end = "2022-12-12T12:42:37.558494"
+        response = self.client.get(
+            '/api/occurrences/?course='+str(self.course.id)+"&filter_start="+filter_start+"&filter_end="+filter_end
+        )
+        occurrences = json.loads(response.content)
+        self.assertEquals(1, len(occurrences))
+
+    
