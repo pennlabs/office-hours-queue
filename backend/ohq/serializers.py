@@ -1,5 +1,5 @@
 import string
-
+from datetime import datetime
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
@@ -465,20 +465,37 @@ class EventSerializer(serializers.ModelSerializer):
     """
 
     rule = RuleSerializer(required= False)
-    course_id = serializers.IntegerField(required=True, write_only=True)
-    course = CourseSerializer(read_only=True)
+    course_id = serializers.IntegerField(required=False)
 
     class Meta: 
         model = Event
-        fields = ("id", "start", "end", "title", "description", "rule", "end_recurring_period", "course_id", "course")
+        fields = ("id", "start", "end", "title", "description", "rule", "end_recurring_period", "course_id")
+
+    def get_course_id(self, instance):
+        return EventRelation.objects.filter(event=instance).first().object_id
+
+    def to_representation(self, instance) :
+        representation = super().to_representation(instance)
+        print("get course ----")
+        course_pk = EventRelation.objects.filter(event=instance).first().object_id
+        print(course_pk)
+        representation['course_id'] = course_pk
+        return representation
+        # return Course.objects.get(pk=course_pk)
 
     def update(self, instance, validated_data):
-        # still needs to check permission (ask Kev)
         rule = None
-        if "rule" in validated_data : 
-            rule = Rule.objects.create(frequency=validated_data["rule"]["frequency"])
-            validated_data.pop("rule")
-        
+        # if changing start, end, or update, delete all previous occurrences
+        if (("start" in validated_data and instance.start != validated_data["start"]) or
+            ("end" in validated_data and instance.end != validated_data["end"]) or
+            ("end_recurring_period" in validated_data and instance.end_recurring_period != validated_data["endRecurringPeriod"]) or
+            ("rule" in validated_data)):
+            if "rule" in validated_data : 
+                rule = Rule.objects.create(frequency=validated_data["rule"]["frequency"])
+                validated_data.pop("rule")
+            Occurrence.objects.filter(event=instance).delete()
+
+        # can never change course_id, client should create a new event instead
         validated_data.pop("course_id")
         super().update(instance, validated_data)
         
@@ -487,7 +504,6 @@ class EventSerializer(serializers.ModelSerializer):
         return instance
 
     def create(self, validated_data):
-        print("creating event...")
         course = Course.objects.get(pk=validated_data["course_id"])
         rule = None
         if "rule" in validated_data :
@@ -509,8 +525,7 @@ class EventSerializer(serializers.ModelSerializer):
         erm.create_relation(event=event, content_object=course)
         return event
 
-    def get_course (self, instance) :
-        return EventRelation.objects.filter(Event=self).only("course")
+    
 
 class OccurrenceSerializer(serializers.ModelSerializer):
     """

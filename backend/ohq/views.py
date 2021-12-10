@@ -1,7 +1,7 @@
 import math
 import re
 from datetime import timedelta, datetime, tzinfo
-import pytz
+from pytz import utc
 
 from django.contrib.auth import get_user_model
 from django.core.validators import ValidationError
@@ -645,16 +645,26 @@ class EventViewSet(viewsets.ModelViewSet) :
     permission_classes = [EventPermission | IsSuperuser]
 
     def list(self, request, *args, **kwargs) :
-        return Event.objects.filter(pk__in = kwargs["events"])
+        return Event.objects.filter(pk=self.kwargs["pk"])
 
     def get_queryset(self):
+        print("getting query set")
+        events = Event.objects.filter(pk=self.kwargs["pk"])
+        # how to use annotate to better do this?
+        for event in events:
+            course_id = EventRelation.objects.filter(event=event)[0].object_id
+            print(course_id)
+            course = Course.objects.filter(pk=course_id).first()
+            print(course.course_code)
+            event.course = Course.objects.filter(pk=course_id).first()
+
         return Event.objects.filter(pk=self.kwargs["pk"])
 
 
 class OccurrenceSchema(AutoSchema):
     def get_operation(self, path, method):
         op = super().get_operation(path, method)
-        if op['operationId'] == "listOccurrences": 
+        if op['operationId'] == "listOccurrences" : 
             op['parameters'].append({
                 "name": "course",
                 "in": "query",
@@ -668,7 +678,7 @@ class OccurrenceSchema(AutoSchema):
                 "required": True,
                 "description": "The start date of the filter in ISO format in UTC+0.<br>"+
                                 "The returned events will have start_time strictly within the range of the filter<br>"+
-                                "e.g 2021-10-05T12:41:37.558494",
+                                "e.g 2021-10-05T12:41:37Z",
                 'schema': {'type': 'datetime'}
             })
             op['parameters'].append({
@@ -676,7 +686,7 @@ class OccurrenceSchema(AutoSchema):
                 "in": "query",
                 "required": True,
                 "description": "The end date of the filter in ISO format in UTC+0<br>"+
-                                "e.g 2021-10-05T12:41:37.558494",
+                                "e.g 2021-10-05T12:41:37Z",
                 'schema': {'type': 'datetime'}
             })
         return op
@@ -694,10 +704,9 @@ class OccurrenceViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin,
 
     def list(self, request, *args, **kwargs):
         # ensure timezone consitency
-        utc = pytz.UTC
         courseIds = request.GET.getlist('course')
-        filter_start = datetime.fromisoformat(request.GET.get('filter_start')).replace(tzinfo = utc)
-        filter_end = datetime.fromisoformat(request.GET.get('filter_end')).replace(tzinfo=utc)
+        filter_start = datetime.strptime(request.GET.get('filter_start'), "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo = utc)
+        filter_end = datetime.strptime(request.GET.get('filter_end'), "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo = utc)
         courses = Course.objects.filter(pk__in = courseIds)
         
         occurrences = []
@@ -707,7 +716,6 @@ class OccurrenceViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin,
             for event in events_for_course:
                 for occurrence in event.get_occurrences(filter_start, filter_end):
                     occurrence.save()
-                    print("id ", occurrence.id)
                     occurrences.append(occurrence)
         
         serializer = OccurrenceSerializer(occurrences, many=True)

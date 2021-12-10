@@ -1,5 +1,7 @@
 import json
 from datetime import timedelta
+from datetime import datetime
+from pytz import utc
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
@@ -286,8 +288,8 @@ class OccurrenceViewTestCase(TestCase) :
     
     def test_list(self):
         self.client.force_authenticate(user=self.ta)
-        start_time = "2021-12-05T12:41:37.558494"
-        end_time = "2021-12-06T12:41:37.558494"
+        start_time = "2021-12-05T12:41:37Z"
+        end_time = "2021-12-06T12:41:37Z"
         self.client.post(
             reverse("ohq:event-list"), {
                 "start": start_time,
@@ -296,14 +298,13 @@ class OccurrenceViewTestCase(TestCase) :
                 "rule": {
                     "frequency": "WEEKLY"
                 },
-                "endRecurringPeriod": "2022-12-05T12:41:37.558494",
+                "endRecurringPeriod": "2022-12-05T12:41:37Z",
                 "courseId": self.course.id,
             }
         )
-        filter_start = "2021-12-05T12:40:37.558494"
-        filter_end = "2021-12-12T12:42:37.558494"
+        filter_start = "2021-12-05T12:40:37Z"
+        filter_end = "2021-12-12T12:42:37Z"
         event = Event.objects.all().first()
-        print(event.rule)
         response = self.client.get(
             '/api/occurrences/?course='+str(self.course.id)+"&filter_start="+filter_start+"&filter_end="+filter_end
         )
@@ -313,25 +314,25 @@ class OccurrenceViewTestCase(TestCase) :
 
     def test_cancel(self):
         self.client.force_authenticate(user=self.ta)
-        start_time = "2021-12-05T12:41:37.558494"
-        end_time = "2021-12-06T12:41:37.558494"
+        start_time = "2021-12-05T12:41:37Z"
+        end_time = "2021-12-06T12:41:37Z"
         self.client.post(
             reverse("ohq:event-list"), {
                 "start": start_time,
                 "end": end_time,
                 "title": "TA session",
-                "endRecurringPeriod": "2022-12-05T12:41:37.558494",
+                "endRecurringPeriod": "2022-12-05T12:41:37Z",
                 "courseId": self.course.id,
             }
         )
         event = Event.objects.all().first()
-        filter_start = "2021-12-05T12:40:37.558494"
-        filter_end = "2021-12-05T12:42:37.558494"
+        filter_start = "2021-12-05T12:40:37Z"
+        filter_end = "2021-12-05T12:42:37Z"
         # create at least one occurrence
-        response = self.client.get(
+        self.client.get(
             '/api/occurrences/?course='+str(self.course.id)+"&filter_start="+filter_start+"&filter_end="+filter_end
         )
-        occurrence = json.loads(response.content)[0]
+        occurrence = Occurrence.objects.all().first()
         self.client.patch(
             reverse("ohq:occurrence-detail", args=[occurrence.id]), {
                 "event": event.id,
@@ -345,23 +346,73 @@ class OccurrenceViewTestCase(TestCase) :
     def test_no_rule(self):
         # events without rule occur only once
         self.client.force_authenticate(user=self.ta)
-        start_time = "2021-12-05T12:41:37.558494"
-        end_time = "2021-12-06T12:41:37.558494"
+        start_time = "2021-12-05T12:41:37Z"
+        end_time = "2021-12-06T12:41:37Z"
         self.client.post(
             reverse("ohq:event-list"), {
                 "start": start_time,
                 "end": end_time,
                 "title": "TA session",
-                "endRecurringPeriod": "2022-12-05T12:41:37.558494",
+                "endRecurringPeriod": "2022-12-05T12:41:37Z",
                 "courseId": self.course.id,
             }
         )
-        filter_start = "2021-12-05T12:40:37.558494"
-        filter_end = "2022-12-12T12:42:37.558494"
+        filter_start = "2021-12-05T12:40:37Z"
+        filter_end = "2022-12-12T12:42:37Z"
         response = self.client.get(
             '/api/occurrences/?course='+str(self.course.id)+"&filter_start="+filter_start+"&filter_end="+filter_end
         )
         occurrences = json.loads(response.content)
         self.assertEquals(1, len(occurrences))
 
-    
+        # calling twice doesn't create more occurrences
+        response = self.client.get(
+            '/api/occurrences/?course='+str(self.course.id)+"&filter_start="+filter_start+"&filter_end="+filter_end
+        )
+        occurrences = json.loads(response.content)
+        self.assertEquals(1, len(occurrences))
+
+    def test_update_start(self):
+        self.client.force_authenticate(user=self.ta)
+        startTime = "2019-08-22T12:41:37Z"
+        endTime = "2019-09-22T12:41:37Z"
+        self.client.post(
+            reverse("ohq:event-list"), {
+                "start": startTime,
+                "end": endTime,
+                "title": "TA session",
+                "rule": {
+                    "frequency": "WEEKLY"
+                },
+                "endRecurringPeriod": "2019-10-24T12:41:37Z",
+                "courseId": self.course.id,
+            }
+        )
+        filter_start = "2019-08-21T12:41:37Z"
+        filter_end = "2019-08-31T12:41:37Z"
+        response = self.client.get(
+            '/api/occurrences/?course='+str(self.course.id)+"&filter_start="+filter_start+"&filter_end="+filter_end
+        )
+        occurrences = json.loads(response.content)
+        print(occurrences)
+        self.assertEquals(2, len(occurrences))
+        self.assertEquals(occurrences[0]["start"], startTime)
+        # update event's start day should update occurrences
+        event = Event.objects.all().first()
+        new_start_date = "2019-08-24T12:41:37Z"
+        response = self.client.patch(
+            reverse("ohq:event-detail", args=[event.id]), {
+                "title": "New TA Session", 
+                "courseId": self.course.id,
+                "start": new_start_date,
+            }
+        )
+        event = Event.objects.all().first()
+        self.assertEquals(event.title, "New TA Session")
+        response = self.client.get(
+            '/api/occurrences/?course='+str(self.course.id)+"&filter_start="+filter_start+"&filter_end="+filter_end
+        )
+        occurrences = json.loads(response.content)
+        print(occurrences)
+        self.assertEquals(1, len(occurrences))
+        self.assertEquals(occurrences[0]["start"], new_start_date)

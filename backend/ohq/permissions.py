@@ -2,6 +2,7 @@ from django.db.models import Q
 from rest_framework import permissions
 
 from ohq.models import Course, Membership, Question
+from schedule.models import Event, Occurrence, EventRelationManager
 
 import json
 
@@ -398,10 +399,18 @@ class TagPermission(permissions.BasePermission):
 
 class EventPermission(permissions.BasePermission) :
     def has_object_permission(self, request, view, obj):
-        course_pk = json.loads(request.body)["courseId"]
+        content = json.loads(request.body)
+        if "courseId" not in content:
+            return False
+
+        course_pk = content["courseId"]
     
         course = Course.objects.get(pk=course_pk)
         membership = Membership.objects.get(course=course, user=request.user)
+
+        erm = EventRelationManager()
+        if (obj not in erm.get_events_for_object(course)) :
+            return False
 
         # Students+ can get an event
         if view.action == "retrieve":
@@ -412,12 +421,12 @@ class EventPermission(permissions.BasePermission) :
             return membership.is_ta
 
     def has_permission(self, request, view):
-        course_pk = json.loads(request.body)["courseId"]
-        
+        content = json.loads(request.body)
         # Anonymous users can't do anything
-        if not request.user.is_authenticated:
+        if not request.user.is_authenticated or "courseId" not in content:
             return False
 
+        course_pk = content["courseId"]
         course = Course.objects.get(pk=course_pk)
         membership = Membership.objects.filter(
             course=course, user=request.user
@@ -436,15 +445,30 @@ class EventPermission(permissions.BasePermission) :
 
 class OccurrencePermission(permissions.BasePermission) :
     def has_object_permission(self, request, view, obj):
+        # Anonymous users can't do anything
+        if not request.user.is_authenticated:
+            return False
+
+        event = Event.objects.filter(pk=request.body["event"])
         course = Course.objects.get(course_code=request.body["course_id"])
+
+        # if event is not in the course, changes cannot be made
+        erm = EventRelationManager()
+        if (event not in erm.get_events_for_object(course)) :
+            return False
+
         membership = Membership.objects.filter(course=course, user=request.user).first()
 
         return membership.is_student or membership.is_leadership
        
 
     def has_permission(self, request, view):
-        # Anonymous users can't do anything
-        if not request.user.is_authenticated:
+        event = Event.objects.filter(pk=request.body["event"])
+        course = Course.objects.get(course_code=request.body["course_id"])
+
+        # if event is not in the course, changes cannot be made
+        erm = EventRelationManager()
+        if (event not in erm.get_events_for_object(course) or not request.user.is_authenticated) :
             return False
 
         course = Course.objects.get(course_code=request.body["course_id"])

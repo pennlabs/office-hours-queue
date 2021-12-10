@@ -597,6 +597,42 @@ class EventSerializerTestCase(TestCase) :
         """ 
         Ensure TAs can update event
         """
+        print("test_update")
+        self.client.force_authenticate(user=self.ta)
+        startTime = "2019-08-24T14:15:22Z"
+        endTime = "2019-09-24T14:15:22Z"
+        response = self.client.post(
+            reverse("ohq:event-list"), {
+                "start": startTime,
+                "end": endTime,
+                "title": "TA session",
+                "rule": {
+                    "frequency": "WEEKLY"
+                },
+                "endRecurringPeriod": "2019-10-24T14:15:22Z",
+                "courseId": self.course.id,
+            }
+        )
+        print("response content")
+        print(json.loads(response.content))
+        self.assertEqual(1, Event.objects.all().count())
+        event = Event.objects.all().first()
+        response = self.client.patch(
+            reverse("ohq:event-detail", args=[event.id]), {
+                "title": "New TA Session", 
+                "courseId": self.course.id,
+                "rule": {"frequency": "MONTHLY"},
+                "courseId": self.course.id,
+            }
+        )
+        event = Event.objects.all().first()
+        self.assertEquals(event.title, "New TA Session")
+        self.assertEquals(event.rule.frequency, "MONTHLY")
+
+    def test_update_no_rule(self) :
+        """ 
+        Ensure TAs can update event
+        """
         self.client.force_authenticate(user=self.ta)
         startTime = "2019-08-24T14:15:22Z"
         endTime = "2019-09-24T14:15:22Z"
@@ -614,18 +650,15 @@ class EventSerializerTestCase(TestCase) :
         )
         self.assertEqual(1, Event.objects.all().count())
         event = Event.objects.all().first()
-        response = self.client.patch(
+        self.client.patch(
             reverse("ohq:event-detail", args=[event.id]), {
                 "title": "New TA Session", 
                 "courseId": self.course.id,
-                "rule": {"frequency": "MONTHLY"}
             }
         )
         event = Event.objects.all().first()
         self.assertEquals(event.title, "New TA Session")
-        self.assertEquals(event.rule.frequency, "MONTHLY")
-
+        self.assertEquals(event.rule, None)
    
-    
 
         
