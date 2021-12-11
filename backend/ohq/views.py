@@ -620,23 +620,29 @@ class EventViewSet(viewsets.ModelViewSet):
     """
     retrieve:
     Return an event.
+    Courseid is required
 
     list:
     Return a list of events.
+    Courseid is required
 
     create:
     Create a event.
+    Courseid is required
 
     update:
     Update all fields in the event.
     You must specify all of the fields or use a patch request.
+    Courseid is required
 
     partial_update:
     Update certain fields in the event.
     You can update the rule's frequency, but cannot make a reoccurring event happen only once.
+    Courseid is required
 
     destroy:
     Delete an event.
+    Courseid is required
     """
 
     serializer_class = EventSerializer
@@ -711,6 +717,7 @@ class OccurrenceViewSet(
 
     partial_update:
     Update certain fields in the Occurrece.
+    courseId is required for all operations for authentication purposes.
     """
 
     serializer_class = OccurrenceSerializer
