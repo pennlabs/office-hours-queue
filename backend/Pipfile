@@ -43,7 +43,6 @@ uvicorn = {extras = ["standard"],version = "*"}
 gunicorn = "*"
 drf-renderer-xlsx = "*"
 django-scheduler = "*"
-coreapi = "*"
 
 [requires]
 python_version = "3"

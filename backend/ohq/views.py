@@ -21,14 +21,13 @@ from rest_framework.schemas.openapi import AutoSchema
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 from rest_live.mixins import RealtimeMixin
-from schedule.models import EventRelationManager, Occurrence
+from schedule.models import Event, EventRelationManager, Occurrence
 
 from ohq.filters import QuestionSearchFilter, QueueStatisticFilter
 from ohq.invite import parse_and_send_invites
 from ohq.models import (
     Announcement,
     Course,
-    Event,
     Membership,
     MembershipInvite,
     Question,
