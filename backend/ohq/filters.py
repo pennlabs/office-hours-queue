@@ -1,7 +1,6 @@
 from django.db.models import Q
 from django_filters import rest_framework as filters
 
-from schedule.models import Occurrence
 from ohq.models import Question, QueueStatistic
 
 

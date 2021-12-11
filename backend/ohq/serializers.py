@@ -1,12 +1,12 @@
 import string
-from datetime import datetime
+
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
-from schedule.models import Event, Rule, EventRelationManager, EventRelation, Calendar
+from schedule.models import Calendar, Event, EventRelation, EventRelationManager, Rule
 from schedule.models.events import Occurrence
 
 from ohq.models import (
@@ -434,6 +434,7 @@ class AnnouncementSerializer(CourseRouteMixin):
     """
     Serializer for announcements
     """
+
     author = UserSerializer(read_only=True)
 
     class Meta:
@@ -449,48 +450,62 @@ class AnnouncementSerializer(CourseRouteMixin):
         validated_data["author"] = self.context["request"].user
         return super().update(instance, validated_data)
 
+
 class RuleSerializer(serializers.ModelSerializer):
     """
     Serializer for rules
     """
+
     class Meta:
         model = Rule
         fields = ("frequency",)
+
 
 class EventSerializer(serializers.ModelSerializer):
     """
     Serializer for events
 
-    For timezones, both the back and front end will be dealing with UTC+0
+    All times are converted to UTC+0
     """
 
-    rule = RuleSerializer(required= False)
+    rule = RuleSerializer(required=False)
     course_id = serializers.IntegerField(required=False)
 
-    class Meta: 
+    class Meta:
         model = Event
-        fields = ("id", "start", "end", "title", "description", "rule", "end_recurring_period", "course_id")
+        fields = (
+            "id",
+            "start",
+            "end",
+            "title",
+            "description",
+            "rule",
+            "end_recurring_period",
+            "course_id",
+        )
 
     def get_course_id(self, instance):
         return EventRelation.objects.filter(event=instance).first().object_id
 
-    def to_representation(self, instance) :
+    def to_representation(self, instance):
         representation = super().to_representation(instance)
-        print("get course ----")
         course_pk = EventRelation.objects.filter(event=instance).first().object_id
-        print(course_pk)
-        representation['course_id'] = course_pk
+        representation["course_id"] = course_pk
         return representation
-        # return Course.objects.get(pk=course_pk)
 
     def update(self, instance, validated_data):
-        rule = None
+        rule = instance.rule
         # if changing start, end, or update, delete all previous occurrences
-        if (("start" in validated_data and instance.start != validated_data["start"]) or
-            ("end" in validated_data and instance.end != validated_data["end"]) or
-            ("end_recurring_period" in validated_data and instance.end_recurring_period != validated_data["endRecurringPeriod"]) or
-            ("rule" in validated_data)):
-            if "rule" in validated_data : 
+        if (
+            ("start" in validated_data and instance.start != validated_data["start"])
+            or ("end" in validated_data and instance.end != validated_data["end"])
+            or (
+                "end_recurring_period" in validated_data
+                and instance.end_recurring_period != validated_data["endRecurringPeriod"]
+            )
+            or ("rule" in validated_data and rule.frequency != validated_data["rule"]["frequency"])
+        ):
+            if "rule" in validated_data:
                 rule = Rule.objects.create(frequency=validated_data["rule"]["frequency"])
                 validated_data.pop("rule")
             Occurrence.objects.filter(event=instance).delete()
@@ -498,7 +513,7 @@ class EventSerializer(serializers.ModelSerializer):
         # can never change course_id, client should create a new event instead
         validated_data.pop("course_id")
         super().update(instance, validated_data)
-        
+
         instance.rule = rule
         instance.save()
         return instance
@@ -506,16 +521,16 @@ class EventSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         course = Course.objects.get(pk=validated_data["course_id"])
         rule = None
-        if "rule" in validated_data :
+        if "rule" in validated_data:
             rule = Rule.objects.create(frequency=validated_data["rule"]["frequency"])
             validated_data.pop("rule")
 
         validated_data.pop("course_id")
         default_calendar = Calendar.objects.filter(name="DefaultCalendar").first()
-        if (default_calendar is None) :
+        if default_calendar is None:
             default_calendar = Calendar.objects.create(name="DefaultCalendar")
         validated_data["calendar"] = default_calendar
-        
+
         # for some reason, super().create() doesn't automatically serialize Rule
         event = super().create(validated_data)
         event.rule = rule
@@ -525,18 +540,15 @@ class EventSerializer(serializers.ModelSerializer):
         erm.create_relation(event=event, content_object=course)
         return event
 
-    
 
 class OccurrenceSerializer(serializers.ModelSerializer):
     """
     Serializer for occurrence
     """
+
     event = EventSerializer
 
-    class Meta: 
+    class Meta:
         model = Occurrence
         fields = ("id", "event", "title", "description", "start", "end", "cancelled")
-        read_only = ("event")
-
-
-    
+        read_only = "event"

@@ -1,7 +1,6 @@
 import math
 import re
-from datetime import timedelta, datetime, tzinfo
-from pytz import utc
+from datetime import datetime, timedelta
 
 from django.contrib.auth import get_user_model
 from django.core.validators import ValidationError
@@ -13,23 +12,23 @@ from django_auto_prefetching import prefetch
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_renderer_xlsx.mixins import XLSXFileMixin
 from drf_renderer_xlsx.renderers import XLSXRenderer
-from rest_framework import filters, generics, viewsets
+from pytz import utc
+from rest_framework import filters, generics, mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.schemas.openapi import AutoSchema
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
-from rest_framework import mixins
 from rest_live.mixins import RealtimeMixin
-from rest_framework.schemas.openapi import AutoSchema
-from schedule.models import EventManager, EventRelation, EventRelationManager, Occurrence
-
+from schedule.models import EventRelationManager, Occurrence
 
 from ohq.filters import QuestionSearchFilter, QueueStatisticFilter
 from ohq.invite import parse_and_send_invites
 from ohq.models import (
     Announcement,
     Course,
+    Event,
     Membership,
     MembershipInvite,
     Question,
@@ -37,12 +36,12 @@ from ohq.models import (
     QueueStatistic,
     Semester,
     Tag,
-    Event,
 )
 from ohq.pagination import QuestionSearchPagination
 from ohq.permissions import (
     AnnouncementPermission,
     CoursePermission,
+    EventPermission,
     IsSuperuser,
     MassInvitePermission,
     MembershipInvitePermission,
@@ -53,13 +52,13 @@ from ohq.permissions import (
     QueuePermission,
     QueueStatisticPermission,
     TagPermission,
-    EventPermission,
 )
 from ohq.schemas import MassInviteSchema
 from ohq.serializers import (
     AnnouncementSerializer,
     CourseCreateSerializer,
     CourseSerializer,
+    EventSerializer,
     MembershipInviteSerializer,
     MembershipSerializer,
     OccurrenceSerializer,
@@ -70,8 +69,6 @@ from ohq.serializers import (
     SemesterSerializer,
     TagSerializer,
     UserPrivateSerializer,
-    EventSerializer,
-    UserSerializer
 )
 from ohq.sms import sendSMSVerification
 
@@ -619,7 +616,8 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Announcement.objects.filter(course=self.kwargs["course_pk"])
 
-class EventViewSet(viewsets.ModelViewSet) :
+
+class EventViewSet(viewsets.ModelViewSet):
     """
     retrieve:
     Return an event.
@@ -631,84 +629,106 @@ class EventViewSet(viewsets.ModelViewSet) :
     Create a event.
 
     update:
-    Update all fields in the announcement.
+    Update all fields in the event.
     You must specify all of the fields or use a patch request.
 
     partial_update:
-    Update certain fields in the announcement.
-    Only specify the fields that you want to change.
+    Update certain fields in the event.
+    You can update the rule's frequency, but cannot make a reoccurring event happen only once.
 
     destroy:
-    Delete a announcement.
+    Delete an event.
     """
+
     serializer_class = EventSerializer
     permission_classes = [EventPermission | IsSuperuser]
 
-    def list(self, request, *args, **kwargs) :
+    def list(self, request, *args, **kwargs):
         return Event.objects.filter(pk=self.kwargs["pk"])
 
     def get_queryset(self):
-        print("getting query set")
-        events = Event.objects.filter(pk=self.kwargs["pk"])
-        # how to use annotate to better do this?
-        for event in events:
-            course_id = EventRelation.objects.filter(event=event)[0].object_id
-            print(course_id)
-            course = Course.objects.filter(pk=course_id).first()
-            print(course.course_code)
-            event.course = Course.objects.filter(pk=course_id).first()
-
         return Event.objects.filter(pk=self.kwargs["pk"])
 
 
 class OccurrenceSchema(AutoSchema):
     def get_operation(self, path, method):
         op = super().get_operation(path, method)
-        if op['operationId'] == "listOccurrences" : 
-            op['parameters'].append({
-                "name": "course",
-                "in": "query",
-                "required": True,
-                "description": "A series of api/occurrences/?course=1&course=2 - where the numbers are the course pks",
-                'schema': {'type': 'string'}
-            })
-            op['parameters'].append({
-                "name": "filter_start",
-                "in": "query",
-                "required": True,
-                "description": "The start date of the filter in ISO format in UTC+0.<br>"+
-                                "The returned events will have start_time strictly within the range of the filter<br>"+
-                                "e.g 2021-10-05T12:41:37Z",
-                'schema': {'type': 'datetime'}
-            })
-            op['parameters'].append({
-                "name": "filter_end",
-                "in": "query",
-                "required": True,
-                "description": "The end date of the filter in ISO format in UTC+0<br>"+
-                                "e.g 2021-10-05T12:41:37Z",
-                'schema': {'type': 'datetime'}
-            })
+        if op["operationId"] == "listOccurrences":
+            op["parameters"].append(
+                {
+                    "name": "course",
+                    "in": "query",
+                    "required": True,
+                    "description": "A series of api/occurrences/?course=1&course=2 "
+                    + "- where the numbers are the course pks",
+                    "schema": {"type": "string"},
+                }
+            )
+            op["parameters"].append(
+                {
+                    "name": "filter_start",
+                    "in": "query",
+                    "required": True,
+                    "description": "The start date of the filter in ISO format in UTC+0.<br>"
+                    + "The returned events will have start_time strictly within "
+                    + "the range of the filter<br>"
+                    + "e.g 2021-10-05T12:41:37Z",
+                    "schema": {"type": "datetime"},
+                }
+            )
+            op["parameters"].append(
+                {
+                    "name": "filter_end",
+                    "in": "query",
+                    "required": True,
+                    "description": "The end date of the filter in ISO format in UTC+0<br>"
+                    + "e.g 2021-10-05T12:41:37Z",
+                    "schema": {"type": "datetime"},
+                }
+            )
         return op
 
 
-class OccurrenceViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin,
-        mixins.UpdateModelMixin, viewsets.GenericViewSet) :
+class OccurrenceViewSet(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet,
+):
     """
-   
+    retrieve:
+    Return an Occurrence.
+    courseId is required for all operations for authentication purposes.
 
+    list:
+    You should pass in a list of course ids, along with the filter start and end dates,
+    and all the occurrences related to those courses will be returned to you.
+    Return a list of Occurrences.
+
+    update:
+    Update all fields in an Occurrence.
+    You must specify all of the fields or use a patch request.
+    courseId is required for all operations for authentication purposes.
+
+    partial_update:
+    Update certain fields in the Occurrece.
     """
+
     serializer_class = OccurrenceSerializer
     permission_class = [OccurrencePermission | IsSuperuser]
     schema = OccurrenceSchema()
 
     def list(self, request, *args, **kwargs):
         # ensure timezone consitency
-        courseIds = request.GET.getlist('course')
-        filter_start = datetime.strptime(request.GET.get('filter_start'), "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo = utc)
-        filter_end = datetime.strptime(request.GET.get('filter_end'), "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo = utc)
-        courses = Course.objects.filter(pk__in = courseIds)
-        
+        courseIds = request.GET.getlist("course")
+        filter_start = datetime.strptime(
+            request.GET.get("filter_start"), "%Y-%m-%dT%H:%M:%SZ"
+        ).replace(tzinfo=utc)
+        filter_end = datetime.strptime(request.GET.get("filter_end"), "%Y-%m-%dT%H:%M:%SZ").replace(
+            tzinfo=utc
+        )
+        courses = Course.objects.filter(pk__in=courseIds)
+
         occurrences = []
         relManager = EventRelationManager()
         for course in courses:
@@ -717,9 +737,9 @@ class OccurrenceViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin,
                 for occurrence in event.get_occurrences(filter_start, filter_end):
                     occurrence.save()
                     occurrences.append(occurrence)
-        
+
         serializer = OccurrenceSerializer(occurrences, many=True)
         return Response(serializer.data)
- 
+
     def get_queryset(self):
         return Occurrence.objects.filter(pk=self.kwargs["pk"])

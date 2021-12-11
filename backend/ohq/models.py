@@ -4,7 +4,7 @@ from django.db import models
 from django.dispatch import receiver
 from email_tools.emails import send_email
 from phonenumber_field.modelfields import PhoneNumberField
-from schedule.models import Event, EventManager, EventRelationManager, Occurrence, Rule
+
 
 User = settings.AUTH_USER_MODEL
 
