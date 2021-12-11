@@ -580,6 +580,20 @@ class EventSerializerTestCase(TestCase):
             },
         )
         self.assertEqual(1, Event.objects.all().count())
+
+        # creating without course id is not valid
+        self.client.post(
+            reverse("ohq:event-list"),
+            {
+                "start": self.start_time,
+                "end": self.end_time,
+                "title": self.old_title,
+                "rule": {"frequency": "WEEKLY"},
+                "endRecurringPeriod": self.end_time,
+            },
+        )
+        self.assertEqual(1, Event.objects.all().count())
+
         # student cannot create new event
         self.client.force_authenticate(user=self.student)
         self.client.post(
@@ -637,7 +651,7 @@ class EventSerializerTestCase(TestCase):
 
     def test_update_no_rule(self):
         """
-        Ensure TAs can update event
+        Ensure TAs can update event without Rule
         """
         self.client.force_authenticate(user=self.ta)
         self.client.post(
