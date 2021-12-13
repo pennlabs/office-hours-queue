@@ -1156,7 +1156,7 @@ class EventTestCase(TestCase):
             user,
             "retrieve",
             "get",
-            reverse("ohq:queue-detail", args=[self.course.id, self.queue.id]),
+            reverse("ohq:event_list", args=[self.course.id, self.queue.id]),
         )
 
     @parameterized.expand(users, name_func=get_test_name)
@@ -1166,7 +1166,7 @@ class EventTestCase(TestCase):
             user,
             "destroy",
             "delete",
-            reverse("ohq:queue-detail", args=[self.course.id, self.queue.id]),
+            reverse("ohq:event_list", args=[self.course.id, self.queue.id]),
         )
 
     @parameterized.expand(users, name_func=get_test_name)
@@ -1176,7 +1176,7 @@ class EventTestCase(TestCase):
             user,
             "modify",
             "patch",
-            reverse("ohq:queue-detail", args=[self.course.id, self.queue.id]),
+            reverse("ohq:event-list", args=[self.course.id, self.queue.id]),
             {"active": True},
         )
 
@@ -1191,5 +1191,5 @@ class EventTestCase(TestCase):
             user,
             "clear",
             "post",
-            reverse("ohq:queue-clear", args=[self.course.id, self.queue.id]),
+            reverse("ohq:event-list", args=[self.course.id, self.queue.id]),
         )
