@@ -5,6 +5,7 @@ from django.test import TestCase
 from django.urls import reverse
 from parameterized import parameterized
 from rest_framework.test import APIClient
+from schedule.models import Event, Calendar, EventRelationManager
 
 from ohq.models import (
     Announcement,
@@ -1079,4 +1080,116 @@ class AnnouncementTestCase(TestCase):
             "patch",
             reverse("ohq:announcement-detail", args=[self.course.id, self.announcement.id]),
             {"content": "Updated announcement"},
+        )
+
+class EventTestCase(TestCase):
+    def setUp(self):
+        setUp(self)
+        self.default_calendar = Calendar.objects.create(name="DefaultCalendar")
+        self.event = Event.objects.create(name="Event", calendar=self.default_calendar,)
+        erm = EventRelationManager()
+        erm.create_relation(event=self.event, content_object=self.course)
+
+        # Expected results
+        self.expected = {
+            "list": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 200,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+            "create": {
+                "professor": 201,
+                "head_ta": 201,
+                "ta": 403,
+                "student": 403,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+            "retrieve": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 200,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+            "destroy": {
+                "professor": 204,
+                "head_ta": 204,
+                "ta": 403,
+                "student": 403,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+            "modify": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 403,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+        }
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_list(self, user):
+        test(self, user, "list", "get", reverse("ohq:event-list", args=[self.course.id]))
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_create(self, user):
+        test(
+            self,
+            user,
+            "create",
+            "post",
+            reverse("ohq:event-list", args=[self.course.id]),
+            {"name": "new", "description": "description"},
+        )
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_retrieve(self, user):
+        test(
+            self,
+            user,
+            "retrieve",
+            "get",
+            reverse("ohq:queue-detail", args=[self.course.id, self.queue.id]),
+        )
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_destroy(self, user):
+        test(
+            self,
+            user,
+            "destroy",
+            "delete",
+            reverse("ohq:queue-detail", args=[self.course.id, self.queue.id]),
+        )
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_modify(self, user):
+        test(
+            self,
+            user,
+            "modify",
+            "patch",
+            reverse("ohq:queue-detail", args=[self.course.id, self.queue.id]),
+            {"active": True},
+        )
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_clear(self, user):
+        """
+        Test who can clear questions from a queue.
+        """
+
+        test(
+            self,
+            user,
+            "clear",
+            "post",
+            reverse("ohq:queue-clear", args=[self.course.id, self.queue.id]),
         )

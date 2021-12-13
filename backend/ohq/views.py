@@ -13,7 +13,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_renderer_xlsx.mixins import XLSXFileMixin
 from drf_renderer_xlsx.renderers import XLSXRenderer
 from pytz import utc
-from rest_framework import filters, generics, mixins, viewsets
+from rest_framework import filters, generics, mixins, serializers, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -616,40 +616,71 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
         return Announcement.objects.filter(course=self.kwargs["course_pk"])
 
 
+class EventSchema(AutoSchema):
+    def get_operation(self, path, method):
+        print(method)
+        op = super().get_operation(path, method)
+        print(op)
+        if op["operationId"] == "listEvents":
+            op["parameters"].append(
+                {
+                    "name": "course",
+                    "in": "query",
+                    "required": True,
+                    "description": "A series of api/events/?course=1&course=2 "
+                    + "- where the numbers are the course pks",
+                    "schema": {"type": "string"},
+                }
+            )
+        return op
+
 class EventViewSet(viewsets.ModelViewSet):
     """
     retrieve:
     Return an event.
-    Courseid is required
+    courseId is required
 
     list:
-    Return a list of events.
-    Courseid is required
+    Return a list of events associated with a course.
 
     create:
     Create a event.
-    Courseid is required
+    courseId is required
 
     update:
     Update all fields in the event.
     You must specify all of the fields or use a patch request.
-    Courseid is required
+    courseId is required
 
     partial_update:
     Update certain fields in the event.
     You can update the rule's frequency, but cannot make a reoccurring event happen only once.
-    Courseid is required
+    courseId is required
 
     destroy:
     Delete an event.
-    Courseid is required
+    courseId is required
     """
 
     serializer_class = EventSerializer
     permission_classes = [EventPermission | IsSuperuser]
+    schema = EventSchema()
 
     def list(self, request, *args, **kwargs):
-        return Event.objects.filter(pk=self.kwargs["pk"])
+        print("listing .... listing ...")
+        course_ids = request.GET.getlist("course")
+        courses = Course.objects.filter(pk__in=course_ids)
+        erm = EventRelationManager()
+
+        events = []
+        for course in courses:
+            events_for_course = erm.get_events_for_object(course)
+            for event in events_for_course:
+                events.append(event)
+
+        serializer = EventSerializer(events, many=True)
+        return Response(serializer.data)
+
 
     def get_queryset(self):
         return Event.objects.filter(pk=self.kwargs["pk"])
@@ -693,7 +724,6 @@ class OccurrenceSchema(AutoSchema):
             )
         return op
 
-
 class OccurrenceViewSet(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
@@ -726,19 +756,18 @@ class OccurrenceViewSet(
 
     def list(self, request, *args, **kwargs):
         # ensure timezone consitency
-        courseIds = request.GET.getlist("course")
+        course_ids = request.GET.getlist("course")
         filter_start = datetime.strptime(
             request.GET.get("filter_start"), "%Y-%m-%dT%H:%M:%SZ"
         ).replace(tzinfo=utc)
         filter_end = datetime.strptime(request.GET.get("filter_end"), "%Y-%m-%dT%H:%M:%SZ").replace(
             tzinfo=utc
         )
-        courses = Course.objects.filter(pk__in=courseIds)
-
+        courses = Course.objects.filter(pk__in=course_ids)
+        erm = EventRelationManager()
         occurrences = []
-        relManager = EventRelationManager()
         for course in courses:
-            events_for_course = relManager.get_events_for_object(course)
+            events_for_course = erm.get_events_for_object(course)
             for event in events_for_course:
                 for occurrence in event.get_occurrences(filter_start, filter_end):
                     occurrence.save()

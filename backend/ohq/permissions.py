@@ -398,22 +398,25 @@ class TagPermission(permissions.BasePermission):
 
 class EventPermission(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
+        # Students+ can get an event
+        if view.action in ["list", "retrieve"]:
+            return True
+
         course_pk = json.loads(request.body)["courseId"]
         course = Course.objects.get(pk=course_pk)
         membership = Membership.objects.get(course=course, user=request.user)
 
-        # Students+ can get an event
-        if view.action == "retrieve":
-            return True
-
         # TAs+ can make changes
-        if view.action in ["destroy", "partial_update", "update"]:
+        if view.action in ["create", "destroy", "partial_update", "update"]:
             return membership.is_ta
 
     def has_permission(self, request, view):
         # Anonymous users can't do anything
         if not request.user.is_authenticated:
             return False
+
+        if view.action in ["list", "retrieve"]:
+            return True
 
         course_pk = json.loads(request.body)["courseId"]
         course = Course.objects.get(pk=course_pk)
@@ -422,9 +425,6 @@ class EventPermission(permissions.BasePermission):
         # Non-Students can't do anything
         if membership is None:
             return False
-
-        if view.action in ["list", "retrieve"]:
-            return True
 
         # TAs+ can make changes
         if view.action in ["create", "destroy", "update", "partial_update"]:
@@ -443,7 +443,7 @@ class OccurrencePermission(permissions.BasePermission):
         return membership.is_student or membership.is_leadership
 
     def has_permission(self, request, view):
-        if request.user.is_authenticated:
+        if not request.user.is_authenticated:
             return False
 
         course = Course.objects.get(course_code=request.body["course_id"])

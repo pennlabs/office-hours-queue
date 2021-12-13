@@ -660,3 +660,40 @@ class EventSerializerTestCase(TestCase):
         )
         event = Event.objects.all().first()
         self.assertEquals(event.title, self.new_title)
+
+    def test_list(self):
+        """
+        Ensure list of events work
+        """
+        self.client.force_authenticate(user=self.ta)
+        self.client.post(
+            reverse("ohq:event-list"),
+            {
+                "start": self.start_time,
+                "end": self.end_time,
+                "title": self.old_title,
+                "rule": {"frequency": "WEEKLY"},
+                "endRecurringPeriod": self.end_time,
+                "courseId": self.course.id,
+            },
+        )
+        self.client.post(
+            reverse("ohq:event-list"),
+            {
+                "start": self.start_time,
+                "end": self.end_time,
+                "title": self.new_title,
+                "rule": {"frequency": "WEEKLY"},
+                "endRecurringPeriod": self.end_time,
+                "courseId": self.course.id,
+            },
+        )
+        response = self.client.get(
+            "/api/events/?course="
+            + str(self.course.id)
+        )
+        data = json.loads(response.content)
+        self.assertEquals(2, len(data))
+        self.assertEquals(self.course.id, data[0]['courseId'])
+        self.assertEquals(self.course.id, data[1]['courseId'])
+
