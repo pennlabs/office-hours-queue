@@ -1104,7 +1104,6 @@ class EventTestCase(TestCase):
         self.title = "TA Session"
         self.new_title = "New TA Session"
 
-        # confirm with
         # Expected results
         self.expected = {
             "list": {
@@ -1189,5 +1188,104 @@ class EventTestCase(TestCase):
             "modify",
             "patch",
             reverse("ohq:event-detail", args=[self.event.id]),
+            {"title": self.new_title, "courseId": self.course.id},
+        )
+
+
+class OccurrenceTestCase(TestCase):
+    def setUp(self):
+        setUp(self)
+
+        self.start_time = datetime.strptime("2021-12-05T12:41:37Z", "%Y-%m-%dT%H:%M:%SZ").replace(
+            tzinfo=pytz.utc
+        )
+        self.end_time = datetime.strptime("2021-12-06T12:41:37Z", "%Y-%m-%dT%H:%M:%SZ").replace(
+            tzinfo=pytz.utc
+        )
+        self.title = "TA Session"
+
+        self.default_calendar = Calendar.objects.create(name="DefaultCalendar")
+        self.event = Event.objects.create(
+            title="Event",
+            calendar=self.default_calendar,
+            rule=None,
+            start=self.start_time,
+            end=self.end_time,
+        )
+        erm = EventRelationManager()
+        erm.create_relation(event=self.event, content_object=self.course)
+
+        self.filter_start = "2021-12-05T12:40:37Z"
+        self.filter_end = "2021-12-12T12:42:37Z"
+
+        self.occurrence = self.event.get_occurrences(
+            datetime.strptime(self.filter_start, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=pytz.utc),
+            datetime.strptime(self.filter_end, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=pytz.utc),
+        )[0]
+        self.occurrence.save()
+
+        # Expected results
+        self.expected = {
+            "list": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 200,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+            "retrieve": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 200,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+            "modify": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 403,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+        }
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_list(self, user):
+        test(
+            self,
+            user,
+            "list",
+            "get",
+            "/api/occurrences/?course="
+            + str(self.course.id)
+            + "&filter_start="
+            + self.filter_start
+            + "&filter_end="
+            + self.filter_end,
+        )
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_retrieve(self, user):
+        print(reverse("ohq:occurrence-detail", args=[self.occurrence.id]))
+
+        test(
+            self,
+            user,
+            "retrieve",
+            "get",
+            reverse("ohq:occurrence-detail", args=[self.occurrence.id]),
+        )
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_modify(self, user):
+        test(
+            self,
+            user,
+            "modify",
+            "patch",
+            reverse("ohq:occurrence-detail", args=[self.occurrence.id]),
             {"title": self.new_title, "courseId": self.course.id},
         )

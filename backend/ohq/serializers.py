@@ -484,8 +484,8 @@ class EventSerializer(serializers.ModelSerializer):
             "course_id",
         )
 
-    def get_course_id(self, instance):
-        return EventRelation.objects.filter(event=instance).first().object_id
+    # def get_course_id(self, instance):
+    #     return EventRelation.objects.filter(event=instance).first().object_id   ###########
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -546,9 +546,8 @@ class OccurrenceSerializer(serializers.ModelSerializer):
     Serializer for occurrence
     """
 
-    event = EventSerializer
+    event = EventSerializer(read_only=True)
 
     class Meta:
         model = Occurrence
-        fields = ("id", "event", "title", "description", "start", "end", "cancelled")
-        read_only = "event"
+        fields = ("id", "title", "description", "start", "end", "cancelled", "event")

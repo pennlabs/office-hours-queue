@@ -286,8 +286,7 @@ class OccurrenceViewTestCase(TestCase):
         Membership.objects.create(
             course=self.course, user=self.student, kind=Membership.KIND_STUDENT
         )
-        self.old_title = "TA session"
-        self.new_title = "TA session"
+        self.title = "TA session"
         self.start_time = "2021-12-05T12:41:37Z"
         self.end_time = "2021-12-06T12:41:37Z"
         self.end_recurring_period = "2022-12-05T12:41:37Z"
@@ -301,7 +300,7 @@ class OccurrenceViewTestCase(TestCase):
             {
                 "start": self.start_time,
                 "end": self.end_time,
-                "title": self.old_title,
+                "title": self.title,
                 "rule": {"frequency": "WEEKLY"},
                 "endRecurringPeriod": self.end_recurring_period,
                 "courseId": self.course.id,
@@ -325,7 +324,7 @@ class OccurrenceViewTestCase(TestCase):
             {
                 "start": self.start_time,
                 "end": self.end_time,
-                "title": self.old_title,
+                "title": self.title,
                 "endRecurringPeriod": self.end_recurring_period,
                 "courseId": self.course.id,
             },
@@ -363,7 +362,7 @@ class OccurrenceViewTestCase(TestCase):
             {
                 "start": self.start_time,
                 "end": self.end_time,
-                "title": self.old_title,
+                "title": self.title,
                 "endRecurringPeriod": self.end_recurring_period,
                 "courseId": self.course.id,
             },
@@ -400,7 +399,7 @@ class OccurrenceViewTestCase(TestCase):
             {
                 "start": self.start_time,
                 "end": self.end_time,
-                "title": self.old_title,
+                "title": self.title,
                 "rule": {"frequency": "WEEKLY"},
                 "endRecurringPeriod": self.end_recurring_period,
                 "courseId": self.course.id,

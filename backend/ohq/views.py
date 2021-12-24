@@ -649,12 +649,12 @@ class EventViewSet(viewsets.ModelViewSet):
     update:
     Update all fields in the event.
     You must specify all of the fields or use a patch request.
-    courseId is required in post body
+    courseId is required in post body for authentication
 
     partial_update:
     Update certain fields in the event.
     You can update the rule's frequency, but cannot make a reoccurring event happen only once.
-    courseId is required in post body
+    courseId is required in post body for authentication
 
     destroy:
     Delete an event.
@@ -731,7 +731,6 @@ class OccurrenceViewSet(
     """
     retrieve:
     Return an Occurrence.
-    courseId is required for all operations for authentication purposes.
 
     list:
     You should pass in a list of course ids, along with the filter start and end dates,
@@ -741,15 +740,13 @@ class OccurrenceViewSet(
     update:
     Update all fields in an Occurrence.
     You must specify all of the fields or use a patch request.
-    courseId is required for all operations for authentication purposes.
 
     partial_update:
     Update certain fields in the Occurrece.
-    courseId is required for all operations for authentication purposes.
     """
 
     serializer_class = OccurrenceSerializer
-    permission_class = [OccurrencePermission | IsSuperuser]
+    permission_classes = [OccurrencePermission | IsSuperuser]
     schema = OccurrenceSchema()
 
     def list(self, request, *args, **kwargs):
