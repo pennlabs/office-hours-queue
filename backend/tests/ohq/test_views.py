@@ -316,7 +316,6 @@ class OccurrenceViewTestCase(TestCase):
             + self.filter_end
         )
         occurrences = json.loads(response.content)
-        print(occurrences)
         self.assertEquals(2, len(occurrences))
 
     def test_cancel(self):

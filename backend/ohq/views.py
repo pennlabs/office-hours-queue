@@ -20,6 +20,7 @@ from rest_framework.response import Response
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
 from rest_live.mixins import RealtimeMixin
 from schedule.models import Event, EventRelationManager, Occurrence
 
@@ -618,9 +619,7 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
 
 class EventSchema(AutoSchema):
     def get_operation(self, path, method):
-        print(method)
         op = super().get_operation(path, method)
-        print(op)
         if op["operationId"] == "listEvents":
             op["parameters"].append(
                 {
@@ -638,28 +637,28 @@ class EventViewSet(viewsets.ModelViewSet):
     """
     retrieve:
     Return an event.
-    courseId is required
+    eventId is required
 
     list:
     Return a list of events associated with a course.
 
     create:
     Create a event.
-    courseId is required
+    courseId is required in body
 
     update:
     Update all fields in the event.
     You must specify all of the fields or use a patch request.
-    courseId is required
+    courseId is required in post body
 
     partial_update:
     Update certain fields in the event.
     You can update the rule's frequency, but cannot make a reoccurring event happen only once.
-    courseId is required
+    courseId is required in post body
 
     destroy:
     Delete an event.
-    courseId is required
+    eventId is required
     """
 
     serializer_class = EventSerializer
@@ -667,7 +666,6 @@ class EventViewSet(viewsets.ModelViewSet):
     schema = EventSchema()
 
     def list(self, request, *args, **kwargs):
-        print("listing .... listing ...")
         course_ids = request.GET.getlist("course")
         courses = Course.objects.filter(pk__in=course_ids)
         erm = EventRelationManager()

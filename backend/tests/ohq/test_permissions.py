@@ -7,6 +7,9 @@ from parameterized import parameterized
 from rest_framework.test import APIClient
 from schedule.models import Event, Calendar, EventRelationManager
 
+from datetime import datetime
+import pytz
+
 from ohq.models import (
     Announcement,
     Course,
@@ -1086,10 +1089,17 @@ class EventTestCase(TestCase):
     def setUp(self):
         setUp(self)
         self.default_calendar = Calendar.objects.create(name="DefaultCalendar")
-        self.event = Event.objects.create(name="Event", calendar=self.default_calendar,)
+        self.event = Event.objects.create(title="Event", calendar=self.default_calendar,
+                                rule=None, start=datetime.now(tz=pytz.utc), end=datetime.now(tz=pytz.utc))
         erm = EventRelationManager()
         erm.create_relation(event=self.event, content_object=self.course)
 
+        self.start_time = "2019-08-24T14:15:22Z"
+        self.end_time = "2019-09-24T14:15:22Z"
+        self.title = "TA Session"
+        self.new_title = "New TA Session"
+
+        # confirm with 
         # Expected results
         self.expected = {
             "list": {
@@ -1097,13 +1107,13 @@ class EventTestCase(TestCase):
                 "head_ta": 200,
                 "ta": 200,
                 "student": 200,
-                "non_member": 403,
+                "non_member": 403, # confirm with Kevin this is the expected results: non-members can see events of other courses
                 "anonymous": 403,
             },
             "create": {
                 "professor": 201,
                 "head_ta": 201,
-                "ta": 403,
+                "ta": 201,
                 "student": 403,
                 "non_member": 403,
                 "anonymous": 403,
@@ -1113,13 +1123,13 @@ class EventTestCase(TestCase):
                 "head_ta": 200,
                 "ta": 200,
                 "student": 200,
-                "non_member": 403,
+                "non_member": 403, # confirm with Kevin this is the expected results: non-members can see events of other courses
                 "anonymous": 403,
             },
             "destroy": {
                 "professor": 204,
                 "head_ta": 204,
-                "ta": 403,
+                "ta": 204,
                 "student": 403,
                 "non_member": 403,
                 "anonymous": 403,
@@ -1136,7 +1146,9 @@ class EventTestCase(TestCase):
 
     @parameterized.expand(users, name_func=get_test_name)
     def test_list(self, user):
-        test(self, user, "list", "get", reverse("ohq:event-list", args=[self.course.id]))
+        test(self, user, "list", "get", 
+            "/api/events/?course="+ str(self.course.id)
+        )
 
     @parameterized.expand(users, name_func=get_test_name)
     def test_create(self, user):
@@ -1145,8 +1157,15 @@ class EventTestCase(TestCase):
             user,
             "create",
             "post",
-            reverse("ohq:event-list", args=[self.course.id]),
-            {"name": "new", "description": "description"},
+            reverse("ohq:event-list"),
+            {
+                "start": self.start_time,
+                "end": self.end_time,
+                "title": self.title,
+                "rule": {"frequency": "WEEKLY"},
+                "endRecurringPeriod": self.end_time,
+                "courseId": self.course.id,
+            }
         )
 
     @parameterized.expand(users, name_func=get_test_name)
@@ -1156,7 +1175,7 @@ class EventTestCase(TestCase):
             user,
             "retrieve",
             "get",
-            reverse("ohq:event_list", args=[self.course.id, self.queue.id]),
+            reverse("ohq:event-detail", args=[self.event.id]),
         )
 
     @parameterized.expand(users, name_func=get_test_name)
@@ -1166,7 +1185,7 @@ class EventTestCase(TestCase):
             user,
             "destroy",
             "delete",
-            reverse("ohq:event_list", args=[self.course.id, self.queue.id]),
+            reverse("ohq:event-detail", args=[self.event.id])
         )
 
     @parameterized.expand(users, name_func=get_test_name)
@@ -1176,20 +1195,8 @@ class EventTestCase(TestCase):
             user,
             "modify",
             "patch",
-            reverse("ohq:event-list", args=[self.course.id, self.queue.id]),
-            {"active": True},
+            reverse("ohq:event-detail", args=[self.event.id]),
+            {"title": self.new_title, "courseId": self.course.id},
         )
 
-    @parameterized.expand(users, name_func=get_test_name)
-    def test_clear(self, user):
-        """
-        Test who can clear questions from a queue.
-        """
-
-        test(
-            self,
-            user,
-            "clear",
-            "post",
-            reverse("ohq:event-list", args=[self.course.id, self.queue.id]),
-        )
+    

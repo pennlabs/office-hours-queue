@@ -689,6 +689,7 @@ class EventSerializerTestCase(TestCase):
             },
         )
         response = self.client.get(
+            # i don't know how to reverse this, so it is a bit clunky
             "/api/events/?course="
             + str(self.course.id)
         )

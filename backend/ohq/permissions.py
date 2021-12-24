@@ -2,8 +2,10 @@ import json
 
 from django.db.models import Q
 from rest_framework import permissions
+from schedule.models.events import EventRelationManager
 
 from ohq.models import Course, Membership, Question
+from schedule.models import Event, EventRelation
 
 
 # Hierarchy of permissions is usually:
@@ -398,37 +400,42 @@ class TagPermission(permissions.BasePermission):
 
 class EventPermission(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        # Students+ can get an event
-        if view.action in ["list", "retrieve"]:
-            return True
-
-        course_pk = json.loads(request.body)["courseId"]
-        course = Course.objects.get(pk=course_pk)
-        membership = Membership.objects.get(course=course, user=request.user)
-
-        # TAs+ can make changes
-        if view.action in ["create", "destroy", "partial_update", "update"]:
-            return membership.is_ta
+        return self.has_permission(request, view)
 
     def has_permission(self, request, view):
         # Anonymous users can't do anything
         if not request.user.is_authenticated:
             return False
 
-        if view.action in ["list", "retrieve"]:
+        if view.action in ["create", "partial_update", "update"]:
+            course_pk = json.loads(request.body)["courseId"]
+            course = Course.objects.get(pk=course_pk)
+            membership = Membership.objects.filter(course=course, user=request.user).first()
+            if membership is None:
+                return False
+            return membership.is_ta
+
+        if view.action == "list":
+            course_ids = request.GET.getlist("course")
+            for course in course_ids:
+                membership = Membership.objects.filter(course=course, user=request.user).first()
+                if membership is None:
+                    return False
             return True
 
-        course_pk = json.loads(request.body)["courseId"]
-        course = Course.objects.get(pk=course_pk)
-        membership = Membership.objects.filter(course=course, user=request.user).first()
-
-        # Non-Students can't do anything
-        if membership is None:
-            return False
-
-        # TAs+ can make changes
-        if view.action in ["create", "destroy", "update", "partial_update"]:
-            return membership.is_ta
+        if view.action in ["retrieve", "destroy"]:
+            event = Event.objects.filter(pk=view.kwargs["pk"]).first()
+            if (event == None): 
+                return False
+            event_course_relation = EventRelation.objects.filter(event=event).first()
+            if (event_course_relation == None): 
+                return False
+            
+            membership = Membership.objects.filter(course_id=event_course_relation.object_id, user=request.user).first()
+            if (membership is None) :
+                return False
+        
+            return (view.action == "retrieve") or (view.action == "destroy" and membership.is_ta)
 
 
 class OccurrencePermission(permissions.BasePermission):
