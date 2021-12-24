@@ -1203,7 +1203,7 @@ class OccurrenceTestCase(TestCase):
             tzinfo=pytz.utc
         )
         self.title = "TA Session"
-
+        self.new_title = "New TA Session"
         self.default_calendar = Calendar.objects.create(name="DefaultCalendar")
         self.event = Event.objects.create(
             title="Event",
@@ -1269,8 +1269,6 @@ class OccurrenceTestCase(TestCase):
 
     @parameterized.expand(users, name_func=get_test_name)
     def test_retrieve(self, user):
-        print(reverse("ohq:occurrence-detail", args=[self.occurrence.id]))
-
         test(
             self,
             user,

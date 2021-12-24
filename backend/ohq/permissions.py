@@ -463,8 +463,7 @@ class OccurrencePermission(permissions.BasePermission):
         if view.action in ["retrieve"]:
             occurrence = Occurrence.objects.filter(pk=view.kwargs["pk"]).first()
             membership = self.get_membership_from_event(request=request, event=occurrence.event)
-            print(membership is None)
-            return not (membership is None)
+            return membership is not None
 
         if view.action in ["list"]:
             # if any member of the course in the list is not accessible, return false
@@ -478,4 +477,4 @@ class OccurrencePermission(permissions.BasePermission):
         if view.action in ["update", "partial_update"]:
             occurrence = Occurrence.objects.filter(pk=view.kwargs["pk"]).first()
             membership = self.get_membership_from_event(request, occurrence.event)
-            return membership.is_ta
+            return membership is not None and membership.is_ta
