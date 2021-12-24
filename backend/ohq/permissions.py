@@ -2,10 +2,9 @@ import json
 
 from django.db.models import Q
 from rest_framework import permissions
-from schedule.models.events import EventRelationManager
+from schedule.models import Event, EventRelation
 
 from ohq.models import Course, Membership, Question
-from schedule.models import Event, EventRelation
 
 
 # Hierarchy of permissions is usually:
@@ -425,16 +424,18 @@ class EventPermission(permissions.BasePermission):
 
         if view.action in ["retrieve", "destroy"]:
             event = Event.objects.filter(pk=view.kwargs["pk"]).first()
-            if (event == None): 
+            if event is None:
                 return False
             event_course_relation = EventRelation.objects.filter(event=event).first()
-            if (event_course_relation == None): 
+            if event_course_relation is None:
                 return False
-            
-            membership = Membership.objects.filter(course_id=event_course_relation.object_id, user=request.user).first()
-            if (membership is None) :
+
+            membership = Membership.objects.filter(
+                course_id=event_course_relation.object_id, user=request.user
+            ).first()
+            if membership is None:
                 return False
-        
+
             return (view.action == "retrieve") or (view.action == "destroy" and membership.is_ta)
 
 

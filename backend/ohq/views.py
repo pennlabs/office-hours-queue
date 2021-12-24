@@ -13,14 +13,13 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_renderer_xlsx.mixins import XLSXFileMixin
 from drf_renderer_xlsx.renderers import XLSXRenderer
 from pytz import utc
-from rest_framework import filters, generics, mixins, serializers, viewsets
+from rest_framework import filters, generics, mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny
 from rest_live.mixins import RealtimeMixin
 from schedule.models import Event, EventRelationManager, Occurrence
 
@@ -633,6 +632,7 @@ class EventSchema(AutoSchema):
             )
         return op
 
+
 class EventViewSet(viewsets.ModelViewSet):
     """
     retrieve:
@@ -679,7 +679,6 @@ class EventViewSet(viewsets.ModelViewSet):
         serializer = EventSerializer(events, many=True)
         return Response(serializer.data)
 
-
     def get_queryset(self):
         return Event.objects.filter(pk=self.kwargs["pk"])
 
@@ -721,6 +720,7 @@ class OccurrenceSchema(AutoSchema):
                 }
             )
         return op
+
 
 class OccurrenceViewSet(
     mixins.ListModelMixin,

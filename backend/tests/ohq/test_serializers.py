@@ -695,6 +695,5 @@ class EventSerializerTestCase(TestCase):
         )
         data = json.loads(response.content)
         self.assertEquals(2, len(data))
-        self.assertEquals(self.course.id, data[0]['courseId'])
-        self.assertEquals(self.course.id, data[1]['courseId'])
-
+        self.assertEquals(self.course.id, data[0]["courseId"])
+        self.assertEquals(self.course.id, data[1]["courseId"])
