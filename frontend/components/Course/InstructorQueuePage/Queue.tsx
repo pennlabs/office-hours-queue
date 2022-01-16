@@ -141,7 +141,7 @@ const Queue = (props: QueueProps) => {
                             <Form.Input
                                 name="changePin"
                                 label="Pin: "
-                                value={pinState}
+                                value={editingPin ? pinState : queue.pin}
                                 disabled={!editingPin}
                                 onChange={handlePinChange}
                             />
