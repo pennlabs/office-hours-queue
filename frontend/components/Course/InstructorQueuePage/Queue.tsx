@@ -1,13 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import {
-    Header,
-    Label,
-    Grid,
-    Message,
-    Button,
-    Icon,
-    Form,
-} from "semantic-ui-react";
+import { Header, Label, Grid, Message, Button, Icon } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Select from "react-select";
 import Questions from "./Questions";
@@ -46,6 +38,7 @@ const Queue = (props: QueueProps) => {
     const { id: queueId, active, estimatedWaitTime, pin } = queue;
     const [pinState, setPinState] = useState<string | undefined>(pin);
     const [editingPin, setEditingPin] = useState<boolean>(false);
+    const [pinMutated, setPinMutated] = useState<boolean>(true);
     const [filteredTags, setFilteredTags] = useState<string[]>([]);
     const { data: questions, mutate: mutateQuestions } = useQuestions(
         courseId,
@@ -71,21 +64,35 @@ const Queue = (props: QueueProps) => {
 
     const [clearModalOpen, setClearModalOpen] = useState(false);
 
-    const handlePinChange = (_, { value }) => {
-        if (value.length <= PIN_CHAR_LIMIT) {
-            setPinState(value);
+    const handlePinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.value.length <= PIN_CHAR_LIMIT && editingPin && active) {
+            setPinState(e.target.value);
         }
     };
 
-    const handlePinSubmit = async () => {
-        if (editingPin) {
-            await partialUpdateQueue(courseId, queueId, { pin: pinState });
-        }
-        await mutate(pin, { pin: pinState });
-        if (!editingPin) {
+    const handlePinKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (editingPin && e.key === "Enter") {
+            setPinMutated(false);
+            setEditingPin(false);
+            partialUpdateQueue(courseId, queueId, { pin: pinState });
+            mutate(pin, { pin: pinState }).then(() => setPinMutated(true));
+        } else if (editingPin && e.key === "Escape") {
             setPinState(pin);
+            setEditingPin(false);
         }
-        setEditingPin(!editingPin);
+    };
+
+    const handlePinToggle = () => {
+        if (editingPin) {
+            setPinMutated(false);
+            setEditingPin(false);
+            partialUpdateQueue(courseId, queueId, { pin: pinState });
+            mutate(pin, { pin: pinState }).then(() => setPinMutated(true));
+        } else if (active) {
+            setPinState(pin);
+            setEditingPin(true);
+            mutate(pin, { pin: pinState });
+        }
     };
 
     const handleTagChange = (_, event) => {
@@ -101,11 +108,72 @@ const Queue = (props: QueueProps) => {
     };
 
     const onOpen = async () => {
+        setEditingPin(false);
         await mutate(queueId, { active: true });
     };
 
     const onClose = async () => {
+        setEditingPin(false);
         await mutate(queueId, { active: false });
+        await partialUpdateQueue(courseId, queueId, { pin: "" });
+        await mutate(pin, { pin: pinState });
+    };
+
+    const renderPinInput = () => {
+        const editAllowed = editingPin && active;
+        const textColor = editAllowed ? "black" : "#B9B9BA";
+        const val = editingPin || !pinMutated ? pinState : pin;
+        return (
+            <div style={{}}>
+                <label
+                    htmlFor="changePin"
+                    style={{
+                        fontFamily: "Lato",
+                        fontWeight: "bold",
+                        padding: "0.5em",
+                    }}
+                >
+                    Pin:
+                </label>
+                <input
+                    name="changePin"
+                    value={active ? val : ""}
+                    onChange={handlePinChange}
+                    onKeyDown={handlePinKeyPress}
+                    style={{
+                        position: "relative",
+                        fontFamily: "Lato",
+                        fontSize: "1em",
+                        outline: "none",
+                        lineHeight: "1.21428571em",
+                        padding: "0.67857143em 2.5em 0.67857143em 1em",
+                        borderRadius: "0.28571429rem",
+                        borderStyle: "solid",
+                        borderWidth: "1px",
+                        borderColor: "#B9B9BA",
+                        color: textColor,
+                        caretColor: editAllowed ? "#75767F" : "transparent",
+                        backgroundColor: editAllowed ? "white" : "#F1F1F2",
+                    }}
+                />
+                <Button
+                    icon={
+                        <Icon
+                            name={editAllowed ? "check" : "edit"}
+                            onClick={handlePinToggle}
+                        />
+                    }
+                    style={{
+                        position: "absolute",
+                        padding: "0.5rem",
+                        marginTop: "0.3rem",
+                        marginLeft: "-2.3rem",
+                        backgroundColor: "transparent",
+                        color: textColor,
+                    }}
+                />
+            </div>
+        );
     };
 
     return queue && questions ? (
@@ -135,26 +203,7 @@ const Queue = (props: QueueProps) => {
                         {queue.description}
                     </Header.Subheader>
                 </Header>
-                {queue.pinEnabled && (
-                    <Form onSubmit={handlePinSubmit}>
-                        <Form.Group inline unstackable>
-                            <Form.Input
-                                name="changePin"
-                                label="Pin: "
-                                value={editingPin ? pinState : queue.pin}
-                                disabled={!editingPin}
-                                onChange={handlePinChange}
-                            />
-                            <Form.Button
-                                icon={
-                                    <Icon
-                                        name={editingPin ? "check" : "edit"}
-                                    />
-                                }
-                            />
-                        </Form.Group>
-                    </Form>
-                )}
+                {queue.pinEnabled && renderPinInput()}
             </div>
             <Grid>
                 <Grid.Row columns="equal">
