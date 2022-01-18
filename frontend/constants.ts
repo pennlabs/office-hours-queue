@@ -23,6 +23,8 @@ export const ANALYTICS_SURVEY_SHOWN_SPRING_2021_END_TOKEN =
     "__analytics_survey_sp_2021_end_shown";
 export const FALL_2021_TRANSITION_MESSAGE_TOKEN =
     "__fall_2021_transition_message_shown";
+export const SPRING_2022_TRANSITION_MESSAGE_TOKEN =
+    "__spring_2022_transition_message_shown";
 export const CHANGELOG_TOKEN = "__changelog";
 
 export const MOBILE_BP = "766px";

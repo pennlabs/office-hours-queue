@@ -12,7 +12,7 @@ import { useMemberships } from "../../../hooks/data-fetching/dashboard";
 import { isLeadershipRole } from "../../../utils/enums";
 import {
     CHANGELOG_TOKEN,
-    FALL_2021_TRANSITION_MESSAGE_TOKEN,
+    SPRING_2022_TRANSITION_MESSAGE_TOKEN,
     MOBILE_BP,
 } from "../../../constants";
 import ModalShowNewChanges from "./Modals/ModalShowNewChanges";
@@ -26,7 +26,9 @@ const Dashboard = () => {
     }
     const [messageDisp, setMessageDisp] = useState(false);
     useEffect(() => {
-        const state = localStorage.getItem(FALL_2021_TRANSITION_MESSAGE_TOKEN);
+        const state = localStorage.getItem(
+            SPRING_2022_TRANSITION_MESSAGE_TOKEN
+        );
         setMessageDisp(state !== "true");
     }, []);
 
@@ -92,7 +94,7 @@ const Dashboard = () => {
                                     onDismiss={() => {
                                         setMessageDisp(false);
                                         localStorage.setItem(
-                                            FALL_2021_TRANSITION_MESSAGE_TOKEN,
+                                            SPRING_2022_TRANSITION_MESSAGE_TOKEN,
                                             "true"
                                         );
                                     }}
@@ -100,9 +102,8 @@ const Dashboard = () => {
                                     header="Welcome back!"
                                     content={
                                         <>
-                                            Spring and Summer 2021 courses have
-                                            been archived in preparation for
-                                            Fall 2021.
+                                            Fall 2021 courses have been archived
+                                            in preparation for Spring 2022.
                                             <br />
                                             Please contact us at contact@ohq.io
                                             if this is an error.
