@@ -199,7 +199,7 @@ class Queue(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     archived = models.BooleanField(default=False)
     pin_enabled = models.BooleanField(default=False)
-    pin = models.CharField(max_length=5, blank=True, null=True)
+    pin = models.CharField(max_length=50, blank=True, null=True)
 
     # Estimated wait time for the queue, in minutes
     estimated_wait_time = models.IntegerField(default=-1)
@@ -276,7 +276,7 @@ class Question(models.Model):
         User, related_name="responded_questions", on_delete=models.SET_NULL, blank=True, null=True
     )
     # This field should be a custom message or one of the following:
-    # OTHER, NOT_HERE, OH_ENDED, NOT_SPECIFIC, or WRONG_QUEUE
+    # OTHER, NOT_HERE, OH_ENDED, NOT_SPECIFIC, MISSING_TEMPLATE, or WRONG_QUEUE
     rejected_reason = models.CharField(max_length=255, blank=True, null=True)
 
     should_send_up_soon_notification = models.BooleanField(default=False)

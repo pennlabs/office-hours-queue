@@ -49,11 +49,10 @@ const QueuePage = (props: QueuePageProps) => {
             <Head>
                 <title>{`OHQ | ${course.department} ${course.courseCode}`}</title>
             </Head>
-            <Grid columns="equal" divided style={{ width: "100%" }} stackable>
+            <Grid divided style={{ width: "100%" }} stackable>
                 <CourseWrapper
                     course={course}
                     leadership={leadership}
-                    notificationUI={true}
                     render={(
                         staff: boolean,
                         play: NotificationProps,

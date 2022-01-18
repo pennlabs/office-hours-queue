@@ -172,6 +172,7 @@ const QuestionCard = (props: QuestionCardProps) => {
                         style={{
                             paddingTop: "0.25rem",
                             fontStyle: "italic",
+                            overflowWrap: "anywhere",
                         }}
                     >
                         {question.studentDescriptor}
@@ -326,7 +327,6 @@ const QuestionCard = (props: QuestionCardProps) => {
                         <Grid.Column
                             width={5}
                             textAlign="right"
-                            only="computer mobile"
                             style={{
                                 fontSize: "10px",
                                 whiteSpace: "nowrap",
