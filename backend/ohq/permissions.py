@@ -406,36 +406,13 @@ class EventPermission(permissions.BasePermission):
         return membership
 
     def has_object_permission(self, request, view, obj):
-        return self.has_permission(request, view)
-
-    def has_permission(self, request, view):
-        # Anonymous users can't do anything
-        if not request.user.is_authenticated:
-            return False
-
-        if view.action in ["create"]:
-            course_pk = json.loads(request.body)["courseId"]
-            course = Course.objects.get(pk=course_pk)
-            membership = Membership.objects.filter(course=course, user=request.user).first()
-            if membership is None:
-                return False
-            return membership.is_ta
-
         if view.action in ["partial_update", "update"]:
             event = Event.objects.filter(pk=view.kwargs["pk"]).first()
             membership = self.get_membership_from_event(request, event)
             if membership is None:
                 return False
             return membership.is_ta
-
-        if view.action == "list":
-            course_ids = request.GET.getlist("course")
-            for course in course_ids:
-                membership = Membership.objects.filter(course=course, user=request.user).first()
-                if membership is None:
-                    return False
-            return True
-
+            
         if view.action in ["retrieve", "destroy"]:
             event = Event.objects.filter(pk=view.kwargs["pk"]).first()
             membership = self.get_membership_from_event(request, event)
@@ -444,6 +421,31 @@ class EventPermission(permissions.BasePermission):
 
             return (view.action == "retrieve") or (view.action == "destroy" and membership.is_ta)
 
+        return False
+
+    def has_permission(self, request, view):
+        if not request.user.is_authenticated:
+            return False
+
+        # Anonymous users can't do anything
+        if view.action in ["create"]:
+            course_pk = json.loads(request.body)["courseId"]
+            course = Course.objects.get(pk=course_pk)
+            membership = Membership.objects.filter(course=course, user=request.user).first()
+            if membership is None:
+                return False
+            return membership.is_ta
+
+        if view.action in ["list"]:
+            course_ids = request.GET.getlist("course")
+            for course in course_ids:
+                membership = Membership.objects.filter(course=course, user=request.user).first()
+                if membership is None:
+                    return False
+            return True
+
+        if view.action in ["partial_update", "update", "retrieve", "destroy"]:
+            return self.has_object_permission(request, view, None)
 
 class OccurrencePermission(permissions.BasePermission):
     def get_membership_from_event(self, request, event):
@@ -454,16 +456,21 @@ class OccurrencePermission(permissions.BasePermission):
         return membership
 
     def has_object_permission(self, request, view, obj):
-        return self.has_permission(request, view)
-
-    def has_permission(self, request, view):
-        if not request.user.is_authenticated:
-            return False
-
         if view.action in ["retrieve"]:
             occurrence = Occurrence.objects.filter(pk=view.kwargs["pk"]).first()
             membership = self.get_membership_from_event(request=request, event=occurrence.event)
             return membership is not None
+
+        if view.action in ["update", "partial_update"]:
+            occurrence = Occurrence.objects.filter(pk=view.kwargs["pk"]).first()
+            membership = self.get_membership_from_event(request, occurrence.event)
+            return membership is not None and membership.is_ta
+
+        return False
+
+    def has_permission(self, request, view):
+        if not request.user.is_authenticated:
+            return False
 
         if view.action in ["list"]:
             # if any member of the course in the list is not accessible, return false
@@ -474,7 +481,5 @@ class OccurrencePermission(permissions.BasePermission):
                     return False
             return True
 
-        if view.action in ["update", "partial_update"]:
-            occurrence = Occurrence.objects.filter(pk=view.kwargs["pk"]).first()
-            membership = self.get_membership_from_event(request, occurrence.event)
-            return membership is not None and membership.is_ta
+        if view.action in ["retrieve", "update", "partial_update"]: 
+           return self.has_object_permission(request, view, None)
