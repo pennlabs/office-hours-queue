@@ -38,7 +38,6 @@ const Queue = (props: QueueProps) => {
     const { id: queueId, active, estimatedWaitTime, pin } = queue;
     const [pinState, setPinState] = useState<string | undefined>(pin);
     const [editingPin, setEditingPin] = useState<boolean>(false);
-    const [pinMutated, setPinMutated] = useState<boolean>(true);
     const [filteredTags, setFilteredTags] = useState<string[]>([]);
     const { data: questions, mutate: mutateQuestions } = useQuestions(
         courseId,
@@ -72,10 +71,9 @@ const Queue = (props: QueueProps) => {
 
     const handlePinKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (editingPin && e.key === "Enter") {
-            setPinMutated(false);
             setEditingPin(false);
             partialUpdateQueue(courseId, queueId, { pin: pinState });
-            mutate(pin, { pin: pinState }).then(() => setPinMutated(true));
+            mutate(queueId, { pin: pinState });
         } else if (editingPin && e.key === "Escape") {
             setPinState(pin);
             setEditingPin(false);
@@ -84,14 +82,12 @@ const Queue = (props: QueueProps) => {
 
     const handlePinToggle = () => {
         if (editingPin) {
-            setPinMutated(false);
             setEditingPin(false);
             partialUpdateQueue(courseId, queueId, { pin: pinState });
-            mutate(pin, { pin: pinState }).then(() => setPinMutated(true));
-        } else if (active) {
+            mutate(queueId, { pin: pinState });
+        } else {
             setPinState(pin);
             setEditingPin(true);
-            mutate(pin, { pin: pinState });
         }
     };
 
@@ -108,21 +104,15 @@ const Queue = (props: QueueProps) => {
     };
 
     const onOpen = async () => {
-        setEditingPin(false);
         await mutate(queueId, { active: true });
     };
 
     const onClose = async () => {
-        setEditingPin(false);
         await mutate(queueId, { active: false });
-        await partialUpdateQueue(courseId, queueId, { pin: "" });
-        await mutate(pin, { pin: pinState });
     };
 
     const renderPinInput = () => {
-        const editAllowed = editingPin && active;
-        const textColor = editAllowed ? "black" : "#B9B9BA";
-        const val = editingPin || !pinMutated ? pinState : pin;
+        const textColor = editingPin ? "black" : "#B9B9BA";
         return (
             <div style={{}}>
                 <label
@@ -137,7 +127,7 @@ const Queue = (props: QueueProps) => {
                 </label>
                 <input
                     name="changePin"
-                    value={active ? val : ""}
+                    value={editingPin ? pinState : pin}
                     onChange={handlePinChange}
                     onKeyDown={handlePinKeyPress}
                     style={{
@@ -152,14 +142,14 @@ const Queue = (props: QueueProps) => {
                         borderWidth: "1px",
                         borderColor: "#B9B9BA",
                         color: textColor,
-                        caretColor: editAllowed ? "#75767F" : "transparent",
-                        backgroundColor: editAllowed ? "white" : "#F1F1F2",
+                        caretColor: editingPin ? "#75767F" : "transparent",
+                        backgroundColor: editingPin ? "white" : "#F1F1F2",
                     }}
                 />
                 <Button
                     icon={
                         <Icon
-                            name={editAllowed ? "check" : "edit"}
+                            name={editingPin ? "check" : "edit"}
                             onClick={handlePinToggle}
                         />
                     }
@@ -203,7 +193,7 @@ const Queue = (props: QueueProps) => {
                         {queue.description}
                     </Header.Subheader>
                 </Header>
-                {queue.pinEnabled && renderPinInput()}
+                {queue.pinEnabled && active && renderPinInput()}
             </div>
             <Grid>
                 <Grid.Row columns="equal">
