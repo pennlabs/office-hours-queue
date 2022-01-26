@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Header, Label, Grid, Message, Button, Icon } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Select from "react-select";
@@ -38,6 +38,7 @@ const Queue = (props: QueueProps) => {
     const { id: queueId, active, estimatedWaitTime, pin } = queue;
     const [pinState, setPinState] = useState<string | undefined>(pin);
     const [editingPin, setEditingPin] = useState<boolean>(false);
+    const pinInputRef = useRef(null);
     const [filteredTags, setFilteredTags] = useState<string[]>([]);
     const { data: questions, mutate: mutateQuestions } = useQuestions(
         courseId,
@@ -48,6 +49,23 @@ const Queue = (props: QueueProps) => {
     useEffect(() => {
         mutateQuestions();
     }, [JSON.stringify(questions)]);
+
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (
+                pinInputRef.current &&
+                !pinInputRef.current.contains(event.target) &&
+                editingPin
+            ) {
+                setEditingPin(false);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [pinInputRef, editingPin]);
 
     const filteredQuestions = useMemo(
         () =>
@@ -121,6 +139,7 @@ const Queue = (props: QueueProps) => {
             </label>
             <input
                 name="changePin"
+                ref={pinInputRef}
                 value={editingPin ? pinState : pin}
                 onChange={handlePinChange}
                 onKeyPress={handlePinKeyPress}
