@@ -98,14 +98,6 @@ const Queue = (props: QueueProps) => {
         mutate(queueId, { pin: pinState });
     };
 
-    const handlePinKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (editingPin && e.key === "Enter") {
-            endPinEdit();
-        } else if (editingPin && e.key === "Escape") {
-            setEditingPin(false);
-        }
-    };
-
     const handleTagChange = (_, event) => {
         if (event.action === "select-option") {
             setFilteredTags([...filteredTags, event.option.label]);
@@ -142,13 +134,16 @@ const Queue = (props: QueueProps) => {
                 ref={pinInputRef}
                 value={editingPin ? pinState : pin}
                 onChange={handlePinChange}
-                onKeyPress={handlePinKeyPress}
+                onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                    editingPin && e.key === "Enter" && endPinEdit();
+                }}
                 style={{
                     height: "2.7rem",
                     color: editingPin ? "black" : "#B9B9BA",
                     caretColor: editingPin ? "#75767F" : "transparent",
                     borderColor: "#22242626",
                     backgroundColor: editingPin ? "white" : "#F1F1F2",
+                    paddingRight: "2rem",
                 }}
             />
             <Button
@@ -159,10 +154,9 @@ const Queue = (props: QueueProps) => {
                     />
                 }
                 style={{
-                    position: "absolute",
+                    position: "relative",
                     padding: "0.5rem",
-                    marginTop: "0.3rem",
-                    marginLeft: "16.5rem",
+                    marginLeft: "-2.3rem",
                     backgroundColor: "transparent",
                     color: editingPin ? "black" : "#B9B9BA",
                 }}
