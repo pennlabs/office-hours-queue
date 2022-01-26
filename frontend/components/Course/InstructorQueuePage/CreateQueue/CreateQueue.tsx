@@ -173,7 +173,6 @@ const CreateQueue = (props: CreateQueueProps) => {
                                 onChange={handleInputChange}
                             />
                         </Form.Field>
-                        videoChatSetting
                         <Form.Field>
                             <label htmlFor="form-question-template">
                                 Question Template
@@ -281,17 +280,17 @@ const CreateQueue = (props: CreateQueueProps) => {
                             </Form.Group>
                         </Form.Field>
                         <Form.Field required>
-                            <label htmlFor="pin-radio">PIN</label>
+                            <label htmlFor="pin-radio">Pin</label>
                             <Form.Group id="pin-radio">
                                 <Form.Radio
-                                    label="Enable PIN"
+                                    label="Enable Pin"
                                     checked={input.pinEnabled}
                                     name="pinEnabled"
                                     disabled={mutateLoading}
                                     onChange={handlePinInputChange}
                                 />
                                 <Form.Radio
-                                    label="Disable PIN"
+                                    label="Disable Pin"
                                     checked={!input.pinEnabled}
                                     name="pinDisabled"
                                     disabled={mutateLoading}

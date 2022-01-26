@@ -358,17 +358,17 @@ const QueueForm = (props: QueueFormProps) => {
                             />
                         </Form.Group>
                         <Form.Field required>
-                            <label htmlFor="pin-radio">PIN</label>
+                            <label htmlFor="pin-radio">Pin</label>
                             <Form.Group id="pin-radio">
                                 <Form.Radio
-                                    label="Enable PIN"
+                                    label="Enable Pin"
                                     checked={input.pinEnabled}
                                     name="pinEnabled"
                                     disabled={loading}
                                     onChange={handlePinInputChange}
                                 />
                                 <Form.Radio
-                                    label="Disable PIN"
+                                    label="Disable Pin"
                                     checked={!input.pinEnabled}
                                     name="pinDisabled"
                                     disabled={loading}

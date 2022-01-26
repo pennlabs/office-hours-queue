@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Header, Label, Grid, Message, Button, Icon } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Select from "react-select";
@@ -64,30 +64,27 @@ const Queue = (props: QueueProps) => {
     const [clearModalOpen, setClearModalOpen] = useState(false);
 
     const handlePinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.value.length <= PIN_CHAR_LIMIT && editingPin && active) {
+        if (e.target.value.length <= PIN_CHAR_LIMIT && editingPin) {
             setPinState(e.target.value);
         }
     };
 
-    const handlePinKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (editingPin && e.key === "Enter") {
-            setEditingPin(false);
-            partialUpdateQueue(courseId, queueId, { pin: pinState });
-            mutate(queueId, { pin: pinState });
-        } else if (editingPin && e.key === "Escape") {
-            setPinState(pin);
-            setEditingPin(false);
-        }
+    const startPinEdit = () => {
+        setPinState(pin);
+        setEditingPin(true);
     };
 
-    const handlePinToggle = () => {
-        if (editingPin) {
+    const endPinEdit = () => {
+        setEditingPin(false);
+        partialUpdateQueue(courseId, queueId, { pin: pinState });
+        mutate(queueId, { pin: pinState });
+    };
+
+    const handlePinKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (editingPin && e.key === "Enter") {
+            endPinEdit();
+        } else if (editingPin && e.key === "Escape") {
             setEditingPin(false);
-            partialUpdateQueue(courseId, queueId, { pin: pinState });
-            mutate(queueId, { pin: pinState });
-        } else {
-            setPinState(pin);
-            setEditingPin(true);
         }
     };
 
@@ -111,91 +108,85 @@ const Queue = (props: QueueProps) => {
         await mutate(queueId, { active: false });
     };
 
-    const renderPinInput = () => {
-        const textColor = editingPin ? "black" : "#B9B9BA";
-        return (
-            <div style={{}}>
-                <label
-                    htmlFor="changePin"
-                    style={{
-                        fontFamily: "Lato",
-                        fontWeight: "bold",
-                        padding: "0.5em",
-                    }}
-                >
-                    Pin:
-                </label>
-                <input
-                    name="changePin"
-                    value={editingPin ? pinState : pin}
-                    onChange={handlePinChange}
-                    onKeyDown={handlePinKeyPress}
-                    style={{
-                        position: "relative",
-                        fontFamily: "Lato",
-                        fontSize: "1em",
-                        outline: "none",
-                        lineHeight: "1.21428571em",
-                        padding: "0.67857143em 2.5em 0.67857143em 1em",
-                        borderRadius: "0.28571429rem",
-                        borderStyle: "solid",
-                        borderWidth: "1px",
-                        borderColor: "#B9B9BA",
-                        color: textColor,
-                        caretColor: editingPin ? "#75767F" : "transparent",
-                        backgroundColor: editingPin ? "white" : "#F1F1F2",
-                    }}
-                />
-                <Button
-                    icon={
-                        <Icon
-                            name={editingPin ? "check" : "edit"}
-                            onClick={handlePinToggle}
-                        />
-                    }
-                    style={{
-                        position: "absolute",
-                        padding: "0.5rem",
-                        marginTop: "0.3rem",
-                        marginLeft: "-2.3rem",
-                        backgroundColor: "transparent",
-                        color: textColor,
-                    }}
-                />
-            </div>
-        );
-    };
+    const pinInput = (
+        <div className="ui input">
+            <label
+                htmlFor="changePin"
+                style={{
+                    fontWeight: "bold",
+                    padding: "0.5rem 0.5rem 0.5rem 2rem",
+                }}
+            >
+                Pin:
+            </label>
+            <input
+                name="changePin"
+                value={editingPin ? pinState : pin}
+                onChange={handlePinChange}
+                onKeyPress={handlePinKeyPress}
+                style={{
+                    height: "2.7rem",
+                    color: editingPin ? "black" : "#B9B9BA",
+                    caretColor: editingPin ? "#75767F" : "transparent",
+                    borderColor: "#22242626",
+                    backgroundColor: editingPin ? "white" : "#F1F1F2",
+                }}
+            />
+            <Button
+                icon={
+                    <Icon
+                        name={editingPin ? "check" : "edit"}
+                        onClick={editingPin ? endPinEdit : startPinEdit}
+                    />
+                }
+                style={{
+                    position: "absolute",
+                    padding: "0.5rem",
+                    marginTop: "0.3rem",
+                    marginLeft: "16.5rem",
+                    backgroundColor: "transparent",
+                    color: editingPin ? "black" : "#B9B9BA",
+                }}
+            />
+        </div>
+    );
 
     return queue && questions ? (
         <>
-            <ClearQueueModal
-                courseId={courseId}
-                queueId={queueId}
-                open={clearModalOpen}
-                queue={queue}
-                mutate={mutateQuestions}
-                closeFunc={() => setClearModalOpen(false)}
-            />
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                }}
-            >
-                <Header as="h3">
-                    {queue.name}
-                    <Header.Subheader
-                        style={{
-                            whiteSpace: "break-spaces",
-                            wordBreak: "break-word",
-                        }}
-                    >
-                        {queue.description}
-                    </Header.Subheader>
-                </Header>
-                {queue.pinEnabled && active && renderPinInput()}
-            </div>
             <Grid>
+                <Grid.Row>
+                    <Grid.Column>
+                        <ClearQueueModal
+                            courseId={courseId}
+                            queueId={queueId}
+                            open={clearModalOpen}
+                            queue={queue}
+                            mutate={mutateQuestions}
+                            closeFunc={() => setClearModalOpen(false)}
+                        />
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                            }}
+                        >
+                            <Header
+                                as="h3"
+                                style={{
+                                    marginBottom: "0rem",
+                                    whiteSpace: "break-spaces",
+                                    wordBreak: "break-word",
+                                }}
+                            >
+                                {queue.name}
+                                <Header.Subheader>
+                                    {queue.description}
+                                </Header.Subheader>
+                            </Header>
+                            {queue.pinEnabled && active && pinInput}
+                        </div>
+                    </Grid.Column>
+                </Grid.Row>
                 <Grid.Row columns="equal">
                     <Grid.Column>
                         {questions.length !== 0 && (

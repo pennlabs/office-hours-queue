@@ -351,10 +351,9 @@ export async function partialUpdateQueue(
 
     if (!res.ok) {
         const error = await res.json();
-        throw {
-            payload: JSON.stringify(payload),
-            error: JSON.stringify(error),
-        };
+        const errorObj = Error(JSON.stringify(error));
+        logException(errorObj, JSON.stringify(payload));
+        throw errorObj;
     }
 }
 
