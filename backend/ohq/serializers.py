@@ -484,9 +484,6 @@ class EventSerializer(serializers.ModelSerializer):
             "course_id",
         )
 
-    # def get_course_id(self, instance):
-    #     return EventRelation.objects.filter(event=instance).first().object_id   ###########
-
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         course_pk = EventRelation.objects.filter(event=instance).first().object_id
@@ -503,10 +500,13 @@ class EventSerializer(serializers.ModelSerializer):
                 "end_recurring_period" in validated_data
                 and instance.end_recurring_period != validated_data["endRecurringPeriod"]
             )
-            or ("rule" in validated_data and rule.frequency != validated_data["rule"]["frequency"])
+            or (
+                "rule" in validated_data
+                and (rule is None or rule.frequency != validated_data["rule"]["frequency"])
+            )
         ):
             if "rule" in validated_data:
-                rule = Rule.objects.create(frequency=validated_data["rule"]["frequency"])
+                rule, _ = Rule.objects.get_or_create(frequency=validated_data["rule"]["frequency"])
                 validated_data.pop("rule")
             Occurrence.objects.filter(event=instance).delete()
 
@@ -522,7 +522,7 @@ class EventSerializer(serializers.ModelSerializer):
         course = Course.objects.get(pk=validated_data["course_id"])
         rule = None
         if "rule" in validated_data:
-            rule = Rule.objects.create(frequency=validated_data["rule"]["frequency"])
+            rule, _ = Rule.objects.get_or_create(frequency=validated_data["rule"]["frequency"])
             validated_data.pop("rule")
 
         validated_data.pop("course_id")

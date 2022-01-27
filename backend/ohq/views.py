@@ -765,6 +765,9 @@ class OccurrenceViewSet(
             events_for_course = erm.get_events_for_object(course)
             for event in events_for_course:
                 for occurrence in event.get_occurrences(filter_start, filter_end):
+                    # need to save because get_occurrences only create temporary Occurrence objs
+                    # once we save the Occurrence objs, later calls will retrieve them,
+                    # and no duplicates will be created
                     occurrence.save()
                     occurrences.append(occurrence)
 

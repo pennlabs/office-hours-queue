@@ -412,7 +412,7 @@ class EventPermission(permissions.BasePermission):
             if membership is None:
                 return False
             return membership.is_ta
-            
+
         if view.action in ["retrieve", "destroy"]:
             event = Event.objects.filter(pk=view.kwargs["pk"]).first()
             membership = self.get_membership_from_event(request, event)
@@ -444,8 +444,8 @@ class EventPermission(permissions.BasePermission):
                     return False
             return True
 
-        if view.action in ["partial_update", "update", "retrieve", "destroy"]:
-            return self.has_object_permission(request, view, None)
+        return True
+
 
 class OccurrencePermission(permissions.BasePermission):
     def get_membership_from_event(self, request, event):
@@ -481,5 +481,4 @@ class OccurrencePermission(permissions.BasePermission):
                     return False
             return True
 
-        if view.action in ["retrieve", "update", "partial_update"]: 
-           return self.has_object_permission(request, view, None)
+        return True
