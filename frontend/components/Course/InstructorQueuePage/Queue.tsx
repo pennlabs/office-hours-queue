@@ -38,7 +38,7 @@ const Queue = (props: QueueProps) => {
     const { id: queueId, active, estimatedWaitTime, pin } = queue;
     const [pinState, setPinState] = useState<string | undefined>(pin);
     const [editingPin, setEditingPin] = useState<boolean>(false);
-    const pinInputRef = useRef(null);
+    const pinInputRef = useRef<HTMLInputElement>(null);
     const [filteredTags, setFilteredTags] = useState<string[]>([]);
     const { data: questions, mutate: mutateQuestions } = useQuestions(
         courseId,
