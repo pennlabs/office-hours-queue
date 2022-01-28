@@ -429,7 +429,10 @@ class EventPermission(permissions.BasePermission):
 
         # Anonymous users can't do anything
         if view.action in ["create"]:
-            course_pk = json.loads(request.body)["courseId"]
+            course_pk = json.loads(request.body).get("courseId", None)
+            if course_pk is None:
+                return False
+
             course = Course.objects.get(pk=course_pk)
             membership = Membership.objects.filter(course=course, user=request.user).first()
             if membership is None:

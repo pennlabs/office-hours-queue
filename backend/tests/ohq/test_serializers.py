@@ -581,6 +581,18 @@ class EventSerializerTestCase(TestCase):
         )
         self.assertEqual(1, Event.objects.all().count())
 
+        self.client.post(
+            reverse("ohq:event-list"),
+            {
+                "start": self.start_time,
+                "end": self.end_time,
+                "title": self.old_title,
+                "rule": {"frequency": "WEEKLY"},
+                "endRecurringPeriod": self.end_time,
+            },
+        )
+        self.assertEqual(1, Event.objects.all().count())
+
         # student cannot create new event
         self.client.force_authenticate(user=self.student)
         self.client.post(
