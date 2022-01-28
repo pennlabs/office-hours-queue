@@ -86,9 +86,13 @@ const Queue = (props: QueueProps) => {
                 if (totalSeconds > 0) {
                     setSeconds(totalSeconds % 60 >> 0);
                     setMinutes((totalSeconds - (totalSeconds % 60)) / 60);
-                    setTimeUp(false);
-                } else {
-                    setTimeUp(true);
+                    if (timeUp) {
+                        setTimeUp(false);
+                    }
+                } else if (totalSeconds == 0) {
+                    if (!timeUp) {
+                        setTimeUp(true);
+                    }
                 }
             }
         }, 1000);
