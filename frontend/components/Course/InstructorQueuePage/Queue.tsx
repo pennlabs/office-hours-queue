@@ -41,6 +41,8 @@ const Queue = (props: QueueProps) => {
     } = props;
     const { id: queueId, active, estimatedWaitTime } = queue;
     const [filteredTags, setFilteredTags] = useState<string[]>([]);
+
+    // inital props here do not update, so every time the page is rerendered, it shows a flash of the raw thing
     const { data: questions, mutate: mutateQuestions } = useQuestions(
         courseId,
         queueId,
@@ -67,7 +69,7 @@ const Queue = (props: QueueProps) => {
                   )!.timeResponseStarted!
               )
             : null;
-    }, [JSON.stringify(questions), user]);
+    }, [questions, JSON.stringify(questions), user]);
 
     const [minutes, setMinutes] = useState<Number>(
         (membership.timerSeconds.valueOf() / 60) >> 0
@@ -89,10 +91,8 @@ const Queue = (props: QueueProps) => {
                     if (timeUp) {
                         setTimeUp(false);
                     }
-                } else if (totalSeconds == 0) {
-                    if (!timeUp) {
-                        setTimeUp(true);
-                    }
+                } else if (!timeUp) {
+                    setTimeUp(true);
                 }
             }
         }, 1000);
