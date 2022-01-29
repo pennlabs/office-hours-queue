@@ -42,7 +42,6 @@ const Queue = (props: QueueProps) => {
     const { id: queueId, active, estimatedWaitTime } = queue;
     const [filteredTags, setFilteredTags] = useState<string[]>([]);
 
-    // inital props here do not update, so every time the page is rerendered, it shows a flash of the raw thing
     const { data: questions, mutate: mutateQuestions } = useQuestions(
         courseId,
         queueId,
@@ -69,33 +68,39 @@ const Queue = (props: QueueProps) => {
                   )!.timeResponseStarted!
               )
             : null;
-    }, [questions, JSON.stringify(questions), user]);
+    }, [JSON.stringify(questions), user]);
 
     const [minutes, setMinutes] = useState<Number>(
-        (membership.timerSeconds.valueOf() / 60) >> 0
+        membership.timerSeconds.valueOf()
     );
-    const [seconds, setSeconds] = useState<Number>(
-        membership.timerSeconds.valueOf() % 60
-    );
+    const [seconds, setSeconds] = useState<Number>(0);
     const [timeUp, setTimeUp] = useState<Boolean>(false);
 
+    const [intervalID, setIntervalID] = useState<NodeJS.Timeout | null>(null);
+
     useEffect(() => {
-        setInterval(() => {
-            if (answeredTime) {
-                const totalSeconds =
-                    membership.timerSeconds.valueOf() * 60 -
-                    (new Date().getTime() - answeredTime.getTime()) / 1000;
-                if (totalSeconds > 0) {
-                    setSeconds(totalSeconds % 60 >> 0);
-                    setMinutes((totalSeconds - (totalSeconds % 60)) / 60);
-                    if (timeUp) {
-                        setTimeUp(false);
+        if (intervalID) {
+            clearInterval(intervalID);
+        }
+
+        setIntervalID(
+            setInterval(() => {
+                if (answeredTime) {
+                    const totalSeconds =
+                        membership.timerSeconds.valueOf() * 60 -
+                        (new Date().getTime() - answeredTime.getTime()) / 1000;
+                    if (totalSeconds > 0) {
+                        setSeconds(totalSeconds % 60 >> 0);
+                        setMinutes((totalSeconds - (totalSeconds % 60)) / 60);
+                        if (timeUp) {
+                            setTimeUp(false);
+                        }
+                    } else if (!timeUp) {
+                        setTimeUp(true);
                     }
-                } else if (!timeUp) {
-                    setTimeUp(true);
                 }
-            }
-        }, 1000);
+            }, 1000)
+        );
     }, [membership, answeredTime]);
 
     useEffect(() => {

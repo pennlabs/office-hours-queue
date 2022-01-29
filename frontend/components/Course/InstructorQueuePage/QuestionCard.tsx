@@ -10,6 +10,7 @@ import {
 } from "semantic-ui-react";
 import moment from "moment";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
+import router from "next/router";
 import RejectQuestionModal from "./RejectQuestionModal";
 import { AuthUserContext } from "../../../context/auth";
 import { Question, QuestionStatus, User } from "../../../types";
@@ -54,6 +55,7 @@ const QuestionCard = (props: QuestionCardProps) => {
         setLastNotif(notifs); // turns notifications off when answering questions
         setNotifs(false);
         await mutateQuestion(questionId, { status: QuestionStatus.ACTIVE });
+        router.replace(router.asPath);
     };
 
     const onFinish = async () => {
