@@ -1,15 +1,14 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Header, Label, Grid, Message, Button, Icon } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Select from "react-select";
+import { useMediaQuery } from "@material-ui/core";
 import Questions from "./Questions";
+import QueuePin from "./QueuePin";
 import ClearQueueModal from "./ClearQueueModal";
 import { Queue as QueueType, Question, Tag } from "../../../types";
-import {
-    useQuestions,
-    partialUpdateQueue,
-} from "../../../hooks/data-fetching/course";
-import { PIN_CHAR_LIMIT } from "../../../constants";
+import { useQuestions } from "../../../hooks/data-fetching/course";
+import { MOBILE_BP } from "../../../constants";
 
 interface QueueProps {
     courseId: number;
@@ -35,37 +34,18 @@ const Queue = (props: QueueProps) => {
         setNotifs,
         tags,
     } = props;
-    const { id: queueId, active, estimatedWaitTime, pin } = queue;
-    const [pinState, setPinState] = useState<string | undefined>(pin);
-    const [editingPin, setEditingPin] = useState<boolean>(false);
-    const pinInputRef = useRef<HTMLInputElement>(null);
+    const { id: queueId, active, estimatedWaitTime } = queue;
     const [filteredTags, setFilteredTags] = useState<string[]>([]);
     const { data: questions, mutate: mutateQuestions } = useQuestions(
         courseId,
         queueId,
         rawQuestions
     );
+    const isMobile = useMediaQuery(`(max-width: ${MOBILE_BP})`);
 
     useEffect(() => {
         mutateQuestions();
     }, [JSON.stringify(questions)]);
-
-    useEffect(() => {
-        function handleClickOutside(event) {
-            if (
-                pinInputRef.current &&
-                !pinInputRef.current.contains(event.target) &&
-                editingPin
-            ) {
-                setEditingPin(false);
-            }
-        }
-
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [pinInputRef, editingPin]);
 
     const filteredQuestions = useMemo(
         () =>
@@ -80,23 +60,6 @@ const Queue = (props: QueueProps) => {
     );
 
     const [clearModalOpen, setClearModalOpen] = useState(false);
-
-    const handlePinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.value.length <= PIN_CHAR_LIMIT && editingPin) {
-            setPinState(e.target.value);
-        }
-    };
-
-    const startPinEdit = () => {
-        setPinState(pin);
-        setEditingPin(true);
-    };
-
-    const endPinEdit = () => {
-        setEditingPin(false);
-        partialUpdateQueue(courseId, queueId, { pin: pinState });
-        mutate(queueId, { pin: pinState });
-    };
 
     const handleTagChange = (_, event) => {
         if (event.action === "select-option") {
@@ -118,52 +81,6 @@ const Queue = (props: QueueProps) => {
         await mutate(queueId, { active: false });
     };
 
-    const pinInput = (
-        <div className="ui input">
-            <label
-                htmlFor="changePin"
-                style={{
-                    fontWeight: "bold",
-                    padding: "0.5rem 0.5rem 0.5rem 2rem",
-                }}
-            >
-                Pin:
-            </label>
-            <input
-                name="changePin"
-                ref={pinInputRef}
-                value={editingPin ? pinState : pin}
-                onChange={handlePinChange}
-                onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                    editingPin && e.key === "Enter" && endPinEdit();
-                }}
-                style={{
-                    height: "2.7rem",
-                    color: editingPin ? "black" : "#B9B9BA",
-                    caretColor: editingPin ? "#75767F" : "transparent",
-                    borderColor: "#22242626",
-                    backgroundColor: editingPin ? "white" : "#F1F1F2",
-                    paddingRight: "2rem",
-                }}
-            />
-            <Button
-                icon={
-                    <Icon
-                        name={editingPin ? "check" : "edit"}
-                        onClick={editingPin ? endPinEdit : startPinEdit}
-                    />
-                }
-                style={{
-                    position: "relative",
-                    padding: "0.5rem",
-                    marginLeft: "-2.3rem",
-                    backgroundColor: "transparent",
-                    color: editingPin ? "black" : "#B9B9BA",
-                }}
-            />
-        </div>
-    );
-
     return queue && questions ? (
         <>
             <Grid>
@@ -180,6 +97,7 @@ const Queue = (props: QueueProps) => {
                         <div
                             style={{
                                 display: "flex",
+                                flexWrap: isMobile ? "wrap" : "nowrap",
                                 justifyContent: "space-between",
                             }}
                         >
@@ -196,7 +114,13 @@ const Queue = (props: QueueProps) => {
                                     {queue.description}
                                 </Header.Subheader>
                             </Header>
-                            {queue.pinEnabled && active && pinInput}
+                            {queue.pinEnabled && active && (
+                                <QueuePin
+                                    courseId={courseId}
+                                    queue={queue}
+                                    mutate={mutate}
+                                />
+                            )}
                         </div>
                     </Grid.Column>
                 </Grid.Row>
