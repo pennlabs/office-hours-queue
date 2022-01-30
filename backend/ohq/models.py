@@ -68,7 +68,7 @@ class Course(models.Model):
 
     course_code = models.CharField(max_length=10)
     department = models.CharField(max_length=10)
-    course_title = models.CharField(max_length=50)
+    course_title = models.CharField(max_length=100)
     description = models.CharField(max_length=255, blank=True)
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
     archived = models.BooleanField(default=False)
