@@ -76,6 +76,13 @@ const CourseSidebarNav = (props: CourseSidebarProps) => {
                             active={router.pathname.endsWith("analytics")}
                             color="blue"
                         >
+                            <Icon
+                                name="chart bar"
+                                style={{
+                                    float: "right",
+                                    margin: "0 0 0 .5em",
+                                }}
+                            />
                             Analytics
                             <Label
                                 color="violet"
@@ -84,13 +91,6 @@ const CourseSidebarNav = (props: CourseSidebarProps) => {
                                 style={{
                                     float: "none",
                                     verticalAlign: "bottom",
-                                }}
-                            />
-                            <Icon
-                                name="chart bar"
-                                style={{
-                                    float: "right",
-                                    margin: "0 0 0 .5em",
                                 }}
                             />
                         </Menu.Item>
