@@ -1,9 +1,6 @@
 import { useEffect } from "react";
 import { mutate as globalMutate } from "swr";
-import {
-    useRealtimeResource,
-    useRealtimeResourceList,
-} from "@pennlabs/rest-live-hooks";
+import { useRealtimeResourceList } from "@pennlabs/rest-live-hooks";
 import { useResourceList, useResource } from "@pennlabs/rest-hooks";
 import {
     Announcement,
@@ -23,6 +20,7 @@ import { doApiRequest } from "../../utils/fetch";
 import {
     QUEUE_STATUS_POLL_INTERVAL,
     STAFF_QUESTION_POLL_INTERVAL,
+    STUDENT_QUESTION_POS_POLL_INTERVAL,
     ANNOUNCEMENTS_POLL_INTERVAL,
     STUDENT_QUOTA_POLL_INTERVAL,
 } from "../../constants";
@@ -193,7 +191,6 @@ export const useQuestions = (
         },
         {
             initialData,
-            // Using refresh interval for question as an arbitrary endpoint to determine with staff is online
             refreshInterval: STAFF_QUESTION_POLL_INTERVAL,
             orderBy: (q1, q2) => {
                 const date1 = new Date(q1.timeAsked);
@@ -220,20 +217,13 @@ export const useQuestionPosition = (
     queueId: number,
     id: number
 ) => {
-    const { data, error, isValidating, mutate } = useRealtimeResource<{
-        id: number;
-        position: number;
-    }>(
+    const { data, error, isValidating, mutate } = useResource(
         `/api/courses/${courseId}/queues/${queueId}/questions/${id}/position/`,
         {
-            model: "ohq.Question",
-            lookup_by: id,
-        },
-        {
             initialData: {
-                id,
                 position: -1,
             },
+            refreshInterval: STUDENT_QUESTION_POS_POLL_INTERVAL,
         }
     );
 
