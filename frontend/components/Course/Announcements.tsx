@@ -8,6 +8,7 @@ import {
     Icon,
     Button,
 } from "semantic-ui-react";
+import Linkify from "react-linkify";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import { useMediaQuery } from "@material-ui/core";
 import { Announcement, BaseUser, NotificationProps } from "../../types";
@@ -233,7 +234,7 @@ const AnnouncementMessage = ({
                             marginBottom: "0px",
                         }}
                     >
-                        {announcement.content}
+                        <Linkify>{announcement.content}</Linkify>
                     </p>
                     <br />
                     <p style={{ color: "#666666", marginTop: "0px" }}>
