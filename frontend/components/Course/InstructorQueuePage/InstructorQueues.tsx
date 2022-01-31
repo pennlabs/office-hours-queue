@@ -118,6 +118,7 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
                             setNotifs={setNotifs}
                             tags={tags}
                             membership={membership}
+                            play={play}
                         />
                     </Grid.Column>
                 </>

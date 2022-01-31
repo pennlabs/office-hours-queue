@@ -9,6 +9,7 @@ import {
     Question,
     Tag,
     UserMembership,
+    NotificationProps,
 } from "../../../types";
 import { useQuestions } from "../../../hooks/data-fetching/course";
 import { AuthUserContext } from "../../../context/auth";
@@ -24,6 +25,7 @@ interface QueueProps {
     setNotifs: (boolean) => void;
     tags: Tag[];
     membership: UserMembership;
+    play: NotificationProps;
 }
 
 const Queue = (props: QueueProps) => {
@@ -38,6 +40,7 @@ const Queue = (props: QueueProps) => {
         setNotifs,
         tags,
         membership,
+        play,
     } = props;
     const { id: queueId, active, estimatedWaitTime } = queue;
     const [filteredTags, setFilteredTags] = useState<string[]>([]);
@@ -97,6 +100,10 @@ const Queue = (props: QueueProps) => {
                         }
                     } else if (!timeUp) {
                         setTimeUp(true);
+                        play.current("Time is up");
+                        if (intervalID) {
+                            clearInterval(intervalID);
+                        }
                     }
                 }
             }, 1000)
