@@ -1,3 +1,5 @@
+import json
+
 from asgiref.sync import sync_to_async
 from channels.auth import AuthMiddlewareStack
 from channels.db import database_sync_to_async as db
@@ -51,7 +53,7 @@ class QuestionTest(TransactionTestCase):
 
     @async_test
     async def testPositionUpdate(self):
-        payload = {
+        list_payload = {
             "type": "subscribe",
             "id": 1,
             "action": "list",
@@ -59,18 +61,31 @@ class QuestionTest(TransactionTestCase):
             "view_kwargs": {"course_pk": self.course.id, "queue_pk": self.queue.id},
         }
 
-        await self.client.send_json_to(payload)
+        await self.client.send_json_to(list_payload)
         self.assertTrue(await self.client.receive_nothing())
 
         await sync_to_async(self.api_client.force_authenticate)(user=self.student2)
-        await sync_to_async(self.api_client.post)(
+        new_question = await sync_to_async(self.api_client.post)(
             reverse("ohq:question-list", args=[self.course.id, self.queue.id]),
             {"text": "New question", "tags": []},
         )
 
         question_position = 2
         response = await self.client.receive_json_from()
+
         self.assertEquals(question_position, response["instance"]["position"])
+
+        retrieve_payload = {
+            "type": "subscribe",
+            "id": 1,
+            "action": "retrieve",
+            "model": "ohq.Question",
+            "lookup_by": json.loads(new_question.content)["id"],
+            "view_kwargs": {"course_pk": self.course.id, "queue_pk": self.queue.id},
+        }
+
+        await self.client.send_json_to(retrieve_payload)
+        self.assertTrue(await self.client.receive_nothing())
 
         await sync_to_async(self.api_client.force_authenticate)(user=self.professor)
         await sync_to_async(self.api_client.patch)(
