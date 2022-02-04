@@ -1,9 +1,6 @@
 import { useEffect } from "react";
 import { mutate as globalMutate } from "swr";
-import {
-    useRealtimeResource,
-    useRealtimeResourceList,
-} from "@pennlabs/rest-live-hooks";
+import { useRealtimeResourceList } from "@pennlabs/rest-live-hooks";
 import { useResourceList, useResource } from "@pennlabs/rest-hooks";
 import {
     Announcement,
@@ -213,31 +210,6 @@ export const useQuestions = (
             q.status === QuestionStatus.ASKED
     );
     return { data: filteredData, ...other };
-};
-
-export const useQuestionPosition = (
-    courseId: number,
-    queueId: number,
-    id: number
-) => {
-    const { data, error, isValidating, mutate } = useRealtimeResource<{
-        id: number;
-        position: number;
-    }>(
-        `/api/courses/${courseId}/queues/${queueId}/questions/${id}/position/`,
-        {
-            model: "ohq.Question",
-            lookup_by: id,
-        },
-        {
-            initialData: {
-                id,
-                position: -1,
-            },
-        }
-    );
-
-    return { data, error, isValidating, mutate };
 };
 
 // only student queues should use this, since it doesn't make
