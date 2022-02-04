@@ -234,7 +234,23 @@ const AnnouncementMessage = ({
                             marginBottom: "0px",
                         }}
                     >
-                        <Linkify>{announcement.content}</Linkify>
+                        <Linkify
+                            componentDecorator={(
+                                decoratedHref: string,
+                                decoratedText: string,
+                                key: number
+                            ) => (
+                                <a
+                                    href={decoratedHref}
+                                    key={key}
+                                    target="_blank"
+                                >
+                                    {decoratedText}
+                                </a>
+                            )}
+                        >
+                            {announcement.content}
+                        </Linkify>
                     </p>
                     <br />
                     <p style={{ color: "#666666", marginTop: "0px" }}>
