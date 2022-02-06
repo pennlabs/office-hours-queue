@@ -4,7 +4,17 @@ from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.core.validators import ValidationError
-from django.db.models import Count, Exists, FloatField, IntegerField, OuterRef, Q, Subquery
+from django.db.models import (
+    Case,
+    Count,
+    Exists,
+    FloatField,
+    IntegerField,
+    OuterRef,
+    Q,
+    Subquery,
+    When,
+)
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.utils import timezone
 from django.utils.crypto import get_random_string
@@ -188,10 +198,29 @@ class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
     queryset = Question.objects.none()
 
     def get_queryset(self):
-        qs = Question.objects.filter(
-            Q(queue=self.kwargs["queue_pk"])
-            & (Q(status=Question.STATUS_ASKED) | Q(status=Question.STATUS_ACTIVE))
-        ).order_by("time_asked")
+        position = (
+            Question.objects.filter(
+                Q(queue=OuterRef("queue"))
+                & Q(status=Question.STATUS_ASKED)
+                & Q(time_asked__lte=OuterRef("time_asked"))
+            )
+            .values("queue")
+            .annotate(count=Count("queue", output_field=IntegerField()))
+            .values("count")
+        )
+
+        qs = (
+            Question.objects.filter(
+                Q(queue=self.kwargs["queue_pk"])
+                & (Q(status=Question.STATUS_ASKED) | Q(status=Question.STATUS_ACTIVE))
+            )
+            .annotate(
+                position=Case(
+                    When(status=Question.STATUS_ASKED, then=Subquery(position[:1]),), default=-1,
+                )
+            )
+            .order_by("time_asked")
+        )
 
         membership = Membership.objects.get(course=self.kwargs["course_pk"], user=self.request.user)
 
