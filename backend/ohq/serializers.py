@@ -7,6 +7,8 @@ from django.utils.crypto import get_random_string
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 from rest_live.signals import save_handler
+from schedule.models import Calendar, Event, EventRelation, EventRelationManager, Rule
+from schedule.models.events import Occurrence
 
 from ohq.models import (
     Announcement,
@@ -461,3 +463,105 @@ class AnnouncementSerializer(CourseRouteMixin):
     def update(self, instance, validated_data):
         validated_data["author"] = self.context["request"].user
         return super().update(instance, validated_data)
+
+
+class RuleSerializer(serializers.ModelSerializer):
+    """
+    Serializer for rules
+    """
+
+    class Meta:
+        model = Rule
+        fields = ("frequency",)
+
+
+class EventSerializer(serializers.ModelSerializer):
+    """
+    Serializer for events
+
+    All times are converted to UTC+0
+    """
+
+    rule = RuleSerializer(required=False)
+    course_id = serializers.IntegerField(required=False)
+
+    class Meta:
+        model = Event
+        fields = (
+            "id",
+            "start",
+            "end",
+            "title",
+            "description",
+            "rule",
+            "end_recurring_period",
+            "course_id",
+        )
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        course_pk = EventRelation.objects.filter(event=instance).first().object_id
+        representation["course_id"] = course_pk
+        return representation
+
+    def update(self, instance, validated_data):
+        rule = instance.rule
+        # if changing start, end, or update, delete all previous occurrences
+        if (
+            ("start" in validated_data and instance.start != validated_data["start"])
+            or ("end" in validated_data and instance.end != validated_data["end"])
+            or (
+                "end_recurring_period" in validated_data
+                and instance.end_recurring_period != validated_data["endRecurringPeriod"]
+            )
+            or (
+                "rule" in validated_data
+                and (rule is None or rule.frequency != validated_data["rule"]["frequency"])
+            )
+        ):
+            if "rule" in validated_data:
+                rule, _ = Rule.objects.get_or_create(frequency=validated_data["rule"]["frequency"])
+                validated_data.pop("rule")
+            Occurrence.objects.filter(event=instance).delete()
+
+        # can never change course_id, client should create a new event instead
+        validated_data.pop("course_id")
+        super().update(instance, validated_data)
+
+        instance.rule = rule
+        instance.save()
+        return instance
+
+    def create(self, validated_data):
+        course = Course.objects.get(pk=validated_data["course_id"])
+        rule = None
+        if "rule" in validated_data:
+            rule, _ = Rule.objects.get_or_create(frequency=validated_data["rule"]["frequency"])
+            validated_data.pop("rule")
+
+        validated_data.pop("course_id")
+        default_calendar = Calendar.objects.filter(name="DefaultCalendar").first()
+        if default_calendar is None:
+            default_calendar = Calendar.objects.create(name="DefaultCalendar")
+        validated_data["calendar"] = default_calendar
+
+        # for some reason, super().create() doesn't automatically serialize Rule
+        event = super().create(validated_data)
+        event.rule = rule
+        event.save()
+
+        erm = EventRelationManager()
+        erm.create_relation(event=event, content_object=course)
+        return event
+
+
+class OccurrenceSerializer(serializers.ModelSerializer):
+    """
+    Serializer for occurrence
+    """
+
+    event = EventSerializer(read_only=True)
+
+    class Meta:
+        model = Occurrence
+        fields = ("id", "title", "description", "start", "end", "cancelled", "event")

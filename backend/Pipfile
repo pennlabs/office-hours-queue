@@ -42,6 +42,7 @@ channels-redis = "*"
 uvicorn = {extras = ["standard"],version = "*"}
 gunicorn = "*"
 drf-renderer-xlsx = "*"
+django-scheduler = "*"
 typing-extensions = "*"
 
 [requires]
