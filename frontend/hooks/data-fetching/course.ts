@@ -20,7 +20,6 @@ import { doApiRequest } from "../../utils/fetch";
 import {
     QUEUE_STATUS_POLL_INTERVAL,
     STAFF_QUESTION_POLL_INTERVAL,
-    STUDENT_QUESTION_POS_POLL_INTERVAL,
     ANNOUNCEMENTS_POLL_INTERVAL,
     STUDENT_QUOTA_POLL_INTERVAL,
 } from "../../constants";
@@ -191,6 +190,7 @@ export const useQuestions = (
         },
         {
             initialData,
+            // Using refresh interval for question as an arbitrary endpoint to determine with staff is online
             refreshInterval: STAFF_QUESTION_POLL_INTERVAL,
             orderBy: (q1, q2) => {
                 const date1 = new Date(q1.timeAsked);
@@ -210,24 +210,6 @@ export const useQuestions = (
             q.status === QuestionStatus.ASKED
     );
     return { data: filteredData, ...other };
-};
-
-export const useQuestionPosition = (
-    courseId: number,
-    queueId: number,
-    id: number
-) => {
-    const { data, error, isValidating, mutate } = useResource(
-        `/api/courses/${courseId}/queues/${queueId}/questions/${id}/position/`,
-        {
-            initialData: {
-                position: -1,
-            },
-            refreshInterval: STUDENT_QUESTION_POS_POLL_INTERVAL,
-        }
-    );
-
-    return { data, error, isValidating, mutate };
 };
 
 // only student queues should use this, since it doesn't make
@@ -327,6 +309,27 @@ export async function createQueue(
         method: "POST",
         body: payload,
     });
+
+    if (!res.ok) {
+        const error = await res.json();
+        const errorObj = Error(JSON.stringify(error));
+        logException(errorObj, JSON.stringify(payload));
+        throw errorObj;
+    }
+}
+
+export async function partialUpdateQueue(
+    courseId: number,
+    queueId: number,
+    payload: Partial<Queue>
+): Promise<void> {
+    const res = await doApiRequest(
+        `/api/courses/${courseId}/queues/${queueId}/`,
+        {
+            method: "PATCH",
+            body: payload,
+        }
+    );
 
     if (!res.ok) {
         const error = await res.json();

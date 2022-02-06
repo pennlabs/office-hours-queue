@@ -68,7 +68,10 @@ const ModalAddInstructorCourse = (props: ModalAddInstructorCourseProps) => {
         <Modal open={open}>
             <Modal.Header>Create New Course</Modal.Header>
             <Modal.Content>
-                <CreateCourseForm changeFunc={handleInputChange} />
+                <CreateCourseForm
+                    changeFunc={handleInputChange}
+                    input={input}
+                />
             </Modal.Content>
             <Modal.Actions>
                 <Button content="Cancel" disabled={loading} onClick={onClose} />
