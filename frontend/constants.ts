@@ -6,6 +6,7 @@ export const STUDENT_QUOTA_POLL_INTERVAL = 60000;
 export const COURSE_TITLE_CHAR_LIMIT = 100;
 export const TEXT_CHAR_LIMIT = 1000;
 export const STUD_DESC_CHAR_LIMIT = 100;
+export const PIN_CHAR_LIMIT = 50;
 export const ALLOWED_LINKS = [
     "zoom.us",
     "zoom.com",

@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
+from rest_live.signals import save_handler
 
 from ohq.models import (
     Announcement,
@@ -209,6 +210,7 @@ class QuestionSerializer(QueueRouteMixin):
     asked_by = UserSerializer(read_only=True)
     responded_to_by = UserSerializer(read_only=True)
     tags = TagSerializer(many=True)
+    position = serializers.IntegerField(default=-1, read_only=True)
 
     class Meta:
         model = Question
@@ -227,6 +229,7 @@ class QuestionSerializer(QueueRouteMixin):
             "tags",
             "note",
             "resolved_note",
+            "position",
             "student_descriptor",
         )
         read_only_fields = (
@@ -237,6 +240,7 @@ class QuestionSerializer(QueueRouteMixin):
             "responded_to_by",
             "should_send_up_soon_notification",
             "resolved_note",
+            "position",
         )
 
     def update(self, instance, validated_data):
@@ -306,6 +310,16 @@ class QuestionSerializer(QueueRouteMixin):
             instance.resolved_note = True
 
         instance.save()
+
+        # if the status changes to something that affects position, call save() on asked questions
+        if "status" in validated_data:
+            asked_questions = Question.objects.filter(
+                queue=instance.queue, status=Question.STATUS_ASKED
+            )
+
+            for question in asked_questions:
+                save_handler(sender=Question, instance=question, dispatch_uid="rest-live")
+
         return instance
 
     def create(self, validated_data):
