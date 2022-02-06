@@ -2,10 +2,13 @@ import { useState, useEffect, useMemo } from "react";
 import { Header, Label, Grid, Message, Button, Icon } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Select from "react-select";
+import { useMediaQuery } from "@material-ui/core";
 import Questions from "./Questions";
+import QueuePin from "./QueuePin";
 import ClearQueueModal from "./ClearQueueModal";
 import { Queue as QueueType, Question, Tag } from "../../../types";
 import { useQuestions } from "../../../hooks/data-fetching/course";
+import { MOBILE_BP } from "../../../constants";
 
 interface QueueProps {
     courseId: number;
@@ -38,6 +41,7 @@ const Queue = (props: QueueProps) => {
         queueId,
         rawQuestions
     );
+    const isMobile = useMediaQuery(`(max-width: ${MOBILE_BP})`);
 
     useEffect(() => {
         mutateQuestions();
@@ -79,26 +83,47 @@ const Queue = (props: QueueProps) => {
 
     return queue && questions ? (
         <>
-            <ClearQueueModal
-                courseId={courseId}
-                queueId={queueId}
-                open={clearModalOpen}
-                queue={queue}
-                mutate={mutateQuestions}
-                closeFunc={() => setClearModalOpen(false)}
-            />
-            <Header as="h3">
-                {queue.name}
-                <Header.Subheader
-                    style={{
-                        whiteSpace: "break-spaces",
-                        wordBreak: "break-word",
-                    }}
-                >
-                    {queue.description}
-                </Header.Subheader>
-            </Header>
             <Grid>
+                <Grid.Row>
+                    <Grid.Column>
+                        <ClearQueueModal
+                            courseId={courseId}
+                            queueId={queueId}
+                            open={clearModalOpen}
+                            queue={queue}
+                            mutate={mutateQuestions}
+                            closeFunc={() => setClearModalOpen(false)}
+                        />
+                        <div
+                            style={{
+                                display: "flex",
+                                flexWrap: isMobile ? "wrap" : "nowrap",
+                                justifyContent: "space-between",
+                            }}
+                        >
+                            <Header
+                                as="h3"
+                                style={{
+                                    marginBottom: "0rem",
+                                    whiteSpace: "break-spaces",
+                                    wordBreak: "break-word",
+                                }}
+                            >
+                                {queue.name}
+                                <Header.Subheader>
+                                    {queue.description}
+                                </Header.Subheader>
+                            </Header>
+                            {queue.pinEnabled && active && (
+                                <QueuePin
+                                    courseId={courseId}
+                                    queue={queue}
+                                    mutate={mutate}
+                                />
+                            )}
+                        </div>
+                    </Grid.Column>
+                </Grid.Row>
                 <Grid.Row columns="equal">
                     <Grid.Column>
                         {questions.length !== 0 && (
