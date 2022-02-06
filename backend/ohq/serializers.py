@@ -6,9 +6,9 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
+from rest_live.signals import save_handler
 from schedule.models import Calendar, Event, EventRelation, EventRelationManager, Rule
 from schedule.models.events import Occurrence
-from rest_live.signals import save_handler
 
 from ohq.models import (
     Announcement,
