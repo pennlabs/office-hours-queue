@@ -21,6 +21,7 @@ interface QuestionFormState {
     tags: { name: string }[];
     videoChatUrl?: string;
     studentDescriptor: string;
+    pin: string;
 }
 
 const QuestionForm = (props: QuestionFormProps) => {
@@ -29,6 +30,7 @@ const QuestionForm = (props: QuestionFormProps) => {
         text: queue.questionTemplate,
         tags: [],
         studentDescriptor: "",
+        pin: "",
     });
     const [textCharCount, setTextCharCount] = useState(0);
     const [studDescCharCount, setStudDescCharCount] = useState(0);
@@ -117,6 +119,17 @@ const QuestionForm = (props: QuestionFormProps) => {
             </Segment>
             <Segment attached secondary>
                 <Form>
+                    {queue.pinEnabled && (
+                        <Form.Field required>
+                            <label htmlFor="form-pin">Pin</label>
+                            <Form.Input
+                                id="form-pin"
+                                name="pin"
+                                value={input.pin}
+                                onChange={handleInputChange}
+                            />
+                        </Form.Field>
+                    )}
                     <Form.Field required>
                         <label htmlFor="form-question">Question</label>
                         <Form.TextArea
