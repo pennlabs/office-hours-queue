@@ -1,5 +1,0 @@
-[{"model": "ohq.announcement", "pk": 1, "fields": {"content": "<div><h3>Cool</h3></div>", "author": 1, "time_updated": "2022-01-30T19:04:28.919Z", "course": 1}}]
-[{"model": "ohq.semester", "pk": 1, "fields": {"year": 2020, "term": "FALL"}}]
-[{"model": "ohq.semester", "pk": 2, "fields": {"year": 2020, "term": "SUMMER"}}]
-[{"model": "ohq.semester", "pk": 3, "fields": {"year": 2020, "term": "SPRING"}}]
-[{"model": "ohq.semester", "pk": 4, "fields": {"year": 1930, "term": "SPRING"}}]
