@@ -52,6 +52,20 @@ const CourseSidebarNav = (props: CourseSidebarProps) => {
                         />
                     </Link>
                 )}
+                {!course.archived && (
+                    <Link
+                        href="/courses/[course]/calendar"
+                        as={`/courses/${courseId}/calendar`}
+                    >
+                        <Menu.Item
+                            style={noWrapStyle}
+                            name="Calendar"
+                            icon="calendar alternate outline"
+                            active={router.pathname.endsWith("calendar")}
+                            color="blue"
+                        />
+                    </Link>
+                )}
                 {staff && (
                     <Link
                         href="/courses/[course]/roster"
