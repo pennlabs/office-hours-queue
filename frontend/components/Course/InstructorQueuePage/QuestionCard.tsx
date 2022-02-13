@@ -8,13 +8,13 @@ import {
     Popup,
     Segment,
 } from "semantic-ui-react";
-import Linkify from "react-linkify";
 import moment from "moment";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import RejectQuestionModal from "./RejectQuestionModal";
 import { AuthUserContext } from "../../../context/auth";
 import { Question, QuestionStatus, User } from "../../../types";
 import MessageQuestionModal from "./MessageQuestionModal";
+import LinkedText from "../../common/ui/LinkedText";
 
 export const fullName = (user: User) => `${user.firstName} ${user.lastName}`;
 
@@ -185,19 +185,7 @@ const QuestionCard = (props: QuestionCardProps) => {
                 tertiary={question.timeResponseStarted !== null}
                 style={{ whiteSpace: "break-spaces", wordBreak: "break-word" }}
             >
-                <Linkify
-                    componentDecorator={(
-                        decoratedHref: string,
-                        decoratedText: string,
-                        key: number
-                    ) => (
-                        <a href={decoratedHref} key={key} target="_blank">
-                            {decoratedText}
-                        </a>
-                    )}
-                >
-                    {question.text}
-                </Linkify>
+                <LinkedText text={question.text} />
             </Segment>
             <Segment attached="bottom" secondary textAlign="right">
                 <Grid>
@@ -299,23 +287,7 @@ const QuestionCard = (props: QuestionCardProps) => {
                                         style={{ overflowWrap: "anywhere" }}
                                     >
                                         <p>
-                                            <Linkify
-                                                componentDecorator={(
-                                                    decoratedHref: string,
-                                                    decoratedText: string,
-                                                    key: number
-                                                ) => (
-                                                    <a
-                                                        href={decoratedHref}
-                                                        key={key}
-                                                        target="_blank"
-                                                    >
-                                                        {decoratedText}
-                                                    </a>
-                                                )}
-                                            >
-                                                {question.note}
-                                            </Linkify>
+                                            <LinkedText text={question.note} />
                                         </p>
                                         <Button
                                             compact

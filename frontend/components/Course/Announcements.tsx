@@ -8,7 +8,6 @@ import {
     Icon,
     Button,
 } from "semantic-ui-react";
-import Linkify from "react-linkify";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import { useMediaQuery } from "@material-ui/core";
 import { Announcement, BaseUser, NotificationProps } from "../../types";
@@ -18,6 +17,7 @@ import {
     createAnnouncement,
 } from "../../hooks/data-fetching/course";
 import ResponsiveIconButton from "../common/ui/ResponsiveIconButton";
+import LinkedText from "../common/ui/LinkedText";
 import { MOBILE_BP } from "../../constants";
 
 interface AnnouncementsProps {
@@ -234,23 +234,7 @@ const AnnouncementMessage = ({
                             marginBottom: "0px",
                         }}
                     >
-                        <Linkify
-                            componentDecorator={(
-                                decoratedHref: string,
-                                decoratedText: string,
-                                key: number
-                            ) => (
-                                <a
-                                    href={decoratedHref}
-                                    key={key}
-                                    target="_blank"
-                                >
-                                    {decoratedText}
-                                </a>
-                            )}
-                        >
-                            {announcement.content}
-                        </Linkify>
+                        <LinkedText text={announcement.content} />
                     </p>
                     <br />
                     <p style={{ color: "#666666", marginTop: "0px" }}>

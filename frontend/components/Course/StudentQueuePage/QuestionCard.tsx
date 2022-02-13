@@ -8,7 +8,6 @@ import {
     Grid,
     Message,
 } from "semantic-ui-react";
-import Linkify from "react-linkify";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import EditQuestionModal from "./EditQuestionModal";
 import DeleteQuestionModal from "./DeleteQuestionModal";
@@ -17,6 +16,7 @@ import {
     useQuestionPosition,
     finishQuestion,
 } from "../../../hooks/data-fetching/course";
+import LinkedText from "../../common/ui/LinkedText";
 
 interface QuestionCardProps {
     question: Question;
@@ -117,20 +117,7 @@ const QuestionCard = (props: QuestionCardProps) => {
                 {question.studentDescriptor && (
                     <Header as="h5">Question</Header>
                 )}
-                <Linkify
-                    componentDecorator={(
-                        decoratedHref: string,
-                        decoratedText: string,
-                        key: number
-                    ) => (
-                        <a href={decoratedHref} key={key} target="_blank">
-                            {decoratedText}
-                        </a>
-                    )}
-                >
-                    {question.text}
-                </Linkify>
-                ;
+                <LinkedText text={question.text} />
             </Segment>
             {question.studentDescriptor && (
                 <Segment
