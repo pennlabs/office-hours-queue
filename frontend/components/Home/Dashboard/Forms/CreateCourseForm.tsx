@@ -1,9 +1,11 @@
 import "../../../Course/CourseSettings/CourseForm.module.css";
 
+import { useState } from "react";
 import { Form } from "semantic-ui-react";
 import AsyncSelect from "react-select/async";
 import { Semester } from "../../../../types";
 import { getSemesters } from "../../../../hooks/data-fetching/course";
+import { COURSE_TITLE_CHAR_LIMIT } from "../../../../constants";
 
 const semesterOptions = async (inputValue: string) => {
     const semesters: Semester[] = await getSemesters();
@@ -24,9 +26,22 @@ const semesterOptions = async (inputValue: string) => {
 };
 interface CreateCourseFormProps {
     changeFunc: (a: any, b: any) => void; // TODO: restrict this
+    input: any;
 }
 const CreateCourseForm = (props: CreateCourseFormProps) => {
-    const { changeFunc } = props;
+    const { changeFunc, input } = props;
+
+    const [courseTitleCharCount, setCourseTitleCharCount] = useState(
+        input.courseTitle ? input.courseTitle : 0
+    );
+
+    const handleCourseTitleChange = (e, { name, value }) => {
+        if (value.length <= COURSE_TITLE_CHAR_LIMIT) {
+            setCourseTitleCharCount(value.length);
+            changeFunc(e, { name, value });
+        }
+    };
+
     return (
         <Form>
             <Form.Field required>
@@ -53,9 +68,21 @@ const CreateCourseForm = (props: CreateCourseFormProps) => {
                 <Form.Input
                     id="course-title"
                     name="courseTitle"
-                    onChange={changeFunc}
+                    value={input.courseTitle}
+                    onChange={handleCourseTitleChange}
                     placeholder="Data Structures and Algorithms"
                 />
+                <div
+                    style={{
+                        textAlign: "right",
+                        color:
+                            courseTitleCharCount < COURSE_TITLE_CHAR_LIMIT
+                                ? ""
+                                : "crimson",
+                    }}
+                >
+                    {`Characters: ${courseTitleCharCount}/${COURSE_TITLE_CHAR_LIMIT}`}
+                </div>
             </Form.Field>
             <Form.Field required>
                 <label htmlFor="select-sem">Semester</label>

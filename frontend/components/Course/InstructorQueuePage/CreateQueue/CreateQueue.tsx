@@ -18,6 +18,7 @@ interface QueueFormInput {
     description: string;
     questionTemplate: string;
     videoChatSetting: VideoChatSetting;
+    pinEnabled: boolean;
     rateLimitEnabled: boolean;
     rateLimitLength?: number;
     rateLimitQuestions?: number;
@@ -48,6 +49,7 @@ const CreateQueue = (props: CreateQueueProps) => {
         description: "",
         questionTemplate: "",
         videoChatSetting: VideoChatSetting.DISABLED,
+        pinEnabled: false,
         rateLimitEnabled: false,
         rateLimitLength: undefined,
         rateLimitQuestions: undefined,
@@ -64,6 +66,18 @@ const CreateQueue = (props: CreateQueueProps) => {
                 break;
             case "videoChatDisabled":
                 input.videoChatSetting = VideoChatSetting.DISABLED;
+                break;
+        }
+        setInput({ ...input });
+    };
+
+    const handlePinInputChange = (e, { name }) => {
+        switch (name) {
+            case "pinEnabled":
+                input.pinEnabled = true;
+                break;
+            case "pinDisabled":
+                input.pinEnabled = false;
                 break;
         }
         setInput({ ...input });
@@ -183,7 +197,6 @@ const CreateQueue = (props: CreateQueueProps) => {
                                 }
                             />
                         </Form.Field>
-
                         {input.rateLimitEnabled && (
                             <Form.Group style={{ alignItems: "center" }}>
                                 <Form.Input
@@ -231,7 +244,6 @@ const CreateQueue = (props: CreateQueueProps) => {
                                 <label htmlFor="rate-length">question(s)</label>
                             </Form.Group>
                         )}
-
                         <Form.Field required>
                             <label htmlFor="video-radio">Video Chat</label>
                             <Form.Group id="video-radio">
@@ -267,7 +279,25 @@ const CreateQueue = (props: CreateQueueProps) => {
                                 />
                             </Form.Group>
                         </Form.Field>
-
+                        <Form.Field required>
+                            <label htmlFor="pin-radio">Pin</label>
+                            <Form.Group id="pin-radio">
+                                <Form.Radio
+                                    label="Enable Pin"
+                                    checked={input.pinEnabled}
+                                    name="pinEnabled"
+                                    disabled={mutateLoading}
+                                    onChange={handlePinInputChange}
+                                />
+                                <Form.Radio
+                                    label="Disable Pin"
+                                    checked={!input.pinEnabled}
+                                    name="pinDisabled"
+                                    disabled={mutateLoading}
+                                    onChange={handlePinInputChange}
+                                />
+                            </Form.Group>
+                        </Form.Field>
                         <Button
                             content="Create"
                             color="blue"
