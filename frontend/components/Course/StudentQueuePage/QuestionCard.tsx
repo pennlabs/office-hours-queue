@@ -228,7 +228,9 @@ const QuestionCard = (props: QuestionCardProps) => {
                             <Message.Content
                                 style={{ overflowWrap: "anywhere" }}
                             >
-                                <p>{question.note}</p>
+                                <p>
+                                    <LinkedText text={question.note} />
+                                </p>
                             </Message.Content>
                         </Message>
                     </>
