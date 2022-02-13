@@ -12,10 +12,7 @@ import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import EditQuestionModal from "./EditQuestionModal";
 import DeleteQuestionModal from "./DeleteQuestionModal";
 import { Question, Course, Queue, Tag } from "../../../types";
-import {
-    useQuestionPosition,
-    finishQuestion,
-} from "../../../hooks/data-fetching/course";
+import { finishQuestion } from "../../../hooks/data-fetching/course";
 import LinkedText from "../../common/ui/LinkedText";
 
 interface QuestionCardProps {
