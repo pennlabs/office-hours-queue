@@ -39,11 +39,6 @@ const QuestionCard = (props: QuestionCardProps) => {
         lastQuestionsMutate,
         tags,
     } = props;
-    const { data: positionData } = useQuestionPosition(
-        course.id,
-        queue.id,
-        question.id
-    );
 
     const [openEdit, setOpenEdit] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
@@ -96,9 +91,8 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     overflow: "hidden",
                                 }}
                             >
-                                {positionData &&
-                                    positionData.position !== -1 &&
-                                    `Position in Queue: #${positionData.position}`}
+                                {question.position !== -1 &&
+                                    `Position in Queue: #${question.position}`}
                             </Header>
                         </Grid.Column>
                         <Grid.Column width={6}>
