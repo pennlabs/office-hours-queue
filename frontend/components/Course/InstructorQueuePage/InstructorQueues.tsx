@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { Grid, Icon, Message, Menu, Button } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
+import { useMediaQuery } from "@material-ui/core";
 import Queue from "./Queue";
 import {
     Queue as QueueType,
@@ -10,6 +11,7 @@ import {
     UserMembership,
 } from "../../../types";
 import { QueueMenuItem } from "./QueueMenuItem";
+import { MOBILE_BP } from "../../../constants";
 
 interface InstructorQueuesProps {
     suggestedQueueId?: number;
@@ -65,6 +67,8 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
         }
     }, [dispQueues, currQueue]);
 
+    const isMobile = useMediaQuery(`(max-width: ${MOBILE_BP})`);
+
     return (
         <Grid.Row style={{ marginTop: "2rem" }}>
             {currQueue && (
@@ -73,7 +77,10 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
                         <Menu
                             fluid
                             vertical
-                            style={{ display: "flex", minHeight: "20rem" }}
+                            style={{
+                                display: "flex",
+                                minHeight: isMobile ? "0rem" : "20rem",
+                            }}
                         >
                             {dispQueues.map((q) => (
                                 <QueueMenuItem

@@ -68,7 +68,7 @@ class Course(models.Model):
 
     course_code = models.CharField(max_length=10)
     department = models.CharField(max_length=10)
-    course_title = models.CharField(max_length=50)
+    course_title = models.CharField(max_length=100)
     description = models.CharField(max_length=255, blank=True)
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
     archived = models.BooleanField(default=False)
@@ -277,7 +277,7 @@ class Question(models.Model):
         User, related_name="responded_questions", on_delete=models.SET_NULL, blank=True, null=True
     )
     # This field should be a custom message or one of the following:
-    # OTHER, NOT_HERE, OH_ENDED, NOT_SPECIFIC, or WRONG_QUEUE
+    # OTHER, NOT_HERE, OH_ENDED, NOT_SPECIFIC, MISSING_TEMPLATE, or WRONG_QUEUE
     rejected_reason = models.CharField(max_length=255, blank=True, null=True)
 
     should_send_up_soon_notification = models.BooleanField(default=False)

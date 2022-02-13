@@ -15,6 +15,7 @@ import {
     useTags,
 } from "../../../hooks/data-fetching/course";
 import { logException } from "../../../utils/sentry";
+import { COURSE_TITLE_CHAR_LIMIT } from "../../../constants";
 
 interface CourseFormProps {
     course: Course;
@@ -76,6 +77,10 @@ const CourseForm = (props: CourseFormProps) => {
     const [archiveError, setArchiveError] = useState(false);
     const [open, setOpen] = useState(false);
 
+    const [courseTitleCharCount, setCourseTitleCharCount] = useState(
+        input.courseTitle.length
+    );
+
     const disabled = useMemo(() => {
         return (
             !input.department ||
@@ -91,7 +96,14 @@ const CourseForm = (props: CourseFormProps) => {
                 addedTags.length === 0 &&
                 deletedTags.length === 0)
         );
-    }, [input, course, addedTags, deletedTags, alarmSeconds]);
+    }, [
+        input,
+        course,
+        addedTags,
+        deletedTags,
+        alarmSeconds,
+        membershipData.timerSeconds,
+    ]);
 
     // default recommended tags
     const tagOptions = [
@@ -102,9 +114,14 @@ const CourseForm = (props: CourseFormProps) => {
     /* HANDLER FUNCTIONS */
 
     const handleInputChange = (e, { name, value }) => {
-        console.log(membershipData);
         if (name === "timer") {
             setAlarmSeconds(value);
+        } else if (name === "courseTitle") {
+            if (value.length <= COURSE_TITLE_CHAR_LIMIT) {
+                setCourseTitleCharCount(value.length);
+                input[name] = value;
+                setInput({ ...input });
+            }
         } else {
             input[name] = name === "inviteOnly" ? !input[name] : value;
             setInput({ ...input });
@@ -240,14 +257,28 @@ const CourseForm = (props: CourseFormProps) => {
                 />
             </Form.Field>
             <Form.Field required>
-                <label htmlFor="course-title">Course Title</label>
+                <label className="label" htmlFor="course-title">
+                    Course Title
+                </label>
                 <Form.Input
                     id="course-title"
                     defaultValue={course.courseTitle}
+                    value={input.courseTitle}
                     name="courseTitle"
                     disabled={loading}
                     onChange={handleInputChange}
                 />
+                <div
+                    style={{
+                        textAlign: "right",
+                        color:
+                            courseTitleCharCount < COURSE_TITLE_CHAR_LIMIT
+                                ? ""
+                                : "crimson",
+                    }}
+                >
+                    {`Characters: ${courseTitleCharCount}/${COURSE_TITLE_CHAR_LIMIT}`}
+                </div>
             </Form.Field>
             <Form.Field required>
                 <label htmlFor="sem-select">Semester</label>
@@ -284,7 +315,7 @@ const CourseForm = (props: CourseFormProps) => {
                     onChange={handleTagChange}
                 />
             </Form.Field>
-            {membershipData.kind != Kind.STUDENT && (
+            {membershipData.kind !== Kind.STUDENT && (
                 <Form.Field>
                     <label htmlFor="answering-timer">Answering Timer</label>
                     <Input

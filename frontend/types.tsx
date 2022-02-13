@@ -72,6 +72,8 @@ export interface BaseQueue {
     questionsAsked: number;
     staffActive: number;
     videoChatSetting: VideoChatSetting;
+    pinEnabled: boolean;
+    pin?: string;
 }
 
 export enum VideoChatSetting {
@@ -114,6 +116,7 @@ export interface Question {
     note: string;
     resolvedNote: boolean;
     studentDescriptor?: string;
+    position: number;
     // this is a marker field for subscribe requests
     // it should never have a value
     // eslint-disable-next-line

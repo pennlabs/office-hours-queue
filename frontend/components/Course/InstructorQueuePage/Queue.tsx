@@ -2,7 +2,9 @@ import { useState, useEffect, useMemo, useContext } from "react";
 import { Header, Label, Grid, Message, Button, Icon } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import Select from "react-select";
+import { useMediaQuery } from "@material-ui/core";
 import Questions from "./Questions";
+import QueuePin from "./QueuePin";
 import ClearQueueModal from "./ClearQueueModal";
 import {
     Queue as QueueType,
@@ -13,6 +15,7 @@ import {
 } from "../../../types";
 import { useQuestions } from "../../../hooks/data-fetching/course";
 import { AuthUserContext } from "../../../context/auth";
+import { MOBILE_BP } from "../../../constants";
 
 interface QueueProps {
     courseId: number;
@@ -50,6 +53,7 @@ const Queue = (props: QueueProps) => {
         queueId,
         rawQuestions
     );
+    const isMobile = useMediaQuery(`(max-width: ${MOBILE_BP})`);
 
     const { user } = useContext(AuthUserContext);
     if (!user) {
@@ -74,7 +78,7 @@ const Queue = (props: QueueProps) => {
     }, [JSON.stringify(questions), user]);
 
     const [minutes, setMinutes] = useState<Number>(
-        membership.timerSeconds.valueOf()
+        membership.timerSeconds && membership.timerSeconds.valueOf()
     );
     const [seconds, setSeconds] = useState<Number>(0);
     const [timeUp, setTimeUp] = useState<Boolean>(false);
@@ -158,40 +162,59 @@ const Queue = (props: QueueProps) => {
                 mutate={mutateQuestions}
                 closeFunc={() => setClearModalOpen(false)}
             />
-            <Grid columns="equal">
-                <Grid.Column>
-                    <Header as="h3">
-                        {queue.name}
-                        <Header.Subheader
+            <Grid>
+                <Grid.Row>
+                    <Grid.Column>
+                        <div
                             style={{
-                                whiteSpace: "break-spaces",
-                                wordBreak: "break-word",
+                                display: "flex",
+                                flexWrap: isMobile ? "wrap" : "nowrap",
+                                justifyContent: "space-between",
                             }}
                         >
-                            {queue.description}
-                        </Header.Subheader>
-                    </Header>
-                </Grid.Column>
-                {answeredTime && (
-                    <Grid.Column>
-                        <span style={{ float: "right" }}>
-                            <Label
-                                color={timeUp ? "red" : "green"}
-                                size="large"
+                            <Header
+                                as="h3"
+                                style={{
+                                    marginBottom: "0rem",
+                                    whiteSpace: "break-spaces",
+                                    wordBreak: "break-word",
+                                }}
                             >
-                                {timeUp
-                                    ? "Time Up"
-                                    : `${
-                                          minutes < 10 ? `0${minutes}` : minutes
-                                      }:${
-                                          seconds < 10 ? `0${seconds}` : seconds
-                                      }`}
-                            </Label>
-                        </span>
+                                {queue.name}
+                                <Header.Subheader>
+                                    {queue.description}
+                                </Header.Subheader>
+                            </Header>
+                            {answeredTime && (
+                                <span style={{ float: "right" }}>
+                                    <Label
+                                        color={timeUp ? "red" : "green"}
+                                        size="large"
+                                    >
+                                        {timeUp
+                                            ? "Time Up"
+                                            : `${
+                                                  minutes < 10
+                                                      ? `0${minutes}`
+                                                      : minutes
+                                              }:${
+                                                  seconds < 10
+                                                      ? `0${seconds}`
+                                                      : seconds
+                                              }`}
+                                    </Label>
+                                </span>
+                            )}
+                            {queue.pinEnabled && active && (
+                                <QueuePin
+                                    courseId={courseId}
+                                    queue={queue}
+                                    mutate={mutate}
+                                />
+                            )}
+                        </div>
                     </Grid.Column>
-                )}
-            </Grid>
-            <Grid>
+                </Grid.Row>
                 <Grid.Row columns="equal">
                     <Grid.Column>
                         {questions.length !== 0 && (

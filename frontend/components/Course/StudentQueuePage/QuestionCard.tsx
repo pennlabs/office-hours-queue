@@ -12,11 +12,7 @@ import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import EditQuestionModal from "./EditQuestionModal";
 import DeleteQuestionModal from "./DeleteQuestionModal";
 import { Question, Course, Queue, Tag } from "../../../types";
-import {
-    useQuestionPosition,
-    finishQuestion,
-} from "../../../hooks/data-fetching/course";
-import { logException } from "../../../utils/sentry";
+import { finishQuestion } from "../../../hooks/data-fetching/course";
 
 interface QuestionCardProps {
     question: Question;
@@ -39,11 +35,6 @@ const QuestionCard = (props: QuestionCardProps) => {
         lastQuestionsMutate,
         tags,
     } = props;
-    const { data: positionData } = useQuestionPosition(
-        course.id,
-        queue.id,
-        question.id
-    );
 
     const [openEdit, setOpenEdit] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
@@ -59,7 +50,6 @@ const QuestionCard = (props: QuestionCardProps) => {
         try {
             await finishQuestion(course.id, queue.id, question.id);
         } catch (e) {
-            logException(e);
             toastFunc(null, e);
         }
     };
@@ -97,9 +87,8 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     overflow: "hidden",
                                 }}
                             >
-                                {positionData &&
-                                    positionData.position !== -1 &&
-                                    `Position in Queue: #${positionData.position}`}
+                                {question.position !== -1 &&
+                                    `Position in Queue: #${question.position}`}
                             </Header>
                         </Grid.Column>
                         <Grid.Column width={6}>

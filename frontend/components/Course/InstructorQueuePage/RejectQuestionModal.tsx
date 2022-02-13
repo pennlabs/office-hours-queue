@@ -10,6 +10,11 @@ const rejectOptions = [
     { key: "OH_ENDED", value: "OH_ENDED", text: "OH Ended" },
     { key: "NOT_SPECIFIC", value: "NOT_SPECIFIC", text: "Not Specific" },
     { key: "WRONG_QUEUE", value: "WRONG_QUEUE", text: "Wrong Queue" },
+    {
+        key: "MISSING_TEMPLATE",
+        value: "MISSING_TEMPLATE",
+        text: "Didn't Follow Template",
+    },
     { key: "OTHER", value: "OTHER", text: "Other" },
 ];
 
