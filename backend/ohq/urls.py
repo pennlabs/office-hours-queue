@@ -5,9 +5,11 @@ from rest_live.routers import RealtimeRouter
 from ohq.views import (
     AnnouncementViewSet,
     CourseViewSet,
+    EventViewSet,
     MassInviteView,
     MembershipInviteViewSet,
     MembershipViewSet,
+    OccurrenceViewSet,
     QuestionSearchView,
     QuestionViewSet,
     QueueStatisticView,
@@ -24,6 +26,8 @@ app_name = "ohq"
 router = routers.SimpleRouter()
 router.register("semesters", SemesterViewSet, basename="semester")
 router.register("courses", CourseViewSet, basename="course")
+router.register("events", EventViewSet, basename="event")
+router.register("occurrences", OccurrenceViewSet, basename="occurrence")
 
 course_router = routers.NestedSimpleRouter(router, "courses", lookup="course")
 course_router.register("queues", QueueViewSet, basename="queue")

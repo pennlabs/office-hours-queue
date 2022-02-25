@@ -9,6 +9,7 @@ import {
     Button,
 } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
+import { useMediaQuery } from "@material-ui/core";
 import { Announcement, BaseUser, NotificationProps } from "../../types";
 import { AuthUserContext } from "../../context/auth";
 import {
@@ -16,6 +17,8 @@ import {
     createAnnouncement,
 } from "../../hooks/data-fetching/course";
 import ResponsiveIconButton from "../common/ui/ResponsiveIconButton";
+import LinkedText from "../common/ui/LinkedText";
+import { MOBILE_BP } from "../../constants";
 
 interface AnnouncementsProps {
     courseId: number;
@@ -172,6 +175,7 @@ const AnnouncementMessage = ({
     setDeleteState: (state: ModalState) => void;
     setEditState: (state: ModalState) => void;
 }) => {
+    const isMobile = useMediaQuery(`(max-width: ${MOBILE_BP})`);
     return (
         <>
             <Message icon>
@@ -220,7 +224,7 @@ const AnnouncementMessage = ({
                         </Dropdown.Menu>
                     </Dropdown>
                 )}
-                <Icon name="comment alternate outline" />
+                {!isMobile && <Icon name="comment alternate outline" />}
                 <Message.Content style={{ paddingBottom: "1rem" }}>
                     <Message.Header>{`From ${announcement.author.firstName}`}</Message.Header>
                     <p
@@ -230,7 +234,7 @@ const AnnouncementMessage = ({
                             marginBottom: "0px",
                         }}
                     >
-                        {announcement.content}
+                        <LinkedText text={announcement.content} />
                     </p>
                     <br />
                     <p style={{ color: "#666666", marginTop: "0px" }}>

@@ -1,10 +1,20 @@
 import math
 import re
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from django.contrib.auth import get_user_model
 from django.core.validators import ValidationError
-from django.db.models import Count, Exists, FloatField, IntegerField, OuterRef, Q, Subquery
+from django.db.models import (
+    Case,
+    Count,
+    Exists,
+    FloatField,
+    IntegerField,
+    OuterRef,
+    Q,
+    Subquery,
+    When,
+)
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.utils import timezone
 from django.utils.crypto import get_random_string
@@ -12,13 +22,16 @@ from django_auto_prefetching import prefetch
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_renderer_xlsx.mixins import XLSXFileMixin
 from drf_renderer_xlsx.renderers import XLSXRenderer
-from rest_framework import filters, generics, viewsets
+from pytz import utc
+from rest_framework import filters, generics, mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.schemas.openapi import AutoSchema
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 from rest_live.mixins import RealtimeMixin
+from schedule.models import Event, EventRelationManager, Occurrence
 
 from ohq.filters import QuestionSearchFilter, QueueStatisticFilter
 from ohq.invite import parse_and_send_invites
@@ -37,10 +50,12 @@ from ohq.pagination import QuestionSearchPagination
 from ohq.permissions import (
     AnnouncementPermission,
     CoursePermission,
+    EventPermission,
     IsSuperuser,
     MassInvitePermission,
     MembershipInvitePermission,
     MembershipPermission,
+    OccurrencePermission,
     QuestionPermission,
     QuestionSearchPermission,
     QueuePermission,
@@ -52,8 +67,10 @@ from ohq.serializers import (
     AnnouncementSerializer,
     CourseCreateSerializer,
     CourseSerializer,
+    EventSerializer,
     MembershipInviteSerializer,
     MembershipSerializer,
+    OccurrenceSerializer,
     Profile,
     QuestionSerializer,
     QueueSerializer,
@@ -188,10 +205,29 @@ class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
     queryset = Question.objects.none()
 
     def get_queryset(self):
-        qs = Question.objects.filter(
-            Q(queue=self.kwargs["queue_pk"])
-            & (Q(status=Question.STATUS_ASKED) | Q(status=Question.STATUS_ACTIVE))
-        ).order_by("time_asked")
+        position = (
+            Question.objects.filter(
+                Q(queue=OuterRef("queue"))
+                & Q(status=Question.STATUS_ASKED)
+                & Q(time_asked__lte=OuterRef("time_asked"))
+            )
+            .values("queue")
+            .annotate(count=Count("queue", output_field=IntegerField()))
+            .values("count")
+        )
+
+        qs = (
+            Question.objects.filter(
+                Q(queue=self.kwargs["queue_pk"])
+                & (Q(status=Question.STATUS_ASKED) | Q(status=Question.STATUS_ACTIVE))
+            )
+            .annotate(
+                position=Case(
+                    When(status=Question.STATUS_ASKED, then=Subquery(position[:1]),), default=-1,
+                )
+            )
+            .order_by("time_asked")
+        )
 
         membership = Membership.objects.get(course=self.kwargs["course_pk"], user=self.request.user)
 
@@ -608,3 +644,165 @@ class AnnouncementViewSet(viewsets.ModelViewSet, RealtimeMixin):
 
     def get_queryset(self):
         return Announcement.objects.filter(course=self.kwargs["course_pk"])
+
+
+class EventSchema(AutoSchema):
+    def get_operation(self, path, method):
+        op = super().get_operation(path, method)
+        if op["operationId"] == "listEvents":
+            op["parameters"].append(
+                {
+                    "name": "course",
+                    "in": "query",
+                    "required": True,
+                    "description": "A series of api/events/?course=1&course=2 "
+                    + "- where the numbers are the course pks",
+                    "schema": {"type": "string"},
+                }
+            )
+        return op
+
+
+class EventViewSet(viewsets.ModelViewSet):
+    """
+    retrieve:
+    Return an event.
+    eventId is required
+
+    list:
+    Return a list of events associated with a course.
+
+    create:
+    Create a event.
+    courseId is required in body
+
+    update:
+    Update all fields in the event.
+    You must specify all of the fields or use a patch request.
+    courseId is required in post body for authentication
+
+    partial_update:
+    Update certain fields in the event.
+    You can update the rule's frequency, but cannot make a reoccurring event happen only once.
+    courseId is required in post body for authentication
+
+    destroy:
+    Delete an event.
+    eventId is required
+    """
+
+    serializer_class = EventSerializer
+    permission_classes = [EventPermission | IsSuperuser]
+    schema = EventSchema()
+
+    def list(self, request, *args, **kwargs):
+        course_ids = request.GET.getlist("course")
+        courses = Course.objects.filter(pk__in=course_ids)
+        erm = EventRelationManager()
+
+        events = []
+        for course in courses:
+            events_for_course = erm.get_events_for_object(course)
+            for event in events_for_course:
+                events.append(event)
+
+        serializer = EventSerializer(events, many=True)
+        return Response(serializer.data)
+
+    def get_queryset(self):
+        return Event.objects.filter(pk=self.kwargs["pk"])
+
+
+class OccurrenceSchema(AutoSchema):
+    def get_operation(self, path, method):
+        op = super().get_operation(path, method)
+        if op["operationId"] == "listOccurrences":
+            op["parameters"].append(
+                {
+                    "name": "course",
+                    "in": "query",
+                    "required": True,
+                    "description": "A series of api/occurrences/?course=1&course=2 "
+                    + "- where the numbers are the course pks",
+                    "schema": {"type": "string"},
+                }
+            )
+            op["parameters"].append(
+                {
+                    "name": "filter_start",
+                    "in": "query",
+                    "required": True,
+                    "description": "The start date of the filter in ISO format in UTC+0.<br>"
+                    + "The returned events will have start_time strictly within "
+                    + "the range of the filter<br>"
+                    + "e.g 2021-10-05T12:41:37Z",
+                    "schema": {"type": "datetime"},
+                }
+            )
+            op["parameters"].append(
+                {
+                    "name": "filter_end",
+                    "in": "query",
+                    "required": True,
+                    "description": "The end date of the filter in ISO format in UTC+0<br>"
+                    + "e.g 2021-10-05T12:41:37Z",
+                    "schema": {"type": "datetime"},
+                }
+            )
+        return op
+
+
+class OccurrenceViewSet(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet,
+):
+    """
+    retrieve:
+    Return an Occurrence.
+
+    list:
+    You should pass in a list of course ids, along with the filter start and end dates,
+    and all the occurrences related to those courses will be returned to you.
+    Return a list of Occurrences.
+
+    update:
+    Update all fields in an Occurrence.
+    You must specify all of the fields or use a patch request.
+
+    partial_update:
+    Update certain fields in the Occurrece.
+    """
+
+    serializer_class = OccurrenceSerializer
+    permission_classes = [OccurrencePermission | IsSuperuser]
+    schema = OccurrenceSchema()
+
+    def list(self, request, *args, **kwargs):
+        # ensure timezone consitency
+        course_ids = request.GET.getlist("course")
+        filter_start = datetime.strptime(
+            request.GET.get("filter_start"), "%Y-%m-%dT%H:%M:%SZ"
+        ).replace(tzinfo=utc)
+        filter_end = datetime.strptime(request.GET.get("filter_end"), "%Y-%m-%dT%H:%M:%SZ").replace(
+            tzinfo=utc
+        )
+        courses = Course.objects.filter(pk__in=course_ids)
+        erm = EventRelationManager()
+        occurrences = []
+        for course in courses:
+            events_for_course = erm.get_events_for_object(course)
+            for event in events_for_course:
+                for occurrence in event.get_occurrences(filter_start, filter_end):
+                    # need to save because get_occurrences only create temporary Occurrence objs
+                    # once we save the Occurrence objs, later calls will retrieve them,
+                    # and no duplicates will be created
+                    occurrence.save()
+                    occurrences.append(occurrence)
+
+        serializer = OccurrenceSerializer(occurrences, many=True)
+        return Response(serializer.data)
+
+    def get_queryset(self):
+        return Occurrence.objects.filter(pk=self.kwargs["pk"])

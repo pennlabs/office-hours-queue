@@ -1,9 +1,6 @@
 import { useEffect } from "react";
 import { Menu, Label } from "semantic-ui-react";
-import {
-    useQuestionPosition,
-    useQuestions,
-} from "../../../hooks/data-fetching/course";
+import { useQuestions } from "../../../hooks/data-fetching/course";
 import {
     Question,
     Queue,
@@ -23,19 +20,12 @@ interface QueueMenuItemProps {
 const QuestionNotifier = ({
     question,
     play,
-    courseId,
-    queue,
 }: {
     question: Question;
     play: NotificationProps;
     courseId: number;
     queue: Queue;
 }) => {
-    const { data: positionData } = useQuestionPosition(
-        courseId,
-        queue.id,
-        question.id
-    );
     useEffect(() => {
         if (
             question.status === QuestionStatus.ACTIVE ||
@@ -46,10 +36,10 @@ const QuestionNotifier = ({
     }, [question.status, play, question.resolvedNote]);
 
     useEffect(() => {
-        if (positionData && positionData.position === 2) {
+        if (question.position === 2) {
             play.current("Your question will be answered soon");
         }
-    }, [positionData]);
+    }, [question.position, play]);
 
     return null;
 };
