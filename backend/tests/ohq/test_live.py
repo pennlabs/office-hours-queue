@@ -6,10 +6,12 @@ from channels.db import database_sync_to_async as db
 from django.contrib.auth import get_user_model
 from django.test import TransactionTestCase
 from django.urls import reverse
+from djangorestframework_camel_case.util import camelize
 from rest_framework.test import APIClient
 from rest_live.testing import APICommunicator, async_test, get_headers_for_user
 
 from ohq.models import Course, Membership, Question, Queue, Semester
+from ohq.serializers import QueueSerializer
 from ohq.urls import realtime_router
 
 
@@ -98,3 +100,97 @@ class QuestionTest(TransactionTestCase):
 
         response = await self.client.receive_json_from()
         self.assertEquals(question_position, response["instance"]["position"])
+
+
+class QueueTestCase(TransactionTestCase):
+    async def asyncSetUp(self):
+        self.semester = await db(Semester.objects.create)(year=2020, term=Semester.TERM_SUMMER)
+        self.course = await db(Course.objects.create)(
+            course_code="000", department="TEST", course_title="Title", semester=self.semester
+        )
+        self.queue = await db(Queue.objects.create)(name="Queue", course=self.course)
+        self.professor = await db(User.objects.create)(username="professor")
+        self.professor_membership = await db(Membership.objects.create)(
+            course=self.course, user=self.professor, kind=Membership.KIND_PROFESSOR
+        )
+        self.student1 = await db(User.objects.create)(username="student1")
+        await db(Membership.objects.create)(
+            course=self.course, user=self.student1, kind=Membership.KIND_STUDENT
+        )
+        self.student2 = await db(User.objects.create)(username="student2")
+        await db(Membership.objects.create)(
+            course=self.course, user=self.student2, kind=Membership.KIND_STUDENT
+        )
+        self.old_question = await db(Question.objects.create)(
+            queue=self.queue, asked_by=self.student1, text="Help me",
+        )
+
+        headers = await get_headers_for_user(self.student2)
+        self.client = APICommunicator(
+            AuthMiddlewareStack(realtime_router.as_consumer()), "/api/ws/subscribe/", headers
+        )
+        connected, _ = await self.client.connect()
+        self.assertTrue(connected)
+
+        self.api_client = APIClient()
+
+    async def asyncTearDown(self):
+        await self.client.disconnect()
+
+    @async_test
+    async def test_subscribe_list(self):
+        payload = {
+            "type": "subscribe", 
+            "id": 1,
+            "action": "list",
+            "model": "ohq.Queue",
+            "view_kwargs": {"course_pk": self.course.id}
+        }
+        await self.client.send_json_to(payload)
+        self.assertTrue(await self.client.receive_nothing())
+
+        # creating a new queue sends message
+        queue2 = await db(Queue.objects.create)(
+            name="Queue 2", course=self.course, description="This is a new queue"
+        )
+        response = await self.client.receive_json_from()
+        print(response)
+        
+        self.assertEqual(queue2.name, response['instance']['name'])
+        self.assertEqual(queue2.description, response['instance']['description'])
+
+        # deleting a queue sends message
+        print("boom")
+        await db(queue2.delete)()
+        print("bap")
+        response = await self.client.receive_json_from()
+        print("delete", response)
+
+
+    @async_test
+    async def test_subscribe_single(self):
+        queue3 = await db(Queue.objects.create)(
+            name = "Queue 3",  course=self.course, description="This is a new queue 3"
+        )
+        payload = {
+            "type": "subscribe",
+            "id": 2,
+            "action": "retrieve",
+            "model": "ohq.Queue",
+            "view_kwargs": {"course_pk": self.course.id},
+            "lookup_by": queue3.id
+        }
+        await self.client.send_json_to(payload)
+        self.assertTrue(await self.client.receive_nothing())
+
+        # changing subscribed queue sends message
+        queue3.description = "New description"
+        await db(queue3.save)()
+        response = await self.client.receive_json_from()
+        print(response)
+        self.assertEqual(queue3.description, response['instance']['description'])
+
+        # changing non-subscribed queue doesn't send message
+        self.queue.description = "New description"
+        await db(self.queue.save)()
+        self.assertTrue(await self.client.receive_nothing())
