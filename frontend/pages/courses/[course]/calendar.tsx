@@ -41,15 +41,19 @@ CalendarPage.getInitialProps = async (
 
     let course: Course;
     let leadership: Membership[];
-
+    let events: any;
+    console.log(query.course);
+    console.log(data);
     const response = await doMultipleSuccessRequests([
-        { path: "/api/events/?course=s.course.id", data },
+        { path: `/api/courses/${query.course}/`, data },
         { path: `/api/courses/${query.course}/members/`, data },
+        { path: "/api/events/", data },
     ]);
 
     if (response.success) {
-        [course, leadership] = response.data;
-
+        [course, leadership, events] = response.data;
+        console.log("SUCCESS");
+        console.log(events);
         if (course.archived) {
             nextRedirect(
                 context,
