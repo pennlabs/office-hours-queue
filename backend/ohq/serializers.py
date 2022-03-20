@@ -192,6 +192,9 @@ class QueueSerializer(CourseRouteMixin):
     def to_representation(self, instance):
         # get the original representation
         rep = super(QueueSerializer, self).to_representation(instance)
+        if "request" not in self.context:
+            rep.pop("pin")
+            return rep
 
         user = self.context["request"].user
         membership = Membership.objects.filter(course=instance.course, user=user).first()
