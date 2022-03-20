@@ -370,7 +370,7 @@ class QuestionSearchView(XLSXFileMixin, generics.ListAPIView):
         return super().paginator
 
 
-class QueueViewSet(viewsets.ModelViewSet, RealtimeMixin):
+class QueueViewSet(viewsets.ModelViewSet):
     """
     retrieve:
     Return a single queue.
@@ -395,7 +395,6 @@ class QueueViewSet(viewsets.ModelViewSet, RealtimeMixin):
 
     permission_classes = [QueuePermission | IsSuperuser]
     serializer_class = QueueSerializer
-    queryset = Queue.objects.none()
 
     def get_queryset(self):
         """
