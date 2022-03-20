@@ -36,14 +36,14 @@ django-filter = "*"
 celery = "*"
 redis = "*"
 django-auto-prefetching = "*"
-django-rest-live = ">=0.5.0"
+django-rest-live = ">=0.7.0"
 channels = "<3"
 channels-redis = "*"
 uvicorn = {extras = ["standard"],version = "*"}
 gunicorn = "*"
-drf-renderer-xlsx = "*"
 django-scheduler = "*"
 typing-extensions = "*"
+drf-excel = "*"
 
 [requires]
 python_version = "3"

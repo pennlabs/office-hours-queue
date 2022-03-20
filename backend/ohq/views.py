@@ -20,8 +20,8 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django_auto_prefetching import prefetch
 from django_filters.rest_framework import DjangoFilterBackend
-from drf_renderer_xlsx.mixins import XLSXFileMixin
-from drf_renderer_xlsx.renderers import XLSXRenderer
+from drf_excel.mixins import XLSXFileMixin
+from drf_excel.renderers import XLSXRenderer
 from pytz import utc
 from rest_framework import filters, generics, mixins, viewsets
 from rest_framework.decorators import action
