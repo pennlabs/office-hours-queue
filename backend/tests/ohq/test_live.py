@@ -217,6 +217,7 @@ class AnnouncementTestCase(TransactionTestCase):
         }
         self.assertEqual(expected, response)
 
+
 class QueueTestCase(TransactionTestCase):
     async def asyncSetUp(self):
         self.semester = await db(Semester.objects.create)(year=2020, term=Semester.TERM_SUMMER)
