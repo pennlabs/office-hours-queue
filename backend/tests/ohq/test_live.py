@@ -171,7 +171,7 @@ class AnnouncementTestCase(TransactionTestCase):
             "type": "broadcast",
             "id": 1,
             "model": "ohq.Announcement",
-            "instance": {"pk": annoucement_id, "id": annoucement_id,},
+            "instance": {"pk": annoucement_id, "id": annoucement_id},
             "action": "DELETED",
         }
         self.assertEqual(expected, response)
@@ -212,7 +212,7 @@ class AnnouncementTestCase(TransactionTestCase):
             "type": "broadcast",
             "id": 2,
             "model": "ohq.Announcement",
-            "instance": {"pk": annoucement_id, "id": annoucement_id,},
+            "instance": {"pk": annoucement_id, "id": annoucement_id},
             "action": "DELETED",
         }
         self.assertEqual(expected, response)
