@@ -42,6 +42,7 @@ queue_router.register("questions", QuestionViewSet, basename="question")
 realtime_router = RealtimeRouter()
 realtime_router.register(QuestionViewSet)
 realtime_router.register(AnnouncementViewSet)
+realtime_router.register(QueueViewSet)
 
 additional_urls = [
     path("accounts/me/", UserView.as_view(), name="me"),
