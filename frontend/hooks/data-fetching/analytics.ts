@@ -94,12 +94,16 @@ export const useStatistic = (
         dateRange = range ? `&date__gte=${formattedDate}` : "";
     }
     const { data, error, isValidating } = useResource<AnalyticsData>(
-        `/api/courses/${courseId}/queues/${queueId}/statistics/?metric=${type}${dateRange}`
+        `/api/courses/${courseId}/queues/${queueId}/statistics/?metric=${type}${dateRange}`,
+        {
+            revalidateOnFocus: false,
+            revalidateOnReconnect: false,
+        }
     );
 
     if (data) {
         return { data, error, isValidating };
     }
 
-    return { data: [], error, isValidating: true };
+    return { data: [], error, isValidating };
 };

@@ -67,7 +67,7 @@ export default function SummaryCards({ courseId, queueId }: SummaryCardsProps) {
                     label="Average Wait Time"
                     content={
                         avgWaitValidating
-                            ? "Loading..."
+                            ? "..."
                             : `${Math.round(average(avgWaitData))} minutes`
                     }
                 />
@@ -75,7 +75,7 @@ export default function SummaryCards({ courseId, queueId }: SummaryCardsProps) {
                     label="Questions Answered"
                     content={
                         numAnsweredValidating
-                            ? "Loading..."
+                            ? "..."
                             : `${sum(numAnsweredData)} questions`
                     }
                 />
@@ -83,7 +83,7 @@ export default function SummaryCards({ courseId, queueId }: SummaryCardsProps) {
                     label="Students Helped"
                     content={
                         studentsHelpedValidating
-                            ? "Loading..."
+                            ? "..."
                             : `${sum(studentsHelpedData)} questions`
                     }
                 />
@@ -91,7 +91,7 @@ export default function SummaryCards({ courseId, queueId }: SummaryCardsProps) {
                     label="Average Time per Student"
                     content={
                         avgTimeHelpingValidating
-                            ? "Loading..."
+                            ? "..."
                             : `${Math.round(
                                   average(avgTimeHelpingData)
                               )} minutes`
