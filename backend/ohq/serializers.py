@@ -192,9 +192,7 @@ class QueueSerializer(CourseRouteMixin):
     def to_representation(self, instance):
         # get the original representation
         rep = super(QueueSerializer, self).to_representation(instance)
-        print('got to here')
-        if ("request" not in self.context) :
-            print("request not in")
+        if "request" not in self.context:
             rep.pop("pin")
             return rep
 
