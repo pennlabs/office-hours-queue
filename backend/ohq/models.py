@@ -110,6 +110,7 @@ class Membership(models.Model):
 
     # For staff
     last_active = models.DateTimeField(blank=True, null=True)
+    timer_seconds = models.IntegerField(blank=True, null=True)
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["course", "user"], name="unique_membership")]

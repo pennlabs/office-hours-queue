@@ -17,6 +17,8 @@ import {
     Question,
     QuestionMap,
     NotificationProps,
+    User,
+    UserMembership,
 } from "../../../types";
 import InstructorQueuePage from "../../../components/Course/InstructorQueuePage/InstructorQueuePage";
 import StudentQueuePage from "../../../components/Course/StudentQueuePage/StudentQueuePage";
@@ -26,6 +28,7 @@ interface QueuePageProps extends CoursePageProps {
     questionmap: QuestionMap;
     tags: Tag[];
     announcements: Announcement[];
+    membership: UserMembership;
 }
 
 const QueuePage = (props: QueuePageProps) => {
@@ -36,6 +39,7 @@ const QueuePage = (props: QueuePageProps) => {
         questionmap,
         tags,
         announcements,
+        membership,
     } = props;
     return (
         <WebsocketProvider
@@ -71,6 +75,7 @@ const QueuePage = (props: QueuePageProps) => {
                                         notifs={notifs}
                                         setNotifs={setNotifs}
                                         tags={tags}
+                                        membership={membership}
                                     />
                                 )}
                                 {!staff && (
@@ -105,6 +110,8 @@ QueuePage.getInitialProps = async (
     let queues: Queue[];
     let tags: Tag[];
     let announcements: Announcement[];
+    let user: User;
+    let membership: UserMembership;
 
     const response = await doMultipleSuccessRequests([
         { path: `/api/courses/${query.course}/`, data },
@@ -112,10 +119,16 @@ QueuePage.getInitialProps = async (
         { path: `/api/courses/${query.course}/queues/`, data },
         { path: `/api/courses/${query.course}/tags/`, data },
         { path: `/api/courses/${query.course}/announcements/`, data },
+        { path: "/api/accounts/me/", data },
     ]);
 
     if (response.success) {
-        [course, leadership, queues, tags, announcements] = response.data;
+        [course, leadership, queues, tags, announcements, user] = response.data;
+
+        membership = user.membershipSet.find(
+            (item) => item.course.id === course.id
+        )!;
+
         if (course.archived) {
             nextRedirect(
                 context,
@@ -153,6 +166,7 @@ QueuePage.getInitialProps = async (
         questionmap,
         tags,
         announcements,
+        membership,
     };
 };
 export default withAuth(QueuePage);

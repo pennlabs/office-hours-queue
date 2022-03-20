@@ -116,7 +116,7 @@ class MembershipSerializer(CourseRouteMixin):
 
     class Meta:
         model = Membership
-        fields = ("id", "kind", "time_created", "last_active", "user")
+        fields = ("id", "kind", "time_created", "last_active", "user", "timer_seconds")
 
     def create(self, validated_data):
         ModelClass = self.Meta.model
@@ -352,7 +352,7 @@ class MembershipPrivateSerializer(CourseRouteMixin):
 
     class Meta:
         model = Membership
-        fields = ("id", "course", "kind", "time_created", "last_active")
+        fields = ("id", "course", "kind", "time_created", "last_active", "timer_seconds")
 
 
 class ProfileSerializer(serializers.ModelSerializer):

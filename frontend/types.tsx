@@ -49,6 +49,7 @@ export interface UserMembership {
     id: number;
     course: Course;
     kind: Kind;
+    timerSeconds: Number;
 }
 
 export interface User extends BaseUser {

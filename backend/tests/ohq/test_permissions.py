@@ -721,6 +721,7 @@ class MembershipTestCase(TestCase):
     def setUp(self):
         setUp(self)
         self.membership = Membership.objects.get(course=self.course, user=self.professor)
+        self.ta_membership = Membership.objects.get(course=self.course, user=self.ta)
 
         # Expected results
         self.expected = {
@@ -769,6 +770,14 @@ class MembershipTestCase(TestCase):
                 "head_ta": 200,
                 "ta": 403,
                 "student": 403,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+            "modify-timer": {
+                "professor": 403,
+                "head_ta": 403,
+                "ta": 200,
+                "student": 404,  # 404 since student doesn't have permission for TA membership
                 "non_member": 403,
                 "anonymous": 403,
             },
@@ -831,6 +840,17 @@ class MembershipTestCase(TestCase):
             "patch",
             reverse("ohq:member-detail", args=[self.course.id, self.membership.id]),
             {"description": "new"},
+        )
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_modify_timer(self, user):
+        test(
+            self,
+            user,
+            "modify-timer",
+            "patch",
+            reverse("ohq:member-detail", args=[self.course.id, self.ta_membership.id]),
+            {"timer_seconds": 300},
         )
 
 
