@@ -4,6 +4,7 @@ import { Segment, Grid, Dropdown } from "semantic-ui-react";
 import { Course, Queue } from "../../../types";
 // import MyPieChart from "./MyPieChart";
 import Averages from "./Heatmaps/Averages";
+import SummaryCards from "./Cards/SummaryCards";
 
 interface AnalyticsProps {
     course: Course;
@@ -177,45 +178,53 @@ const Analytics = ({ course, queues }: AnalyticsProps) => {
     });
 
     return (
-        <Grid.Row>
-            {queueId ? (
-                <>
-                    <Segment basic>
-                        <span>
-                            Showing statistics for queue:{" "}
-                            <Dropdown
-                                inline
-                                options={queueOptions}
-                                defaultValue={queueId}
-                                onChange={(e, { value }) => {
-                                    setQueueId(value as number);
-                                }}
+        <>
+            <Grid.Row>
+                {queueId ? (
+                    <>
+                        <Segment basic>
+                            <span>
+                                Showing statistics for queue:{" "}
+                                <Dropdown
+                                    inline
+                                    options={queueOptions}
+                                    defaultValue={queueId}
+                                    onChange={(e, { value }) => {
+                                        setQueueId(value as number);
+                                    }}
+                                />
+                            </span>
+                        </Segment>
+                        <Grid.Row>
+                            <SummaryCards
+                                courseId={course.id}
+                                queueId={queueId}
                             />
-                        </span>
-                    </Segment>
-                    <Averages courseId={course.id} queueId={queueId} />
-                    {/* <Segment basic>
-                        <Header as="h3">Questions by Type</Header>
-                        {pieChartData &&
-                        pieChartData.map((dataset) => {
-                            return <MyPieChart dataset={dataset} />;
-                        })}
-                    </Segment>
+                        </Grid.Row>
+                        <Averages courseId={course.id} queueId={queueId} />
+                        {/* <Segment basic>
+                            <Header as="h3">Questions by Type</Header>
+                            {pieChartData &&
+                            pieChartData.map((dataset) => {
+                                return <MyPieChart dataset={dataset} />;
+                            })}
+                        </Segment>
+                        <Segment basic>
+                            <Header as="h3">Queue Traffic</Header>
+                            {lineChartData && <MyPieChart dataset={lineChartData} />}
+                        </Segment> */}
+                    </>
+                ) : (
                     <Segment basic>
-                        <Header as="h3">Queue Traffic</Header>
-                        {lineChartData && <MyPieChart dataset={lineChartData} />}
-                    </Segment> */}
-                </>
-            ) : (
-                <Segment basic>
-                    You have no queues. Create a queue on the{" "}
-                    <Link href={`/courses/${course.id}`}>
-                        <a>queue page</a>
-                    </Link>{" "}
-                    to see analytics.
-                </Segment>
-            )}
-        </Grid.Row>
+                        You have no queues. Create a queue on the{" "}
+                        <Link href={`/courses/${course.id}`}>
+                            <a>queue page</a>
+                        </Link>{" "}
+                        to see analytics.
+                    </Segment>
+                )}
+            </Grid.Row>
+        </>
     );
 };
 
