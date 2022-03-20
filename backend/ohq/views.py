@@ -707,7 +707,7 @@ class EventViewSet(viewsets.ModelViewSet):
                 events.append(event)
 
         serializer = EventSerializer(events, many=True)
-        return Response(serializer.data)
+        return JsonResponse(serializer.data, safe=False)
 
     def get_queryset(self):
         return Event.objects.filter(pk=self.kwargs["pk"])
@@ -802,7 +802,7 @@ class OccurrenceViewSet(
                     occurrences.append(occurrence)
 
         serializer = OccurrenceSerializer(occurrences, many=True)
-        return Response(serializer.data)
+        return JsonResponse(serializer.data, safe=False)
 
     def get_queryset(self):
         return Occurrence.objects.filter(pk=self.kwargs["pk"])
