@@ -6,13 +6,7 @@ import { useMediaQuery } from "@material-ui/core";
 import Questions from "./Questions";
 import QueuePin from "./QueuePin";
 import ClearQueueModal from "./ClearQueueModal";
-import {
-    Queue as QueueType,
-    Question,
-    Tag,
-    UserMembership,
-    NotificationProps,
-} from "../../../types";
+import { Queue as QueueType, Question, Tag } from "../../../types";
 import { useQuestions } from "../../../hooks/data-fetching/course";
 import { AuthUserContext } from "../../../context/auth";
 import { MOBILE_BP } from "../../../constants";
@@ -27,8 +21,6 @@ interface QueueProps {
     notifs: boolean;
     setNotifs: (boolean) => void;
     tags: Tag[];
-    membership: UserMembership;
-    play: NotificationProps;
 }
 
 const Queue = (props: QueueProps) => {
@@ -42,8 +34,6 @@ const Queue = (props: QueueProps) => {
         notifs,
         setNotifs,
         tags,
-        membership,
-        play,
     } = props;
     const { id: queueId, active, estimatedWaitTime } = queue;
     const [filteredTags, setFilteredTags] = useState<string[]>([]);
@@ -61,58 +51,6 @@ const Queue = (props: QueueProps) => {
             "Invariant broken: withAuth must be used with component"
         );
     }
-
-    const answeredTime = useMemo(() => {
-        return questions &&
-            questions?.find(
-                (question) =>
-                    question.respondedToBy?.username === user!.username
-            )
-            ? new Date(
-                  questions!.find(
-                      (question) =>
-                          question.respondedToBy?.username === user!.username
-                  )!.timeResponseStarted!
-              )
-            : null;
-    }, [JSON.stringify(questions), user]);
-
-    const [minutes, setMinutes] = useState<Number>(
-        membership.timerSeconds && membership.timerSeconds.valueOf()
-    );
-    const [seconds, setSeconds] = useState<Number>(0);
-    const [timeUp, setTimeUp] = useState<Boolean>(false);
-
-    const [intervalID, setIntervalID] = useState<NodeJS.Timeout | null>(null);
-
-    useEffect(() => {
-        if (intervalID) {
-            clearInterval(intervalID);
-        }
-
-        setIntervalID(
-            setInterval(() => {
-                if (answeredTime) {
-                    const totalSeconds =
-                        membership.timerSeconds.valueOf() * 60 -
-                        (new Date().getTime() - answeredTime.getTime()) / 1000;
-                    if (totalSeconds > 0) {
-                        setSeconds(totalSeconds % 60 >> 0);
-                        setMinutes((totalSeconds - (totalSeconds % 60)) / 60);
-                        if (timeUp) {
-                            setTimeUp(false);
-                        }
-                    } else if (!timeUp) {
-                        setTimeUp(true);
-                        play.current("Time is up");
-                        if (intervalID) {
-                            clearInterval(intervalID);
-                        }
-                    }
-                }
-            }, 1000)
-        );
-    }, [membership, answeredTime]);
 
     useEffect(() => {
         mutateQuestions();
@@ -185,26 +123,6 @@ const Queue = (props: QueueProps) => {
                                     {queue.description}
                                 </Header.Subheader>
                             </Header>
-                            {answeredTime && (
-                                <span style={{ float: "right" }}>
-                                    <Label
-                                        color={timeUp ? "red" : "green"}
-                                        size="large"
-                                    >
-                                        {timeUp
-                                            ? "Time Up"
-                                            : `${
-                                                  minutes < 10
-                                                      ? `0${minutes}`
-                                                      : minutes
-                                              }:${
-                                                  seconds < 10
-                                                      ? `0${seconds}`
-                                                      : seconds
-                                              }`}
-                                    </Label>
-                                </span>
-                            )}
                             {queue.pinEnabled && active && (
                                 <QueuePin
                                     courseId={courseId}

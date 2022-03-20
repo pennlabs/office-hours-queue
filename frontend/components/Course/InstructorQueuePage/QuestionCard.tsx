@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import {
     Button,
     Grid,
@@ -14,6 +14,7 @@ import RejectQuestionModal from "./RejectQuestionModal";
 import { AuthUserContext } from "../../../context/auth";
 import { Question, QuestionStatus, User } from "../../../types";
 import MessageQuestionModal from "./MessageQuestionModal";
+import QuestionTimer from "./QuestionTimer";
 
 export const fullName = (user: User) => `${user.firstName} ${user.lastName}`;
 
@@ -35,6 +36,18 @@ const QuestionCard = (props: QuestionCardProps) => {
 
     const [open, setOpen] = useState(false);
     const [messageModalOpen, setMessageModalOpen] = useState(false);
+
+    // TODO: types here a little weird
+    const answeredTime = useMemo(() => {
+        return question.respondedToBy?.username === user.username
+            ? question.timeResponseStarted &&
+                  new Date(question.timeResponseStarted)
+            : undefined;
+    }, [
+        question.respondedToBy?.username,
+        question.timeResponseStarted,
+        user.username,
+    ]);
 
     // save notification preference for when an instructor answers a question
     const [lastNotif, setLastNotif] = useState(notifs);
@@ -164,6 +177,12 @@ const QuestionCard = (props: QuestionCardProps) => {
                                 inverted
                                 position="left center"
                             />
+                            {answeredTime && (
+                                <QuestionTimer
+                                    answeredTime={answeredTime}
+                                    timerMinutes={30}
+                                />
+                            )}
                         </Header>
                     </div>
                 </div>

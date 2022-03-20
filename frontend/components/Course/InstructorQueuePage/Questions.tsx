@@ -2,7 +2,7 @@ import { Grid, Message } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import _ from "lodash";
 import QuestionCard from "./QuestionCard";
-import { Question } from "../../../types";
+import { Question, UserMembership } from "../../../types";
 
 interface QuestionsProps {
     questions: Question[];
@@ -10,9 +10,10 @@ interface QuestionsProps {
     mutate: mutateResourceListFunction<Question>;
     notifs: boolean;
     setNotifs: (boolean) => void;
+    memberships: UserMembership;
 }
 const Questions = (props: QuestionsProps) => {
-    const { questions, mutate, active, notifs, setNotifs } = props;
+    const { questions, mutate, active, notifs, setNotifs, memberships } = props;
     return (
         <>
             {questions &&
@@ -25,6 +26,7 @@ const Questions = (props: QuestionsProps) => {
                             mutate={mutate}
                             notifs={notifs}
                             setNotifs={setNotifs}
+                            memberships={memberships}
                         />
                     </Grid.Row>
                 ))}

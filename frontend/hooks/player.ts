@@ -4,6 +4,7 @@ import { NotificationProps } from "../types";
 import { playNotification, checkPermissions } from "../utils/notifications";
 
 export function usePlayer(
+    // TODO: don't make this a parameter, fix in CourseWrapper
     audio: string
 ): [boolean, Dispatch<SetStateAction<Boolean>>, NotificationProps] {
     const player = useRef<UIfx>();
