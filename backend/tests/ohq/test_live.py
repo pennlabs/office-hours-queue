@@ -106,6 +106,9 @@ class QueueTestCase(TransactionTestCase):
         self.course = await db(Course.objects.create)(
             course_code="000", department="TEST", course_title="Title", semester=self.semester
         )
+        self.course2 = await db(Course.objects.create)(
+            course_code="001", department="TEST 2", course_title="Title 2", semester=self.semester
+        )
         self.queue = await db(Queue.objects.create)(name="Queue", course=self.course)
         self.professor = await db(User.objects.create)(username="professor")
         self.professor_membership = await db(Membership.objects.create)(
@@ -157,8 +160,17 @@ class QueueTestCase(TransactionTestCase):
         self.assertEqual(queue2.description, response["instance"]["description"])
 
         # deleting a queue sends message
+        id = queue2.id
         await db(queue2.delete)()
         response = await self.client.receive_json_from()
+        expected = {
+            "type": "broadcast",
+            "id": 1,
+            "model": "ohq.Queue",
+            "action": "DELETED",
+            "instance": {"pk": id, "id": id},
+        }
+        self.assertEqual(expected, response)
 
     @async_test
     async def test_subscribe_single(self):
@@ -182,7 +194,23 @@ class QueueTestCase(TransactionTestCase):
         response = await self.client.receive_json_from()
         self.assertEqual(queue3.description, response["instance"]["description"])
 
+        # deleting a queue sends message
+        id = queue3.id
+        await db(queue3.delete)()
+        response = await self.client.receive_json_from()
+        expected = {
+            "type": "broadcast",
+            "id": 2,
+            "model": "ohq.Queue",
+            "action": "DELETED",
+            "instance": {"pk": id, "id": id},
+        }
+        self.assertEqual(expected, response)
+
         # changing non-subscribed queue doesn't send message
-        self.queue.description = "New description"
-        await db(self.queue.save)()
+        queue4 = await db(Queue.objects.create)(
+            name="Queue 4", course=self.course2, description="This queue is not subscribed"
+        )
+        queue4.description = "New description"
+        await db(queue4.save)()
         self.assertTrue(await self.client.receive_nothing())
