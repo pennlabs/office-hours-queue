@@ -5,12 +5,12 @@ from channels.auth import AuthMiddlewareStack
 from channels.db import database_sync_to_async as db
 from django.contrib.auth import get_user_model
 from django.test import TransactionTestCase
-from djangorestframework_camel_case.util import camelize
 from django.urls import reverse
+from djangorestframework_camel_case.util import camelize
 from rest_framework.test import APIClient
 from rest_live.testing import APICommunicator, async_test, get_headers_for_user
 
-from ohq.models import Course, Membership, Question, Queue, Semester, Announcement
+from ohq.models import Announcement, Course, Membership, Question, Queue, Semester
 from ohq.serializers import AnnouncementSerializer
 from ohq.urls import realtime_router
 
@@ -101,11 +101,10 @@ class QuestionTestCase(TransactionTestCase):
         response = await self.client.receive_json_from()
         self.assertEquals(question_position, response["instance"]["position"])
 
+
 class AnnouncementTestCase(TransactionTestCase):
     async def asyncSetUp(self):
-        self.semester = await db(Semester.objects.create)(
-            year=2020, term=Semester.TERM_SUMMER
-        )
+        self.semester = await db(Semester.objects.create)(year=2020, term=Semester.TERM_SUMMER)
         self.course = await db(Course.objects.create)(
             course_code="000", department="TEST", course_title="Title", semester=self.semester
         )
@@ -172,13 +171,10 @@ class AnnouncementTestCase(TransactionTestCase):
             "type": "broadcast",
             "id": 1,
             "model": "ohq.Announcement",
-            "instance": {
-                "pk": annoucement_id,
-                "id": annoucement_id,
-            },
+            "instance": {"pk": annoucement_id, "id": annoucement_id,},
             "action": "DELETED",
         }
-        self.assertEqual(expected, response) 
+        self.assertEqual(expected, response)
 
     @async_test
     async def test_subscribe_single(self):
@@ -192,7 +188,7 @@ class AnnouncementTestCase(TransactionTestCase):
             "action": "retrieve",
             "model": "ohq.Announcement",
             "view_kwargs": {"course_pk": self.course.id},
-            "lookup_by": new_announcement.id
+            "lookup_by": new_announcement.id,
         }
         await self.client.send_json_to(payload)
         self.assertTrue(await self.client.receive_nothing())
@@ -216,10 +212,7 @@ class AnnouncementTestCase(TransactionTestCase):
             "type": "broadcast",
             "id": 2,
             "model": "ohq.Announcement",
-            "instance": {
-                "pk": annoucement_id,
-                "id": annoucement_id,
-            },
+            "instance": {"pk": annoucement_id, "id": annoucement_id,},
             "action": "DELETED",
         }
-        self.assertEqual(expected, response) 
+        self.assertEqual(expected, response)
