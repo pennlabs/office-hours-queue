@@ -302,8 +302,8 @@ class OccurrenceViewTestCase(TestCase):
                 "end": self.end_time,
                 "title": self.title,
                 "rule": {"frequency": "WEEKLY"},
-                "endRecurringPeriod": self.end_recurring_period,
-                "courseId": self.course.id,
+                "end_recurring_period": self.end_recurring_period,
+                "course_id": self.course.id,
             },
         )
         response = self.client.get(
@@ -325,8 +325,8 @@ class OccurrenceViewTestCase(TestCase):
                 "start": self.start_time,
                 "end": self.end_time,
                 "title": self.title,
-                "endRecurringPeriod": self.end_recurring_period,
-                "courseId": self.course.id,
+                "end_recurring_period": self.end_recurring_period,
+                "course_id": self.course.id,
             },
         )
         event = Event.objects.all().first()
@@ -363,8 +363,8 @@ class OccurrenceViewTestCase(TestCase):
                 "start": self.start_time,
                 "end": self.end_time,
                 "title": self.title,
-                "endRecurringPeriod": self.end_recurring_period,
-                "courseId": self.course.id,
+                "end_recurring_period": self.end_recurring_period,
+                "course_id": self.course.id,
             },
         )
         response = self.client.get(
@@ -401,8 +401,8 @@ class OccurrenceViewTestCase(TestCase):
                 "end": self.end_time,
                 "title": self.title,
                 "rule": {"frequency": "WEEKLY"},
-                "endRecurringPeriod": self.end_recurring_period,
-                "courseId": self.course.id,
+                "end_recurring_period": self.end_recurring_period,
+                "course_id": self.course.id,
             },
         )
         filter_start = "2021-12-04T12:40:37Z"
@@ -426,7 +426,7 @@ class OccurrenceViewTestCase(TestCase):
             reverse("ohq:event-detail", args=[event.id]),
             {
                 "title": "New TA Session",
-                "courseId": self.course.id,
+                "course_id": self.course.id,
                 "start": new_start_date,
                 "end": new_end_date,
             },
