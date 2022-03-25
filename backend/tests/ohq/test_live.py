@@ -217,6 +217,7 @@ class QueueTestCase(TransactionTestCase):
         await db(queue4.save)()
         self.assertTrue(await self.client.receive_nothing())
 
+
 class AnnouncementTestCase(TransactionTestCase):
     async def asyncSetUp(self):
         self.semester = await db(Semester.objects.create)(year=2020, term=Semester.TERM_SUMMER)
