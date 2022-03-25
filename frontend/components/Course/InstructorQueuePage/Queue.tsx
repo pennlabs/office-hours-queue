@@ -6,7 +6,12 @@ import { useMediaQuery } from "@material-ui/core";
 import Questions from "./Questions";
 import QueuePin from "./QueuePin";
 import ClearQueueModal from "./ClearQueueModal";
-import { Queue as QueueType, Question, Tag } from "../../../types";
+import {
+    Queue as QueueType,
+    Question,
+    Tag,
+    UserMembership,
+} from "../../../types";
 import { useQuestions } from "../../../hooks/data-fetching/course";
 import { AuthUserContext } from "../../../context/auth";
 import { MOBILE_BP } from "../../../constants";
@@ -21,6 +26,7 @@ interface QueueProps {
     notifs: boolean;
     setNotifs: (boolean) => void;
     tags: Tag[];
+    membership: UserMembership;
 }
 
 const Queue = (props: QueueProps) => {
@@ -34,6 +40,7 @@ const Queue = (props: QueueProps) => {
         notifs,
         setNotifs,
         tags,
+        membership,
     } = props;
     const { id: queueId, active, estimatedWaitTime } = queue;
     const [filteredTags, setFilteredTags] = useState<string[]>([]);
@@ -257,6 +264,7 @@ const Queue = (props: QueueProps) => {
                             active={active}
                             notifs={notifs}
                             setNotifs={setNotifs}
+                            membership={membership}
                         />
                     </Grid.Column>
                 </Grid.Row>

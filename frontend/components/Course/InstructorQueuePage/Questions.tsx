@@ -10,10 +10,10 @@ interface QuestionsProps {
     mutate: mutateResourceListFunction<Question>;
     notifs: boolean;
     setNotifs: (boolean) => void;
-    memberships: UserMembership;
+    membership: UserMembership;
 }
 const Questions = (props: QuestionsProps) => {
-    const { questions, mutate, active, notifs, setNotifs, memberships } = props;
+    const { questions, mutate, active, notifs, setNotifs, membership } = props;
     return (
         <>
             {questions &&
@@ -26,7 +26,7 @@ const Questions = (props: QuestionsProps) => {
                             mutate={mutate}
                             notifs={notifs}
                             setNotifs={setNotifs}
-                            memberships={memberships}
+                            membership={membership}
                         />
                     </Grid.Row>
                 ))}

@@ -12,7 +12,7 @@ import moment from "moment";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import RejectQuestionModal from "./RejectQuestionModal";
 import { AuthUserContext } from "../../../context/auth";
-import { Question, QuestionStatus, User } from "../../../types";
+import { Question, QuestionStatus, User, UserMembership } from "../../../types";
 import MessageQuestionModal from "./MessageQuestionModal";
 import QuestionTimer from "./QuestionTimer";
 
@@ -23,9 +23,16 @@ interface QuestionCardProps {
     mutate: mutateResourceListFunction<Question>;
     notifs: boolean;
     setNotifs: (boolean) => void;
+    membership: UserMembership;
 }
 const QuestionCard = (props: QuestionCardProps) => {
-    const { question, mutate: mutateQuestion, notifs, setNotifs } = props;
+    const {
+        question,
+        mutate: mutateQuestion,
+        notifs,
+        setNotifs,
+        membership,
+    } = props;
     const { id: questionId, askedBy } = question;
     const { user } = useContext(AuthUserContext);
     if (!user) {
@@ -177,10 +184,10 @@ const QuestionCard = (props: QuestionCardProps) => {
                                 inverted
                                 position="left center"
                             />
-                            {answeredTime && (
+                            {membership.timerSeconds && answeredTime && (
                                 <QuestionTimer
                                     answeredTime={answeredTime}
-                                    timerMinutes={30}
+                                    timerMinutes={membership.timerSeconds.valueOf()}
                                 />
                             )}
                         </Header>

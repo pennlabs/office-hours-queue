@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Label } from "semantic-ui-react";
+import { Icon, Label } from "semantic-ui-react";
 import { usePlayer } from "../../../hooks/player";
 import * as bellAudio from "./notification.mp3";
 
@@ -11,7 +11,7 @@ interface QuestionTimerProps {
 }
 
 const QuestionTimer = ({ answeredTime, timerMinutes }: QuestionTimerProps) => {
-    const [timeUp, setTimeUp] = useState<Boolean>(false);
+    const [timeUp, setTimeUp] = useState(false);
 
     const [minutes, setMinutes] = useState(timerMinutes);
     const [seconds, setSeconds] = useState<Number>(0);
@@ -38,7 +38,7 @@ const QuestionTimer = ({ answeredTime, timerMinutes }: QuestionTimerProps) => {
                         }
                     } else if (!timeUp) {
                         setTimeUp(true);
-                        play.current("Time is up");
+                        // play.current("Time is up");
                         if (intervalID) {
                             clearInterval(intervalID);
                         }
@@ -51,15 +51,14 @@ const QuestionTimer = ({ answeredTime, timerMinutes }: QuestionTimerProps) => {
     return (
         <>
             {answeredTime && (
-                <span style={{ float: "right" }}>
-                    <Label color={timeUp ? "red" : "green"} size="large">
-                        {timeUp
-                            ? "Time Up"
-                            : `${minutes < 10 ? `0${minutes}` : minutes}:${
-                                  seconds < 10 ? `0${seconds}` : seconds
-                              }`}
-                    </Label>
-                </span>
+                <Label color={timeUp ? "red" : "green"}>
+                    <Icon name="clock" />
+                    {timeUp
+                        ? "Time Up"
+                        : `${minutes < 10 ? `0${minutes}` : minutes}:${
+                              seconds < 10 ? `0${seconds}` : seconds
+                          }`}
+                </Label>
             )}
         </>
     );
