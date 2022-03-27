@@ -1,4 +1,4 @@
-import { Card, Dropdown, Header } from "semantic-ui-react";
+import { Card, Dropdown, Header, Segment } from "semantic-ui-react";
 import React, { useState } from "react";
 import AnalyticsCard from "./AnalyticsCard";
 import { useStatistic } from "../../../../hooks/data-fetching/analytics";
@@ -50,9 +50,9 @@ export default function SummaryCards({ courseId, queueId }: SummaryCardsProps) {
     };
 
     return (
-        <>
+        <Segment padded>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <Header as="h3">At a Glance</Header>
+                <Header as="h3">Summary Statistics</Header>
                 <Dropdown
                     inline
                     options={timeRangeOptions}
@@ -68,7 +68,7 @@ export default function SummaryCards({ courseId, queueId }: SummaryCardsProps) {
                     content={
                         avgWaitValidating
                             ? "..."
-                            : `${Math.round(average(avgWaitData))} minutes`
+                            : `${Math.round(average(avgWaitData) / 60)} minutes`
                     }
                 />
                 <AnalyticsCard
@@ -93,11 +93,11 @@ export default function SummaryCards({ courseId, queueId }: SummaryCardsProps) {
                         avgTimeHelpingValidating
                             ? "..."
                             : `${Math.round(
-                                  average(avgTimeHelpingData)
+                                  average(avgTimeHelpingData) / 60
                               )} minutes`
                     }
                 />
             </Card.Group>
-        </>
+        </Segment>
     );
 }

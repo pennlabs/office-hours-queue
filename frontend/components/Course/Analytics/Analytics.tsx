@@ -182,25 +182,16 @@ const Analytics = ({ course, queues }: AnalyticsProps) => {
             <Grid.Row>
                 {queueId ? (
                     <>
-                        <Segment basic>
-                            <span>
-                                Showing statistics for queue:{" "}
-                                <Dropdown
-                                    inline
-                                    options={queueOptions}
-                                    defaultValue={queueId}
-                                    onChange={(e, { value }) => {
-                                        setQueueId(value as number);
-                                    }}
-                                />
-                            </span>
-                        </Segment>
-                        <Grid.Row>
-                            <SummaryCards
-                                courseId={course.id}
-                                queueId={queueId}
-                            />
-                        </Grid.Row>
+                        <Dropdown
+                            as="h3"
+                            inline
+                            options={queueOptions}
+                            defaultValue={queueId}
+                            onChange={(e, { value }) => {
+                                setQueueId(value as number);
+                            }}
+                        />
+                        <SummaryCards courseId={course.id} queueId={queueId} />
                         <Averages courseId={course.id} queueId={queueId} />
                         {/* <Segment basic>
                             <Header as="h3">Questions by Type</Header>
