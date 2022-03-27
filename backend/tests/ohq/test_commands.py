@@ -732,7 +732,7 @@ class CourseStudentMostQuestionsAskedTestCase(TestCase):
             q4.save()
 
     def test_student_most_questions_computation(self):
-        call_command("course_stat")
+        call_command("course_stat", "--hist")
 
         # Top 5 students who asked to most questions
         expected = {
@@ -847,7 +847,7 @@ class CourseStudentMostTimeBeingHelpedTestCase(TestCase):
             q4.save()
 
     def test_student_most_time_being_helped_computation(self):
-        call_command("course_stat")
+        call_command("course_stat", "--hist")
 
         # Top 5 students who spent the most time getting help
         total_time = {}
@@ -946,7 +946,7 @@ class CourseInstructorMostQuestionsAnsweredTestCase(TestCase):
             q4.save()
 
     def test_ta_most_questions_answered_computation(self):
-        call_command("course_stat")
+        call_command("course_stat", "--hist")
 
         last_sunday = datetime(2021, 11, 28)
         # Top 5 TAs who answered the most questions
@@ -1037,7 +1037,7 @@ class CourseInstructorMostTimeHelpingTestCase(TestCase):
                 q3.save()
 
     def test_instructor_most_time_helping_computation(self):
-        call_command("course_stat")
+        call_command("course_stat", "--hist")
 
         # Top 5 students who spent the most time getting help
         total_time = {}
