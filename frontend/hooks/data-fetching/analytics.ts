@@ -88,7 +88,7 @@ export const useStatistic = (
     let dateRange = "";
     if (range) {
         let date = new Date();
-        date.setDate(date.getDay() - range);
+        date.setDate(date.getDate() - range);
         date = new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000);
         const formattedDate = date.toISOString().split("T")[0];
         dateRange = range ? `&date__gte=${formattedDate}` : "";
