@@ -188,7 +188,7 @@ const CreateQueue = (props: CreateQueueProps) => {
                             <Form.Checkbox
                                 name="rateLimitEnabled"
                                 defaultChecked={input.rateLimitEnabled}
-                                label="Enable queue rate-limiting"
+                                label="Enable stack rate-limiting"
                                 onChange={() =>
                                     setInput({
                                         ...input,

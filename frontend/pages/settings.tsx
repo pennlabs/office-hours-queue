@@ -7,7 +7,7 @@ const LandingPage = () => {
     return (
         <>
             <Head>
-                <title>OHQ | Account Settings</title>
+                <title>OHS | Account Settings</title>
             </Head>
             <Home>
                 <AccountSettings />
