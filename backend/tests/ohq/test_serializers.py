@@ -575,12 +575,26 @@ class EventSerializerTestCase(TestCase):
                 "end": self.end_time,
                 "title": self.old_title,
                 "rule": {"frequency": "WEEKLY"},
-                "endRecurringPeriod": self.end_time,
-                "courseId": self.course.id,
+                "end_recurring_period": self.end_time,
+                "course_id": self.course.id,
             },
         )
         self.assertEqual(1, Event.objects.all().count())
 
+        # creating event without rule works
+        self.client.post(
+            reverse("ohq:event-list"),
+            {
+                "start": self.start_time,
+                "end": self.end_time,
+                "title": self.old_title,
+                "end_recurring_period": self.end_time,
+                "course_id": self.course.id,
+            },
+        )
+        self.assertEqual(2, Event.objects.all().count())
+
+        # creating without course_id does not
         self.client.post(
             reverse("ohq:event-list"),
             {
@@ -588,10 +602,10 @@ class EventSerializerTestCase(TestCase):
                 "end": self.end_time,
                 "title": self.old_title,
                 "rule": {"frequency": "WEEKLY"},
-                "endRecurringPeriod": self.end_time,
+                "end_recurring_period": self.end_time,
             },
         )
-        self.assertEqual(1, Event.objects.all().count())
+        self.assertEqual(2, Event.objects.all().count())
 
         # student cannot create new event
         self.client.force_authenticate(user=self.student)
@@ -602,11 +616,11 @@ class EventSerializerTestCase(TestCase):
                 "end": self.end_time,
                 "title": self.old_title,
                 "rule": {"frequency": "WEEKLY"},
-                "endRecurringPeriod": "2019-10-24T14:15:22Z",
-                "courseId": self.course.id,
+                "end_recurring_period": "2019-10-24T14:15:22Z",
+                "course_id": self.course.id,
             },
         )
-        self.assertEqual(1, Event.objects.all().count())
+        self.assertEqual(2, Event.objects.all().count())
 
     def test_update(self):
         """
@@ -620,8 +634,8 @@ class EventSerializerTestCase(TestCase):
                 "end": self.end_time,
                 "title": self.old_title,
                 "rule": {"frequency": "WEEKLY"},
-                "endRecurringPeriod": self.end_time,
-                "courseId": self.course.id,
+                "end_recurring_period": self.end_time,
+                "course_id": self.course.id,
             },
         )
         self.assertEqual(1, Event.objects.all().count())
@@ -630,7 +644,7 @@ class EventSerializerTestCase(TestCase):
             reverse("ohq:event-detail", args=[event.id]),
             {
                 "title": self.new_title,
-                "courseId": self.course.id,
+                "course_id": self.course.id,
                 "rule": {"frequency": "MONTHLY"},
             },
         )
@@ -641,7 +655,7 @@ class EventSerializerTestCase(TestCase):
         self.client.force_authenticate(user=self.student)
         self.client.patch(
             reverse("ohq:event-detail", args=[event.id]),
-            {"title": self.old_title, "courseId": self.course.id},
+            {"title": self.old_title, "course_id": self.course.id},
         )
         event = Event.objects.all().first()
         # title has not changed
@@ -660,8 +674,8 @@ class EventSerializerTestCase(TestCase):
                 "end": self.end_time,
                 "title": self.old_title,
                 "rule": {"frequency": "WEEKLY"},
-                "endRecurringPeriod": self.end_time,
-                "courseId": self.course.id,
+                "end_recurring_period": self.end_time,
+                "course_id": self.course.id,
             },
         )
         self.assertEqual(1, Event.objects.all().count())
@@ -685,8 +699,8 @@ class EventSerializerTestCase(TestCase):
                 "end": self.end_time,
                 "title": self.old_title,
                 "rule": {"frequency": "WEEKLY"},
-                "endRecurringPeriod": self.end_time,
-                "courseId": self.course.id,
+                "end_recurring_period": self.end_time,
+                "course_id": self.course.id,
             },
         )
         self.client.post(
@@ -696,8 +710,8 @@ class EventSerializerTestCase(TestCase):
                 "end": self.end_time,
                 "title": self.new_title,
                 "rule": {"frequency": "WEEKLY"},
-                "endRecurringPeriod": self.end_time,
-                "courseId": self.course.id,
+                "end_recurring_period": self.end_time,
+                "course_id": self.course.id,
             },
         )
         response = self.client.get(
