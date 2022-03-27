@@ -1,5 +1,3 @@
-import json
-
 from django.db.models import Q
 from rest_framework import permissions
 from schedule.models import Event, EventRelation, Occurrence

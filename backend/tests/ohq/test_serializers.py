@@ -594,7 +594,7 @@ class EventSerializerTestCase(TestCase):
         )
         self.assertEqual(2, Event.objects.all().count())
 
-        # creating without course_id does not 
+        # creating without course_id does not
         self.client.post(
             reverse("ohq:event-list"),
             {
@@ -621,7 +621,6 @@ class EventSerializerTestCase(TestCase):
             },
         )
         self.assertEqual(2, Event.objects.all().count())
-
 
     def test_update(self):
         """
