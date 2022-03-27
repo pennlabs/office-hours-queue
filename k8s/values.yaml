@@ -6,7 +6,7 @@ applications:
     image: pennlabs/office-hours-queue-backend
     secret: office-hours-queue
     cmd: ["/usr/local/bin/asgi-run"]
-    replicas: 4
+    replicas: 6
     ingress:
       hosts:
         - host: ohq.io

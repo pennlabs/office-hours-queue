@@ -14,6 +14,7 @@ import RejectQuestionModal from "./RejectQuestionModal";
 import { AuthUserContext } from "../../../context/auth";
 import { Question, QuestionStatus, User } from "../../../types";
 import MessageQuestionModal from "./MessageQuestionModal";
+import LinkedText from "../../common/ui/LinkedText";
 
 export const fullName = (user: User) => `${user.firstName} ${user.lastName}`;
 
@@ -184,7 +185,7 @@ const QuestionCard = (props: QuestionCardProps) => {
                 tertiary={question.timeResponseStarted !== null}
                 style={{ whiteSpace: "break-spaces", wordBreak: "break-word" }}
             >
-                {question.text}
+                <LinkedText text={question.text} />
             </Segment>
             <Segment attached="bottom" secondary textAlign="right">
                 <Grid>
@@ -285,7 +286,9 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     <Message.Content
                                         style={{ overflowWrap: "anywhere" }}
                                     >
-                                        <p>{question.note}</p>
+                                        <p>
+                                            <LinkedText text={question.note} />
+                                        </p>
                                         <Button
                                             compact
                                             size="mini"
