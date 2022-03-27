@@ -674,7 +674,7 @@ class CourseStudentMostQuestionsAskedTestCase(TestCase):
             student7: 50,
         }
 
-        self.question_date = datetime(2021, 12, 1)
+        self.question_date = timezone.datetime.today().date() - timezone.timedelta(days=1)
 
         # this command computes avg wait time yesterday
         for student in students:
@@ -732,7 +732,7 @@ class CourseStudentMostQuestionsAskedTestCase(TestCase):
             q4.save()
 
     def test_student_most_questions_computation(self):
-        call_command("course_stat", "--hist")
+        call_command("course_stat")
 
         # Top 5 students who asked to most questions
         expected = {
@@ -742,7 +742,7 @@ class CourseStudentMostQuestionsAskedTestCase(TestCase):
             )[:5]
         }
 
-        last_sunday = datetime(2021, 11, 28)
+        last_sunday = self.question_date - timezone.timedelta(days=(self.question_date.weekday() + 1) % 7)
         query = CourseStatistic.objects.filter(
             metric=CourseStatistic.METRIC_STUDENT_QUESTIONS_ASKED, date=last_sunday
         )
