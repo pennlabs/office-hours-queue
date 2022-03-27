@@ -19,17 +19,17 @@ export default function SummaryCards({ courseId, queueId }: SummaryCardsProps) {
         };
     });
 
+    const {
+        data: numAnsweredData,
+        isValidating: numAnsweredValidating,
+    } = useStatistic(courseId, queueId, Metric.NUM_ANSWERED, timeRange);
+
     const { data: avgWaitData, isValidating: avgWaitValidating } = useStatistic(
         courseId,
         queueId,
         Metric.AVG_WAIT,
         timeRange
     );
-
-    const {
-        data: numAnsweredData,
-        isValidating: numAnsweredValidating,
-    } = useStatistic(courseId, queueId, Metric.NUM_ANSWERED, timeRange);
 
     const {
         data: studentsHelpedData,
@@ -45,8 +45,25 @@ export default function SummaryCards({ courseId, queueId }: SummaryCardsProps) {
         return data.reduce((prev, cur) => prev + parseInt(cur.value, 10), 0);
     };
 
-    const average = (data) => {
-        return sum(data) / data.length || 0;
+    const averageWeighted = (data, weights) => {
+        const timeHelping: { value: number; date: string }[] = [];
+        const numHelped: { value: number; date: string }[] = [];
+        for (const dataItem of data) {
+            const weightItem = weights.find(
+                (ele) => dataItem.date === ele.date
+            );
+            if (weightItem) {
+                timeHelping.push({
+                    value: dataItem.value * weightItem.value,
+                    date: dataItem.date,
+                });
+                numHelped.push({
+                    value: weightItem.value,
+                    date: dataItem.date,
+                });
+            }
+        }
+        return sum(timeHelping) / sum(numHelped) || 0;
     };
 
     return (
@@ -64,14 +81,6 @@ export default function SummaryCards({ courseId, queueId }: SummaryCardsProps) {
             </div>
             <Card.Group>
                 <AnalyticsCard
-                    label="Average Wait Time"
-                    content={
-                        avgWaitValidating
-                            ? "..."
-                            : `${Math.round(average(avgWaitData) / 60)} minutes`
-                    }
-                />
-                <AnalyticsCard
                     label="Questions Answered"
                     content={
                         numAnsweredValidating
@@ -80,11 +89,24 @@ export default function SummaryCards({ courseId, queueId }: SummaryCardsProps) {
                     }
                 />
                 <AnalyticsCard
+                    label="Average Wait Time"
+                    content={
+                        avgWaitValidating
+                            ? "..."
+                            : `${Math.round(
+                                  averageWeighted(
+                                      avgWaitData,
+                                      numAnsweredData
+                                  ) / 60
+                              )} minutes`
+                    }
+                />
+                <AnalyticsCard
                     label="Students Helped"
                     content={
                         studentsHelpedValidating
                             ? "..."
-                            : `${sum(studentsHelpedData)} questions`
+                            : `${sum(studentsHelpedData)} students`
                     }
                 />
                 <AnalyticsCard
@@ -93,7 +115,10 @@ export default function SummaryCards({ courseId, queueId }: SummaryCardsProps) {
                         avgTimeHelpingValidating
                             ? "..."
                             : `${Math.round(
-                                  average(avgTimeHelpingData) / 60
+                                  averageWeighted(
+                                      avgTimeHelpingData,
+                                      studentsHelpedData
+                                  ) / 60
                               )} minutes`
                     }
                 />
