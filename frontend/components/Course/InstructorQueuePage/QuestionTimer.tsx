@@ -5,48 +5,39 @@ import * as bellAudio from "./notification.mp3";
 
 interface QuestionTimerProps {
     answeredTime: Date;
-    // will be numerical value of membership.timerSeconds for now
-    // if membership.timerSeconds is null, then we don't create this component
     timerMinutes: number;
 }
 
 const QuestionTimer = ({ answeredTime, timerMinutes }: QuestionTimerProps) => {
     const [timeUp, setTimeUp] = useState(false);
-
-    const [minutes, setMinutes] = useState(timerMinutes);
-    const [seconds, setSeconds] = useState<Number>(0);
+    const [secondsLeft, setSecondsLeft] = useState(timerMinutes * 60);
+    const [intervalId, setIntervalId] = useState(-1);
     const [, , play] = usePlayer(bellAudio);
 
-    const [intervalID, setIntervalID] = useState<NodeJS.Timeout | null>(null);
+    const updateSeconds = () => {
+        if (secondsLeft > 0) {
+            setSecondsLeft((prevSecondsLeft) => prevSecondsLeft - 1);
+        } else {
+            setTimeUp(true);
+        }
+    };
 
     useEffect(() => {
-        if (intervalID) {
-            clearInterval(intervalID);
-        }
+        const id = window.setInterval(updateSeconds, 1000);
+        setIntervalId(id);
+        return () => clearInterval(intervalId);
+    }, []);
 
-        setIntervalID(
-            setInterval(() => {
-                if (answeredTime) {
-                    const totalSeconds =
-                        timerMinutes * 60 -
-                        (new Date().getTime() - answeredTime.getTime()) / 1000;
-                    if (totalSeconds > 0) {
-                        setSeconds(totalSeconds % 60 >> 0);
-                        setMinutes((totalSeconds - (totalSeconds % 60)) / 60);
-                        if (timeUp) {
-                            setTimeUp(false);
-                        }
-                    } else if (!timeUp) {
-                        setTimeUp(true);
-                        // play.current("Time is up");
-                        if (intervalID) {
-                            clearInterval(intervalID);
-                        }
-                    }
-                }
-            }, 1000)
-        );
-    }, [timerMinutes, answeredTime, intervalID, timeUp, play]);
+    useEffect(() => {
+        if (timeUp) {
+            setTimeUp(false);
+            play.current("Time is up");
+            clearInterval(intervalId);
+        }
+    }, [intervalId, play, timeUp]);
+
+    const minutes = Math.floor(secondsLeft / 60);
+    const seconds = secondsLeft % 60;
 
     return (
         <>

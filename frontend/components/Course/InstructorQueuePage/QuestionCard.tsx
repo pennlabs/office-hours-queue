@@ -184,6 +184,7 @@ const QuestionCard = (props: QuestionCardProps) => {
                                 inverted
                                 position="left center"
                             />
+                            {/* membership.timerSeconds actually stores minutes, TODO: change name to timerMinutes */}
                             {membership.timerSeconds && answeredTime && (
                                 <QuestionTimer
                                     answeredTime={answeredTime}
