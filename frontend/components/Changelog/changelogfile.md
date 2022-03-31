@@ -1,6 +1,8 @@
 ## 2022-03-31
 ### Added
 -   New analytics cards listing summary statistics for queues, specifically the number of questions answered, average wait time, number of students helped, and average time helping each student. 
+### Changed
+-   The max character limit for course titles has been increased to 100.
 
 ## 2022-02-05
 ### Added
