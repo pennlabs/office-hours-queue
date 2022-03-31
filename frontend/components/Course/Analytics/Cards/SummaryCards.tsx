@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import AnalyticsCard from "./AnalyticsCard";
 import { useStatistic } from "../../../../hooks/data-fetching/analytics";
 import { Metric } from "../../../../types";
+import { logException } from "../../../../utils/sentry";
 
 interface SummaryCardsProps {
     courseId: number;
@@ -48,6 +49,7 @@ export default function SummaryCards({ courseId, queueId }: SummaryCardsProps) {
     const averageWeighted = (data, weights) => {
         let timeHelping = 0;
         let numHelped = 0;
+
         for (const dataItem of data) {
             const weightItem = weights.find(
                 (ele) => dataItem.date === ele.date
@@ -57,10 +59,21 @@ export default function SummaryCards({ courseId, queueId }: SummaryCardsProps) {
                     parseInt(dataItem.value, 10) *
                     parseInt(weightItem.value, 10);
                 numHelped += parseInt(weightItem.value, 10);
+            } else {
+                logException(
+                    Error("Missing weight entry for data item when averaging"),
+                    dataItem.date
+                );
             }
         }
-        return numHelped ? timeHelping / numHelped : 0;
+        return numHelped ? timeHelping / numHelped : undefined;
     };
+
+    const avgWaitWeighted = averageWeighted(avgWaitData, numAnsweredData);
+    const avgTimeHelpingWeighted = averageWeighted(
+        avgTimeHelpingData,
+        studentsHelpedData
+    );
 
     return (
         <Segment padded>
@@ -81,28 +94,27 @@ export default function SummaryCards({ courseId, queueId }: SummaryCardsProps) {
                     content={`${sum(numAnsweredData)} questions`}
                     isValidating={numAnsweredValidating}
                 />
-                <AnalyticsCard
-                    label="Average Wait Time"
-                    content={`${Math.round(
-                        averageWeighted(avgWaitData, numAnsweredData) / 60
-                    )} minutes`}
-                    isValidating={avgWaitValidating}
-                />
+                {avgWaitWeighted && (
+                    <AnalyticsCard
+                        label="Average Wait Time"
+                        content={`${Math.round(avgWaitWeighted / 60)} minutes`}
+                        isValidating={avgWaitValidating}
+                    />
+                )}
                 <AnalyticsCard
                     label="Students Helped"
                     content={`${sum(studentsHelpedData)} students`}
                     isValidating={studentsHelpedValidating}
                 />
-                <AnalyticsCard
-                    label="Average Time per Student"
-                    content={`${Math.round(
-                        averageWeighted(
-                            avgTimeHelpingData,
-                            studentsHelpedData
-                        ) / 60
-                    )} minutes`}
-                    isValidating={avgTimeHelpingValidating}
-                />
+                {avgTimeHelpingWeighted && (
+                    <AnalyticsCard
+                        label="Average Time per Student"
+                        content={`${Math.round(
+                            avgTimeHelpingWeighted / 60
+                        )} minutes`}
+                        isValidating={avgTimeHelpingValidating}
+                    />
+                )}
             </Card.Group>
         </Segment>
     );
