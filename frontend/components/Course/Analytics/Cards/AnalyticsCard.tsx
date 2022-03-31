@@ -4,9 +4,14 @@ import React from "react";
 interface AnalyticsCardProps {
     label: string;
     content: string;
+    isValidating: boolean;
 }
 
-export default function AnalyticsCard({ label, content }: AnalyticsCardProps) {
+export default function AnalyticsCard({
+    label,
+    content,
+    isValidating,
+}: AnalyticsCardProps) {
     return (
         <Card
             style={{
@@ -19,7 +24,7 @@ export default function AnalyticsCard({ label, content }: AnalyticsCardProps) {
             <Card.Content>
                 <Header as="h5">{label}</Header>
                 <Header as="h1" color="blue" style={{ marginTop: "17px" }}>
-                    {content}
+                    {isValidating ? "..." : content}
                 </Header>
             </Card.Content>
         </Card>

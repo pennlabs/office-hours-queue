@@ -101,9 +101,5 @@ export const useStatistic = (
         }
     );
 
-    if (data) {
-        return { data, error, isValidating };
-    }
-
-    return { data: [], error, isValidating };
+    return { data: data || [], error, isValidating };
 };
