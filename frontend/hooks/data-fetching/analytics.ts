@@ -86,12 +86,14 @@ export const useStatistic = (
     range: number
 ) => {
     let dateRange = "";
-    if (range) {
+    if (range <= 0) {
+        logException(new Error(`Invalid date range ${range}`));
+    } else {
         let date = new Date();
         date.setDate(date.getDate() - range);
         date = new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000);
         const formattedDate = date.toISOString().split("T")[0];
-        dateRange = range ? `&date__gte=${formattedDate}` : "";
+        dateRange = `&date__gte=${formattedDate}`;
     }
     const { data, error, isValidating } = useResource<AnalyticsData>(
         `/api/courses/${courseId}/queues/${queueId}/statistics/?metric=${type}${dateRange}`,
