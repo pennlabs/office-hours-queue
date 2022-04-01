@@ -21,7 +21,7 @@ const Sidebar = () => {
             <Segment basic>
                 <Link href="/" as="/">
                     <Image
-                        src="../../../ohq.png"
+                        src="../../../ohs.png"
                         size="tiny"
                         style={{ marginTop: "10px", cursor: "pointer" }}
                     />

@@ -9,7 +9,7 @@ const AboutModal = (props: AboutModalProps) => {
     return (
         <Modal open={open} style={{ width: "350px" }}>
             <Modal.Content>
-                OHQ is maintained by Penn Labs and was originally built by
+                OHS is maintained by Penn Labs and was originally built by
                 Steven Bursztyn, Chris Fischer, Monal Garg, Karen Shen, and
                 Marshall Vail
                 <br />
@@ -32,7 +32,7 @@ const AboutModal = (props: AboutModalProps) => {
                     rel="noopener noreferrer"
                     href="mailto:contact@ohq.io"
                 >
-                    contact@ohq.io
+                    contact@ohs.io
                 </a>
                 .
             </Modal.Content>

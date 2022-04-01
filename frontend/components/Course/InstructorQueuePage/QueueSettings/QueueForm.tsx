@@ -265,7 +265,7 @@ const QueueForm = (props: QueueFormProps) => {
                         <Form.Checkbox
                             name="rateLimitEnabled"
                             defaultChecked={input.rateLimitEnabled}
-                            label="Enable queue rate-limiting"
+                            label="Enable stack rate-limiting"
                             onChange={() =>
                                 setInput({
                                     ...input,
@@ -395,9 +395,9 @@ const QueueForm = (props: QueueFormProps) => {
                             </Button>
                         }
                     >
-                        <Modal.Header>Archive Queue</Modal.Header>
+                        <Modal.Header>Archive Stack</Modal.Header>
                         <Modal.Content>
-                            You are about to archive this queue:{" "}
+                            You are about to archive this stack:{" "}
                             <b>{queue.name}</b>.
                         </Modal.Content>
                         <Modal.Actions>

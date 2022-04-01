@@ -37,11 +37,11 @@ export default function InstructorGuide() {
             <Segment basic>
                 Hi there! 🎉
                 <br />
-                Welcome to OHQ, a centralized online office hours system that
+                Welcome to OHS, a centralized online office hours system that
                 helps instructors like you manage office hours easily and
                 intuitively, so you can focus on teaching and your students can
                 focus on learning in office hours. This guide will walk you
-                through using OHQ, so your experience holding office hours can
+                through using OHS, so your experience holding office hours can
                 be as easy and straightforward as possible.
             </Segment>
 
@@ -64,7 +64,7 @@ export default function InstructorGuide() {
             <AnalyticsBody />
             <SettingsBody />
             <p>
-                Have any lingering questions? Please email us at contact@ohq.io
+                Have any lingering questions? Please email us at contact@ohs.io
                 - we&apos;re happy to help!
             </p>
         </>
