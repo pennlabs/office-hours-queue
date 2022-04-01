@@ -512,7 +512,7 @@ class EventSerializer(serializers.ModelSerializer):
             or ("end" in validated_data and instance.end != validated_data["end"])
             or (
                 "end_recurring_period" in validated_data
-                and instance.end_recurring_period != validated_data["endRecurringPeriod"]
+                and instance.end_recurring_period != validated_data["end_recurring_period"]
             )
             or (
                 "rule" in validated_data

@@ -20,8 +20,8 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django_auto_prefetching import prefetch
 from django_filters.rest_framework import DjangoFilterBackend
-from drf_renderer_xlsx.mixins import XLSXFileMixin
-from drf_renderer_xlsx.renderers import XLSXRenderer
+from drf_excel.mixins import XLSXFileMixin
+from drf_excel.renderers import XLSXRenderer
 from pytz import utc
 from rest_framework import filters, generics, mixins, viewsets
 from rest_framework.decorators import action
@@ -615,7 +615,7 @@ class QueueStatisticView(generics.ListAPIView):
         return prefetch(qs, self.serializer_class)
 
 
-class AnnouncementViewSet(viewsets.ModelViewSet):
+class AnnouncementViewSet(viewsets.ModelViewSet, RealtimeMixin):
     """
     retrieve:
     Return a single announcement.
@@ -640,6 +640,7 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
 
     permission_classes = [AnnouncementPermission | IsSuperuser]
     serializer_class = AnnouncementSerializer
+    queryset = Announcement.objects.none()
 
     def get_queryset(self):
         return Announcement.objects.filter(course=self.kwargs["course_pk"])
@@ -706,7 +707,7 @@ class EventViewSet(viewsets.ModelViewSet):
                 events.append(event)
 
         serializer = EventSerializer(events, many=True)
-        return Response(serializer.data)
+        return JsonResponse(serializer.data, safe=False)
 
     def get_queryset(self):
         return Event.objects.filter(pk=self.kwargs["pk"])
@@ -801,7 +802,7 @@ class OccurrenceViewSet(
                     occurrences.append(occurrence)
 
         serializer = OccurrenceSerializer(occurrences, many=True)
-        return Response(serializer.data)
+        return JsonResponse(serializer.data, safe=False)
 
     def get_queryset(self):
         return Occurrence.objects.filter(pk=self.kwargs["pk"])
