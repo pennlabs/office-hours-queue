@@ -742,7 +742,9 @@ class CourseStudentMostQuestionsAskedTestCase(TestCase):
             )[:5]
         }
 
-        last_sunday = self.question_date - timezone.timedelta(days=(self.question_date.weekday() + 1) % 7)
+        last_sunday = self.question_date - timezone.timedelta(
+            days=(self.question_date.weekday() + 1) % 7
+        )
         query = CourseStatistic.objects.filter(
             metric=CourseStatistic.METRIC_STUDENT_QUESTIONS_ASKED, date=last_sunday
         )
