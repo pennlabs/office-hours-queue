@@ -5,7 +5,7 @@ from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 
 from officehoursqueue.settings.base import *  # noqa: F401, F403
-from officehoursqueue.settings.base import DOMAIN, REDIS_URL
+from officehoursqueue.settings.base import DOMAINS, REDIS_URL
 
 
 DEBUG = False
@@ -14,7 +14,7 @@ DEBUG = False
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Allow production host headers
-ALLOWED_HOSTS = [DOMAIN]
+ALLOWED_HOSTS = DOMAINS
 
 # Make sure SECRET_KEY is set to a secret in production
 SECRET_KEY = os.environ.get("SECRET_KEY", None)
