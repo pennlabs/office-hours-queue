@@ -105,7 +105,7 @@ const Dashboard = () => {
                                             Fall 2021 courses have been archived
                                             in preparation for Spring 2022.
                                             <br />
-                                            Please contact us at contact@ohs.io
+                                            Please contact us at contact@ohq.io
                                             if this is an error.
                                         </>
                                     }

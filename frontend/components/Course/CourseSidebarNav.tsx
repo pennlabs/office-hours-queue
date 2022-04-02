@@ -35,7 +35,7 @@ const CourseSidebarNav = (props: CourseSidebarProps) => {
         <Segment basic>
             <Link href="/" as="/">
                 <Image
-                    src="../../../ohs.png"
+                    src="../../../ohq.png"
                     size="tiny"
                     style={{ marginTop: "10px", cursor: "pointer" }}
                 />
@@ -45,7 +45,7 @@ const CourseSidebarNav = (props: CourseSidebarProps) => {
                     <Link href="/courses/[course]" as={`/courses/${courseId}`}>
                         <Menu.Item
                             style={noWrapStyle}
-                            name="Stacks"
+                            name="Queues"
                             icon="hourglass one"
                             active={router.pathname.endsWith("[course]")}
                             color="blue"

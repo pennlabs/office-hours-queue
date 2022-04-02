@@ -20,7 +20,7 @@ const AuthPrompt = (): JSX.Element => {
             <Grid columns={1} textAlign="center">
                 <Grid.Row only="computer tablet">
                     <img
-                        src="ohs-login.png"
+                        src="ohq-login.png"
                         width="600px"
                         height="107px"
                         alt="logo"
@@ -28,7 +28,7 @@ const AuthPrompt = (): JSX.Element => {
                 </Grid.Row>
                 <Grid.Row only="mobile">
                     <img
-                        src="ohs.png"
+                        src="ohq.png"
                         width="217px"
                         height="107px"
                         alt="logo-mini"

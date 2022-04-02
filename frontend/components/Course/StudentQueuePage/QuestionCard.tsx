@@ -89,7 +89,7 @@ const QuestionCard = (props: QuestionCardProps) => {
                                 }}
                             >
                                 {question.position !== -1 &&
-                                    `Position in Stack: #${question.position}`}
+                                    `Position in Queue: #${question.position}`}
                             </Header>
                         </Grid.Column>
                         <Grid.Column width={6}>
