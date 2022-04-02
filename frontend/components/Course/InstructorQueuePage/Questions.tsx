@@ -14,13 +14,7 @@ interface QuestionsProps {
 const Questions = (props: QuestionsProps) => {
     const { questions, mutate, active, notifs, setNotifs } = props;
     return (
-        <div
-            style={{
-                display: "flex",
-                flexDirection: "column-reverse",
-                // flexDirection:"column"
-            }}
-        >
+        <>
             {questions &&
                 questions.length !== 0 &&
                 _.sortBy(questions, "orderKey").map((question) => (
@@ -39,8 +33,8 @@ const Questions = (props: QuestionsProps) => {
                     <Grid.Column>
                         <Message
                             icon="folder open outline"
-                            header="Empty Stack"
-                            content="This stack currently has no questions, or no questions match your tag filter."
+                            header="Empty Queue"
+                            content="This queue currently has no questions, or no questions match your tag filter."
                         />
                     </Grid.Column>
                 </Grid.Row>
@@ -50,14 +44,14 @@ const Questions = (props: QuestionsProps) => {
                     <Grid.Column>
                         <Message
                             icon="calendar times outline"
-                            header="Closed Stack"
-                            content="This stack is currently closed. You can open it by using the 'open' button above."
+                            header="Closed Queue"
+                            content="This queue is currently closed. You can open it by using the 'open' button above."
                             error
                         />
                     </Grid.Column>
                 </Grid.Row>
             )}
-        </div>
+        </>
     );
 };
 
