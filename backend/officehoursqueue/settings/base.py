@@ -15,7 +15,7 @@ import os
 import dj_database_url
 
 
-DOMAIN = os.environ.get("DOMAINS", "example.com")
+DOMAINS = os.environ.get("DOMAINS", "example.com").split(",")
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -165,7 +165,7 @@ PLATFORM_ACCOUNTS = {
 # Email Settings
 
 EMAIL_TOOLS = {
-    "FROM_EMAIL": f"Office Hours Queue <contact@{DOMAIN}>",
+    "FROM_EMAIL": f"Office Hours Queue <contact@{DOMAINS[0]}>",
     "TEMPLATE_DIRECTORY": os.path.join(BASE_DIR, "officehoursqueue", "templates", "emails"),
 }
 
