@@ -1,5 +1,11 @@
 import { useResource } from "@pennlabs/rest-hooks";
-import { HeatmapSeries, HeatmapData, Metric, DayOfWeek } from "../../types";
+import {
+    HeatmapSeries,
+    HeatmapData,
+    Metric,
+    DayOfWeek,
+    AnalyticsData,
+} from "../../types";
 import { logException } from "../../utils/sentry";
 
 const positiveMod = (n: number, m: number) => ((n % m) + m) % m;
@@ -71,4 +77,31 @@ export const useHeatmapData = (
     }
 
     return { data, error, isValidating };
+};
+
+export const useStatistic = (
+    courseId: number,
+    queueId: number,
+    type: Metric,
+    range: number
+) => {
+    let dateRange = "";
+    if (range <= 0) {
+        logException(new Error(`Invalid date range ${range}`));
+    } else {
+        let date = new Date();
+        date.setDate(date.getDate() - range);
+        date = new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000);
+        const formattedDate = date.toISOString().split("T")[0];
+        dateRange = `&date__gte=${formattedDate}`;
+    }
+    const { data, error, isValidating } = useResource<AnalyticsData>(
+        `/api/courses/${courseId}/queues/${queueId}/statistics/?metric=${type}${dateRange}`,
+        {
+            revalidateOnFocus: false,
+            revalidateOnReconnect: false,
+        }
+    );
+
+    return { data: data || [], error, isValidating };
 };
