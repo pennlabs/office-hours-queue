@@ -20,8 +20,8 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django_auto_prefetching import prefetch
 from django_filters.rest_framework import DjangoFilterBackend
-from drf_renderer_xlsx.mixins import XLSXFileMixin
-from drf_renderer_xlsx.renderers import XLSXRenderer
+from drf_excel.mixins import XLSXFileMixin
+from drf_excel.renderers import XLSXRenderer
 from pytz import utc
 from rest_framework import filters, generics, mixins, viewsets
 from rest_framework.decorators import action
@@ -33,11 +33,12 @@ from rest_framework.views import APIView
 from rest_live.mixins import RealtimeMixin
 from schedule.models import Event, EventRelationManager, Occurrence
 
-from ohq.filters import QuestionSearchFilter, QueueStatisticFilter
+from ohq.filters import CourseStatisticFilter, QuestionSearchFilter, QueueStatisticFilter
 from ohq.invite import parse_and_send_invites
 from ohq.models import (
     Announcement,
     Course,
+    CourseStatistic,
     Membership,
     MembershipInvite,
     Question,
@@ -50,6 +51,7 @@ from ohq.pagination import QuestionSearchPagination
 from ohq.permissions import (
     AnnouncementPermission,
     CoursePermission,
+    CourseStatisticPermission,
     EventPermission,
     IsSuperuser,
     MassInvitePermission,
@@ -67,6 +69,7 @@ from ohq.serializers import (
     AnnouncementSerializer,
     CourseCreateSerializer,
     CourseSerializer,
+    CourseStatisticSerializer,
     EventSerializer,
     MembershipInviteSerializer,
     MembershipSerializer,
@@ -598,6 +601,22 @@ class MassInviteView(APIView):
         )
 
 
+class CourseStatisticView(generics.ListAPIView):
+    """
+    Return a list of statistics - multiple data points for list statistics and heatmap statistics
+    and singleton for card statistics.
+    """
+
+    serializer_class = CourseStatisticSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = CourseStatisticFilter
+    permission_classes = [CourseStatisticPermission | IsSuperuser]
+
+    def get_queryset(self):
+        qs = CourseStatistic.objects.filter(course=self.kwargs["course_pk"])
+        return prefetch(qs, self.serializer_class)
+
+
 class QueueStatisticView(generics.ListAPIView):
     """
     Return a list of statistics - multiple data points for list statistics and heatmap statistics
@@ -615,7 +634,7 @@ class QueueStatisticView(generics.ListAPIView):
         return prefetch(qs, self.serializer_class)
 
 
-class AnnouncementViewSet(viewsets.ModelViewSet):
+class AnnouncementViewSet(viewsets.ModelViewSet, RealtimeMixin):
     """
     retrieve:
     Return a single announcement.
@@ -640,6 +659,7 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
 
     permission_classes = [AnnouncementPermission | IsSuperuser]
     serializer_class = AnnouncementSerializer
+    queryset = Announcement.objects.none()
 
     def get_queryset(self):
         return Announcement.objects.filter(course=self.kwargs["course_pk"])
@@ -706,7 +726,7 @@ class EventViewSet(viewsets.ModelViewSet):
                 events.append(event)
 
         serializer = EventSerializer(events, many=True)
-        return Response(serializer.data)
+        return JsonResponse(serializer.data, safe=False)
 
     def get_queryset(self):
         return Event.objects.filter(pk=self.kwargs["pk"])
@@ -801,7 +821,7 @@ class OccurrenceViewSet(
                     occurrences.append(occurrence)
 
         serializer = OccurrenceSerializer(occurrences, many=True)
-        return Response(serializer.data)
+        return JsonResponse(serializer.data, safe=False)
 
     def get_queryset(self):
         return Occurrence.objects.filter(pk=self.kwargs["pk"])
