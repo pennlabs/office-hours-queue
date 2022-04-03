@@ -133,7 +133,7 @@ class Membership(models.Model):
         context = {
             "course": f"{self.course.department} {self.course.course_code}",
             "role": self.kind_to_pretty(),
-            "product_link": f"https://{settings.DOMAIN}",
+            "product_link": f"https://{settings.DOMAINS[0]}",
         }
         subject = f"You've been added to {context['course']} OHQ"
         send_email("emails/course_added.html", context, subject, self.user.email)
@@ -170,7 +170,7 @@ class MembershipInvite(models.Model):
         context = {
             "course": f"{self.course.department} {self.course.course_code}",
             "role": self.kind_to_pretty(),
-            "product_link": f"https://{settings.DOMAIN}",
+            "product_link": f"https://{settings.DOMAINS[0]}",
         }
         subject = f"Invitation to join {context['course']} OHQ"
         send_email("emails/course_invitation.html", context, subject, self.email)
