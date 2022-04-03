@@ -83,6 +83,13 @@ export class MyChart extends PennLabsChart {
       secret: secret,
       cmd: ['python', 'manage.py', 'queue_heatmap_stat'],
     });
+
+    new CronJob(this, 'calculate-course-stat', {
+      schedule: cronTime.everyDayAt(8),
+      image: backendImage,
+      secret: secret,
+      cmd: ['python', 'manage.py', 'course_stat'],
+    });
   }
 }
 
