@@ -619,6 +619,7 @@ class MembershipStatisticView(generics.ListAPIView):
         qs = MembershipStatistic.objects.filter(
             course=self.kwargs["course_pk"], user=self.request.user
         )
+        return prefetch(qs, self.serializer_class)
 
 
 class CourseStatisticView(generics.ListAPIView):

@@ -982,24 +982,27 @@ class MembershipStatisticTestCase(TestCase):
         )
 
 
-class CourseStatisticPermission(permissions.BasePermission):
-    """
-    TA+ can access course related statistics
-    """
+class CourseStatisticTestCase(TestCase):
+    def setUp(self):
+        setUp(self)
 
-    def has_permission(self, request, view):
-        # Anonymous users can't do anything
-        if not request.user.is_authenticated:
-            return False
+        # Expected results
+        self.expected = {
+            "list": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 403,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+        }
 
-        membership = (
-            Membership.objects.filter(course=view.kwargs["course_pk"], user=request.user)
-            .exclude(kind=Membership.KIND_STUDENT)
-            .first()
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_list(self, user):
+        test(
+            self, user, "list", "get", reverse("ohq:course-statistic", args=[self.course.id]),
         )
-
-        # anyone who is an instructor of the class can see course related statistics
-        return membership is not None
 
 
 class QueueStatisticTestCase(TestCase):

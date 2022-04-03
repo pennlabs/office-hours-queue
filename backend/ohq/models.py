@@ -283,6 +283,9 @@ class Question(models.Model):
     tags = models.ManyToManyField(Tag, blank=True)
     student_descriptor = models.CharField(max_length=255, blank=True, null=True)
 
+    def __str__(self):
+        return f"{self.queue}: Asked by {self.asked_by}"
+
 
 class CourseStatistic(models.Model):
     """
@@ -319,9 +322,6 @@ class CourseStatistic(models.Model):
 
     def __str__(self):
         return f"{self.course}: {self.date}: {self.metric_to_pretty()}"
-
-    def __str__(self):
-        return f"{self.queue}: Asked by {self.asked_by}"
 
 
 class MembershipStatistic(models.Model):
