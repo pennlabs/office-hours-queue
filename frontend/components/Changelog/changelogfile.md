@@ -1,4 +1,4 @@
-## 2022-03-31
+## 2022-04-03
 ### Added
 -   New analytics cards listing summary statistics for queues, specifically the number of questions answered, average wait time, number of students helped, and average time helping each student. 
 ### Changed
