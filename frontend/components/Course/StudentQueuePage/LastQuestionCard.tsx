@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from "react";
 import { Segment, Message } from "semantic-ui-react";
 import { Question } from "../../../types";
 import { getFullName } from "../../../utils";
@@ -23,6 +22,8 @@ const LastQuestionCard = ({ question }: { question: Question }) => {
                 return "Not Specific";
             case "WRONG_QUEUE":
                 return "Wrong Queue";
+            case "MISSING_TEMPLATE":
+                return "Didn't Follow Template";
             default:
                 return reason;
         }

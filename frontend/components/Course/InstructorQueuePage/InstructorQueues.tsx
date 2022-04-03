@@ -1,17 +1,16 @@
-import React, { MutableRefObject, useState, useMemo, useEffect } from "react";
-import {
-    Grid,
-    Segment,
-    Icon,
-    Message,
-    Label,
-    Menu,
-    Button,
-} from "semantic-ui-react";
+import { useState, useMemo, useEffect } from "react";
+import { Grid, Icon, Message, Menu, Button } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
+import { useMediaQuery } from "@material-ui/core";
 import Queue from "./Queue";
-import { Queue as QueueType, QuestionMap, Tag } from "../../../types";
+import {
+    Queue as QueueType,
+    QuestionMap,
+    Tag,
+    NotificationProps,
+} from "../../../types";
 import { QueueMenuItem } from "./QueueMenuItem";
+import { MOBILE_BP } from "../../../constants";
 
 interface InstructorQueuesProps {
     suggestedQueueId?: number;
@@ -22,7 +21,9 @@ interface InstructorQueuesProps {
     mutate: mutateResourceListFunction<QueueType>;
     editFunc: (n: number) => void;
     createFunc: () => void;
-    play: MutableRefObject<() => void>;
+    play: NotificationProps;
+    notifs: boolean;
+    setNotifs: (boolean) => void;
     tags: Tag[];
 }
 const InstructorQueues = (props: InstructorQueuesProps) => {
@@ -35,6 +36,8 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
         mutate,
         editFunc,
         play,
+        notifs,
+        setNotifs,
         tags,
         suggestedQueueId,
     } = props;
@@ -61,6 +64,8 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
         }
     }, [dispQueues, currQueue]);
 
+    const isMobile = useMediaQuery(`(max-width: ${MOBILE_BP})`);
+
     return (
         <Grid.Row style={{ marginTop: "2rem" }}>
             {currQueue && (
@@ -69,7 +74,10 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
                         <Menu
                             fluid
                             vertical
-                            style={{ display: "flex", minHeight: "20rem" }}
+                            style={{
+                                display: "flex",
+                                minHeight: isMobile ? "0rem" : "20rem",
+                            }}
                         >
                             {dispQueues.map((q) => (
                                 <QueueMenuItem
@@ -110,7 +118,8 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
                             leader={leader}
                             mutate={mutate}
                             editFunc={() => editFunc(currQueue.id)}
-                            play={play}
+                            notifs={notifs}
+                            setNotifs={setNotifs}
                             tags={tags}
                         />
                     </Grid.Column>

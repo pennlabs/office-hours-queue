@@ -1,3 +1,6 @@
+frontend/package-lock.json
+frontend/yarn-error.log
+
 # IDE files
 .vscode/
 .idea/
@@ -27,6 +30,7 @@ postgres
 # React
 node_modules/
 .next/
+.log
 
 # Firebase credentials
 ohq-firebase-*.json

@@ -1,16 +1,24 @@
-import React, { MutableRefObject, useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Grid, Message, Menu } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
+import { useMediaQuery } from "@material-ui/core";
 import StudentQueue from "./StudentQueue";
-import { Queue, Course, QuestionMap, Tag } from "../../../types";
+import {
+    Queue,
+    Course,
+    QuestionMap,
+    Tag,
+    NotificationProps,
+} from "../../../types";
 import { QueueMenuItem } from "./QueueMenuItem";
+import { MOBILE_BP } from "../../../constants";
 
 interface StudentQueuesProps {
     queues: Queue[];
     course: Course;
     queueMutate: mutateResourceListFunction<Queue>;
     questionmap: QuestionMap;
-    play: MutableRefObject<() => void>;
+    play: NotificationProps;
     tags: Tag[];
 }
 const StudentQueues = (props: StudentQueuesProps) => {
@@ -31,6 +39,8 @@ const StudentQueues = (props: StudentQueuesProps) => {
         }
     }, [dispQueues, currQueue]);
 
+    const isMobile = useMediaQuery(`(max-width: ${MOBILE_BP})`);
+
     return (
         <>
             {queues && (
@@ -43,7 +53,7 @@ const StudentQueues = (props: StudentQueuesProps) => {
                                     vertical
                                     style={{
                                         display: "flex",
-                                        minHeight: "20rem",
+                                        minHeight: isMobile ? "0rem" : "20rem",
                                     }}
                                 >
                                     {dispQueues.map((q) => (

@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import * as React from "react";
 import { Modal, Button } from "semantic-ui-react";
 import AddForm from "./AddForm";
 import { sendMassInvites } from "../../../../hooks/data-fetching/course";
-import { logException } from "../../../../utils/sentry";
 
 interface InviteModalProps {
     courseId: number;
@@ -47,7 +47,6 @@ const InviteModal = (props: InviteModalProps) => {
                 closeFunc();
                 successFunc();
             } catch (e) {
-                logException(e);
                 setLoading(false);
                 setToast({
                     open: true,

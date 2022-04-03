@@ -1,10 +1,13 @@
+from datetime import datetime
 from unittest.mock import patch
 
+import pytz
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 from parameterized import parameterized
 from rest_framework.test import APIClient
+from schedule.models import Calendar, Event, EventRelationManager
 
 from ohq.models import (
     Announcement,
@@ -979,6 +982,26 @@ class MembershipStatisticTestCase(TestCase):
         )
 
 
+class CourseStatisticPermission(permissions.BasePermission):
+    """
+    TA+ can access course related statistics
+    """
+
+    def has_permission(self, request, view):
+        # Anonymous users can't do anything
+        if not request.user.is_authenticated:
+            return False
+
+        membership = (
+            Membership.objects.filter(course=view.kwargs["course_pk"], user=request.user)
+            .exclude(kind=Membership.KIND_STUDENT)
+            .first()
+        )
+
+        # anyone who is an instructor of the class can see course related statistics
+        return membership is not None
+
+
 class QueueStatisticTestCase(TestCase):
     def setUp(self):
         setUp(self)
@@ -1103,4 +1126,208 @@ class AnnouncementTestCase(TestCase):
             "patch",
             reverse("ohq:announcement-detail", args=[self.course.id, self.announcement.id]),
             {"content": "Updated announcement"},
+        )
+
+
+class EventTestCase(TestCase):
+    def setUp(self):
+        setUp(self)
+        self.default_calendar = Calendar.objects.create(name="DefaultCalendar")
+        self.event = Event.objects.create(
+            title="Event",
+            calendar=self.default_calendar,
+            rule=None,
+            start=datetime.now(tz=pytz.utc),
+            end=datetime.now(tz=pytz.utc),
+        )
+        erm = EventRelationManager()
+        erm.create_relation(event=self.event, content_object=self.course)
+
+        self.start_time = "2019-08-24T14:15:22Z"
+        self.end_time = "2019-09-24T14:15:22Z"
+        self.title = "TA Session"
+        self.new_title = "New TA Session"
+
+        # Expected results
+        self.expected = {
+            "list": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 200,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+            "create": {
+                "professor": 201,
+                "head_ta": 201,
+                "ta": 201,
+                "student": 403,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+            "retrieve": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 200,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+            "destroy": {
+                "professor": 204,
+                "head_ta": 204,
+                "ta": 204,
+                "student": 403,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+            "modify": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 403,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+        }
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_list(self, user):
+        test(self, user, "list", "get", "/api/events/?course=" + str(self.course.id))
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_create(self, user):
+        test(
+            self,
+            user,
+            "create",
+            "post",
+            reverse("ohq:event-list"),
+            {
+                "start": self.start_time,
+                "end": self.end_time,
+                "title": self.title,
+                "rule": {"frequency": "WEEKLY"},
+                "endRecurringPeriod": self.end_time,
+                "courseId": self.course.id,
+            },
+        )
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_retrieve(self, user):
+        test(
+            self, user, "retrieve", "get", reverse("ohq:event-detail", args=[self.event.id]),
+        )
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_destroy(self, user):
+        test(self, user, "destroy", "delete", reverse("ohq:event-detail", args=[self.event.id]))
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_modify(self, user):
+        test(
+            self,
+            user,
+            "modify",
+            "patch",
+            reverse("ohq:event-detail", args=[self.event.id]),
+            {"title": self.new_title, "courseId": self.course.id},
+        )
+
+
+class OccurrenceTestCase(TestCase):
+    def setUp(self):
+        setUp(self)
+
+        self.start_time = datetime.strptime("2021-12-05T12:41:37Z", "%Y-%m-%dT%H:%M:%SZ").replace(
+            tzinfo=pytz.utc
+        )
+        self.end_time = datetime.strptime("2021-12-06T12:41:37Z", "%Y-%m-%dT%H:%M:%SZ").replace(
+            tzinfo=pytz.utc
+        )
+        self.title = "TA Session"
+        self.new_title = "New TA Session"
+        self.default_calendar = Calendar.objects.create(name="DefaultCalendar")
+        self.event = Event.objects.create(
+            title="Event",
+            calendar=self.default_calendar,
+            rule=None,
+            start=self.start_time,
+            end=self.end_time,
+        )
+        erm = EventRelationManager()
+        erm.create_relation(event=self.event, content_object=self.course)
+
+        self.filter_start = "2021-12-05T12:40:37Z"
+        self.filter_end = "2021-12-12T12:42:37Z"
+
+        self.occurrence = self.event.get_occurrences(
+            datetime.strptime(self.filter_start, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=pytz.utc),
+            datetime.strptime(self.filter_end, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=pytz.utc),
+        )[0]
+        self.occurrence.save()
+
+        # Expected results
+        self.expected = {
+            "list": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 200,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+            "retrieve": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 200,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+            "modify": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 403,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+        }
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_list(self, user):
+        test(
+            self,
+            user,
+            "list",
+            "get",
+            "/api/occurrences/?course="
+            + str(self.course.id)
+            + "&filter_start="
+            + self.filter_start
+            + "&filter_end="
+            + self.filter_end,
+        )
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_retrieve(self, user):
+        test(
+            self,
+            user,
+            "retrieve",
+            "get",
+            reverse("ohq:occurrence-detail", args=[self.occurrence.id]),
+        )
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_modify(self, user):
+        test(
+            self,
+            user,
+            "modify",
+            "patch",
+            reverse("ohq:occurrence-detail", args=[self.occurrence.id]),
+            {"title": self.new_title, "courseId": self.course.id},
         )

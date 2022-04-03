@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button, Form, Modal, Segment } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import { Question, QuestionStatus } from "../../../types";
@@ -10,6 +10,11 @@ const rejectOptions = [
     { key: "OH_ENDED", value: "OH_ENDED", text: "OH Ended" },
     { key: "NOT_SPECIFIC", value: "NOT_SPECIFIC", text: "Not Specific" },
     { key: "WRONG_QUEUE", value: "WRONG_QUEUE", text: "Wrong Queue" },
+    {
+        key: "MISSING_TEMPLATE",
+        value: "MISSING_TEMPLATE",
+        text: "Didn't Follow Template",
+    },
     { key: "OTHER", value: "OTHER", text: "Other" },
 ];
 
@@ -67,7 +72,6 @@ const RejectQuestionModal = (props: RejectQuestionModalProps) => {
             closeFunc();
         } catch (e) {
             logException(e);
-            console.log(e);
         }
     };
 

@@ -1,9 +1,15 @@
-import React, { useState } from "react";
+import Link from "next/link";
+import { useState } from "react";
 import { Container } from "semantic-ui-react";
 
 import AboutModal from "./AboutModal";
+import Feedback from "./Feedback";
 
-export default function Footer() {
+interface FooterProps {
+    showFeedback?: boolean;
+}
+
+export default function Footer({ showFeedback }: FooterProps) {
     const [showModal, setShowModal] = useState(false);
     return (
         <>
@@ -20,7 +26,7 @@ export default function Footer() {
                 >
                     Penn Labs
                 </a>{" "}
-                and{" "}
+                &{" "}
                 <span
                     role="button"
                     onClick={() => setShowModal(true)}
@@ -30,7 +36,16 @@ export default function Footer() {
                     }}
                 >
                     Friends
-                </span>
+                </span>{" "}
+                |{" "}
+                <Link href="/changelog">
+                    <a>Changelog</a>
+                </Link>
+                {showFeedback && (
+                    <div role="button" style={{ marginTop: "8px" }}>
+                        <Feedback />
+                    </div>
+                )}
             </Container>
             <AboutModal
                 open={showModal}

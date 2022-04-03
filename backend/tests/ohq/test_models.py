@@ -5,6 +5,7 @@ from django.utils import timezone
 
 from ohq.models import (
     Course,
+    CourseStatistic,
     Membership,
     MembershipInvite,
     MembershipStatistic,
@@ -151,6 +152,165 @@ class SemesterTestCase(TestCase):
         self.assertEqual(str(self.semester), f"{self.semester.term.title()} {self.semester.year}")
 
 
+class CourseStatisticTestCase(TestCase):
+    def setUp(self):
+        semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
+        self.course = Course.objects.create(
+            course_code="000", department="TEST", course_title="Title", semester=semester
+        )
+        self.user = User.objects.create_user("user", "user@a.com", "user")
+        today = timezone.datetime.today().date()
+
+        self.student_num_questions_asked = CourseStatistic.objects.create(
+            course=self.course,
+            user=self.user,
+            metric=CourseStatistic.METRIC_STUDENT_QUESTIONS_ASKED,
+            value=100.00,
+            date=today,
+        )
+
+        self.student_time_being_helped = CourseStatistic.objects.create(
+            course=self.course,
+            user=self.user,
+            metric=CourseStatistic.METRIC_STUDENT_TIME_BEING_HELPED,
+            value=100.00,
+            date=today,
+        )
+
+        self.instructor_num_questions_answered = CourseStatistic.objects.create(
+            course=self.course,
+            user=self.user,
+            metric=CourseStatistic.METRIC_INSTR_QUESTIONS_ANSWERED,
+            value=100.00,
+            date=today,
+        )
+
+        self.instructor_time_answering_questions = CourseStatistic.objects.create(
+            course=self.course,
+            user=self.user,
+            metric=CourseStatistic.METRIC_INSTR_TIME_ANSWERING,
+            value=100.00,
+            date=today,
+        )
+
+    def test_metric_to_pretty(self):
+
+        self.assertEqual(
+            self.student_num_questions_asked.metric_to_pretty(), "Student: Questions asked"
+        )
+
+        self.assertEqual(
+            self.student_time_being_helped.metric_to_pretty(), "Student: Time being helped",
+        )
+
+        self.assertEqual(
+            self.instructor_num_questions_answered.metric_to_pretty(),
+            "Instructor: Questions answered",
+        )
+
+        self.assertEqual(
+            self.instructor_time_answering_questions.metric_to_pretty(),
+            "Instructor: Time answering questions",
+        )
+
+    def test_str(self):
+
+        today = timezone.datetime.today().date()
+        self.assertEqual(
+            str(self.student_num_questions_asked),
+            f"{self.course}: {today}: Student: Questions asked",
+        )
+
+        self.assertEqual(
+            str(self.student_time_being_helped),
+            f"{self.course}: {today}: Student: Time being helped",
+        )
+
+        self.assertEqual(
+            str(self.instructor_num_questions_answered),
+            f"{self.course}: {today}: Instructor: Questions answered",
+        )
+
+        self.assertEqual(
+            str(self.instructor_time_answering_questions),
+            f"{self.course}: {today}: Instructor: Time answering questions",
+        )
+
+
+class QueueStatisticTestCase(TestCase):
+    def setUp(self):
+        semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
+        course = Course.objects.create(
+            course_code="000", department="TEST", course_title="Title", semester=semester
+        )
+        self.queue = Queue.objects.create(name="Queue", course=course)
+
+        self.heatmap_queue_statistic = QueueStatistic.objects.create(
+            queue=self.queue,
+            metric=QueueStatistic.METRIC_HEATMAP_WAIT,
+            value=100.00,
+            day=QueueStatistic.DAY_MONDAY,
+            hour=0,
+        )
+        today = timezone.datetime.today().date()
+
+        self.avg_wait_time_queue_statistic = QueueStatistic.objects.create(
+            queue=self.queue,
+            metric=QueueStatistic.METRIC_AVG_WAIT,
+            value=150.00,
+            date=today - timezone.timedelta(days=1),
+        )
+
+        self.num_questions_answered_queue_statistic = QueueStatistic.objects.create(
+            queue=self.queue,
+            metric=QueueStatistic.METRIC_NUM_ANSWERED,
+            value=10.00,
+            date=today - timezone.timedelta(days=1),
+        )
+
+        self.num_students_helped_queue_statistic = QueueStatistic.objects.create(
+            queue=self.queue,
+            metric=QueueStatistic.METRIC_STUDENTS_HELPED,
+            value=50.00,
+            date=today - timezone.timedelta(days=1),
+        )
+
+        self.avg_time_helping_queue_statistic = QueueStatistic.objects.create(
+            queue=self.queue,
+            metric=QueueStatistic.METRIC_AVG_TIME_HELPING,
+            value=120.00,
+            date=today - timezone.timedelta(days=1),
+        )
+
+    def test_str(self):
+        self.assertEqual(
+            str(self.heatmap_queue_statistic),
+            f"{self.queue}: {self.heatmap_queue_statistic.get_metric_display()} "
+            f"{self.heatmap_queue_statistic.get_day_display()} "
+            f"{self.heatmap_queue_statistic.hour}:00 - {self.heatmap_queue_statistic.hour+1}:00",
+        )
+
+        self.assertEqual(
+            str(self.avg_wait_time_queue_statistic),
+            f"{self.queue}: {self.avg_wait_time_queue_statistic.get_metric_display()}",
+        )
+
+        self.assertEqual(
+            str(self.num_questions_answered_queue_statistic),
+            f"{self.queue}: {self.num_questions_answered_queue_statistic.get_metric_display()}",
+        )
+
+        self.assertEqual(
+            str(self.num_students_helped_queue_statistic),
+            f"{self.queue}: {self.num_students_helped_queue_statistic.get_metric_display()}",
+        )
+
+        self.assertEqual(
+            str(self.avg_time_helping_queue_statistic),
+            f"{self.queue}: {self.avg_time_helping_queue_statistic.get_metric_display()}",
+        )
+
+
 class MembershipStatisticTestCase(TestCase):
     def setUp(self):
         semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
@@ -228,78 +388,4 @@ class MembershipStatisticTestCase(TestCase):
         self.assertEqual(
             str(self.instructor_avg_students_per_hour),
             f"{self.course}: {self.user}: Instructor: Average number of students helped per hour",
-        )
-
-
-class QueueStatisticTestCase(TestCase):
-    def setUp(self):
-        semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
-        course = Course.objects.create(
-            course_code="000", department="TEST", course_title="Title", semester=semester
-        )
-        self.queue = Queue.objects.create(name="Queue", course=course)
-
-        self.heatmap_queue_statistic = QueueStatistic.objects.create(
-            queue=self.queue,
-            metric=QueueStatistic.METRIC_HEATMAP_WAIT,
-            value=100.00,
-            day=QueueStatistic.DAY_MONDAY,
-            hour=0,
-        )
-        today = timezone.datetime.today().date()
-
-        self.avg_wait_time_queue_statistic = QueueStatistic.objects.create(
-            queue=self.queue,
-            metric=QueueStatistic.METRIC_AVG_WAIT,
-            value=150.00,
-            date=today - timezone.timedelta(days=1),
-        )
-
-        self.num_questions_answered_queue_statistic = QueueStatistic.objects.create(
-            queue=self.queue,
-            metric=QueueStatistic.METRIC_NUM_ANSWERED,
-            value=10.00,
-            date=today - timezone.timedelta(days=1),
-        )
-
-        self.num_students_helped_queue_statistic = QueueStatistic.objects.create(
-            queue=self.queue,
-            metric=QueueStatistic.METRIC_STUDENTS_HELPED,
-            value=50.00,
-            date=today - timezone.timedelta(days=1),
-        )
-
-        self.avg_time_helping_queue_statistic = QueueStatistic.objects.create(
-            queue=self.queue,
-            metric=QueueStatistic.METRIC_AVG_TIME_HELPING,
-            value=120.00,
-            date=today - timezone.timedelta(days=1),
-        )
-
-    def test_str(self):
-        self.assertEqual(
-            str(self.heatmap_queue_statistic),
-            f"{self.queue}: {self.heatmap_queue_statistic.get_metric_display()} "
-            f"{self.heatmap_queue_statistic.get_day_display()} "
-            f"{self.heatmap_queue_statistic.hour}:00 - {self.heatmap_queue_statistic.hour+1}:00",
-        )
-
-        self.assertEqual(
-            str(self.avg_wait_time_queue_statistic),
-            f"{self.queue}: {self.avg_wait_time_queue_statistic.get_metric_display()}",
-        )
-
-        self.assertEqual(
-            str(self.num_questions_answered_queue_statistic),
-            f"{self.queue}: {self.num_questions_answered_queue_statistic.get_metric_display()}",
-        )
-
-        self.assertEqual(
-            str(self.num_students_helped_queue_statistic),
-            f"{self.queue}: {self.num_students_helped_queue_statistic.get_metric_display()}",
-        )
-
-        self.assertEqual(
-            str(self.avg_time_helping_queue_statistic),
-            f"{self.queue}: {self.avg_time_helping_queue_statistic.get_metric_display()}",
         )

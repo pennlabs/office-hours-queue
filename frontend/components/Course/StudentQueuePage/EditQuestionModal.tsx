@@ -1,13 +1,15 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
+import * as React from "react";
 import { Modal, Form, Button } from "semantic-ui-react";
 import Select from "react-select";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
-import { Course, Question, Tag } from "../../../types";
+import { Question, Queue, Tag, VideoChatSetting } from "../../../types";
 import { logException } from "../../../utils/sentry";
 import { isValidVideoChatURL } from "../../../utils";
+import { STUD_DESC_CHAR_LIMIT, TEXT_CHAR_LIMIT } from "../../../constants";
 
 interface EditQuestionModalProps {
-    course: Course;
+    queue: Queue;
     question: Question;
     open: boolean;
     setOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -21,38 +23,45 @@ interface EditQuestionFormState {
     text: string;
     tags: Tag[];
     videoChatUrl?: string;
+    studentDescriptor: string;
 }
 
 const EditQuestionModal = (props: EditQuestionModalProps) => {
-    const { question, course, open, setOpen, mutate, toastFunc, tags } = props;
-
-    const charLimit: number = 250;
+    const { question, queue, open, setOpen, mutate, toastFunc, tags } = props;
     const [input, setInput] = useState<EditQuestionFormState>({
         questionId: question.id,
         text: question.text || "",
         tags: question.tags || [],
         videoChatUrl: question.videoChatUrl,
+        studentDescriptor: question.studentDescriptor || "",
     });
-    const [charCount, setCharCount] = useState(input.text.length);
+    const [textCharCount, setTextCharCount] = useState(input.text.length);
+    const [studDescCharCount, setStudDescCharCount] = useState(
+        input.studentDescriptor.length
+    );
     const loading: boolean = false;
 
     const isValid = useMemo(
         () =>
             input.text &&
-            (!course.requireVideoChatUrlOnQuestions ||
+            (!(queue.videoChatSetting === VideoChatSetting.REQUIRED) ||
                 (input.videoChatUrl &&
                     isValidVideoChatURL(input.videoChatUrl))) &&
             (question.text !== input.text ||
+                question.studentDescriptor !== input.studentDescriptor ||
                 JSON.stringify(question.tags) !== JSON.stringify(input.tags) ||
                 question.videoChatUrl !== input.videoChatUrl),
-        [input, course, question]
+        [input, queue, question]
     );
 
     const handleInputChange = (e, { name, value }) => {
-        if (name === "text" && value.length > charLimit) return;
+        if (name === "text" && value.length > TEXT_CHAR_LIMIT) return;
+        if (name === "studentDescriptor" && value.length > STUD_DESC_CHAR_LIMIT)
+            return;
         input[name] = value;
         setInput({ ...input });
-        setCharCount(input.text.length);
+        setTextCharCount(input.text.length);
+        setStudDescCharCount(input.studentDescriptor.length);
     };
 
     const handleTagChange = (_, event) => {
@@ -86,7 +95,7 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
     };
 
     const onSubmit = async () => {
-        if (!course.requireVideoChatUrlOnQuestions && !course.videoChatEnabled)
+        if (queue.videoChatSetting === VideoChatSetting.DISABLED)
             delete input.videoChatUrl;
         try {
             await mutate(question.id, input);
@@ -105,8 +114,9 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
             text: question.text,
             tags: question.tags || [],
             videoChatUrl: question.videoChatUrl,
+            studentDescriptor: question.studentDescriptor || "",
         });
-        setCharCount(question.text.length);
+        setTextCharCount(question.text.length);
     };
 
     return (
@@ -126,16 +136,47 @@ const EditQuestionModal = (props: EditQuestionModalProps) => {
                         <div
                             style={{
                                 textAlign: "right",
-                                color: charCount < charLimit ? "" : "crimson",
+                                color:
+                                    textCharCount < TEXT_CHAR_LIMIT
+                                        ? ""
+                                        : "crimson",
                             }}
                         >
-                            {`Characters: ${charCount}/${charLimit}`}
+                            {`Characters: ${textCharCount}/${TEXT_CHAR_LIMIT}`}
                         </div>
                     </Form.Field>
-                    {(course.requireVideoChatUrlOnQuestions ||
-                        course.videoChatEnabled) && (
+                    {queue.videoChatSetting !== VideoChatSetting.REQUIRED && (
+                        <Form.Field>
+                            <label htmlFor="form-desc">Describe Yourself</label>
+                            <Form.TextArea
+                                id="form-stud-desc"
+                                name="studentDescriptor"
+                                disabled={loading}
+                                placeholder="Beside the window, wearing a red hoodie"
+                                value={input.studentDescriptor}
+                                onChange={handleInputChange}
+                            />
+                            <div
+                                style={{
+                                    textAlign: "right",
+                                    color:
+                                        studDescCharCount < STUD_DESC_CHAR_LIMIT
+                                            ? ""
+                                            : "crimson",
+                                }}
+                            >
+                                {`Characters: ${studDescCharCount}/${STUD_DESC_CHAR_LIMIT}`}
+                            </div>
+                        </Form.Field>
+                    )}
+                    {!(
+                        queue.videoChatSetting === VideoChatSetting.DISABLED
+                    ) && (
                         <Form.Field
-                            required={course.requireVideoChatUrlOnQuestions}
+                            required={
+                                queue.videoChatSetting ===
+                                VideoChatSetting.REQUIRED
+                            }
                         >
                             <label htmlFor="form-vid-url">Video Chat URL</label>
                             <Form.Input

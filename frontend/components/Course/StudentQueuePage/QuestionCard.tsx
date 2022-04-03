@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
     Segment,
     Header,
@@ -11,12 +11,9 @@ import {
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import EditQuestionModal from "./EditQuestionModal";
 import DeleteQuestionModal from "./DeleteQuestionModal";
-import { Question, Course, Queue, QuestionStatus, Tag } from "../../../types";
-import {
-    useQuestionPosition,
-    finishQuestion,
-} from "../../../hooks/data-fetching/course";
-import { logException } from "../../../utils/sentry";
+import { Question, Course, Queue, Tag } from "../../../types";
+import { finishQuestion } from "../../../hooks/data-fetching/course";
+import LinkedText from "../../common/ui/LinkedText";
 
 interface QuestionCardProps {
     question: Question;
@@ -39,11 +36,6 @@ const QuestionCard = (props: QuestionCardProps) => {
         lastQuestionsMutate,
         tags,
     } = props;
-    const { data: positionData } = useQuestionPosition(
-        course.id,
-        queue.id,
-        question.id
-    );
 
     const [openEdit, setOpenEdit] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
@@ -59,7 +51,6 @@ const QuestionCard = (props: QuestionCardProps) => {
         try {
             await finishQuestion(course.id, queue.id, question.id);
         } catch (e) {
-            logException(e);
             toastFunc(null, e);
         }
     };
@@ -68,7 +59,7 @@ const QuestionCard = (props: QuestionCardProps) => {
         <div>
             <EditQuestionModal
                 open={openEdit}
-                course={course}
+                queue={queue}
                 question={question}
                 setOpen={setOpenEdit}
                 toastFunc={toastFunc}
@@ -97,9 +88,8 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     overflow: "hidden",
                                 }}
                             >
-                                {positionData &&
-                                    positionData.position !== -1 &&
-                                    `Position in Queue: #${positionData.position}`}
+                                {question.position !== -1 &&
+                                    `Position in Queue: #${question.position}`}
                             </Header>
                         </Grid.Column>
                         <Grid.Column width={6}>
@@ -113,26 +103,23 @@ const QuestionCard = (props: QuestionCardProps) => {
             <Segment
                 attached
                 tertiary={question.timeResponseStarted !== null}
-                style={{ overflowWrap: "anywhere" }}
+                style={{ whiteSpace: "break-spaces", wordBreak: "break-word" }}
             >
-                {question.text}
-                {question.note && !question.resolvedNote && (
-                    <>
-                        <br />
-                        <Message info>
-                            <Message.Header style={{ fontSize: "1rem" }}>
-                                An instructor has messaged you, please update
-                                your question:
-                            </Message.Header>
-                            <Message.Content
-                                style={{ overflowWrap: "anywhere" }}
-                            >
-                                <p>{question.note}</p>
-                            </Message.Content>
-                        </Message>
-                    </>
+                {question.studentDescriptor && (
+                    <Header as="h5">Question</Header>
                 )}
+                <LinkedText text={question.text} />
             </Segment>
+            {question.studentDescriptor && (
+                <Segment
+                    attached
+                    tertiary={question.timeResponseStarted !== null}
+                    style={{ overflowWrap: "anywhere" }}
+                >
+                    <Header as="h5">Describe Yourself</Header>
+                    {question.studentDescriptor}
+                </Segment>
+            )}
             <Segment attached="bottom" secondary>
                 <Grid>
                     <Grid.Row columns="equal">
@@ -222,6 +209,23 @@ const QuestionCard = (props: QuestionCardProps) => {
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
+                {question.note && !question.resolvedNote && (
+                    <>
+                        <Message info>
+                            <Message.Header style={{ fontSize: "1rem" }}>
+                                An instructor has messaged you, please update
+                                your question:
+                            </Message.Header>
+                            <Message.Content
+                                style={{ overflowWrap: "anywhere" }}
+                            >
+                                <p>
+                                    <LinkedText text={question.note} />
+                                </p>
+                            </Message.Content>
+                        </Message>
+                    </>
+                )}
             </Segment>
         </div>
     );

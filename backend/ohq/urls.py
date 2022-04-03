@@ -4,11 +4,14 @@ from rest_live.routers import RealtimeRouter
 
 from ohq.views import (
     AnnouncementViewSet,
+    CourseStatisticView,
     CourseViewSet,
+    EventViewSet,
     MassInviteView,
     MembershipInviteViewSet,
     MembershipStatisticView,
     MembershipViewSet,
+    OccurrenceViewSet,
     QuestionSearchView,
     QuestionViewSet,
     QueueStatisticView,
@@ -25,6 +28,8 @@ app_name = "ohq"
 router = routers.SimpleRouter()
 router.register("semesters", SemesterViewSet, basename="semester")
 router.register("courses", CourseViewSet, basename="course")
+router.register("events", EventViewSet, basename="event")
+router.register("occurrences", OccurrenceViewSet, basename="occurrence")
 
 course_router = routers.NestedSimpleRouter(router, "courses", lookup="course")
 course_router.register("queues", QueueViewSet, basename="queue")
@@ -38,6 +43,7 @@ queue_router.register("questions", QuestionViewSet, basename="question")
 
 realtime_router = RealtimeRouter()
 realtime_router.register(QuestionViewSet)
+realtime_router.register(AnnouncementViewSet)
 
 additional_urls = [
     path("accounts/me/", UserView.as_view(), name="me"),
@@ -55,6 +61,11 @@ additional_urls = [
         "courses/<slug:course_pk>/membership-statistics/",
         MembershipStatisticView.as_view(),
         name="membership-statistic",
+    ),
+    path(
+        "courses/<slug:course_pk>/course-statistics/",
+        CourseStatisticView.as_view(),
+        name="course-statistic",
     ),
 ]
 

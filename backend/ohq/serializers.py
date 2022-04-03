@@ -1,13 +1,19 @@
+import string
+
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
+from rest_live.signals import save_handler
+from schedule.models import Calendar, Event, EventRelation, EventRelationManager, Rule
+from schedule.models.events import Occurrence
 
 from ohq.models import (
     Announcement,
     Course,
+    CourseStatistic,
     Membership,
     MembershipInvite,
     MembershipStatistic,
@@ -73,8 +79,6 @@ class CourseSerializer(serializers.ModelSerializer):
             "semester_pretty",
             "archived",
             "invite_only",
-            "video_chat_enabled",
-            "require_video_chat_url_on_questions",
             "is_member",
         )
 
@@ -93,8 +97,6 @@ class CourseCreateSerializer(serializers.ModelSerializer):
             "semester",
             "archived",
             "invite_only",
-            "video_chat_enabled",
-            "require_video_chat_url_on_questions",
             "created_role",
         )
 
@@ -145,6 +147,7 @@ class QueueSerializer(CourseRouteMixin):
             "id",
             "name",
             "description",
+            "question_template",
             "archived",
             "estimated_wait_time",
             "active",
@@ -155,6 +158,9 @@ class QueueSerializer(CourseRouteMixin):
             "rate_limit_length",
             "rate_limit_questions",
             "rate_limit_minutes",
+            "video_chat_setting",
+            "pin",
+            "pin_enabled",
         )
         read_only_fields = ("estimated_wait_time",)
 
@@ -167,14 +173,35 @@ class QueueSerializer(CourseRouteMixin):
         user = self.context["request"].user
         membership = Membership.objects.get(course=instance.course, user=user)
 
+        # generate a random pin when the queue is opened and the queue has pin enabled
+        if "active" in validated_data and validated_data["active"] and instance.pin_enabled:
+            validated_data["pin"] = get_random_string(
+                length=5, allowed_chars=string.ascii_letters + string.digits
+            )
+
         if membership.is_leadership:  # User is a Head TA+
             return super().update(instance, validated_data)
-        else:  # User is a TA
-            if "active" in validated_data:
-                instance.active = validated_data["active"]
+
+        if "active" in validated_data:
+            instance.active = validated_data["active"]
+
+        if "pin" in validated_data:
+            instance.pin = validated_data["pin"]
 
         instance.save()
         return instance
+
+    def to_representation(self, instance):
+        # get the original representation
+        rep = super(QueueSerializer, self).to_representation(instance)
+
+        user = self.context["request"].user
+        membership = Membership.objects.filter(course=instance.course, user=user).first()
+
+        if membership is None or not membership.is_ta:
+            rep.pop("pin")
+
+        return rep
 
 
 class TagSerializer(CourseRouteMixin):
@@ -187,6 +214,7 @@ class QuestionSerializer(QueueRouteMixin):
     asked_by = UserSerializer(read_only=True)
     responded_to_by = UserSerializer(read_only=True)
     tags = TagSerializer(many=True)
+    position = serializers.IntegerField(default=-1, read_only=True)
 
     class Meta:
         model = Question
@@ -205,6 +233,8 @@ class QuestionSerializer(QueueRouteMixin):
             "tags",
             "note",
             "resolved_note",
+            "position",
+            "student_descriptor",
         )
         read_only_fields = (
             "time_asked",
@@ -214,6 +244,7 @@ class QuestionSerializer(QueueRouteMixin):
             "responded_to_by",
             "should_send_up_soon_notification",
             "resolved_note",
+            "position",
         )
 
     def update(self, instance, validated_data):
@@ -276,11 +307,23 @@ class QuestionSerializer(QueueRouteMixin):
                         instance.tags.add(tag)
                     except ObjectDoesNotExist:
                         continue
+            if "student_descriptor" in validated_data:
+                instance.student_descriptor = validated_data["student_descriptor"]
             # If a student modifies a question, discard any note added by a TA and mark as resolved
             instance.note = ""
             instance.resolved_note = True
 
         instance.save()
+
+        # if the status changes to something that affects position, call save() on asked questions
+        if "status" in validated_data:
+            asked_questions = Question.objects.filter(
+                queue=instance.queue, status=Question.STATUS_ASKED
+            )
+
+            for question in asked_questions:
+                save_handler(sender=Question, instance=question, dispatch_uid="rest-live")
+
         return instance
 
     def create(self, validated_data):
@@ -300,8 +343,6 @@ class QuestionSerializer(QueueRouteMixin):
             except ObjectDoesNotExist:
                 continue
         return question
-        validated_data["note"] = ""
-        return super().create(validated_data)
 
 
 class MembershipPrivateSerializer(CourseRouteMixin):
@@ -337,7 +378,7 @@ class UserPrivateSerializer(serializers.ModelSerializer):
 
     profile = ProfileSerializer(read_only=False, required=False)
     membership_set = MembershipPrivateSerializer(many=True, read_only=True)
-    groups = serializers.StringRelatedField(many=True)
+    groups = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = get_user_model()
@@ -405,6 +446,14 @@ class MembershipStatisticSerializer(serializers.ModelSerializer):
         read_only_fields = ("metric", "value")
 
 
+class CourseStatisticSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseStatistic
+        fields = ("user", "metric", "value", "date")
+        # make everything read-only, stats are only updated through commands
+        read_only_fields = ("user", "metric", "value", "date")
+
+
 class QueueStatisticSerializer(serializers.ModelSerializer):
     class Meta:
         model = QueueStatistic
@@ -432,3 +481,105 @@ class AnnouncementSerializer(CourseRouteMixin):
     def update(self, instance, validated_data):
         validated_data["author"] = self.context["request"].user
         return super().update(instance, validated_data)
+
+
+class RuleSerializer(serializers.ModelSerializer):
+    """
+    Serializer for rules
+    """
+
+    class Meta:
+        model = Rule
+        fields = ("frequency",)
+
+
+class EventSerializer(serializers.ModelSerializer):
+    """
+    Serializer for events
+
+    All times are converted to UTC+0
+    """
+
+    rule = RuleSerializer(required=False)
+    course_id = serializers.IntegerField(required=False)
+
+    class Meta:
+        model = Event
+        fields = (
+            "id",
+            "start",
+            "end",
+            "title",
+            "description",
+            "rule",
+            "end_recurring_period",
+            "course_id",
+        )
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        course_pk = EventRelation.objects.filter(event=instance).first().object_id
+        representation["course_id"] = course_pk
+        return representation
+
+    def update(self, instance, validated_data):
+        rule = instance.rule
+        # if changing start, end, or update, delete all previous occurrences
+        if (
+            ("start" in validated_data and instance.start != validated_data["start"])
+            or ("end" in validated_data and instance.end != validated_data["end"])
+            or (
+                "end_recurring_period" in validated_data
+                and instance.end_recurring_period != validated_data["end_recurring_period"]
+            )
+            or (
+                "rule" in validated_data
+                and (rule is None or rule.frequency != validated_data["rule"]["frequency"])
+            )
+        ):
+            if "rule" in validated_data:
+                rule, _ = Rule.objects.get_or_create(frequency=validated_data["rule"]["frequency"])
+                validated_data.pop("rule")
+            Occurrence.objects.filter(event=instance).delete()
+
+        # can never change course_id, client should create a new event instead
+        validated_data.pop("course_id")
+        super().update(instance, validated_data)
+
+        instance.rule = rule
+        instance.save()
+        return instance
+
+    def create(self, validated_data):
+        course = Course.objects.get(pk=validated_data["course_id"])
+        rule = None
+        if "rule" in validated_data:
+            rule, _ = Rule.objects.get_or_create(frequency=validated_data["rule"]["frequency"])
+            validated_data.pop("rule")
+
+        validated_data.pop("course_id")
+        default_calendar = Calendar.objects.filter(name="DefaultCalendar").first()
+        if default_calendar is None:
+            default_calendar = Calendar.objects.create(name="DefaultCalendar")
+        validated_data["calendar"] = default_calendar
+
+        # for some reason, super().create() doesn't automatically serialize Rule
+        event = super().create(validated_data)
+        event.rule = rule
+        event.save()
+
+        erm = EventRelationManager()
+        erm.create_relation(event=event, content_object=course)
+        return event
+
+
+class OccurrenceSerializer(serializers.ModelSerializer):
+    """
+    Serializer for occurrence
+    """
+
+    event = EventSerializer(read_only=True)
+
+    class Meta:
+        model = Occurrence
+        fields = ("id", "title", "description", "start", "end", "cancelled", "event")

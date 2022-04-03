@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.utils import timezone
 from djangorestframework_camel_case.util import camelize
 from rest_framework.test import APIClient
+from schedule.models import Event, Occurrence
 
 from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester
 from ohq.serializers import UserPrivateSerializer
@@ -131,6 +132,10 @@ class QuestionViewTestCase(TestCase):
             rate_limit_minutes=15,
             rate_limit_questions=2,
         )
+        self.pin = "AAAAA"
+        self.pin_queue = Queue.objects.create(
+            name="Pin Queue", course=self.course, pin_enabled=True, pin=self.pin
+        )
         self.no_limit_queue = Queue.objects.create(name="No Rate Limit Queue", course=self.course)
         self.ta = User.objects.create(username="ta")
         self.student = User.objects.create(username="student")
@@ -232,3 +237,210 @@ class QuestionViewTestCase(TestCase):
             reverse("ohq:question-quota-count", args=[self.course.id, self.queue3.id])
         )
         self.assertEqual(0, json.loads(res.content)["wait_time_mins"])
+
+    def test_create_with_pin(self):
+        self.client.force_authenticate(user=self.student)
+        Question.objects.all().delete()
+
+        # correct pin is required in queues with pin_enabled
+        self.client.post(
+            reverse("ohq:question-list", args=[self.course.id, self.pin_queue.id]),
+            {"text": "Help me", "tags": []},
+        )
+        self.assertEqual(0, Question.objects.all().count())
+
+        self.client.post(
+            reverse("ohq:question-list", args=[self.course.id, self.pin_queue.id]),
+            {"text": "Help me", "tags": [], "pin": "BBBBB"},
+        )
+        self.assertEqual(0, Question.objects.all().count())
+
+        self.client.post(
+            reverse("ohq:question-list", args=[self.course.id, self.pin_queue.id]),
+            {"text": "Help me", "tags": [], "pin": self.pin},
+        )
+        self.assertEqual(1, Question.objects.all().count())
+
+        # queue without pin enabled does not require pin in post data
+        self.client.post(
+            reverse("ohq:question-list", args=[self.course.id, self.no_limit_queue.id]),
+            {"text": "Help me", "tags": []},
+        )
+        self.assertEqual(2, Question.objects.all().count())
+
+
+class OccurrenceViewTestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
+        self.course = Course.objects.create(
+            course_code="000", department="Penn Labs", semester=self.semester
+        )
+        self.head_ta = User.objects.create(username="head_ta")
+        self.ta = User.objects.create(username="ta")
+        self.student = User.objects.create(username="student")
+        Membership.objects.create(
+            course=self.course, user=self.head_ta, kind=Membership.KIND_HEAD_TA
+        )
+        Membership.objects.create(course=self.course, user=self.ta, kind=Membership.KIND_TA)
+        Membership.objects.create(
+            course=self.course, user=self.student, kind=Membership.KIND_STUDENT
+        )
+        self.title = "TA session"
+        self.start_time = "2021-12-05T12:41:37Z"
+        self.end_time = "2021-12-06T12:41:37Z"
+        self.end_recurring_period = "2022-12-05T12:41:37Z"
+        self.filter_start = "2021-12-05T12:40:37Z"
+        self.filter_end = "2021-12-12T12:42:37Z"
+
+    def test_list(self):
+        self.client.force_authenticate(user=self.ta)
+        self.client.post(
+            reverse("ohq:event-list"),
+            {
+                "start": self.start_time,
+                "end": self.end_time,
+                "title": self.title,
+                "rule": {"frequency": "WEEKLY"},
+                "end_recurring_period": self.end_recurring_period,
+                "course_id": self.course.id,
+            },
+        )
+        response = self.client.get(
+            "/api/occurrences/?course="
+            + str(self.course.id)
+            + "&filter_start="
+            + self.filter_start
+            + "&filter_end="
+            + self.filter_end
+        )
+        occurrences = json.loads(response.content)
+        self.assertEquals(2, len(occurrences))
+
+    def test_cancel(self):
+        self.client.force_authenticate(user=self.ta)
+        self.client.post(
+            reverse("ohq:event-list"),
+            {
+                "start": self.start_time,
+                "end": self.end_time,
+                "title": self.title,
+                "end_recurring_period": self.end_recurring_period,
+                "course_id": self.course.id,
+            },
+        )
+        event = Event.objects.all().first()
+        # create at least one occurrence
+        self.client.get(
+            "/api/occurrences/?course="
+            + str(self.course.id)
+            + "&filter_start="
+            + self.filter_start
+            + "&filter_end="
+            + self.filter_end
+        )
+        occurrence = Occurrence.objects.all().first()
+        self.client.patch(
+            reverse("ohq:occurrence-detail", args=[occurrence.id]),
+            {
+                "event": event.id,
+                "start": occurrence.start,
+                "end": occurrence.end,
+                "cancelled": True,
+            },
+        )
+        occurrence = event.get_occurrences(event.start - timedelta(1), event.start + timedelta(1))[
+            0
+        ]
+        self.assertTrue(occurrence.cancelled)
+
+    def test_no_rule(self):
+        # events without rule occur only once
+        self.client.force_authenticate(user=self.ta)
+        self.client.post(
+            reverse("ohq:event-list"),
+            {
+                "start": self.start_time,
+                "end": self.end_time,
+                "title": self.title,
+                "end_recurring_period": self.end_recurring_period,
+                "course_id": self.course.id,
+            },
+        )
+        response = self.client.get(
+            "/api/occurrences/?course="
+            + str(self.course.id)
+            + "&filter_start="
+            + self.filter_start
+            + "&filter_end="
+            + self.filter_end
+        )
+        occurrences = json.loads(response.content)
+        self.assertEquals(1, len(occurrences))
+
+        # calling twice doesn't create more occurrences
+        response = self.client.get(
+            "/api/occurrences/?course="
+            + str(self.course.id)
+            + "&filter_start="
+            + self.filter_start
+            + "&filter_end="
+            + self.filter_end
+        )
+        occurrences = json.loads(response.content)
+        self.assertEquals(1, len(occurrences))
+        cnt = Occurrence.objects.all().count()
+        self.assertEquals(1, cnt)
+
+    def test_update_start(self):
+        self.client.force_authenticate(user=self.ta)
+        self.client.post(
+            reverse("ohq:event-list"),
+            {
+                "start": self.start_time,
+                "end": self.end_time,
+                "title": self.title,
+                "rule": {"frequency": "WEEKLY"},
+                "end_recurring_period": self.end_recurring_period,
+                "course_id": self.course.id,
+            },
+        )
+        filter_start = "2021-12-04T12:40:37Z"
+        filter_end = "2021-12-13T12:40:37Z"
+        response = self.client.get(
+            "/api/occurrences/?course="
+            + str(self.course.id)
+            + "&filter_start="
+            + filter_start
+            + "&filter_end="
+            + filter_end
+        )
+        occurrences = json.loads(response.content)
+        self.assertEquals(2, len(occurrences))
+        self.assertEquals(occurrences[0]["start"], self.start_time)
+        # update event's start day should update occurrences
+        event = Event.objects.all().first()
+        new_start_date = "2021-12-07T12:40:37Z"
+        new_end_date = "2021-12-08T12:40:37Z"
+        response = self.client.patch(
+            reverse("ohq:event-detail", args=[event.id]),
+            {
+                "title": "New TA Session",
+                "course_id": self.course.id,
+                "start": new_start_date,
+                "end": new_end_date,
+            },
+        )
+        event = Event.objects.all().first()
+        self.assertEquals(event.title, "New TA Session")
+        response = self.client.get(
+            "/api/occurrences/?course="
+            + str(self.course.id)
+            + "&filter_start="
+            + filter_start
+            + "&filter_end="
+            + filter_end
+        )
+        occurrences = json.loads(response.content)
+        self.assertEquals(1, len(occurrences))
+        self.assertEquals(occurrences[0]["start"], new_start_date)

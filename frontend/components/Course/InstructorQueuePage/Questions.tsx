@@ -1,4 +1,3 @@
-import React, { MutableRefObject } from "react";
 import { Grid, Message } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import _ from "lodash";
@@ -9,10 +8,11 @@ interface QuestionsProps {
     questions: Question[];
     active: boolean;
     mutate: mutateResourceListFunction<Question>;
-    play: MutableRefObject<() => void>;
+    notifs: boolean;
+    setNotifs: (boolean) => void;
 }
 const Questions = (props: QuestionsProps) => {
-    const { questions, mutate, active, play } = props;
+    const { questions, mutate, active, notifs, setNotifs } = props;
     return (
         <>
             {questions &&
@@ -20,10 +20,11 @@ const Questions = (props: QuestionsProps) => {
                 _.sortBy(questions, "orderKey").map((question) => (
                     <Grid.Row key={question.id}>
                         <QuestionCard
-                            play={play}
                             key={question.id}
                             question={question}
                             mutate={mutate}
+                            notifs={notifs}
+                            setNotifs={setNotifs}
                         />
                     </Grid.Row>
                 ))}

@@ -3,6 +3,7 @@ from django.contrib import admin
 from ohq.models import (
     Announcement,
     Course,
+    CourseStatistic,
     Membership,
     MembershipInvite,
     MembershipStatistic,
@@ -16,6 +17,7 @@ from ohq.models import (
 
 
 admin.site.register(Course)
+admin.site.register(CourseStatistic)
 admin.site.register(Membership)
 admin.site.register(MembershipInvite)
 admin.site.register(MembershipStatistic)

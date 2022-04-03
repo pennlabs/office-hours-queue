@@ -68,13 +68,11 @@ class Course(models.Model):
 
     course_code = models.CharField(max_length=10)
     department = models.CharField(max_length=10)
-    course_title = models.CharField(max_length=50)
+    course_title = models.CharField(max_length=100)
     description = models.CharField(max_length=255, blank=True)
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
     archived = models.BooleanField(default=False)
     invite_only = models.BooleanField(default=False)
-    video_chat_enabled = models.BooleanField(default=False)
-    require_video_chat_url_on_questions = models.BooleanField(default=False)
     members = models.ManyToManyField(User, through="Membership", through_fields=("course", "user"))
 
     # MAX_NUMBER_COURSE_USERS = 1000
@@ -135,7 +133,7 @@ class Membership(models.Model):
         context = {
             "course": f"{self.course.department} {self.course.course_code}",
             "role": self.kind_to_pretty(),
-            "product_link": f"https://{settings.DOMAIN}",
+            "product_link": f"https://{settings.DOMAINS[0]}",
         }
         subject = f"You've been added to {context['course']} OHQ"
         send_email("emails/course_added.html", context, subject, self.user.email)
@@ -172,7 +170,7 @@ class MembershipInvite(models.Model):
         context = {
             "course": f"{self.course.department} {self.course.course_code}",
             "role": self.kind_to_pretty(),
-            "product_link": f"https://{settings.DOMAIN}",
+            "product_link": f"https://{settings.DOMAINS[0]}",
         }
         subject = f"Invitation to join {context['course']} OHQ"
         send_email("emails/course_invitation.html", context, subject, self.email)
@@ -186,10 +184,22 @@ class Queue(models.Model):
     A single office hours queue for a class.
     """
 
+    VIDEO_REQUIRED = "REQUIRED"
+    VIDEO_OPTIONAL = "OPTIONAL"
+    VIDEO_DISABLED = "DISABLED"
+    VIDEO_CHOICES = [
+        (VIDEO_REQUIRED, "required"),
+        (VIDEO_OPTIONAL, "optional"),
+        (VIDEO_DISABLED, "disabled"),
+    ]
+
     name = models.CharField(max_length=255)
     description = models.TextField()
+    question_template = models.TextField(blank=True, default="")
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     archived = models.BooleanField(default=False)
+    pin_enabled = models.BooleanField(default=False)
+    pin = models.CharField(max_length=50, blank=True, null=True)
 
     # Estimated wait time for the queue, in minutes
     estimated_wait_time = models.IntegerField(default=-1)
@@ -204,6 +214,10 @@ class Queue(models.Model):
     rate_limit_length = models.IntegerField(blank=True, null=True)
     rate_limit_questions = models.IntegerField(blank=True, null=True)
     rate_limit_minutes = models.IntegerField(blank=True, null=True)
+
+    video_chat_setting = models.CharField(
+        max_length=8, choices=VIDEO_CHOICES, default=VIDEO_OPTIONAL
+    )
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["course", "name"], name="unique_queue_name")]
@@ -262,11 +276,49 @@ class Question(models.Model):
         User, related_name="responded_questions", on_delete=models.SET_NULL, blank=True, null=True
     )
     # This field should be a custom message or one of the following:
-    # OTHER, NOT_HERE, OH_ENDED, NOT_SPECIFIC, or WRONG_QUEUE
+    # OTHER, NOT_HERE, OH_ENDED, NOT_SPECIFIC, MISSING_TEMPLATE, or WRONG_QUEUE
     rejected_reason = models.CharField(max_length=255, blank=True, null=True)
 
     should_send_up_soon_notification = models.BooleanField(default=False)
     tags = models.ManyToManyField(Tag, blank=True)
+    student_descriptor = models.CharField(max_length=255, blank=True, null=True)
+
+
+class CourseStatistic(models.Model):
+    """
+    Most active students/TAs in the past week for a course
+    """
+
+    METRIC_STUDENT_QUESTIONS_ASKED = "STUDENT_QUESTIONS_ASKED"
+    METRIC_STUDENT_TIME_BEING_HELPED = "STUDENT_TIME_BEING_HELPED"
+    METRIC_INSTR_QUESTIONS_ANSWERED = "INSTR_QUESTIONS_ANSWERED"
+    METRIC_INSTR_TIME_ANSWERING = "INSTR_TIME_ANSWERING"
+
+    METRIC_CHOICES = [
+        (METRIC_STUDENT_QUESTIONS_ASKED, "Student: Questions asked"),
+        (METRIC_STUDENT_TIME_BEING_HELPED, "Student: Time being helped"),
+        (METRIC_INSTR_QUESTIONS_ANSWERED, "Instructor: Questions answered"),
+        (METRIC_INSTR_TIME_ANSWERING, "Instructor: Time answering questions"),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    metric = models.CharField(max_length=256, choices=METRIC_CHOICES)
+    value = models.DecimalField(max_digits=16, decimal_places=8)
+    date = models.DateField(blank=True, null=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "course", "metric", "date"], name="course_statistic"
+            )
+        ]
+
+    def metric_to_pretty(self):
+        return [pretty for raw, pretty in CourseStatistic.METRIC_CHOICES if raw == self.metric][0]
+
+    def __str__(self):
+        return f"{self.course}: {self.date}: {self.metric_to_pretty()}"
 
     def __str__(self):
         return f"{self.queue}: Asked by {self.asked_by}"
