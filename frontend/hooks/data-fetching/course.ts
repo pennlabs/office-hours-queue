@@ -20,7 +20,6 @@ import { doApiRequest } from "../../utils/fetch";
 import {
     QUEUE_STATUS_POLL_INTERVAL,
     STAFF_QUESTION_POLL_INTERVAL,
-    ANNOUNCEMENTS_POLL_INTERVAL,
     STUDENT_QUOTA_POLL_INTERVAL,
 } from "../../constants";
 import { logException } from "../../utils/sentry";
@@ -246,12 +245,17 @@ export const useAnnouncements = (
     courseId: number,
     initialData: Announcement[]
 ) =>
-    useResourceList(
+    useRealtimeResourceList(
         `/api/courses/${courseId}/announcements/`,
         (id) => `/api/courses/${courseId}/announcements/${id}/`,
         {
+            model: "ohq.Announcement",
+            view_kwargs: {
+                course_pk: courseId,
+            },
+        },
+        {
             initialData,
-            refreshInterval: ANNOUNCEMENTS_POLL_INTERVAL,
         }
     );
 
