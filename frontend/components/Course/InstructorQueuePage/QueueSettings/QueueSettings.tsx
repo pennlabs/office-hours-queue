@@ -9,6 +9,7 @@ import {
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import QueueForm from "./QueueForm";
 import { Queue } from "../../../../types";
+import LinkedText from "../../../common/ui/LinkedText";
 
 interface QueueSettingsProps {
     queue?: Queue;
@@ -28,9 +29,7 @@ const QueueSettings = (props: QueueSettingsProps) => {
                                 <Header as="h3">
                                     {queue.name}
                                     <Header.Subheader>
-                                        {/* <Linkify componentDecorator={linkifyComponentDecorator}> */}
-                                        {queue.description}
-                                        {/* </Linkify> */}
+                                        <LinkedText text={queue.description} />
                                     </Header.Subheader>
                                 </Header>
                             </Grid.Column>
