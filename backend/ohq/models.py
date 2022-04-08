@@ -1,10 +1,10 @@
+from operator import mod
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.dispatch import receiver
 from email_tools.emails import send_email
 from phonenumber_field.modelfields import PhoneNumberField
-
 
 User = settings.AUTH_USER_MODEL
 
@@ -374,3 +374,7 @@ class Announcement(models.Model):
     author = models.ForeignKey(User, related_name="announcements", on_delete=models.CASCADE)
     time_updated = models.DateTimeField(auto_now=True)
     course = models.ForeignKey(Course, related_name="announcements", on_delete=models.CASCADE)
+
+class QuestionFile(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    file = models.FileField(upload_to='question_files/')

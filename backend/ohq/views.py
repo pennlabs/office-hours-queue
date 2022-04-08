@@ -62,7 +62,12 @@ from ohq.permissions import (
     QueueStatisticPermission,
     TagPermission,
 )
-from ohq.schemas import MassInviteSchema
+from ohq.schemas import (
+    MassInviteSchema,
+    EventSchema,
+    OccurrenceSchema,
+    QuestionSchema,
+)
 from ohq.serializers import (
     AnnouncementSerializer,
     CourseCreateSerializer,
@@ -203,6 +208,7 @@ class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
     permission_classes = [QuestionPermission | IsSuperuser]
     serializer_class = QuestionSerializer
     queryset = Question.objects.none()
+    schema = QuestionSchema()
 
     def get_queryset(self):
         position = (
@@ -646,23 +652,6 @@ class AnnouncementViewSet(viewsets.ModelViewSet, RealtimeMixin):
         return Announcement.objects.filter(course=self.kwargs["course_pk"])
 
 
-class EventSchema(AutoSchema):
-    def get_operation(self, path, method):
-        op = super().get_operation(path, method)
-        if op["operationId"] == "listEvents":
-            op["parameters"].append(
-                {
-                    "name": "course",
-                    "in": "query",
-                    "required": True,
-                    "description": "A series of api/events/?course=1&course=2 "
-                    + "- where the numbers are the course pks",
-                    "schema": {"type": "string"},
-                }
-            )
-        return op
-
-
 class EventViewSet(viewsets.ModelViewSet):
     """
     retrieve:
@@ -711,46 +700,6 @@ class EventViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Event.objects.filter(pk=self.kwargs["pk"])
-
-
-class OccurrenceSchema(AutoSchema):
-    def get_operation(self, path, method):
-        op = super().get_operation(path, method)
-        if op["operationId"] == "listOccurrences":
-            op["parameters"].append(
-                {
-                    "name": "course",
-                    "in": "query",
-                    "required": True,
-                    "description": "A series of api/occurrences/?course=1&course=2 "
-                    + "- where the numbers are the course pks",
-                    "schema": {"type": "string"},
-                }
-            )
-            op["parameters"].append(
-                {
-                    "name": "filter_start",
-                    "in": "query",
-                    "required": True,
-                    "description": "The start date of the filter in ISO format in UTC+0.<br>"
-                    + "The returned events will have start_time strictly within "
-                    + "the range of the filter<br>"
-                    + "e.g 2021-10-05T12:41:37Z",
-                    "schema": {"type": "datetime"},
-                }
-            )
-            op["parameters"].append(
-                {
-                    "name": "filter_end",
-                    "in": "query",
-                    "required": True,
-                    "description": "The end date of the filter in ISO format in UTC+0<br>"
-                    + "e.g 2021-10-05T12:41:37Z",
-                    "schema": {"type": "datetime"},
-                }
-            )
-        return op
-
 
 class OccurrenceViewSet(
     mixins.ListModelMixin,

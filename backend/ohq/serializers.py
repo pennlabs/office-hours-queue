@@ -21,6 +21,7 @@ from ohq.models import (
     QueueStatistic,
     Semester,
     Tag,
+    QuestionFile,
 )
 from ohq.sms import sendSMSVerification
 from ohq.tasks import sendUpNextNotificationTask
@@ -213,6 +214,7 @@ class QuestionSerializer(QueueRouteMixin):
     responded_to_by = UserSerializer(read_only=True)
     tags = TagSerializer(many=True)
     position = serializers.IntegerField(default=-1, read_only=True)
+    files = serializers.ListField(child=serializers.CharField(), read_only=True)
 
     class Meta:
         model = Question
@@ -233,6 +235,7 @@ class QuestionSerializer(QueueRouteMixin):
             "resolved_note",
             "position",
             "student_descriptor",
+            "files"
         )
         read_only_fields = (
             "time_asked",
@@ -243,7 +246,19 @@ class QuestionSerializer(QueueRouteMixin):
             "should_send_up_soon_notification",
             "resolved_note",
             "position",
+            "files"
         )
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        related_question_files = QuestionFile.objects.filter(question=instance).all()
+
+        # create a list of QuestionFile ids associated with course
+        representation['files'] = []
+        for question_file_obj in related_question_files:
+            representation['files'].append(question_file_obj.id)
+        return representation
+
 
     def update(self, instance, validated_data):
         """
@@ -321,6 +336,14 @@ class QuestionSerializer(QueueRouteMixin):
 
             for question in asked_questions:
                 save_handler(sender=Question, instance=question, dispatch_uid="rest-live")
+
+        # delete all files related to question
+        if ((membership.is_ta or membership.is_student) and
+            ('status' in validated_data) and
+            (validated_data['status'] in [Question.STATUS_ANSWERED, 
+                                        Question.STATUS_REJECTED, 
+                                        Question.STATUS_WITHDRAWN])):
+            QuestionFile.objects.filter(question=self).delete()
 
         return instance
 
@@ -559,9 +582,7 @@ class OccurrenceSerializer(serializers.ModelSerializer):
     """
     Serializer for occurrence
     """
-
     event = EventSerializer(read_only=True)
-
     class Meta:
         model = Occurrence
         fields = ("id", "title", "description", "start", "end", "cancelled", "event")
