@@ -20,7 +20,7 @@ export function playNotification(message: string) {
             /* eslint-disable-next-line */
             new Notification("Alert", {
                 body: message,
-                icon: "../ohs.png",
+                icon: "../favicon.ico",
             });
         } catch (e) {
             logException(e);

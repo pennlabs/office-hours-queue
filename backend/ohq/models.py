@@ -133,7 +133,7 @@ class Membership(models.Model):
         context = {
             "course": f"{self.course.department} {self.course.course_code}",
             "role": self.kind_to_pretty(),
-            "product_link": f"https://{settings.DOMAIN}",
+            "product_link": f"https://{settings.DOMAINS[0]}",
         }
         subject = f"You've been added to {context['course']} OHQ"
         send_email("emails/course_added.html", context, subject, self.user.email)
@@ -170,7 +170,7 @@ class MembershipInvite(models.Model):
         context = {
             "course": f"{self.course.department} {self.course.course_code}",
             "role": self.kind_to_pretty(),
-            "product_link": f"https://{settings.DOMAIN}",
+            "product_link": f"https://{settings.DOMAINS[0]}",
         }
         subject = f"Invitation to join {context['course']} OHQ"
         send_email("emails/course_invitation.html", context, subject, self.email)
@@ -282,6 +282,43 @@ class Question(models.Model):
     should_send_up_soon_notification = models.BooleanField(default=False)
     tags = models.ManyToManyField(Tag, blank=True)
     student_descriptor = models.CharField(max_length=255, blank=True, null=True)
+
+
+class CourseStatistic(models.Model):
+    """
+    Most active students/TAs in the past week for a course
+    """
+
+    METRIC_STUDENT_QUESTIONS_ASKED = "STUDENT_QUESTIONS_ASKED"
+    METRIC_STUDENT_TIME_BEING_HELPED = "STUDENT_TIME_BEING_HELPED"
+    METRIC_INSTR_QUESTIONS_ANSWERED = "INSTR_QUESTIONS_ANSWERED"
+    METRIC_INSTR_TIME_ANSWERING = "INSTR_TIME_ANSWERING"
+
+    METRIC_CHOICES = [
+        (METRIC_STUDENT_QUESTIONS_ASKED, "Student: Questions asked"),
+        (METRIC_STUDENT_TIME_BEING_HELPED, "Student: Time being helped"),
+        (METRIC_INSTR_QUESTIONS_ANSWERED, "Instructor: Questions answered"),
+        (METRIC_INSTR_TIME_ANSWERING, "Instructor: Time answering questions"),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    metric = models.CharField(max_length=256, choices=METRIC_CHOICES)
+    value = models.DecimalField(max_digits=16, decimal_places=8)
+    date = models.DateField(blank=True, null=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "course", "metric", "date"], name="course_statistic"
+            )
+        ]
+
+    def metric_to_pretty(self):
+        return [pretty for raw, pretty in CourseStatistic.METRIC_CHOICES if raw == self.metric][0]
+
+    def __str__(self):
+        return f"{self.course}: {self.date}: {self.metric_to_pretty()}"
 
 
 class QueueStatistic(models.Model):

@@ -104,7 +104,7 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
             {!isConnected && (
                 <div style={{ paddingTop: "1rem" }}>
                     <Message warning>
-                        You are not currently connected to OHS. Reconnecting...
+                        You are not currently connected to OHQ. Reconnecting...
                     </Message>
                 </div>
             )}

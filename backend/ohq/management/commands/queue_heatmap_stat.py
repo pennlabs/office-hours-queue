@@ -2,7 +2,10 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from ohq.models import Queue
-from ohq.statistics import calculate_questions_per_ta_heatmap, calculate_wait_time_heatmap
+from ohq.statistics import (
+    queue_calculate_questions_per_ta_heatmap,
+    queue_calculate_wait_time_heatmap,
+)
 
 
 class Command(BaseCommand):
@@ -16,8 +19,8 @@ class Command(BaseCommand):
         for queue in queues:
             for weekday in weekdays:
                 for hour in range(24):
-                    calculate_questions_per_ta_heatmap(queue, weekday, hour)
-                    calculate_wait_time_heatmap(queue, weekday, hour)
+                    queue_calculate_questions_per_ta_heatmap(queue, weekday, hour)
+                    queue_calculate_wait_time_heatmap(queue, weekday, hour)
 
     def handle(self, *args, **kwargs):
         if kwargs["hist"]:

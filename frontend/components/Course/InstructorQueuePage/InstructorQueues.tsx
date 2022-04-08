@@ -103,7 +103,7 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
                                         primary
                                         onClick={createFunc}
                                     >
-                                        Add Stack
+                                        Add Queue
                                     </Button>
                                 </Menu.Item>
                             )}
@@ -130,7 +130,7 @@ const InstructorQueues = (props: InstructorQueuesProps) => {
                     <Message info icon>
                         <Icon name="lightbulb outline" />
                         <Message.Content>
-                            <Message.Header>Create a Stack</Message.Header>
+                            <Message.Header>Create a Queue</Message.Header>
                             <a
                                 role="button"
                                 onClick={createFunc}

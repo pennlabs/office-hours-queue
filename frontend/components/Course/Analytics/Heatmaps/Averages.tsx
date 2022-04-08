@@ -20,8 +20,8 @@ export default function Averages({ courseId, queueId }: AveragesProps) {
 
     return (
         <>
-            <Segment basic>
-                <Header as="h3">Averages</Header>
+            <Segment padded>
+                <Header as="h3">Semester Averages</Header>
                 <Tab
                     menu={{ secondary: true, pointing: true }}
                     panes={[

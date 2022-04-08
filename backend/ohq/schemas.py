@@ -74,6 +74,7 @@ class EventSchema(AutoSchema):
             )
         return op
 
+
 class OccurrenceSchema(AutoSchema):
     def get_operation(self, path, method):
         op = super().get_operation(path, method)

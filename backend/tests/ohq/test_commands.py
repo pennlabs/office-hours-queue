@@ -1,3 +1,4 @@
+from datetime import datetime
 from io import StringIO
 from unittest.mock import patch
 
@@ -9,6 +10,7 @@ from django.utils import timezone
 
 from ohq.models import (
     Course,
+    CourseStatistic,
     Membership,
     MembershipInvite,
     Question,
@@ -93,7 +95,7 @@ class RegisterClassTestCase(TestCase):
         self.assertEqual(stdout_msg, out.getvalue())
 
 
-class AverageQueueWaitTimeTestCase(TestCase):
+class QueueAverageWaitTimeTestCase(TestCase):
     def setUp(self):
         semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
         course = Course.objects.create(
@@ -182,7 +184,7 @@ class AverageQueueWaitTimeTestCase(TestCase):
         self.assertEqual(expected_old, actual_old)
 
 
-class AverageQueueTimeHelpingTestCase(TestCase):
+class QueueAverageTimeHelpingTestCase(TestCase):
     def setUp(self):
         semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
         course = Course.objects.create(
@@ -258,7 +260,7 @@ class AverageQueueTimeHelpingTestCase(TestCase):
         self.assertEqual(expected_old, actual_old)
 
 
-class NumberQuestionsAnsweredQueueTestCase(TestCase):
+class QueueNumberQuestionsAnsweredTestCase(TestCase):
     def setUp(self):
         semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
         course = Course.objects.create(
@@ -333,7 +335,7 @@ class NumberQuestionsAnsweredQueueTestCase(TestCase):
         self.assertEqual(expected_old, actual_old)
 
 
-class NumberStudentsHelpedQueueTestCase(TestCase):
+class QueueNumberStudentsHelpedTestCase(TestCase):
     def setUp(self):
         semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
         course = Course.objects.create(
@@ -409,7 +411,7 @@ class NumberStudentsHelpedQueueTestCase(TestCase):
         self.assertEqual(expected, actual)
 
 
-class AverageQueueWaitHeatmapTestCase(TestCase):
+class QueueAverageWaitHeatmapTestCase(TestCase):
     def setUp(self):
         semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
         course = Course.objects.create(
@@ -518,7 +520,7 @@ class AverageQueueWaitHeatmapTestCase(TestCase):
         self.assertEqual(expected_older, actual_older)
 
 
-class QuestionsPerTAQueueHeatmapTestCase(TestCase):
+class QueueQuestionsPerTAHeatmapTestCase(TestCase):
     def setUp(self):
         semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
         course = Course.objects.create(
@@ -643,6 +645,420 @@ class QuestionsPerTAQueueHeatmapTestCase(TestCase):
             hour=self.older_time_asked.hour,
         ).value
         self.assertEqual(expected_two_days_ago_8, actual_two_days_ago_8)
+
+
+class CourseStudentMostQuestionsAskedTestCase(TestCase):
+    def setUp(self):
+        semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
+        course = Course.objects.create(
+            course_code="000", department="TEST", course_title="Title", semester=semester
+        )
+        self.queue = Queue.objects.create(name="Queue", course=course)
+        ta = User.objects.create_user("ta", "ta@a.com", "ta")
+        student1 = User.objects.create_user("student1", "student1@a.com", "student1")
+        student2 = User.objects.create_user("student2", "student2@a.com", "student2")
+        student3 = User.objects.create_user("student3", "student3@a.com", "student3")
+        student4 = User.objects.create_user("student4", "student4@a.com", "student4")
+        student5 = User.objects.create_user("student5", "student5@a.com", "student5")
+        student6 = User.objects.create_user("student6", "student6@a.com", "student6")
+        student7 = User.objects.create_user("student7", "student7@a.com", "student7")
+        students = [student1, student2, student3, student4, student5, student6, student7]
+
+        self.num_questions_per_student = {
+            student1: 30,
+            student2: 20,
+            student3: 10,
+            student4: 5,
+            student5: 4,
+            student6: 2,
+            student7: 50,
+        }
+
+        self.question_date = timezone.datetime.today().date() - timezone.timedelta(days=1)
+
+        # this command computes avg wait time yesterday
+        for student in students:
+            for i in range(self.num_questions_per_student[student]):
+                # test all varieties of statuses
+                q1 = Question.objects.create(
+                    text=f"Question {i} Active",
+                    queue=self.queue,
+                    asked_by=student,
+                    responded_to_by=ta,
+                    time_response_started=self.question_date,
+                    status=Question.STATUS_ACTIVE,
+                )
+                q1.time_asked = self.question_date
+                q1.save()
+
+                q2 = Question.objects.create(
+                    text=f"Question {i} Answered",
+                    queue=self.queue,
+                    asked_by=student,
+                    responded_to_by=ta,
+                    time_response_started=self.question_date,
+                    time_responded_to=self.question_date + timezone.timedelta(seconds=100),
+                    status=Question.STATUS_ANSWERED,
+                )
+                q2.time_asked = self.question_date
+                q2.save()
+
+                q3 = Question.objects.create(
+                    text=f"Question {i} Rejected",
+                    queue=self.queue,
+                    asked_by=student,
+                    responded_to_by=ta,
+                    time_response_started=self.question_date,
+                    time_responded_to=self.question_date,
+                    status=Question.STATUS_REJECTED,
+                )
+                q3.time_asked = self.question_date
+                q3.save()
+
+        # create questions that weren't in the last week
+        for i in range(10):
+            q4 = Question.objects.create(
+                text="Old question",
+                queue=self.queue,
+                asked_by=student1,
+                responded_to_by=ta,
+                time_response_started=self.question_date - timezone.timedelta(days=9),
+                time_responded_to=self.question_date
+                - timezone.timedelta(days=9)
+                + timezone.timedelta(seconds=100),
+                status=Question.STATUS_ANSWERED,
+            )
+            q4.time_asked = self.question_date - timezone.timedelta(days=9, minutes=20)
+            q4.save()
+
+    def test_student_most_questions_computation(self):
+        call_command("course_stat")
+
+        # Top 5 students who asked to most questions
+        expected = {
+            student.pk: count * 3
+            for student, count in sorted(
+                self.num_questions_per_student.items(), key=lambda x: -x[1]
+            )[:5]
+        }
+
+        last_sunday = self.question_date - timezone.timedelta(
+            days=(self.question_date.weekday() + 1) % 7
+        )
+        query = CourseStatistic.objects.filter(
+            metric=CourseStatistic.METRIC_STUDENT_QUESTIONS_ASKED, date=last_sunday
+        )
+        actual = {}
+        for ele in query:
+            actual[ele.user.pk] = int(ele.value)
+        self.assertEqual(expected, actual)
+
+
+class CourseStudentMostTimeBeingHelpedTestCase(TestCase):
+    def setUp(self):
+        semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
+        course = Course.objects.create(
+            course_code="000", department="TEST", course_title="Title", semester=semester
+        )
+        self.queue = Queue.objects.create(name="Queue", course=course)
+        ta = User.objects.create_user("ta", "ta@a.com", "ta")
+        student1 = User.objects.create_user("student1", "student1@a.com", "student1")
+        student2 = User.objects.create_user("student2", "student2@a.com", "student2")
+        student3 = User.objects.create_user("student3", "student3@a.com", "student3")
+        student4 = User.objects.create_user("student4", "student4@a.com", "student4")
+        student5 = User.objects.create_user("student5", "student5@a.com", "student5")
+        student6 = User.objects.create_user("student6", "student6@a.com", "student6")
+        student7 = User.objects.create_user("student7", "student7@a.com", "student7")
+        students = [student1, student2, student3, student4, student5, student6, student7]
+
+        self.num_questions_per_student = {
+            student1: 1,
+            student2: 2,
+            student3: 3,
+            student4: 4,
+            student5: 5,
+            student6: 6,
+            student7: 7,
+        }
+        self.time_per_question_student = {
+            student1: 500,
+            student2: 200,
+            student3: 300,
+            student4: 800,
+            student5: 900,
+            student6: 300,
+            student7: 100,
+        }
+
+        self.question_date = datetime(2021, 12, 1)
+
+        # this command computes avg wait time yesterday
+        for student in students:
+            for i in range(self.num_questions_per_student[student]):
+                # test all varieties of statuses
+                q1 = Question.objects.create(
+                    text=f"Question {i} Active",
+                    queue=self.queue,
+                    asked_by=student,
+                    responded_to_by=ta,
+                    time_response_started=self.question_date,
+                    status=Question.STATUS_ACTIVE,
+                )
+                q1.time_asked = self.question_date
+                q1.save()
+
+                q2 = Question.objects.create(
+                    text=f"Question {i} Answered",
+                    queue=self.queue,
+                    asked_by=student,
+                    responded_to_by=ta,
+                    time_response_started=self.question_date,
+                    time_responded_to=self.question_date
+                    + timezone.timedelta(seconds=self.time_per_question_student[student]),
+                    status=Question.STATUS_ANSWERED,
+                )
+                q2.time_asked = self.question_date
+                q2.save()
+
+                q3 = Question.objects.create(
+                    text=f"Question {i} Rejected",
+                    queue=self.queue,
+                    asked_by=student,
+                    responded_to_by=ta,
+                    time_response_started=self.question_date,
+                    time_responded_to=self.question_date,
+                    status=Question.STATUS_REJECTED,
+                )
+                q3.time_asked = self.question_date
+                q3.save()
+
+        # create questions that weren't in the last week
+        for i in range(10):
+            q4 = Question.objects.create(
+                text="Old question",
+                queue=self.queue,
+                asked_by=student1,
+                responded_to_by=ta,
+                time_response_started=self.question_date - timezone.timedelta(days=9),
+                time_responded_to=self.question_date
+                - timezone.timedelta(days=9)
+                + timezone.timedelta(seconds=100),
+                status=Question.STATUS_ANSWERED,
+            )
+            q4.time_asked = self.question_date - timezone.timedelta(days=9, minutes=20)
+            q4.save()
+
+    def test_student_most_time_being_helped_computation(self):
+        call_command("course_stat", "--hist")
+
+        # Top 5 students who spent the most time getting help
+        total_time = {}
+        for student, question_count in self.num_questions_per_student.items():
+            total_time[student] = question_count * self.time_per_question_student[student]
+
+        expected = {
+            student.pk: count
+            for student, count in sorted(total_time.items(), key=lambda x: -x[1])[:5]
+        }
+
+        last_sunday = datetime(2021, 11, 28)
+        query = CourseStatistic.objects.filter(
+            metric=CourseStatistic.METRIC_STUDENT_TIME_BEING_HELPED, date=last_sunday
+        )
+        actual = {}
+        for ele in query:
+            actual[ele.user.pk] = int(ele.value)
+        self.assertEqual(expected, actual)
+
+
+class CourseInstructorMostQuestionsAnsweredTestCase(TestCase):
+    def setUp(self):
+        semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
+        course = Course.objects.create(
+            course_code="000", department="TEST", course_title="Title", semester=semester
+        )
+        self.queue = Queue.objects.create(name="Queue", course=course)
+        student = User.objects.create_user("student", "student@a.com", "student")
+        ta1 = User.objects.create_user("ta1", "ta1@a.com", "ta1")
+        ta2 = User.objects.create_user("ta2", "ta2@a.com", "ta2")
+        ta3 = User.objects.create_user("ta3", "ta3@a.com", "ta3")
+        ta4 = User.objects.create_user("ta4", "ta4@a.com", "ta4")
+        ta5 = User.objects.create_user("ta5", "ta5@a.com", "ta5")
+        ta6 = User.objects.create_user("ta6", "ta6@a.com", "ta6")
+        ta7 = User.objects.create_user("ta7", "ta7@a.com", "ta7")
+        tas = [ta1, ta2, ta3, ta4, ta5, ta6, ta7]
+
+        self.num_questions_per_ta = {ta1: 21, ta2: 19, ta3: 15, ta4: 12, ta5: 11, ta6: 8, ta7: 50}
+
+        self.question_date = datetime(2021, 12, 1)
+
+        # this command computes avg wait time yesterday
+        for ta in tas:
+            for i in range(self.num_questions_per_ta[ta]):
+                # test all varieties of statuses
+                q1 = Question.objects.create(
+                    text=f"Question {i} Active",
+                    queue=self.queue,
+                    asked_by=student,
+                    responded_to_by=ta,
+                    time_response_started=self.question_date,
+                    status=Question.STATUS_ACTIVE,
+                )
+                q1.time_asked = self.question_date
+                q1.save()
+
+                q2 = Question.objects.create(
+                    text=f"Question {i} Answered",
+                    queue=self.queue,
+                    asked_by=student,
+                    responded_to_by=ta,
+                    time_response_started=self.question_date,
+                    time_responded_to=self.question_date + timezone.timedelta(seconds=100),
+                    status=Question.STATUS_ANSWERED,
+                )
+                q2.time_asked = self.question_date
+                q2.save()
+
+                q3 = Question.objects.create(
+                    text=f"Question {i} Rejected",
+                    queue=self.queue,
+                    asked_by=student,
+                    responded_to_by=ta,
+                    time_response_started=self.question_date,
+                    time_responded_to=self.question_date,
+                    status=Question.STATUS_REJECTED,
+                )
+                q3.time_asked = self.question_date
+                q3.save()
+
+        # create questions that weren't in the last week
+        for i in range(10):
+            q4 = Question.objects.create(
+                text="Old question",
+                queue=self.queue,
+                asked_by=student,
+                responded_to_by=ta1,
+                time_response_started=self.question_date - timezone.timedelta(days=9),
+                time_responded_to=self.question_date
+                - timezone.timedelta(days=9)
+                + timezone.timedelta(seconds=100),
+                status=Question.STATUS_ANSWERED,
+            )
+            q4.time_asked = self.question_date - timezone.timedelta(days=9, minutes=20)
+            q4.save()
+
+    def test_ta_most_questions_answered_computation(self):
+        call_command("course_stat", "--hist")
+
+        last_sunday = datetime(2021, 11, 28)
+        # Top 5 TAs who answered the most questions
+        expected = {
+            ta.pk: count
+            for ta, count in sorted(self.num_questions_per_ta.items(), key=lambda x: -x[1])[:5]
+        }
+
+        query = CourseStatistic.objects.filter(
+            metric=CourseStatistic.METRIC_INSTR_QUESTIONS_ANSWERED, date=last_sunday
+        )
+
+        actual = {}
+        for ele in query:
+            actual[ele.user.pk] = int(ele.value)
+
+        self.assertEqual(expected, actual)
+
+
+class CourseInstructorMostTimeHelpingTestCase(TestCase):
+    def setUp(self):
+        semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
+        course = Course.objects.create(
+            course_code="000", department="TEST", course_title="Title", semester=semester
+        )
+        self.queue = Queue.objects.create(name="Queue", course=course)
+        student = User.objects.create_user("student", "student@a.com", "student")
+        ta1 = User.objects.create_user("ta1", "ta1@a.com", "ta1")
+        ta2 = User.objects.create_user("ta2", "ta2@a.com", "ta2")
+        ta3 = User.objects.create_user("ta3", "ta3@a.com", "ta3")
+        ta4 = User.objects.create_user("ta4", "ta4@a.com", "ta4")
+        ta5 = User.objects.create_user("ta5", "ta5@a.com", "ta5")
+        ta6 = User.objects.create_user("ta6", "ta6@a.com", "ta6")
+        ta7 = User.objects.create_user("ta7", "ta7@a.com", "ta7")
+        tas = [ta1, ta2, ta3, ta4, ta5, ta6, ta7]
+
+        self.num_questions_per_ta = {ta1: 12, ta2: 8, ta3: 14, ta4: 6, ta5: 31, ta6: 2, ta7: 9}
+        self.time_per_question_ta = {
+            ta1: 1000,
+            ta2: 2000,
+            ta3: 1200,
+            ta4: 800,
+            ta5: 600,
+            ta6: 500,
+            ta7: 400,
+        }
+
+        self.question_date = datetime(2021, 12, 4)
+
+        # this command computes avg wait time yesterday
+        for ta in tas:
+            for i in range(self.num_questions_per_ta[ta]):
+                # test all varieties of statuses
+                q1 = Question.objects.create(
+                    text=f"Question {i} Active",
+                    queue=self.queue,
+                    asked_by=student,
+                    responded_to_by=ta,
+                    time_response_started=self.question_date,
+                    status=Question.STATUS_ACTIVE,
+                )
+                q1.time_asked = self.question_date
+                q1.save()
+
+                q2 = Question.objects.create(
+                    text=f"Question {i} Answered",
+                    queue=self.queue,
+                    asked_by=student,
+                    responded_to_by=ta,
+                    time_response_started=self.question_date,
+                    time_responded_to=self.question_date
+                    + timezone.timedelta(seconds=self.time_per_question_ta[ta]),
+                    status=Question.STATUS_ANSWERED,
+                )
+                q2.time_asked = self.question_date
+                q2.save()
+
+                q3 = Question.objects.create(
+                    text=f"Question {i} Rejected",
+                    queue=self.queue,
+                    asked_by=student,
+                    responded_to_by=ta,
+                    time_response_started=self.question_date,
+                    time_responded_to=self.question_date,
+                    status=Question.STATUS_REJECTED,
+                )
+                q3.time_asked = self.question_date
+                q3.save()
+
+    def test_instructor_most_time_helping_computation(self):
+        call_command("course_stat", "--hist")
+
+        # Top 5 students who spent the most time getting help
+        total_time = {}
+        for ta, question_count in self.num_questions_per_ta.items():
+            total_time[ta] = question_count * self.time_per_question_ta[ta]
+
+        expected = {
+            ta.pk: count for ta, count in sorted(total_time.items(), key=lambda x: -x[1])[:5]
+        }
+
+        last_sunday = datetime(2021, 11, 28)
+
+        query = CourseStatistic.objects.filter(
+            metric=CourseStatistic.METRIC_INSTR_TIME_ANSWERING, date=last_sunday
+        )
+        actual = {}
+        for ele in query:
+            actual[ele.user.pk] = int(ele.value)
+        self.assertEqual(expected, actual)
 
 
 class ArchiveCourseTestCase(TestCase):

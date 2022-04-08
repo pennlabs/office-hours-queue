@@ -47,7 +47,7 @@ const QueuePage = (props: QueuePageProps) => {
             }
         >
             <Head>
-                <title>{`OHS | ${course.department} ${course.courseCode}`}</title>
+                <title>{`OHQ | ${course.department} ${course.courseCode}`}</title>
             </Head>
             <Grid divided style={{ width: "100%" }} stackable>
                 <CourseWrapper
