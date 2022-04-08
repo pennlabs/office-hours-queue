@@ -34,7 +34,7 @@ export default function SummaryCards({ courseId, queueId }: SummaryCardsProps) {
 
     const {
         data: studentsHelpedData,
-        isValidating: studentsHelpedValidating,
+        // isValidating: studentsHelpedValidating,
     } = useStatistic(courseId, queueId, Metric.STUDENTS_HELPED, timeRange);
 
     const {
@@ -101,11 +101,11 @@ export default function SummaryCards({ courseId, queueId }: SummaryCardsProps) {
                         isValidating={avgWaitValidating}
                     />
                 )}
-                <AnalyticsCard
-                    label="Students Helped"
-                    content={`${sum(studentsHelpedData)} students`}
-                    isValidating={studentsHelpedValidating}
-                />
+                {/* <AnalyticsCard */}
+                {/*    label="Students Helped" */}
+                {/*    content={`${sum(studentsHelpedData)} students`} */}
+                {/*    isValidating={studentsHelpedValidating} */}
+                {/* /> */}
                 {avgTimeHelpingWeighted && (
                     <AnalyticsCard
                         label="Average Time per Student"
