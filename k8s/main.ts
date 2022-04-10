@@ -17,7 +17,7 @@ export class MyChart extends PennLabsChart {
       deployment: {
         image: backendImage,
         cmd: ['/usr/local/bin/asgi-run'],
-        replicas: 4,
+        replicas: 6,
         secret,
         env: [
           { name: 'REDIS_URL', value: 'redis://office-hours-queue-redis:6379' },
