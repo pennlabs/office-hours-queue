@@ -1,5 +1,3 @@
-import json
-
 from django.db.models import Q
 from rest_framework import permissions
 from schedule.models import Event, EventRelation, Occurrence
@@ -314,6 +312,26 @@ class MassInvitePermission(permissions.BasePermission):
         return membership.is_leadership
 
 
+class CourseStatisticPermission(permissions.BasePermission):
+    """
+    TA+ can access course related statistics
+    """
+
+    def has_permission(self, request, view):
+        # Anonymous users can't do anything
+        if not request.user.is_authenticated:
+            return False
+
+        membership = (
+            Membership.objects.filter(course=view.kwargs["course_pk"], user=request.user)
+            .exclude(kind=Membership.KIND_STUDENT)
+            .first()
+        )
+
+        # anyone who is an instructor of the class can see course related statistics
+        return membership is not None
+
+
 class QueueStatisticPermission(permissions.BasePermission):
     """
     Students+ can access queue related statistics
@@ -429,11 +447,7 @@ class EventPermission(permissions.BasePermission):
 
         # Anonymous users can't do anything
         if view.action in ["create"]:
-            # print(request.data)
-            # print(json.loads(request.data))
-            print(type(request.data))
-            print(request.data)
-            course_pk = request.data.get("courseId", None)
+            course_pk = request.data.get("course_id", None)
             if course_pk is None:
                 return False
 

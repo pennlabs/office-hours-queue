@@ -13,6 +13,7 @@ import EditQuestionModal from "./EditQuestionModal";
 import DeleteQuestionModal from "./DeleteQuestionModal";
 import { Question, Course, Queue, Tag } from "../../../types";
 import { finishQuestion } from "../../../hooks/data-fetching/course";
+import LinkedText from "../../common/ui/LinkedText";
 
 interface QuestionCardProps {
     question: Question;
@@ -107,7 +108,7 @@ const QuestionCard = (props: QuestionCardProps) => {
                 {question.studentDescriptor && (
                     <Header as="h5">Question</Header>
                 )}
-                {question.text}
+                <LinkedText text={question.text} />
             </Segment>
             {question.studentDescriptor && (
                 <Segment
@@ -218,7 +219,9 @@ const QuestionCard = (props: QuestionCardProps) => {
                             <Message.Content
                                 style={{ overflowWrap: "anywhere" }}
                             >
-                                <p>{question.note}</p>
+                                <p>
+                                    <LinkedText text={question.note} />
+                                </p>
                             </Message.Content>
                         </Message>
                     </>

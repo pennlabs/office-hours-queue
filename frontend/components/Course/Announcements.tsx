@@ -17,6 +17,7 @@ import {
     createAnnouncement,
 } from "../../hooks/data-fetching/course";
 import ResponsiveIconButton from "../common/ui/ResponsiveIconButton";
+import LinkedText from "../common/ui/LinkedText";
 import { MOBILE_BP } from "../../constants";
 
 interface AnnouncementsProps {
@@ -233,7 +234,7 @@ const AnnouncementMessage = ({
                             marginBottom: "0px",
                         }}
                     >
-                        {announcement.content}
+                        <LinkedText text={announcement.content} />
                     </p>
                     <br />
                     <p style={{ color: "#666666", marginTop: "0px" }}>

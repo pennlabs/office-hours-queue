@@ -21,24 +21,24 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django_auto_prefetching import prefetch
 from django_filters.rest_framework import DjangoFilterBackend
-from drf_renderer_xlsx.mixins import XLSXFileMixin
-from drf_renderer_xlsx.renderers import XLSXRenderer
+from drf_excel.mixins import XLSXFileMixin
+from drf_excel.renderers import XLSXRenderer
 from pytz import utc
 from rest_framework import filters, generics, mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.schemas.openapi import AutoSchema
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 from rest_live.mixins import RealtimeMixin
 from schedule.models import Event, EventRelationManager, Occurrence
 
-from ohq.filters import QuestionSearchFilter, QueueStatisticFilter
+from ohq.filters import CourseStatisticFilter, QuestionSearchFilter, QueueStatisticFilter
 from ohq.invite import parse_and_send_invites
 from ohq.models import (
     Announcement,
     Course,
+    CourseStatistic,
     Membership,
     MembershipInvite,
     Question,
@@ -51,6 +51,7 @@ from ohq.pagination import QuestionSearchPagination
 from ohq.permissions import (
     AnnouncementPermission,
     CoursePermission,
+    CourseStatisticPermission,
     EventPermission,
     IsSuperuser,
     MassInvitePermission,
@@ -63,11 +64,12 @@ from ohq.permissions import (
     QueueStatisticPermission,
     TagPermission,
 )
-from ohq.schemas import MassInviteSchema
+from ohq.schemas import EventSchema, MassInviteSchema, OccurrenceSchema
 from ohq.serializers import (
     AnnouncementSerializer,
     CourseCreateSerializer,
     CourseSerializer,
+    CourseStatisticSerializer,
     EventSerializer,
     MembershipInviteSerializer,
     MembershipSerializer,
@@ -599,6 +601,22 @@ class MassInviteView(APIView):
         )
 
 
+class CourseStatisticView(generics.ListAPIView):
+    """
+    Return a list of statistics - multiple data points for list statistics and heatmap statistics
+    and singleton for card statistics.
+    """
+
+    serializer_class = CourseStatisticSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = CourseStatisticFilter
+    permission_classes = [CourseStatisticPermission | IsSuperuser]
+
+    def get_queryset(self):
+        qs = CourseStatistic.objects.filter(course=self.kwargs["course_pk"])
+        return prefetch(qs, self.serializer_class)
+
+
 class QueueStatisticView(generics.ListAPIView):
     """
     Return a list of statistics - multiple data points for list statistics and heatmap statistics
@@ -616,7 +634,7 @@ class QueueStatisticView(generics.ListAPIView):
         return prefetch(qs, self.serializer_class)
 
 
-class AnnouncementViewSet(viewsets.ModelViewSet):
+class AnnouncementViewSet(viewsets.ModelViewSet, RealtimeMixin):
     """
     retrieve:
     Return a single announcement.
@@ -641,26 +659,10 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
 
     permission_classes = [AnnouncementPermission | IsSuperuser]
     serializer_class = AnnouncementSerializer
+    queryset = Announcement.objects.none()
 
     def get_queryset(self):
         return Announcement.objects.filter(course=self.kwargs["course_pk"])
-
-
-class EventSchema(AutoSchema):
-    def get_operation(self, path, method):
-        op = super().get_operation(path, method)
-        if op["operationId"] == "listEvents":
-            op["parameters"].append(
-                {
-                    "name": "course",
-                    "in": "query",
-                    "required": True,
-                    "description": "A series of api/events/?course=1&course=2 "
-                    + "- where the numbers are the course pks",
-                    "schema": {"type": "string"},
-                }
-            )
-        return op
 
 
 class EventViewSet(viewsets.ModelViewSet):
@@ -713,45 +715,6 @@ class EventViewSet(viewsets.ModelViewSet):
         return Event.objects.filter(pk=self.kwargs["pk"])
 
 
-class OccurrenceSchema(AutoSchema):
-    def get_operation(self, path, method):
-        op = super().get_operation(path, method)
-        if op["operationId"] == "listOccurrences":
-            op["parameters"].append(
-                {
-                    "name": "course",
-                    "in": "query",
-                    "required": True,
-                    "description": "A series of api/occurrences/?course=1&course=2 "
-                    + "- where the numbers are the course pks",
-                    "schema": {"type": "string"},
-                }
-            )
-            op["parameters"].append(
-                {
-                    "name": "filter_start",
-                    "in": "query",
-                    "required": True,
-                    "description": "The start date of the filter in ISO format in UTC+0.<br>"
-                    + "The returned events will have start_time strictly within "
-                    + "the range of the filter<br>"
-                    + "e.g 2021-10-05T12:41:37Z",
-                    "schema": {"type": "datetime"},
-                }
-            )
-            op["parameters"].append(
-                {
-                    "name": "filter_end",
-                    "in": "query",
-                    "required": True,
-                    "description": "The end date of the filter in ISO format in UTC+0<br>"
-                    + "e.g 2021-10-05T12:41:37Z",
-                    "schema": {"type": "datetime"},
-                }
-            )
-        return op
-
-
 class OccurrenceViewSet(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
@@ -802,7 +765,7 @@ class OccurrenceViewSet(
                     occurrences.append(occurrence)
 
         serializer = OccurrenceSerializer(occurrences, many=True)
-        return Response(serializer.data)
+        return JsonResponse(serializer.data, safe=False)
 
     def get_queryset(self):
         return Occurrence.objects.filter(pk=self.kwargs["pk"])
