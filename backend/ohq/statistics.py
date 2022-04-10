@@ -9,7 +9,7 @@ from ohq.models import CourseStatistic, MembershipStatistic, Question, QueueStat
 User = get_user_model()
 
 
-def calculate_student_time_waiting(user, questions, course):
+def membership_calculate_student_time_waiting(user, questions, course):
 
     num_questions = total_time_waiting = 0
     for question in questions:
@@ -26,7 +26,7 @@ def calculate_student_time_waiting(user, questions, course):
     )
 
 
-def calculate_student_time_helped(user, questions, course):
+def membership_calculate_student_time_helped(user, questions, course):
 
     num_questions = total_time_helped = 0
     for question in questions:
@@ -43,7 +43,7 @@ def calculate_student_time_helped(user, questions, course):
     )
 
 
-def calculate_instructor_time_helping(user, questions, course):
+def membership_calculate_instructor_time_helping(user, questions, course):
     num_questions = total_time = 0
     for question in questions:
         total_time += (question.time_responded_to - question.time_response_started).seconds
@@ -59,7 +59,7 @@ def calculate_instructor_time_helping(user, questions, course):
     )
 
 
-def calculate_instructor_students_per_hour(user, questions, course):
+def membership_calculate_instructor_students_per_hour(user, questions, course):
     num_questions = total_time = 0
     for question in questions:
         total_time += (question.time_responded_to - question.time_response_started).seconds
