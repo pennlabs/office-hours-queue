@@ -1,4 +1,5 @@
 import Head from "next/head";
+import { useState } from "react";
 import { Grid } from "semantic-ui-react";
 import { NextPageContext } from "next";
 import CourseWrapper from "../../../components/Course/CourseWrapper";
@@ -6,13 +7,17 @@ import Calender from "../../../components/Calender";
 import { doMultipleSuccessRequests } from "../../../utils/fetch";
 import { isLeadershipRole } from "../../../utils/enums";
 import { withAuth } from "../../../context/auth";
-import { CoursePageProps, Course, Membership } from "../../../types";
+import { CoursePageProps, Course, Membership, Event } from "../../../types";
 import nextRedirect from "../../../utils/redirect";
+import { useEvents } from "../../../hooks/data-fetching/calendar";
 
-interface SettingsPageProps extends CoursePageProps {}
+interface CalendarPageProps extends CoursePageProps {
+    events: Event[];
+}
 
-const CalendarPage = (props: SettingsPageProps) => {
-    const { course, leadership } = props;
+const CalendarPage = (props: CalendarPageProps) => {
+    const { course, leadership, events } = props;
+    const { data, mutate } = useEvents(course.id, events);
     return (
         <>
             <Head>
@@ -23,7 +28,13 @@ const CalendarPage = (props: SettingsPageProps) => {
                     course={course}
                     leadership={leadership}
                     render={() => {
-                        return <Calender />;
+                        return (
+                            <Calender
+                                courseId={course.id}
+                                events={data ? data : []}
+                                mutate={mutate}
+                            />
+                        );
                     }}
                 />
             </Grid>
@@ -33,7 +44,7 @@ const CalendarPage = (props: SettingsPageProps) => {
 
 CalendarPage.getInitialProps = async (
     context: NextPageContext
-): Promise<SettingsPageProps> => {
+): Promise<CalendarPageProps> => {
     const { query, req } = context;
     const data = {
         headers: req ? { cookie: req.headers.cookie } : undefined,
@@ -41,19 +52,15 @@ CalendarPage.getInitialProps = async (
 
     let course: Course;
     let leadership: Membership[];
-    let events: any;
-    console.log(query.course);
-    console.log(data);
+    let events: Event[];
     const response = await doMultipleSuccessRequests([
         { path: `/api/courses/${query.course}/`, data },
         { path: `/api/courses/${query.course}/members/`, data },
-        { path: "/api/events/", data },
+        { path: `/api/events/?course=${query.course}`, data },
     ]);
 
     if (response.success) {
         [course, leadership, events] = response.data;
-        console.log("SUCCESS");
-        console.log(events);
         if (course.archived) {
             nextRedirect(
                 context,
@@ -69,6 +76,7 @@ CalendarPage.getInitialProps = async (
     return {
         course,
         leadership: leadership.filter((m) => isLeadershipRole(m.kind)),
+        events,
     };
 };
 

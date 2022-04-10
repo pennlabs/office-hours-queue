@@ -447,7 +447,15 @@ class EventPermission(permissions.BasePermission):
 
         # Anonymous users can't do anything
         if view.action in ["create"]:
+<<<<<<< HEAD
             course_pk = request.data.get("course_id", None)
+=======
+            # print(request.data)
+            # print(json.loads(request.data))
+            print(type(request.data))
+            print(request.data)
+            course_pk = request.data.get("courseId", None)
+>>>>>>> 192df59 (calender create edit delete)
             if course_pk is None:
                 return False
 
