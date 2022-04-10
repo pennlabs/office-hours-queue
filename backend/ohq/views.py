@@ -616,9 +616,16 @@ class MembershipStatisticView(generics.ListAPIView):
     permission_classes = [MembershipStatisticPermission | IsSuperuser]
 
     def get_queryset(self):
-        qs = MembershipStatistic.objects.filter(
-            course=self.kwargs["course_pk"], user=self.request.user
-        )
+        membership = Membership.objects.get(course=self.kwargs["course_pk"], user=self.request.user)
+
+        # students can only see their statistics, ta's can see all
+        if not membership.is_ta:
+            qs = MembershipStatistic.objects.filter(
+                course=self.kwargs["course_pk"], user=self.request.user
+            )
+        else:
+            qs = MembershipStatistic.objects.filter(course=self.kwargs["course_pk"])
+
         return prefetch(qs, self.serializer_class)
 
 

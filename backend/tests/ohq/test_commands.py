@@ -648,7 +648,7 @@ class QueueQuestionsPerTAHeatmapTestCase(TestCase):
         self.assertEqual(expected_two_days_ago_8, actual_two_days_ago_8)
 
 
-class StudentWaitTimeMembershipStatisticTestCase(TestCase):
+class MembershipStudentWaitTimeTestCase(TestCase):
     """
     Test student wait times being helped per course
     """
@@ -830,7 +830,7 @@ class StudentWaitTimeMembershipStatisticTestCase(TestCase):
                 self.assertEqual(expected, actual)
 
 
-class StudentTimeHelpedMembershipStatisticTestCase(TestCase):
+class MembershipStudentTimeHelpedTestCase(TestCase):
     """
     Test student time spent being helped per course
     """
@@ -1010,7 +1010,7 @@ class StudentTimeHelpedMembershipStatisticTestCase(TestCase):
                 self.assertEqual(expected, actual)
 
 
-class InstructorTimeHelpingMembershipStatisticTestCase(TestCase):
+class MembershipInstructorTimeHelpingTestCase(TestCase):
     """
     Test instructor average time spent helping students
     """
@@ -1164,7 +1164,7 @@ class InstructorTimeHelpingMembershipStatisticTestCase(TestCase):
                 self.assertEqual(expected, actual)
 
 
-class InstructorNumQuestionsPerHourMembershipStatisticTestCase(TestCase):
+class MembershipInstructorNumQuestionsPerHourTestCase(TestCase):
     """
     Test instructor average number of students helped per hour
     """
