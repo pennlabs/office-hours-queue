@@ -1,3 +1,4 @@
+from http.client import HTTPResponse
 import math
 import re
 from datetime import datetime, timedelta
@@ -706,7 +707,7 @@ class EventViewSet(viewsets.ModelViewSet):
                 events.append(event)
 
         serializer = EventSerializer(events, many=True)
-        return Response(serializer.data)
+        return JsonResponse(serializer.data, safe=False)
 
     def get_queryset(self):
         return Event.objects.filter(pk=self.kwargs["pk"])

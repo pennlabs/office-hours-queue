@@ -196,3 +196,25 @@ export enum DayOfWeek {
 }
 
 export type NotificationProps = MutableRefObject<(string) => void>;
+
+export interface PartialEvent {
+    title: string;
+    course_id: number;
+    description: string | null;
+    start: string;
+    end: string;
+    endRecurringPeriod: string | null;
+}
+
+export interface CalendarEvent {
+    title: string;
+    course_id: number;
+    description: string | null;
+    start: Date;
+    end: Date;
+    endRecurringPeriod: string | null;
+}
+
+export interface Event extends PartialEvent {
+    id: number;
+}
