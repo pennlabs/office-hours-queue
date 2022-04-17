@@ -1,6 +1,7 @@
 import math
 import re
 from datetime import datetime, timedelta
+import coreapi
 
 from django.contrib.auth import get_user_model
 from django.core.validators import ValidationError
@@ -27,6 +28,7 @@ from rest_framework import filters, generics, mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.schemas.openapi import AutoSchema
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 from rest_live.mixins import RealtimeMixin
@@ -43,6 +45,7 @@ from ohq.models import (
     Question,
     Queue,
     QueueStatistic,
+    QuestionFile,
     Semester,
     Tag,
 )
@@ -298,25 +301,58 @@ class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
             time_responded_to__gte=timezone.now() - timedelta(minutes=queue.rate_limit_minutes),
         ).exclude(status__in=[Question.STATUS_REJECTED, Question.STATUS_WITHDRAWN])
 
+    def handleFileUpload(self, files, question):
+        for f in files:
+            questionFile = QuestionFile(question=question, file=File(f))
+            questionFile.save()
+
+    def update(self, request, *args, **kwargs):
+        # question = super().update(request, args, kwargs)
+        print('updating')
+        # self.handleFileUpload(request.FILES.getlist('files'), question)
+        return super().update(request, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
+        question = super().update(request, *args, **kwargs)
+        print('partial updating')
+        # self.handleFileUpload(request.FILES.getlist('files'), question)
+        return question
+
+
     def create(self, request, *args, **kwargs):
         """
         Create a new question and check if it follows the rate limit
         """
 
+        print('creating')
         queue = Queue.objects.get(id=self.kwargs["queue_pk"])
+        print(queue.rate_limit_enabled)
+        print(Question.objects.filter(queue=queue, status=Question.STATUS_ASKED).count())
+        print(queue.rate_limit_length)
+
         if (
             queue.rate_limit_enabled
             and Question.objects.filter(queue=queue, status=Question.STATUS_ASKED).count()
             >= queue.rate_limit_length
         ):
+            print('rate limit enabled')
             num_questions_asked = self.quota_count_helper(queue, request.user).count()
 
             if num_questions_asked >= queue.rate_limit_questions:
+                print('large number questions')
                 return JsonResponse({"detail": "rate limited"}, status=429)
         if queue.pin_enabled and queue.pin != request.data.get("pin"):
+            print('in here')
             return JsonResponse({"detail": "incorrect pin"}, status=409)
 
-        return super().create(request, *args, **kwargs)
+        print('cer')
+        question =  super().create(request, *args, **kwargs)
+        print(question)
+        # files = request.FILES.getlist('files')
+
+        # # should check for sizes as well
+        # self.handleFileUpload(files, question)
+        return question
 
     @action(detail=False)
     def quota_count(self, request, course_pk, queue_pk):

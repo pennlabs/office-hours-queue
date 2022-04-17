@@ -215,7 +215,7 @@ class QuestionSerializer(QueueRouteMixin):
     responded_to_by = UserSerializer(read_only=True)
     tags = TagSerializer(many=True)
     position = serializers.IntegerField(default=-1, read_only=True)
-    files = serializers.ListField(child=serializers.CharField(), read_only=True)
+    # files = serializers.ListField(child=serializers.CharField())
 
     class Meta:
         model = Question
@@ -236,7 +236,7 @@ class QuestionSerializer(QueueRouteMixin):
             "resolved_note",
             "position",
             "student_descriptor",
-            "files"
+            # "files"
         )
         read_only_fields = (
             "time_asked",
@@ -247,17 +247,17 @@ class QuestionSerializer(QueueRouteMixin):
             "should_send_up_soon_notification",
             "resolved_note",
             "position",
-            "files"
+            # "files"
         )
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        related_question_files = QuestionFile.objects.filter(question=instance).all()
+        # related_question_files = QuestionFile.objects.filter(question=instance).all()
 
         # create a list of QuestionFile ids associated with course
-        representation['files'] = []
-        for question_file_obj in related_question_files:
-            representation['files'].append(question_file_obj.id)
+        # representation['files'] = []
+        # for question_file_obj in related_question_files:
+        #     representation['files'].append(question_file_obj.id)
         return representation
 
 
@@ -266,6 +266,7 @@ class QuestionSerializer(QueueRouteMixin):
         Students can update their question's text and video_chat_url or withdraw the question
         TAs+ can only modify the status of a question.
         """
+        print('update serializer')
         user = self.context["request"].user
         membership = Membership.objects.get(course=instance.queue.course, user=user)
         queue_id = self.context["view"].kwargs["queue_pk"]

@@ -1,5 +1,5 @@
 from rest_framework.schemas.openapi import AutoSchema
-
+import coreapi
 
 class MassInviteSchema(AutoSchema):
     def get_operation(self, path, method):
@@ -38,6 +38,7 @@ class MassInviteSchema(AutoSchema):
         return operation
 
 class QuestionSchema(AutoSchema):
+    
     def get_operation(self, path, method):
         op = super().get_operation(path, method)
         
@@ -47,16 +48,39 @@ class QuestionSchema(AutoSchema):
                     "multipart-form/data": {
                         "schema": {
                             "properties": {
-                                "file": {"type": "file"},
-                                
+                                "files": {"type": "files"},
+                                "text": {"required": True, "type": "string"},
+                                "videoChatUrl": {"type": "string"},
+                                "status": {"type": "string", "description": "Enum: 'ASKED', 'WITHDRAWN', 'ACTIVE', 'REJECTED', 'ANSWERED'"},
+                                "rejectedReason": {"type": "string or null", "descriptioN": "<= 255 characters"},
+                                "tags": {"type": "Array of objects"},
+                                "note": {"type": "string or null"},
+                                "studentDescriptor": {"type": "string or null"}
                             }
                         }
                     }
                 }
         }
-            
-            
         return op
+
+    # def get_manual_fields(self, path, method):
+    #     print('getting manual fields')
+    #     manual_fields = super().get_manual_fields(path, method)
+    #     custom_fields = []
+    #     if method.lower() == 'post':
+    #         print('post')
+    #         custom_fields =[
+    #             coreapi.Field("file", 
+    #             required=False, 
+    #             location="form",
+    #             description="file")
+    #         ]
+
+    #     if method.lower() == 'put':
+    #         print('put')
+        
+    #     print(manual_fields + custom_fields)
+    #     return manual_fields + custom_fields
 
 class EventSchema(AutoSchema):
     def get_operation(self, path, method):

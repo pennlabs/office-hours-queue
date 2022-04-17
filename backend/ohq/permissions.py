@@ -164,7 +164,7 @@ class QuestionPermission(permissions.BasePermission):
                 & Q(asked_by=request.user)
                 & (Q(status=Question.STATUS_ASKED) | Q(status=Question.STATUS_ACTIVE))
             ).first()
-
+            print(existing_question.text)
             return membership.kind == Membership.KIND_STUDENT and existing_question is None
 
         # Students+ can get, list, or modify questions
