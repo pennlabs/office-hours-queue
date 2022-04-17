@@ -807,7 +807,9 @@ class MembershipStudentWaitTimeTestCase(TestCase):
 
                 expected_total = wait_times[i]
                 actual_total = MembershipStatistic.objects.get(
-                    user=student, course=course, metric=MembershipStatistic.METRIC_STUDENT_TOTAL_TIME_WAITING
+                    user=student,
+                    course=course,
+                    metric=MembershipStatistic.METRIC_STUDENT_TOTAL_TIME_WAITING,
                 ).value
                 self.assertEqual(expected_total, actual_total)
 
@@ -837,7 +839,9 @@ class MembershipStudentWaitTimeTestCase(TestCase):
 
                 expected_total = wait_times[i]
                 actual_total = MembershipStatistic.objects.get(
-                    user=student, course=course, metric=MembershipStatistic.METRIC_STUDENT_TOTAL_TIME_WAITING
+                    user=student,
+                    course=course,
+                    metric=MembershipStatistic.METRIC_STUDENT_TOTAL_TIME_WAITING,
                 ).value
                 self.assertEqual(expected_total, actual_total)
 
@@ -999,7 +1003,9 @@ class MembershipStudentTimeHelpedTestCase(TestCase):
 
                 expected_total = help_times[i]
                 actual_total = MembershipStatistic.objects.get(
-                    user=student, course=course, metric=MembershipStatistic.METRIC_STUDENT_TOTAL_TIME_HELPED
+                    user=student,
+                    course=course,
+                    metric=MembershipStatistic.METRIC_STUDENT_TOTAL_TIME_HELPED,
                 ).value
                 self.assertEqual(expected_total, actual_total)
 
@@ -1029,7 +1035,9 @@ class MembershipStudentTimeHelpedTestCase(TestCase):
 
                 expected_total = help_times[i]
                 actual_total = MembershipStatistic.objects.get(
-                    user=student, course=course, metric=MembershipStatistic.METRIC_STUDENT_TOTAL_TIME_HELPED
+                    user=student,
+                    course=course,
+                    metric=MembershipStatistic.METRIC_STUDENT_TOTAL_TIME_HELPED,
                 ).value
                 self.assertEqual(expected_total, actual_total)
 
@@ -1166,13 +1174,14 @@ class MembershipInstructorTimeHelpingTestCase(TestCase):
                     user=ta, course=course, metric=MembershipStatistic.METRIC_INSTR_AVG_TIME_HELPING
                 ).value
                 self.assertEqual(expected, actual)
-                
+
                 expected_total = help_times[i]
                 actual_total = MembershipStatistic.objects.get(
-                    user=ta, course=course, metric=MembershipStatistic.METRIC_INSTR_TOTAL_TIME_HELPING
+                    user=ta,
+                    course=course,
+                    metric=MembershipStatistic.METRIC_INSTR_TOTAL_TIME_HELPING,
                 ).value
                 self.assertEqual(expected_total, actual_total)
-
 
         call_command("membership_stat", "--hist")
         for ta in self.tas:
@@ -1196,9 +1205,12 @@ class MembershipInstructorTimeHelpingTestCase(TestCase):
 
                 expected_total = help_times[i]
                 actual_total = MembershipStatistic.objects.get(
-                    user=ta, course=course, metric=MembershipStatistic.METRIC_INSTR_TOTAL_TIME_HELPING
+                    user=ta,
+                    course=course,
+                    metric=MembershipStatistic.METRIC_INSTR_TOTAL_TIME_HELPING,
                 ).value
                 self.assertEqual(expected_total, actual_total)
+
 
 class MembershipInstructorTimeHelpingTestCase(TestCase):
     """
@@ -1332,13 +1344,14 @@ class MembershipInstructorTimeHelpingTestCase(TestCase):
                     user=ta, course=course, metric=MembershipStatistic.METRIC_INSTR_AVG_TIME_HELPING
                 ).value
                 self.assertEqual(expected, actual)
-                
+
                 expected_total = help_times[i]
                 actual_total = MembershipStatistic.objects.get(
-                    user=ta, course=course, metric=MembershipStatistic.METRIC_INSTR_TOTAL_TIME_HELPING
+                    user=ta,
+                    course=course,
+                    metric=MembershipStatistic.METRIC_INSTR_TOTAL_TIME_HELPING,
                 ).value
                 self.assertEqual(expected_total, actual_total)
-
 
         call_command("membership_stat", "--hist")
         for ta in self.tas:
@@ -1362,9 +1375,12 @@ class MembershipInstructorTimeHelpingTestCase(TestCase):
 
                 expected_total = help_times[i]
                 actual_total = MembershipStatistic.objects.get(
-                    user=ta, course=course, metric=MembershipStatistic.METRIC_INSTR_TOTAL_TIME_HELPING
+                    user=ta,
+                    course=course,
+                    metric=MembershipStatistic.METRIC_INSTR_TOTAL_TIME_HELPING,
                 ).value
                 self.assertEqual(expected_total, actual_total)
+
 
 class CourseStudentMostQuestionsAskedTestCase(TestCase):
     def setUp(self):
