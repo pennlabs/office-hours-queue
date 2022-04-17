@@ -329,18 +329,29 @@ class MembershipStatistic(models.Model):
     Statistics related to students and instructors
     """
 
+    # average statistics
     METRIC_STUDENT_AVG_TIME_HELPED = "STUDENT_AVG_TIME_HELPED"
     METRIC_STUDENT_AVG_TIME_WAITING = "STUDENT_AVG_TIME_WAITING"
+
     METRIC_INSTR_AVG_TIME_HELPING = "INSTR_AVG_TIME_HELPING"
-    METRIC_INSTR_AVG_STUDENTS_PER_HOUR = "INSTR_AVG_STUDENTS_PER_HOUR"
+
+    # total statistics
+    METRIC_STUDENT_TOTAL_TIME_HELPED = "STUDENT_TOTAL_TIME_HELPED"
+    METRIC_STUDENT_TOTAL_TIME_WAITING = "STUDENT_TOTAL_TIME_WAITING"
+    METRIC_STUDENT_TOTAL_QUESTIONS = "STUDENT_TOTAL_QUESTIONS"
+
+    METRIC_INSTR_TOTAL_TIME_HELPING = "INSTR_TOTAL_TIME_HELPING"
+    METRIC_INSTR_TOTAL_QUESTIONS = "INSTR_TOTAL_QUESTONS"
+
     METRIC_CHOICES = [
         (METRIC_STUDENT_AVG_TIME_HELPED, "Student: Average time being helped"),
         (METRIC_STUDENT_AVG_TIME_WAITING, "Student: Average time waiting for help"),
         (METRIC_INSTR_AVG_TIME_HELPING, "Instructor: Average time helping per question"),
-        (
-            METRIC_INSTR_AVG_STUDENTS_PER_HOUR,
-            "Instructor: Average number of students helped per hour",
-        ),
+        (METRIC_STUDENT_TOTAL_TIME_HELPED, "Student: Total time being helped"),
+        (METRIC_STUDENT_TOTAL_TIME_WAITING, "Student: Total time waiting in queue"),
+        (METRIC_STUDENT_TOTAL_QUESTIONS, "Student: Total questions answered"),
+        (METRIC_INSTR_TOTAL_TIME_HELPING, "Instructor: Total time helping"),
+        (METRIC_INSTR_TOTAL_QUESTIONS, "Instructor: Total questions answered"),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
