@@ -1,6 +1,8 @@
 import json
 from datetime import timedelta
 
+from email.mime import multipart
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
@@ -8,8 +10,9 @@ from django.utils import timezone
 from djangorestframework_camel_case.util import camelize
 from rest_framework.test import APIClient
 from schedule.models import Event, Occurrence
+from django.core.files.uploadedfile import SimpleUploadedFile
 
-from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester
+from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester, QuestionFile
 from ohq.serializers import UserPrivateSerializer
 
 
@@ -192,8 +195,11 @@ class QuestionViewTestCase(TestCase):
         self.prelimit_question1.time_responded_to = timezone.now() - timedelta(minutes=6)
         self.prelimit_question.save()
         self.prelimit_question1.save()
-
         Question.objects.create(queue=self.queue3, asked_by=self.student3, text="Help me")
+
+        self.no_limit_question = Question.objects.create(
+            queue=self.no_limit_queue, asked_by=self.student, text='Help me'
+        )
 
     def test_rate_limit(self):
         self.client.force_authenticate(user=self.student)
@@ -268,6 +274,56 @@ class QuestionViewTestCase(TestCase):
         )
         self.assertEqual(2, Question.objects.all().count())
 
+    def test_create_with_file(self):
+        self.client.force_authenticate(user=self.student)
+        Question.objects.all().delete()
+
+        # test on sample text 
+        file_content = b'file_content'
+        file = SimpleUploadedFile('text.txt', b'file_content', content_type='text/plain')
+        self.client.post(
+            reverse("ohq:question-list", args=[self.course.id, self.no_limit_queue.id]),
+            {"text": "Help me", "tags": [], 'files': {file.name: file_content}},
+        )
+        self.assertEqual(1, Question.objects.all().count())
+        self.assertEqual(1, QuestionFile.objects.all().count())
+        question_file = QuestionFile.objects.all()[0]
+        self.assertEqual(Question.objects.all()[0], question_file.question)
+        print(question_file.file.name)
+        self.assertEqual(question_file.file.saved_file.open('rb').readlines(), file_content)
+        
+        # test on sample audio
+        # file_content = open('../files/audio_file.mp3', 'rb')
+        # response = self.client(
+        #     reverse('ohq:question-list', args=[self.course.id, self.no_limit_queue.id]),
+        #     {"text": "Help me", "tags": [], 'files': {file.name: file_content}},
+        # )
+        # print(response)
+        # print(response.text)
+        # self.assertEqual(2, Question.objects.all().count())
+        # self.assertEqual(2, QuestionFile.objects.all().count())
+        # question_file = QuestionFile.objects.all()[1]
+        # self.assertEqual(Question.objects.all()[1], question_file.question)
+
+
+    def test_update_file(self):
+        self.client.force_authenticate(user=self.student)
+        # https://stackoverflow.com/questions/11170425/how-to-unit-test-file-upload-in-django
+
+        file = SimpleUploadedFile('text.txt', b'file_content', content_type='text/plain')
+
+        self.client.patch(
+            reverse("ohq:question-detail", args=[self.course.id, self.no_limit_queue.id, self.no_limit_question.id]),
+            data={
+                'files': {
+                    file.name: file.chunks
+                },
+                "status": Question.STATUS_ANSWERED
+            }
+        )
+        self.assertEqual(1, len(QuestionFile.objects.all()))
+
+    
 
 class OccurrenceViewTestCase(TestCase):
     def setUp(self):

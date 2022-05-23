@@ -22,6 +22,7 @@ from ohq.models import (
     QueueStatistic,
     Semester,
     Tag,
+    QuestionFile,
 )
 from ohq.sms import sendSMSVerification
 from ohq.tasks import sendUpNextNotificationTask
@@ -214,6 +215,7 @@ class QuestionSerializer(QueueRouteMixin):
     responded_to_by = UserSerializer(read_only=True)
     tags = TagSerializer(many=True)
     position = serializers.IntegerField(default=-1, read_only=True)
+    files = serializers.ListField(child=serializers.CharField(), read_only=True, required=False)
 
     class Meta:
         model = Question
@@ -234,6 +236,7 @@ class QuestionSerializer(QueueRouteMixin):
             "resolved_note",
             "position",
             "student_descriptor",
+            "files",
         )
         read_only_fields = (
             "time_asked",
@@ -244,6 +247,7 @@ class QuestionSerializer(QueueRouteMixin):
             "should_send_up_soon_notification",
             "resolved_note",
             "position",
+            "files"
         )
 
     def update(self, instance, validated_data):
@@ -254,7 +258,7 @@ class QuestionSerializer(QueueRouteMixin):
         user = self.context["request"].user
         membership = Membership.objects.get(course=instance.queue.course, user=user)
         queue_id = self.context["view"].kwargs["queue_pk"]
-
+        print('serializer update')
         if membership.is_ta:  # User is a TA+
             if "status" in validated_data:
                 status = validated_data["status"]

@@ -411,3 +411,7 @@ class Announcement(models.Model):
     author = models.ForeignKey(User, related_name="announcements", on_delete=models.CASCADE)
     time_updated = models.DateTimeField(auto_now=True)
     course = models.ForeignKey(Course, related_name="announcements", on_delete=models.CASCADE)
+
+class QuestionFile(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    file = models.FileField(upload_to='question_files/')

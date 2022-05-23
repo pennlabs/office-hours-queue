@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 
 from django.contrib.auth import get_user_model
 from django.core.validators import ValidationError
+from django.core.files import File
+from django.core.files.base import ContentFile
 from django.db.models import (
     Case,
     Count,
@@ -43,6 +45,7 @@ from ohq.models import (
     Question,
     Queue,
     QueueStatistic,
+    QuestionFile,
     Semester,
     Tag,
 )
@@ -292,11 +295,35 @@ class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
             time_responded_to__gte=timezone.now() - timedelta(minutes=queue.rate_limit_minutes),
         ).exclude(status__in=[Question.STATUS_REJECTED, Question.STATUS_WITHDRAWN])
 
+    def handleFileUpload(self, files, question):
+        print(files)
+        for file_name in files:
+            f = ContentFile(str.encode(files[file_name]))
+            questionFile = QuestionFile(question=question, file=f)
+            questionFile.save()
+
+    def update(self, request, *args, **kwargs):
+        print('updating')
+        print(request)
+        print(request.data)
+        question = super().update(request, args, kwargs)
+        print(question)
+        self.handleFileUpload(request.data['files'], question)
+        # return super().update(request, *args, **kwargs)
+        print('past super update')
+        return question
+
+    def partial_update(self, request, *args, **kwargs):
+        question = super().partial_update(request, *args, **kwargs)
+        print('partial updating')
+        # self.handleFileUpload(request.FILES.getlist('files'), question)
+        return question
+
     def create(self, request, *args, **kwargs):
         """
         Create a new question and check if it follows the rate limit
         """
-
+        print('creating')
         queue = Queue.objects.get(id=self.kwargs["queue_pk"])
         if (
             queue.rate_limit_enabled
@@ -310,7 +337,11 @@ class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
         if queue.pin_enabled and queue.pin != request.data.get("pin"):
             return JsonResponse({"detail": "incorrect pin"}, status=409)
 
-        return super().create(request, *args, **kwargs)
+        response =  super().create(request, *args, **kwargs)
+        question = Question.objects.get(pk=response.data['id'])
+        # should check for sizes as well
+        self.handleFileUpload(request.data['files'], question)
+        return response
 
     @action(detail=False)
     def quota_count(self, request, course_pk, queue_pk):
