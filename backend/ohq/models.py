@@ -4,8 +4,8 @@ from django.db import models
 from django.dispatch import receiver
 from email_tools.emails import send_email
 from phonenumber_field.modelfields import PhoneNumberField
-
-
+from django.dispatch import receiver
+import os
 User = settings.AUTH_USER_MODEL
 
 
@@ -415,3 +415,14 @@ class Announcement(models.Model):
 class QuestionFile(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     file = models.FileField(upload_to='question_files/')
+
+# Delete file on delete of QuestionFile object
+@receiver(models.signals.post_delete, sender=QuestionFile)
+def auto_delete_file_on_delete(sender, instance, **kwargs):
+    """
+    Deletes file from filesystem
+    when corresponding `MediaFile` object is deleted.
+    """
+    if instance.file:
+        if os.path.isfile(instance.file.path):
+            os.remove(instance.file.path)

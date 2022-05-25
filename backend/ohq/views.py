@@ -351,7 +351,6 @@ class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
             return JsonResponse({"detail": "queue does not have rate limit"}, status=405)
 
     def handle_file_upload(self, uploaded_file, question):
-        print('Saving ' + uploaded_file.name)
         question_file = QuestionFile(question=question, file=uploaded_file)
         question_file.save()
         return question_file
@@ -362,9 +361,11 @@ class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
             form = self.form_class(request.POST, request.FILES)
             if form.is_valid():
                 question = Question.objects.filter(pk=self.kwargs['pk']).first()
+                response = []
                 for file in request.FILES.getlist('file'):
                     question_file = self.handle_file_upload(file, question)
-                return JsonResponse({'id': question_file.id, 'name': question_file.file.name}, status=200)
+                    response.append({'id': question_file.id, 'name': question_file.file.name})
+                return JsonResponse(response, status=200, safe=False)
             else :
                 return JsonResponse({'detail': form.errors.as_text}, status=406)
         return JsonResponse({"detail": "file upload should be POST"}, status=405) 
