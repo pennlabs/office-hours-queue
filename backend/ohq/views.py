@@ -18,6 +18,7 @@ from django.db.models import (
     When,
 )
 from django.http import HttpResponseBadRequest, JsonResponse
+from django.http.multipartparser import MultiPartParser
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django_auto_prefetching import prefetch
@@ -48,6 +49,9 @@ from ohq.models import (
     QuestionFile,
     Semester,
     Tag,
+)
+from ohq.forms import (
+    UploadFileForm,
 )
 from ohq.pagination import QuestionSearchPagination
 from ohq.permissions import (
@@ -208,6 +212,7 @@ class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
     permission_classes = [QuestionPermission | IsSuperuser]
     serializer_class = QuestionSerializer
     queryset = Question.objects.none()
+    form_class = UploadFileForm
 
     def get_queryset(self):
         position = (
@@ -295,35 +300,11 @@ class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
             time_responded_to__gte=timezone.now() - timedelta(minutes=queue.rate_limit_minutes),
         ).exclude(status__in=[Question.STATUS_REJECTED, Question.STATUS_WITHDRAWN])
 
-    def handleFileUpload(self, files, question):
-        print(files)
-        for file_name in files:
-            f = ContentFile(str.encode(files[file_name]))
-            questionFile = QuestionFile(question=question, file=f)
-            questionFile.save()
-
-    def update(self, request, *args, **kwargs):
-        print('updating')
-        print(request)
-        print(request.data)
-        question = super().update(request, args, kwargs)
-        print(question)
-        self.handleFileUpload(request.data['files'], question)
-        # return super().update(request, *args, **kwargs)
-        print('past super update')
-        return question
-
-    def partial_update(self, request, *args, **kwargs):
-        question = super().partial_update(request, *args, **kwargs)
-        print('partial updating')
-        # self.handleFileUpload(request.FILES.getlist('files'), question)
-        return question
-
     def create(self, request, *args, **kwargs):
         """
         Create a new question and check if it follows the rate limit
         """
-        print('creating')
+
         queue = Queue.objects.get(id=self.kwargs["queue_pk"])
         if (
             queue.rate_limit_enabled
@@ -337,11 +318,7 @@ class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
         if queue.pin_enabled and queue.pin != request.data.get("pin"):
             return JsonResponse({"detail": "incorrect pin"}, status=409)
 
-        response =  super().create(request, *args, **kwargs)
-        question = Question.objects.get(pk=response.data['id'])
-        # should check for sizes as well
-        self.handleFileUpload(request.data['files'], question)
-        return response
+        return super().create(request, *args, **kwargs)
 
     @action(detail=False)
     def quota_count(self, request, course_pk, queue_pk):
@@ -373,6 +350,24 @@ class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
         else:
             return JsonResponse({"detail": "queue does not have rate limit"}, status=405)
 
+    def handle_file_upload(self, uploaded_file, question):
+        print('Saving ' + uploaded_file.name)
+        question_file = QuestionFile(question=question, file=uploaded_file)
+        question_file.save()
+        return question_file
+
+    @action(detail=True, methods=['post'])
+    def upload_file(self, request, *args, **kwargs):
+        if (request.method == 'POST'):
+            form = self.form_class(request.POST, request.FILES)
+            if form.is_valid():
+                question = Question.objects.filter(pk=self.kwargs['pk']).first()
+                for file in request.FILES.getlist('file'):
+                    question_file = self.handle_file_upload(file, question)
+                return JsonResponse({'id': question_file.id, 'name': question_file.file.name}, status=200)
+            else :
+                return JsonResponse({'detail': form.errors.as_text}, status=406)
+        return JsonResponse({"detail": "file upload should be POST"}, status=405) 
 
 class QuestionSearchView(XLSXFileMixin, generics.ListAPIView):
     filter_backends = [DjangoFilterBackend]

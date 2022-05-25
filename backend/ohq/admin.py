@@ -17,6 +17,7 @@ from ohq.models import (
 
 
 class DisplayIdAdmin(admin.ModelAdmin):
+    readonly_fields = ('id', )
     def get_list_display(self, request): 
         list_display = list(super().get_list_display(request))
         list_display.insert(0, 'id')
