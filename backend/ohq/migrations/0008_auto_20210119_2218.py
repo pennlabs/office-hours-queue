@@ -11,7 +11,9 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name="queue", name="rate_limit_enabled", field=models.BooleanField(default=False),
+            model_name="queue",
+            name="rate_limit_enabled",
+            field=models.BooleanField(default=False),
         ),
         migrations.AddField(
             model_name="queue",

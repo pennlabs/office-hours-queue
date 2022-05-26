@@ -8,20 +8,22 @@ from ohq.models import (
     MembershipInvite,
     Profile,
     Question,
+    QuestionFile,
     Queue,
     QueueStatistic,
     Semester,
     Tag,
-    QuestionFile
 )
 
 
 class DisplayIdAdmin(admin.ModelAdmin):
-    readonly_fields = ('id', )
-    def get_list_display(self, request): 
+    readonly_fields = ("id",)
+
+    def get_list_display(self, request):
         list_display = list(super().get_list_display(request))
-        list_display.insert(0, 'id')
+        list_display.insert(0, "id")
         return list_display
+
 
 admin.site.register(Course, DisplayIdAdmin)
 admin.site.register(CourseStatistic, DisplayIdAdmin)

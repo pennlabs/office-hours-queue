@@ -18,11 +18,11 @@ from ohq.models import (
     MembershipInvite,
     Profile,
     Question,
+    QuestionFile,
     Queue,
     QueueStatistic,
     Semester,
     Tag,
-    QuestionFile,
 )
 from ohq.sms import sendSMSVerification
 from ohq.tasks import sendUpNextNotificationTask
@@ -352,7 +352,7 @@ class QuestionSerializer(QueueRouteMixin):
         question_file_ids = []
         for question_file in question_files:
             question_file_ids.append(question_file.id)
-        representation['files'] = question_file_ids
+        representation["files"] = question_file_ids
         return representation
 
 

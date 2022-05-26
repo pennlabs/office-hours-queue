@@ -14,15 +14,38 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RenameField(
-            model_name="question", old_name="time_answered", new_name="time_responded_to",
+            model_name="question",
+            old_name="time_answered",
+            new_name="time_responded_to",
         ),
-        migrations.RemoveField(model_name="question", name="answered_by",),
-        migrations.RemoveField(model_name="question", name="rejected_by",),
-        migrations.RemoveField(model_name="question", name="rejected_reason_other",),
-        migrations.RemoveField(model_name="question", name="time_last_updated",),
-        migrations.RemoveField(model_name="question", name="time_rejected",),
-        migrations.RemoveField(model_name="question", name="time_started",),
-        migrations.RemoveField(model_name="question", name="time_withdrawn",),
+        migrations.RemoveField(
+            model_name="question",
+            name="answered_by",
+        ),
+        migrations.RemoveField(
+            model_name="question",
+            name="rejected_by",
+        ),
+        migrations.RemoveField(
+            model_name="question",
+            name="rejected_reason_other",
+        ),
+        migrations.RemoveField(
+            model_name="question",
+            name="time_last_updated",
+        ),
+        migrations.RemoveField(
+            model_name="question",
+            name="time_rejected",
+        ),
+        migrations.RemoveField(
+            model_name="question",
+            name="time_started",
+        ),
+        migrations.RemoveField(
+            model_name="question",
+            name="time_withdrawn",
+        ),
         migrations.AddField(
             model_name="question",
             name="responded_to_by",

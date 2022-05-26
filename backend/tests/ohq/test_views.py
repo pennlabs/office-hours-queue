@@ -1,20 +1,16 @@
 import json
 from datetime import timedelta
 
-from email.mime import multipart
-
 from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
-from django.test.client import MULTIPART_CONTENT, encode_multipart, BOUNDARY
 from django.urls import reverse
 from django.utils import timezone
 from djangorestframework_camel_case.util import camelize
 from rest_framework.test import APIClient
 from schedule.models import Event, Occurrence
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.core.files.base import ContentFile
 
-from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester, QuestionFile
+from ohq.models import Course, Membership, MembershipInvite, Question, QuestionFile, Queue, Semester
 from ohq.serializers import UserPrivateSerializer
 
 
@@ -143,7 +139,9 @@ class QuestionViewTestCase(TestCase):
         )
         self.no_limit_queue = Queue.objects.create(name="No Rate Limit Queue", course=self.course)
         self.ta = User.objects.create(username="ta")
-        self.student = User.objects.create(username="student")
+        self.student = User.objects.create(
+            username="student"
+        )  # note student is rate-limited on test_rate_limit
         self.student2 = User.objects.create(username="student2")
         self.student3 = User.objects.create(username="student3")
         Membership.objects.create(course=self.course, user=self.ta, kind=Membership.KIND_TA)
@@ -200,15 +198,14 @@ class QuestionViewTestCase(TestCase):
         Question.objects.create(queue=self.queue3, asked_by=self.student3, text="Help me")
 
         self.question_with_file = Question.objects.create(
-            queue=self.queue, asked_by=self.student, text="Help me with the files"
+            queue=self.queue, asked_by=self.student3, text="Help me with the files"
         )
-        self.file1 = SimpleUploadedFile('file.txt', b'file_content')
-        self.file2 = SimpleUploadedFile('file2.txt', b'file_content 2')
+        self.file1 = SimpleUploadedFile("file.txt", b"file_content")
+        self.file2 = SimpleUploadedFile("file2.txt", b"file_content 2")
         self.question_file1 = QuestionFile(question=self.question_with_file, file=self.file1)
         self.question_file2 = QuestionFile(question=self.question_with_file, file=self.file2)
         self.question_file1.save()
         self.question_file2.save()
-
 
     def test_rate_limit(self):
         self.client.force_authenticate(user=self.student)
@@ -216,14 +213,14 @@ class QuestionViewTestCase(TestCase):
             reverse("ohq:question-detail", args=[self.course.id, self.queue.id, self.question.id]),
             {"status": Question.STATUS_ANSWERED},
         )
-        self.assertEqual(7, Question.objects.all().count())
+        self.assertEqual(8, Question.objects.all().count())
 
         res = self.client.post(
             reverse("ohq:question-list", args=[self.course.id, self.queue.id]),
             {"text": "Should be rate limited", "tags": []},
         )
         self.assertEqual(429, res.status_code)
-        self.assertEqual(7, Question.objects.all().count())
+        self.assertEqual(8, Question.objects.all().count())
 
         res = self.client.get(
             reverse("ohq:question-quota-count", args=[self.course.id, self.queue.id])
@@ -240,7 +237,7 @@ class QuestionViewTestCase(TestCase):
             reverse("ohq:question-list", args=[self.course.id, self.queue.id]),
             {"text": "Shouldn't be rate limited", "tags": []},
         )
-        self.assertEqual(8, Question.objects.all().count())
+        self.assertEqual(9, Question.objects.all().count())
 
         self.client.force_authenticate(user=self.student3)
         res = self.client.get(
@@ -288,11 +285,13 @@ class QuestionViewTestCase(TestCase):
         # uploading single file
         QuestionFile.objects.all().delete()
 
-        file = SimpleUploadedFile('file.txt', b'file_content') 
+        file = SimpleUploadedFile("file.txt", b"file_content")
         response = self.client.post(
-            reverse("ohq:question-upload-file", args=[self.course.id, self.queue.id, self.question.id]),
+            reverse(
+                "ohq:question-upload-file", args=[self.course.id, self.queue.id, self.question.id]
+            ),
             {"file": [file]},
-            format='multipart'
+            format="multipart",
         )
         response_data = json.loads(response.content)
         self.assertEquals(1, len(response_data))
@@ -301,47 +300,60 @@ class QuestionViewTestCase(TestCase):
         # uploading multiple files
         QuestionFile.objects.all().delete()
         self.assertEquals(0, QuestionFile.objects.all().count())
-        file = SimpleUploadedFile('file1.txt', b'file content')
-        file2 = SimpleUploadedFile('file2.txt', b'file_content') 
+        file = SimpleUploadedFile("file1.txt", b"file content")
+        file2 = SimpleUploadedFile("file2.txt", b"file_content")
         response = self.client.post(
-            reverse('ohq:question-upload-file', args=[self.course.id, self.queue.id, self.question.id]),
-            {'file': [file, file2]},
-            format='multipart'
+            reverse(
+                "ohq:question-upload-file", args=[self.course.id, self.queue.id, self.question.id]
+            ),
+            {"file": [file, file2]},
+            format="multipart",
         )
         response_data = json.loads(response.content)
         self.assertEquals(2, QuestionFile.objects.all().count())
         self.assertEquals(2, len(response_data))
-        
+
         # getting file list in response
         response = self.client.get(
-            reverse('ohq:question-detail', args=[self.course.id, self.queue.id, self.question.id])
+            reverse("ohq:question-detail", args=[self.course.id, self.queue.id, self.question.id])
         )
         response_data = json.loads(response.content)
-        self.assertEqual(2, len(response_data['files']))
-        # QuestionFile.objects.all().delete()
+        self.assertEqual(2, len(response_data["files"]))
+        QuestionFile.objects.all().delete()
 
     def test_delete_file(self):
         self.client.force_authenticate(user=self.student)
         file1_pk = str(self.question_file1.pk)
         self.client.delete(
-            reverse("ohq:question-delete-file", 
-            args=[self.course.id, self.queue.id, self.question_with_file.id]) + '?id='+file1_pk
+            reverse(
+                "ohq:question-delete-file",
+                args=[self.course.id, self.queue.id, self.question_with_file.id],
+            )
+            + "?id="
+            + file1_pk
         )
         self.assertEqual(1, QuestionFile.objects.all().count())
 
         # doing again won't delete more
         self.client.delete(
-            reverse('ohq:question-delete-file',
-            args=[self.course.id, self.queue.id, self.question_with_file.id]) + '?id='+file1_pk
+            reverse(
+                "ohq:question-delete-file",
+                args=[self.course.id, self.queue.id, self.question_with_file.id],
+            )
+            + "?id="
+            + file1_pk
         )
         self.assertEqual(1, QuestionFile.objects.all().count())
 
         # deleting all files
         self.client.delete(
-            reverse('ohq:question-delete-all-file',
-            args=[self.course.id, self.queue.id, self.question_with_file.id]) 
+            reverse(
+                "ohq:question-delete-all-file",
+                args=[self.course.id, self.queue.id, self.question_with_file.id],
+            )
         )
         self.assertEqual(0, QuestionFile.objects.all().count())
+
 
 class OccurrenceViewTestCase(TestCase):
     def setUp(self):
@@ -381,7 +393,8 @@ class OccurrenceViewTestCase(TestCase):
             },
         )
         response = self.client.get(
-            reverse('ohq:occurrence-list') + "?course="
+            reverse("ohq:occurrence-list")
+            + "?course="
             + str(self.course.id)
             + "&filter_start="
             + self.filter_start

@@ -10,6 +10,12 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(model_name="course", name="require_video_chat_url_on_questions",),
-        migrations.RemoveField(model_name="course", name="video_chat_enabled",),
+        migrations.RemoveField(
+            model_name="course",
+            name="require_video_chat_url_on_questions",
+        ),
+        migrations.RemoveField(
+            model_name="course",
+            name="video_chat_enabled",
+        ),
     ]

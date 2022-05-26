@@ -120,7 +120,9 @@ def course_calculate_instructor_most_time_helping(course, last_sunday):
 
 def queue_calculate_avg_wait(queue, date):
     avg = Question.objects.filter(
-        queue=queue, time_asked__date=date, time_response_started__isnull=False,
+        queue=queue,
+        time_asked__date=date,
+        time_response_started__isnull=False,
     ).aggregate(avg_wait=Avg(F("time_response_started") - F("time_asked")))
 
     wait = avg["avg_wait"]
@@ -172,7 +174,9 @@ def queue_calculate_wait_time_heatmap(queue, weekday, hour):
 
 def queue_calculate_num_questions_ans(queue, date):
     num_questions = Question.objects.filter(
-        queue=queue, status=Question.STATUS_ANSWERED, time_responded_to__date=date,
+        queue=queue,
+        status=Question.STATUS_ANSWERED,
+        time_responded_to__date=date,
     ).count()
 
     QueueStatistic.objects.update_or_create(
@@ -186,7 +190,9 @@ def queue_calculate_num_questions_ans(queue, date):
 def queue_calculate_num_students_helped(queue, date):
     num_students = (
         Question.objects.filter(
-            queue=queue, status=Question.STATUS_ANSWERED, time_responded_to__date=date,
+            queue=queue,
+            status=Question.STATUS_ANSWERED,
+            time_responded_to__date=date,
         )
         .distinct("asked_by")
         .count()
@@ -206,7 +212,8 @@ def queue_calculate_questions_per_ta_heatmap(queue, weekday, hour):
         .annotate(date=TruncDate("time_asked"))
         .values("date")
         .annotate(
-            questions=Count("date", distinct=False), tas=Count("responded_to_by", distinct=True),
+            questions=Count("date", distinct=False),
+            tas=Count("responded_to_by", distinct=True),
         )
         .annotate(
             q_per_ta=Case(When(tas=0, then=F("questions")), default=1.0 * F("questions") / F("tas"))
