@@ -322,7 +322,7 @@ class QuestionViewTestCase(TestCase):
         QuestionFile.objects.all().delete()
 
     def test_delete_file(self):
-        self.client.force_authenticate(user=self.student)
+        self.client.force_authenticate(user=self.student3)
         file1_pk = str(self.question_file1.pk)
         self.client.delete(
             reverse(
