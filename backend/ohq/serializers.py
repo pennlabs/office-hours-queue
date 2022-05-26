@@ -247,7 +247,7 @@ class QuestionSerializer(QueueRouteMixin):
             "should_send_up_soon_notification",
             "resolved_note",
             "position",
-            "files"
+            "files",
         )
 
     def update(self, instance, validated_data):
@@ -346,6 +346,15 @@ class QuestionSerializer(QueueRouteMixin):
             except ObjectDoesNotExist:
                 continue
         return question
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        question_files = QuestionFile.objects.filter(question=instance).all()
+        question_file_ids = []
+        for question_file in question_files:
+            question_file_ids.append(question_file.id)
+        representation['files'] = question_file_ids
+        return representation
 
 
 class MembershipPrivateSerializer(CourseRouteMixin):

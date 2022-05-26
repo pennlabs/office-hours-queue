@@ -283,14 +283,12 @@ class QuestionViewTestCase(TestCase):
             format='multipart'
         )
         response_data = json.loads(response.content)
-        print(response_data)
         self.assertEquals(1, len(response_data))
         self.assertEquals(1, response_data[0]['id'])
         self.assertEquals(1, QuestionFile.objects.all().count())
 
-
         # uploading multiple files
-        QuestionFile.objects.get(pk=response_data[0]['id']).delete()
+        QuestionFile.objects.all().delete()
         self.assertEquals(0, QuestionFile.objects.all().count())
         file2 = SimpleUploadedFile('file2.txt', b'file_content 2')
         response = self.client.post(
@@ -298,13 +296,17 @@ class QuestionViewTestCase(TestCase):
             {'file': [file, file2]},
             format='multipart'
         )
-
         response_data = json.loads(response.content)
         self.assertEquals(2, QuestionFile.objects.all().count())
         self.assertEquals(2, len(response_data))
-        for item in response_data: 
-            QuestionFile.objects.get(pk=item['id']).delete()
         
+        # getting file list in response
+        response = self.client.get(
+            reverse('ohq:question-detail', args=[self.course.id, self.queue.id, self.question.id])
+        )
+        response_data = json.loads(response.content)
+        self.assertEqual(2, len(response_data['files']))
+        QuestionFile.objects.all().delete()
 
 class OccurrenceViewTestCase(TestCase):
     def setUp(self):
