@@ -301,7 +301,8 @@ class QuestionViewTestCase(TestCase):
         # uploading multiple files
         QuestionFile.objects.all().delete()
         self.assertEquals(0, QuestionFile.objects.all().count())
-        file2 = SimpleUploadedFile('file.txt', b'file_content') 
+        file = SimpleUploadedFile('file1.txt', b'file content')
+        file2 = SimpleUploadedFile('file2.txt', b'file_content') 
         response = self.client.post(
             reverse('ohq:question-upload-file', args=[self.course.id, self.queue.id, self.question.id]),
             {'file': [file, file2]},
@@ -317,7 +318,7 @@ class QuestionViewTestCase(TestCase):
         )
         response_data = json.loads(response.content)
         self.assertEqual(2, len(response_data['files']))
-        QuestionFile.objects.all().delete()
+        # QuestionFile.objects.all().delete()
 
     def test_delete_file(self):
         self.client.force_authenticate(user=self.student)

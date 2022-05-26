@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.core.validators import ValidationError
 from django.core.files import File
 from django.core.files.base import ContentFile
+
 from django.db.models import (
     Case,
     Count,
@@ -362,6 +363,19 @@ class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
             if form.is_valid():
                 question = Question.objects.filter(pk=self.kwargs['pk']).first()
                 response = []
+
+                # projecting up total storage
+                current_storage = 0
+                current_qfiles = QuestionFile.objects.filter(question=question).all()
+                for qfile in current_qfiles:
+                    current_storage += qfile.file.size
+                for file in request.FILES.getlist('file'):
+                    current_storage += file.size
+                if (current_storage > 5 * 1024 * 1024): # if total storage exceeds 5MB
+                    return JsonResponse({'detail': 'files are too heavy. ' +
+                        'total storage for this question exceed 5MB'}, status=413)
+
+                # creating files in storage
                 for file in request.FILES.getlist('file'):
                     question_file = self.handle_file_upload(file, question)
                     response.append({'id': question_file.id, 'name': question_file.file.name})
