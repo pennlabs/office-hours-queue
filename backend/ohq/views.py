@@ -370,9 +370,21 @@ class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
                 return JsonResponse({'detail': form.errors.as_text}, status=406)
         return JsonResponse({"detail": "file upload should be POST"}, status=405)
 
-    # @action(detail=True, methods=['delete']) 
-    # def delete_file(self, request, *args, **kwargs): 
+    @action(detail=True, methods=['delete']) 
+    def delete_file(self, request, *args, **kwargs): 
+        question_file_ids = request.GET.getlist('id')
+        print(question_file_ids)
+        QuestionFile.objects.filter(pk__in=question_file_ids).delete()
+        return JsonResponse({'detail': 'Success'}, status=200)  
 
+    @action(detail=True, methods=['delete'])
+    def delete_all_file(self, request, *args, **kwargs):
+        question = Question.objects.filter(pk=self.kwargs['pk']).first()
+        print(question)
+        question_files = QuestionFile.objects.filter(question=question)
+        print(len(question_files))
+        question_files.delete()
+        return JsonResponse({'detail': 'Success'}, status=200)
 
 class QuestionSearchView(XLSXFileMixin, generics.ListAPIView):
     filter_backends = [DjangoFilterBackend]

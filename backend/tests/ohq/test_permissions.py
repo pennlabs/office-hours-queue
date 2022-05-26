@@ -8,6 +8,7 @@ from django.urls import reverse
 from parameterized import parameterized
 from rest_framework.test import APIClient
 from schedule.models import Calendar, Event, EventRelationManager
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 from ohq.models import (
     Announcement,
@@ -18,13 +19,13 @@ from ohq.models import (
     Queue,
     Semester,
     Tag,
+    QuestionFile
 )
 
 
 User = get_user_model()
 
 users = ["professor", "head_ta", "ta", "student", "non_member", "anonymous"]
-
 
 def get_test_name(testcase_func, _, param):
     """
@@ -716,6 +717,35 @@ class QuestionSearchTestCase(TestCase):
             self, user, "list", "get", reverse("ohq:questionsearch", args=[self.course.id]),
         )
 
+class QuestionFileTestCase(TestCase):
+    def setUp(self):
+        setUp(self)
+        self.queue = Queue.objects.create(name="Queue", course=self.course)
+        self.question = Question.objects.create(queue=self.queue, asked_by=self.student)
+        self.question_other = Question.objects.create(queue=self.queue, asked_by=self.ta)
+        file = SimpleUploadedFile('file.txt', b'file_content')
+        self.question_file = QuestionFile(question=self.question, file=file)
+        self.question_file.save()
+        # Expected results
+        self.expected = {
+            "delete-file": {
+                "ta": 200,
+                "student": 403,
+            },
+        } 
+
+    @parameterized.expand(["student", "ta"], name_func=get_test_name)
+    def test_delete_files(self, user):
+        # the question is asked by TA, so student can't delete
+        test(
+            self,
+            user,
+            "delete-file",
+            "delete",
+            reverse("ohq:question-delete-file", 
+            args=[self.course.id, self.queue.id, self.question_other.id]) + '?id='+str(self.question_file.id)
+        )
+        QuestionFile.objects.all().delete()
 
 class MembershipTestCase(TestCase):
     def setUp(self):

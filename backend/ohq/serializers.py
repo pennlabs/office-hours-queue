@@ -258,7 +258,6 @@ class QuestionSerializer(QueueRouteMixin):
         user = self.context["request"].user
         membership = Membership.objects.get(course=instance.queue.course, user=user)
         queue_id = self.context["view"].kwargs["queue_pk"]
-        print('serializer update')
         if membership.is_ta:  # User is a TA+
             if "status" in validated_data:
                 status = validated_data["status"]

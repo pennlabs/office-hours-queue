@@ -197,8 +197,18 @@ class QuestionViewTestCase(TestCase):
         self.prelimit_question1.time_responded_to = timezone.now() - timedelta(minutes=6)
         self.prelimit_question.save()
         self.prelimit_question1.save()
-
         Question.objects.create(queue=self.queue3, asked_by=self.student3, text="Help me")
+
+        self.question_with_file = Question.objects.create(
+            queue=self.queue, asked_by=self.student, text="Help me with the files"
+        )
+        self.file1 = SimpleUploadedFile('file.txt', b'file_content')
+        self.file2 = SimpleUploadedFile('file2.txt', b'file_content 2')
+        self.question_file1 = QuestionFile(question=self.question_with_file, file=self.file1)
+        self.question_file2 = QuestionFile(question=self.question_with_file, file=self.file2)
+        self.question_file1.save()
+        self.question_file2.save()
+
 
     def test_rate_limit(self):
         self.client.force_authenticate(user=self.student)
@@ -276,7 +286,9 @@ class QuestionViewTestCase(TestCase):
     def test_upload_file(self):
         self.client.force_authenticate(user=self.student)
         # uploading single file
-        file = SimpleUploadedFile('file.txt', b'file_content')
+        QuestionFile.objects.all().delete()
+
+        file = SimpleUploadedFile('file.txt', b'file_content') 
         response = self.client.post(
             reverse("ohq:question-upload-file", args=[self.course.id, self.queue.id, self.question.id]),
             {"file": [file]},
@@ -284,13 +296,12 @@ class QuestionViewTestCase(TestCase):
         )
         response_data = json.loads(response.content)
         self.assertEquals(1, len(response_data))
-        self.assertEquals(1, response_data[0]['id'])
         self.assertEquals(1, QuestionFile.objects.all().count())
 
         # uploading multiple files
         QuestionFile.objects.all().delete()
         self.assertEquals(0, QuestionFile.objects.all().count())
-        file2 = SimpleUploadedFile('file2.txt', b'file_content 2')
+        file2 = SimpleUploadedFile('file.txt', b'file_content') 
         response = self.client.post(
             reverse('ohq:question-upload-file', args=[self.course.id, self.queue.id, self.question.id]),
             {'file': [file, file2]},
@@ -307,6 +318,29 @@ class QuestionViewTestCase(TestCase):
         response_data = json.loads(response.content)
         self.assertEqual(2, len(response_data['files']))
         QuestionFile.objects.all().delete()
+
+    def test_delete_file(self):
+        self.client.force_authenticate(user=self.student)
+        file1_pk = str(self.question_file1.pk)
+        self.client.delete(
+            reverse("ohq:question-delete-file", 
+            args=[self.course.id, self.queue.id, self.question_with_file.id]) + '?id='+file1_pk
+        )
+        self.assertEqual(1, QuestionFile.objects.all().count())
+
+        # doing again won't delete more
+        self.client.delete(
+            reverse('ohq:question-delete-file',
+            args=[self.course.id, self.queue.id, self.question_with_file.id]) + '?id='+file1_pk
+        )
+        self.assertEqual(1, QuestionFile.objects.all().count())
+
+        # deleting all files
+        self.client.delete(
+            reverse('ohq:question-delete-all-file',
+            args=[self.course.id, self.queue.id, self.question_with_file.id]) 
+        )
+        self.assertEqual(0, QuestionFile.objects.all().count())
 
 class OccurrenceViewTestCase(TestCase):
     def setUp(self):
@@ -346,7 +380,7 @@ class OccurrenceViewTestCase(TestCase):
             },
         )
         response = self.client.get(
-            "/api/occurrences/?course="
+            reverse('ohq:occurrence-list') + "?course="
             + str(self.course.id)
             + "&filter_start="
             + self.filter_start
