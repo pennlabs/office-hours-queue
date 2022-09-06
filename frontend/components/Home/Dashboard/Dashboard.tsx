@@ -26,9 +26,7 @@ const Dashboard = () => {
     }
     const [messageDisp, setMessageDisp] = useState(false);
     useEffect(() => {
-        const state = localStorage.getItem(
-            FALL_2022_TRANSITION_MESSAGE_TOKEN
-        );
+        const state = localStorage.getItem(FALL_2022_TRANSITION_MESSAGE_TOKEN);
         setMessageDisp(state !== "true");
     }, []);
 
@@ -102,9 +100,9 @@ const Dashboard = () => {
                                     header="Welcome back!"
                                     content={
                                         <>
-                                            Spring and Summer 2022 courses have 
-                                            been archived in preparation for 
-                                            Fall 2022. 
+                                            Spring and Summer 2022 courses have
+                                            been archived in preparation for
+                                            Fall 2022.
                                             <br />
                                             Please contact us at contact@ohq.io
                                             if this is an error.

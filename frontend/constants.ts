@@ -26,7 +26,7 @@ export const FALL_2021_TRANSITION_MESSAGE_TOKEN =
     "__fall_2021_transition_message_shown";
 export const SPRING_2022_TRANSITION_MESSAGE_TOKEN =
     "__spring_2022_transition_message_shown";
-export const FALL_2022_TRANSITION_MESSAGE_TOKEN = 
+export const FALL_2022_TRANSITION_MESSAGE_TOKEN =
     "__fall_2022_transition_message_shown";
 export const CHANGELOG_TOKEN = "__changelog";
 
