@@ -21,17 +21,19 @@ Navigate to `/backend`. Then,
   - a. `pipenv install --dev`  
         NOTE: You might have to install openssl with Homebrew (`brew install openssl`) and set the following environment variable for the linker.  
         `export LDFLAGS="-I/usr/local/opt/openssl/include -L/usr/local/opt/openssl/lib`.<br>
-        If you run into `ERROR: Couldn't install package: psycopg2`, see [this](https://stackoverflow.com/questions/56796426/pipenv-consistently-failing-to-install-pyscopg2/57044429#57044429) post
+        If you run into `ERROR: Couldn't install package: psycopg2`, see [this](https://stackoverflow.com/questions/56796426/pipenv-consistently-failing-to-install-pyscopg2/57044429#57044429) post. If your problem is on M1, try the top 2 solutions [here](https://stackoverflow.com/questions/66888087/cannot-install-psycopg2-with-pip3-on-m1-mac).
   - b. `pipenv shell`
-  - c. `python manage.py createsuperuser`
-  - d. `python manage.py migrate`
-  - e. `python manage.py populate` to populate the database with dummy data
-  - f. Ensure `python manage.py test` passes all tests.
+1. `docker-compose up` (run this before doing any of the manage.py commands)
+2. Migration commands to ensure your installation works:
+  - a. `python manage.py migrate`
+  - b. `python manage.py createsuperuser`
+  - c. `python manage.py populate` to populate the database with dummy data
+  - d. Ensure `python manage.py test` passes all tests.
     - Note: to run a specific test, you can run `python manage.py test tests.ohq.test_file.TestCase`. 
   Note that you might have to run migrations or reinstall dependencies if the Pipfile or models have been changed upstream.
   
-1. `docker-compose up` (run this before doing any of the manage.py commands)
-2. `python manage.py runserver 8000`
+3. `python manage.py runserver 8000`
+4. Documentation: [localhost:8000/api/documentation](http://localhost:8000/api/documentation)
 
 ### Launching the frontend 
 Navigate to `/frontend`. Then,
