@@ -5,7 +5,7 @@ jobs:
     name: Build and Deploy OHQ
     uses: pennlabs/shared-actions/.github/workflows/labs-application.yaml@main
     with:
-      projectName: officehoursqueue
+      djangoProjectName: officehoursqueue
       dockerImageBaseName: office-hours-queue
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
