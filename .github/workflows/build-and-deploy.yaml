@@ -6,7 +6,7 @@ jobs:
     uses: pennlabs/shared-actions/.github/workflows/labs-application.yaml@main
     with:
       djangoProjectName: officehoursqueue
-      dockerImageBaseName: office-hours-queue
+      dockerImageBaseName: pennlabs/office-hours-queue
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
