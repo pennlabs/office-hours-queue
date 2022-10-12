@@ -22,6 +22,7 @@ import {
     useQueueQuota,
 } from "../../../hooks/data-fetching/course";
 import LastQuestionCard from "./LastQuestionCard";
+import LinkedText from "../../common/ui/LinkedText";
 
 interface StudentQueueProps {
     course: Course;
@@ -128,7 +129,7 @@ const StudentQueue = (props: StudentQueueProps) => {
                         wordBreak: "break-word",
                     }}
                 >
-                    {queue.description}
+                    <LinkedText text={queue.description} />
                 </Header.Subheader>
             </Header>
             <Grid>

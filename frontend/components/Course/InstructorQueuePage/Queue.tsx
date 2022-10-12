@@ -9,6 +9,7 @@ import ClearQueueModal from "./ClearQueueModal";
 import { Queue as QueueType, Question, Tag } from "../../../types";
 import { useQuestions } from "../../../hooks/data-fetching/course";
 import { MOBILE_BP } from "../../../constants";
+import LinkedText from "../../common/ui/LinkedText";
 
 interface QueueProps {
     courseId: number;
@@ -111,7 +112,7 @@ const Queue = (props: QueueProps) => {
                             >
                                 {queue.name}
                                 <Header.Subheader>
-                                    {queue.description}
+                                    <LinkedText text={queue.description} />
                                 </Header.Subheader>
                             </Header>
                             {queue.pinEnabled && active && (
