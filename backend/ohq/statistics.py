@@ -71,6 +71,7 @@ def course_calculate_instructor_most_questions_answered(course, last_sunday):
             time_asked__lt=next_sunday,
             status=Question.STATUS_ANSWERED,
         )
+        .exclude(responded_to_by=None)
         .values("responded_to_by")
         .annotate(questions_answered=Count("responded_to_by"))
         .order_by("-questions_answered")[:5]
@@ -99,6 +100,7 @@ def course_calculate_instructor_most_time_helping(course, last_sunday):
             time_asked__lt=next_sunday,
             status=Question.STATUS_ANSWERED,
         )
+        .exclude(responded_to_by=None)
         .values("responded_to_by")
         .annotate(time_answering=Sum(F("time_responded_to") - F("time_response_started")))
         .order_by("-time_answering")[:5]
