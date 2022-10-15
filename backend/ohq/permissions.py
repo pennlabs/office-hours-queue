@@ -149,9 +149,9 @@ class QuestionPermission(permissions.BasePermission):
         if membership is None:
             return False
 
-        # No one can delete questions
+        # Head TAs can delete questions
         if view.action == "destroy":
-            return False
+            return membership.kind == Membership.KIND_HEAD_TA
 
         # Students can view their last asked question:
         if view.action in ["last", "quota_count"]:
