@@ -14,6 +14,9 @@ import os
 
 import dj_database_url
 
+from dotenv import load_dotenv
+
+load_dotenv()
 
 DOMAINS = os.environ.get("DOMAINS", "example.com").split(",")
 
@@ -185,3 +188,11 @@ MESSAGE_BROKER_URL = REDIS_URL
 # Default to in-memory Channel Layer for dev and CI.
 
 CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
+
+
+
+# Upload file storage
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
