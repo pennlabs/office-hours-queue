@@ -190,7 +190,6 @@ MESSAGE_BROKER_URL = REDIS_URL
 CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
 
 
-
 # Upload file storage
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
