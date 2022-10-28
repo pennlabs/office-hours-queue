@@ -14,6 +14,7 @@ export const useEvents = (courseId: number, initialData: Event[]) =>
     );
 
 export async function createEvent(payload: PartialEvent): Promise<Event> {
+    console.log(payload);
     const res = await doApiRequest(`/api/events/`, {
         method: "POST",
         body: payload,

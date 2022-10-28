@@ -56,7 +56,10 @@ CalendarPage.getInitialProps = async (
     const response = await doMultipleSuccessRequests([
         { path: `/api/courses/${query.course}/`, data },
         { path: `/api/courses/${query.course}/members/`, data },
-        { path: `/api/events/?course=${query.course}`, data },
+        {
+            path: `/api/occurrences/?course=${query.course}&filter_start=2022-01-01T12:00:00Z&end=2023-01-01T12:00:00Z&filter_end=2023-01-01T12:00:00Z&end=2023-01-01T12:00:00Z`,
+            data,
+        },
     ]);
 
     if (response.success) {

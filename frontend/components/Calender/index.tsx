@@ -158,7 +158,7 @@ const NewEventModal = ({
             start: startDate.toISOString(),
             end: endDate.toISOString(),
             description: description,
-            course_id: courseId,
+            courseId: courseId,
             endRecurringPeriod: null,
         };
         await createEvent(newEvent);
