@@ -5,6 +5,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import { useMediaQuery } from "@material-ui/core";
 import InstructorCourses from "./InstructorCourses";
 import StudentCourses from "./StudentCourses";
+import EventSidebar from "./EventSidebar";
 import Footer from "../../common/Footer";
 import { AuthUserContext } from "../../../context/auth";
 import { Kind, UserMembership } from "../../../types";
@@ -70,107 +71,126 @@ const Dashboard = () => {
     }, []);
 
     return (
-        <Grid.Column
-            width={13}
-            style={{ display: "flex", flexDirection: "column" }}
-        >
-            {memberships && (
-                <Grid padded stackable container>
-                    <Grid.Row>
-                        <Segment basic>
-                            <Segment basic>
-                                <Header as="h2">Student Courses</Header>
-                            </Segment>
-                        </Segment>
-                        {messageDisp && (
-                            <div
-                                style={{
-                                    position: "absolute",
-                                    left: "50%",
-                                    transform: "translateX(-50%)",
-                                }}
-                            >
-                                <Message
-                                    onDismiss={() => {
-                                        setMessageDisp(false);
-                                        localStorage.setItem(
-                                            SPRING_2022_TRANSITION_MESSAGE_TOKEN,
-                                            "true"
-                                        );
-                                    }}
-                                    size="mini"
-                                    header="Welcome back!"
-                                    content={
-                                        <>
-                                            Fall 2021 courses have been archived
-                                            in preparation for Spring 2022.
-                                            <br />
-                                            Please contact us at contact@ohq.io
-                                            if this is an error.
-                                        </>
-                                    }
-                                />
-                            </div>
-                        )}
-                    </Grid.Row>
-                    <StudentCourses
-                        memberships={getMemberships(true)}
-                        mutate={mutate}
-                    />
-                    {showInstructorCourses && (
-                        <>
+        <Grid.Column width={13}>
+            <Grid>
+                <Grid.Column
+                    width={13}
+                    style={{ display: "flex", flexDirection: "column" }}
+                >
+                    {memberships && (
+                        <Grid padded stackable container>
                             <Grid.Row>
                                 <Segment basic>
                                     <Segment basic>
-                                        <Header as="h2">
-                                            Instructor Courses
-                                        </Header>
+                                        <Header as="h2">Student Courses</Header>
                                     </Segment>
                                 </Segment>
+                                {messageDisp && (
+                                    <div
+                                        style={{
+                                            position: "absolute",
+                                            left: "50%",
+                                            transform: "translateX(-50%)",
+                                        }}
+                                    >
+                                        <Message
+                                            onDismiss={() => {
+                                                setMessageDisp(false);
+                                                localStorage.setItem(
+                                                    SPRING_2022_TRANSITION_MESSAGE_TOKEN,
+                                                    "true"
+                                                );
+                                            }}
+                                            size="mini"
+                                            header="Welcome back!"
+                                            content={
+                                                <>
+                                                    Fall 2021 courses have been
+                                                    archived in preparation for
+                                                    Spring 2022.
+                                                    <br />
+                                                    Please contact us at
+                                                    contact@ohq.io if this is an
+                                                    error.
+                                                </>
+                                            }
+                                        />
+                                    </div>
+                                )}
                             </Grid.Row>
-                            <InstructorCourses
-                                memberships={getMemberships(false)}
+                            <StudentCourses
+                                memberships={getMemberships(true)}
                                 mutate={mutate}
-                                canCreateCourse={canCreateCourse}
                             />
-                        </>
+                            {showInstructorCourses && (
+                                <>
+                                    <Grid.Row>
+                                        <Segment basic>
+                                            <Segment basic>
+                                                <Header as="h2">
+                                                    Instructor Courses
+                                                </Header>
+                                            </Segment>
+                                        </Segment>
+                                    </Grid.Row>
+                                    <InstructorCourses
+                                        memberships={getMemberships(false)}
+                                        mutate={mutate}
+                                        canCreateCourse={canCreateCourse}
+                                    />
+                                </>
+                            )}
+                        </Grid>
                     )}
-                </Grid>
-            )}
-            <Snackbar
-                open={toastOpen}
-                autoHideDuration={6000}
-                onClose={() => setToastOpen(false)}
-            >
-                <Alert
-                    severity={toast.success ? "success" : "error"}
-                    onClose={() => setToastOpen(false)}
-                >
-                    {toast.message}
-                </Alert>
-            </Snackbar>
+                    <Snackbar
+                        open={toastOpen}
+                        autoHideDuration={6000}
+                        onClose={() => setToastOpen(false)}
+                    >
+                        <Alert
+                            severity={toast.success ? "success" : "error"}
+                            onClose={() => setToastOpen(false)}
+                        >
+                            {toast.message}
+                        </Alert>
+                    </Snackbar>
 
-            <Snackbar
-                open={logOpen}
-                autoHideDuration={10000}
-                onClose={() => setLogOpen(false)}
-                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            >
-                <Alert
-                    severity="info"
-                    onClose={() => setLogOpen(false)}
-                    onClick={() => {
-                        setLogOpen(false);
-                        setLogModal(true);
-                    }}
-                    style={{ cursor: "pointer" }}
-                >
-                    {logToast.message}
-                </Alert>
-            </Snackbar>
+                    <Snackbar
+                        open={logOpen}
+                        autoHideDuration={10000}
+                        onClose={() => setLogOpen(false)}
+                        anchorOrigin={{
+                            vertical: "bottom",
+                            horizontal: "right",
+                        }}
+                    >
+                        <Alert
+                            severity="info"
+                            onClose={() => setLogOpen(false)}
+                            onClick={() => {
+                                setLogOpen(false);
+                                setLogModal(true);
+                            }}
+                            style={{ cursor: "pointer" }}
+                        >
+                            {logToast.message}
+                        </Alert>
+                    </Snackbar>
 
-            <Footer showFeedback={useMediaQuery(`(max-width: ${MOBILE_BP})`)} />
-            <ModalShowNewChanges openModal={logModal} setOpen={setLogModal} />
+                    <Footer
+                        showFeedback={useMediaQuery(
+                            `(max-width: ${MOBILE_BP})`
+                        )}
+                    />
+                    <ModalShowNewChanges
+                        openModal={logModal}
+                        setOpen={setLogModal}
+                    />
+                </Grid.Column>
+                <Grid.Column width={3}>
+                    <EventSidebar memberships={memberships} />
+                </Grid.Column>
+            </Grid>
         </Grid.Column>
     );
 };

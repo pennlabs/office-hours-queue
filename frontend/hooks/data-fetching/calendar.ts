@@ -1,4 +1,4 @@
-import { useResourceList } from "@pennlabs/rest-hooks";
+import { useResource, useResourceList } from "@pennlabs/rest-hooks";
 
 import { Event, PartialEvent } from "../../types";
 import { doApiRequest } from "../../utils/fetch";
@@ -13,8 +13,24 @@ export const useEvents = (courseId: number, initialData: Event[]) =>
         }
     );
 
+export const useListEvents = (courseIds: number[]) => {
+    const courseIdQueries = courseIds.reduce(
+        (prev, cur) => (prev ? `${prev}&course=${cur}` : `course=${cur}`),
+        ""
+    );
+
+    const { data, error, isValidating } = useResource<Event[]>(
+        `/api/events/?${courseIdQueries}`,
+        {
+            revalidateOnFocus: false,
+        }
+    );
+
+    return { data: data || [], error, isValidating };
+};
+
 export async function createEvent(payload: PartialEvent): Promise<Event> {
-    const res = await doApiRequest(`/api/events/`, {
+    const res = await doApiRequest("/api/events/", {
         method: "POST",
         body: payload,
     });

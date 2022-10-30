@@ -4,7 +4,7 @@ export interface Course {
     id: number;
     courseCode: string;
     department: string;
-    courseTitle: string;
+    courseIdQueries: string;
     description: string;
     semester: number;
     semesterPretty: string;
@@ -199,6 +199,7 @@ export type NotificationProps = MutableRefObject<(string) => void>;
 
 export interface PartialEvent {
     title: string;
+    // eslint-disable-next-line camelcase
     course_id: number;
     description: string | null;
     start: string;
@@ -208,6 +209,7 @@ export interface PartialEvent {
 
 export interface CalendarEvent {
     title: string;
+    // eslint-disable-next-line camelcase
     course_id: number;
     description: string | null;
     start: Date;
