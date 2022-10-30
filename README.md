@@ -20,7 +20,7 @@ Navigate to `/backend`. Then,
 0. (Initial setup)
   - a. `pipenv install --dev`  
         NOTE: You might have to install openssl with Homebrew (`brew install openssl`) and set the following environment variable for the linker.  
-        `export LDFLAGS="-I/usr/local/opt/openssl/include -L/usr/local/opt/openssl/lib`.<br>
+        `export LDFLAGS="-I/usr/local/opt/openssl/include -L/usr/local/opt/openssl/lib"`.<br>
         If you run into `ERROR: Couldn't install package: psycopg2`, see [this](https://stackoverflow.com/questions/56796426/pipenv-consistently-failing-to-install-pyscopg2/57044429#57044429) post. If your problem is on M1, try the top 2 solutions [here](https://stackoverflow.com/questions/66888087/cannot-install-psycopg2-with-pip3-on-m1-mac).
   - b. `pipenv shell`
 1. `docker-compose up` (run this before doing any of the manage.py commands)
