@@ -6,7 +6,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - id: "testing"
       - uses: pennlabs/shared-actions/actions/django-check@v1
         with:
           projectName: officehoursqueue
