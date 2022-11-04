@@ -5,35 +5,12 @@ jobs:
     name: Django Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Cache
-        uses: actions/cache@v2
+      - uses: pennlabs/shared-actions/actions/django-check
         with:
-          path: ~/.local/share/virtualenvs
-          key: v0-${{ hashFiles('backend/Pipfile.lock') }}
-      - name: Install Dependencies
-        run: |-
-          cd backend
-          pip install pipenv
-          pipenv install --deploy --dev
-      - name: Lint (flake8)
-        run: |-
-          cd backend
-          pipenv run flake8 .
-      - name: Lint (black)
-        run: |-
-          cd backend
-          pipenv run black --check .
-      - name: Test (run in parallel)
-        run: |-
-          cd backend
-          pipenv run coverage run --concurrency=multiprocessing manage.py test --settings=officehoursqueue.settings.ci --parallel
-          pipenv run coverage combine
-      - name: Upload Code Coverage
-        run: |-
-          ROOT=$(pwd)
-          cd backend
-          pipenv run codecov --root $ROOT --flags backend
+          projectName: officehoursqueue
+          path: 'backend'
+          flake: true
+          black: true
     container:
       image: python:3.8-buster
     env:
