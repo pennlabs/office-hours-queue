@@ -199,8 +199,7 @@ export type NotificationProps = MutableRefObject<(string) => void>;
 
 export interface PartialEvent {
     title: string;
-    // eslint-disable-next-line camelcase
-    course_id: number;
+    courseId: number;
     description: string | null;
     start: string;
     end: string;
@@ -209,8 +208,7 @@ export interface PartialEvent {
 
 export interface CalendarEvent {
     title: string;
-    // eslint-disable-next-line camelcase
-    course_id: number;
+    courseId: number;
     description: string | null;
     start: Date;
     end: Date;

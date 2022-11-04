@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, {
     useState,
     useCallback,
@@ -6,14 +7,14 @@ import React, {
     useEffect,
 } from "react";
 import { Calendar, momentLocalizer, Views } from "react-big-calendar";
-import { PartialEvent, Event, CalendarEvent } from "../../types";
 import moment from "moment";
-import { createEvent } from "../../hooks/data-fetching/calendar";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import { Modal, Form, Button } from "semantic-ui-react";
 import { TextField } from "@mui/material";
 import { TimePicker, DatePicker, LocalizationProvider } from "@mui/lab";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
+import { createEvent } from "../../hooks/data-fetching/calendar";
+import { PartialEvent, Event, CalendarEvent } from "../../types";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
 const localizer = momentLocalizer(moment);
@@ -24,11 +25,9 @@ interface EditEventProps {
     event: Event;
 }
 const EditEventModal = ({ setModalState, mutate, event }: EditEventProps) => {
-    const { title, description, course_id } = event;
+    const { title, description, courseId } = event;
     const [inputTitle, setTitle] = useState(title);
-    const [inputDescription, setDescription] = useState(
-        description ? description : ""
-    );
+    const [inputDescription, setDescription] = useState(description || "");
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -38,7 +37,8 @@ const EditEventModal = ({ setModalState, mutate, event }: EditEventProps) => {
             start: event.start,
             end: event.end,
             description: inputDescription,
-            course_id: course_id,
+            courseId,
+            endRecurringPeriod: event.endRecurringPeriod,
         };
         mutate(event.id, newEvent);
 
@@ -154,11 +154,11 @@ const NewEventModal = ({
         }
         console.log(startDate, endDate);
         const newEvent: PartialEvent = {
-            title: title,
+            title,
             start: startDate.toISOString(),
             end: endDate.toISOString(),
-            description: description,
-            course_id: courseId,
+            description,
+            courseId,
             endRecurringPeriod: null,
         };
         await createEvent(newEvent);
