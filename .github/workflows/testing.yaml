@@ -5,8 +5,11 @@ jobs:
     name: Django Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: pennlabs/shared-actions/actions/django-check@v1
+      - name: "Checkout composite action repo"
+        uses: actions/checkout@v3
+      
+      - name: "Use django check composite action"
+        uses: pennlabs/shared-actions/django-check@v1
         with:
           projectName: officehoursqueue
           path: 'backend'
