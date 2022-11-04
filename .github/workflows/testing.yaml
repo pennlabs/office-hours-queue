@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: Test django build check
 on: push
 jobs:
   django-check:
