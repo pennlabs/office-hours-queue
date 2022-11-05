@@ -15,7 +15,18 @@ jobs:
           path: 'backend'
           flake: true
           black: true
-    
+
+    env:
+        DATABASE_URL: postgres://postgres:postgres@postgres:5432/postgres
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: postgres
+          POSTGRES_PASSWORD: postgres
+        options: "--health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5"
+  
     container:
       image: python:3.8-buster
   
@@ -33,13 +44,4 @@ jobs:
     container:
       image: node:14
     
-    # env:
-    #   DATABASE_URL: postgres://postgres:postgres@postgres:5432/postgres
-    # services:
-    #   postgres:
-    #     image: postgres:12
-    #     env:
-    #       POSTGRES_USER: postgres
-    #       POSTGRES_DB: postgres
-    #       POSTGRES_PASSWORD: postgres
-    #     options: "--health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5"
+    
