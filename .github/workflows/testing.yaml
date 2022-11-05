@@ -15,6 +15,11 @@ jobs:
           path: 'backend'
           flake: true
           black: true
+
+      - name: "Use react check composite action"
+        uses: pennlabs/shared-actions/react-check@v1
+        with:
+          path: 'frontend'
     container:
       image: python:3.8-buster
     env:
