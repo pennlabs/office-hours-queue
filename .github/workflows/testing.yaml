@@ -15,20 +15,31 @@ jobs:
           path: 'backend'
           flake: true
           black: true
-
-      - name: "Use react check composite action"
-        uses: pennlabs/shared-actions/react-check@v1
-        with:
-          path: 'frontend'
+    
     container:
       image: python:3.8-buster
-    env:
-      DATABASE_URL: postgres://postgres:postgres@postgres:5432/postgres
-    services:
-      postgres:
-        image: postgres:12
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_DB: postgres
-          POSTGRES_PASSWORD: postgres
-        options: "--health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5"
+  
+  react-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout composite action repo"
+        uses: actions/checkout@v3
+
+      - name: "Use react check composite action"
+        uses: pennlabs/shared-actions/react-check@v1-react
+        with:
+          path: 'frontend'
+    
+    container:
+      image: node:14
+    
+    # env:
+    #   DATABASE_URL: postgres://postgres:postgres@postgres:5432/postgres
+    # services:
+    #   postgres:
+    #     image: postgres:12
+    #     env:
+    #       POSTGRES_USER: postgres
+    #       POSTGRES_DB: postgres
+    #       POSTGRES_PASSWORD: postgres
+    #     options: "--health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5"
