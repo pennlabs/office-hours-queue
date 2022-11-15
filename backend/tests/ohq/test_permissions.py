@@ -18,6 +18,7 @@ from ohq.models import (
     Queue,
     Semester,
     Tag,
+    Review,
 )
 
 

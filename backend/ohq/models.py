@@ -240,6 +240,26 @@ class Tag(models.Model):
     def __str__(self):
         return f"{self.course}: {self.name}"
 
+class Review(models.Model):
+    """
+    TA reviews within a question
+    """
+    RATING_ONE = 1
+    RATING_TWO = 2
+    RATING_THREE = 3
+    RATING_FOUR = 4
+    RATING_FIVE = 5
+    RATING_CHOICES = [
+        (RATING_ONE, "One star"),
+        (RATING_TWO, "Two stars"),
+        (RATING_THREE, "Three stars"),
+        (RATING_FOUR, "Four stars"),
+        (RATING_FIVE, "Five stars")
+    ]
+
+    content = models.TextField(blank=True)
+    rating = models.IntegerField(choices=RATING_CHOICES)
+
 
 class Question(models.Model):
     """
@@ -282,6 +302,14 @@ class Question(models.Model):
     should_send_up_soon_notification = models.BooleanField(default=False)
     tags = models.ManyToManyField(Tag, blank=True)
     student_descriptor = models.CharField(max_length=255, blank=True, null=True)
+    review = models.OneToOneField(Review, on_delete=models.CASCADE, blank=True, null=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["review"], name="unique_question"
+            )
+        ]
 
 
 class CourseStatistic(models.Model):
@@ -411,3 +439,5 @@ class Announcement(models.Model):
     author = models.ForeignKey(User, related_name="announcements", on_delete=models.CASCADE)
     time_updated = models.DateTimeField(auto_now=True)
     course = models.ForeignKey(Course, related_name="announcements", on_delete=models.CASCADE)
+
+    

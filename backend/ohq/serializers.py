@@ -22,6 +22,7 @@ from ohq.models import (
     QueueStatistic,
     Semester,
     Tag,
+    Review,
 )
 from ohq.sms import sendSMSVerification
 from ohq.tasks import sendUpNextNotificationTask
@@ -49,6 +50,17 @@ class QueueRouteMixin(serializers.ModelSerializer):
     def save(self):
         self.validated_data["queue"] = Queue.objects.get(pk=self.context["view"].kwargs["queue_pk"])
         return super().save()
+
+class QuestionRouteMixin(serializers.ModelSerializer):
+    """
+    Mixin for serializers that overrides the save method to
+    properly handle the URL parameter for questions.
+    """
+
+    def save(self):
+        self.validated_data["question"] = Question.objects.get(pk=self.context["view"].kwargs["question_pk"])
+        return super().save()
+
 
 
 class SemesterSerializer(serializers.ModelSerializer):
@@ -209,11 +221,26 @@ class TagSerializer(CourseRouteMixin):
         fields = ("id", "name")
 
 
+class ReviewSerializer(QuestionRouteMixin):
+    """
+    Serializer for review
+    """
+    question = serializers.ReadOnlyField(source="question.text")
+    ta_first_name = serializers.ReadOnlyField(source="question.responded_to_by.first_name")
+    ta_last_name = serializers.ReadOnlyField(source="question.responded_to_by.last_name")
+
+    class Meta:
+        model = Review
+        fields = ("id", "content", "rating", "question", "ta_first_name", "ta_last_name")
+        read_only_fields = ("question", "ta_first_name", "ta_last_name")
+
+
 class QuestionSerializer(QueueRouteMixin):
     asked_by = UserSerializer(read_only=True)
     responded_to_by = UserSerializer(read_only=True)
     tags = TagSerializer(many=True)
     position = serializers.IntegerField(default=-1, read_only=True)
+    review = ReviewSerializer()
 
     class Meta:
         model = Question
@@ -234,6 +261,7 @@ class QuestionSerializer(QueueRouteMixin):
             "resolved_note",
             "position",
             "student_descriptor",
+            "review",
         )
         read_only_fields = (
             "time_asked",
@@ -342,6 +370,11 @@ class QuestionSerializer(QueueRouteMixin):
             except ObjectDoesNotExist:
                 continue
         return question
+    
+    def get_review(self, obj):
+        review = Review.objects.get(question=obj)
+        serializer = ReviewSerializer(review)
+        return serializer.data
 
 
 class MembershipPrivateSerializer(CourseRouteMixin):
@@ -574,3 +607,4 @@ class OccurrenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Occurrence
         fields = ("id", "title", "description", "start", "end", "cancelled", "event")
+

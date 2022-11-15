@@ -19,6 +19,7 @@ from ohq.views import (
     SemesterViewSet,
     TagViewSet,
     UserView,
+    ReviewViewSet,
 )
 
 
@@ -39,6 +40,9 @@ course_router.register("tags", TagViewSet, basename="tag")
 
 queue_router = routers.NestedSimpleRouter(course_router, "queues", lookup="queue")
 queue_router.register("questions", QuestionViewSet, basename="question")
+
+question_router = routers.NestedSimpleRouter(queue_router, "questions", lookup="question")
+question_router.register("reviews", ReviewViewSet, basename="review")
 
 realtime_router = RealtimeRouter()
 realtime_router.register(QuestionViewSet)
@@ -63,4 +67,4 @@ additional_urls = [
     ),
 ]
 
-urlpatterns = router.urls + course_router.urls + queue_router.urls + additional_urls
+urlpatterns = router.urls + course_router.urls + queue_router.urls + question_router.urls + additional_urls
