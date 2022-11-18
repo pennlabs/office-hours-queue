@@ -1,4 +1,4 @@
-name: validate-backend
+name: Check front and backend
 
 on: push
 
