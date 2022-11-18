@@ -1,5 +1,5 @@
 name: Test django build check
-on: push
+on: gollum
 jobs:
   django-check:
     name: Django Check

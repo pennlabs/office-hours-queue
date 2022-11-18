@@ -1,0 +1,59 @@
+name: validate-backend
+
+on: push
+
+jobs:
+  backend-check:
+    name: "Backend Check"
+    uses: pennlabs/shared-actions/.github/workflows/django-check.yaml@v0.1.1-dj-wf
+    with:
+      projectName: officehoursqueue
+      path: backend
+      flake: true
+      black: true
+
+  frontend-check:
+    # if: false
+    name: "Frontend Check"
+    uses: pennlabs/shared-actions/.github/workflows/react-check.yaml@v0.1.1i
+    with:
+      path: frontend
+  
+  # publish:
+  #   uses: pennlabs/shared-actions/.github/workflows/docker-publish.yaml@v0.1.1f
+  #   with:
+  #     imageName: "office-hours-queue-backend"
+  #     githubRef: ${{ github.ref }}
+  #     gitSha: ${{ github.sha }}
+
+  #     # Optional finetuning inputs
+      
+  #     # Path to the docker context
+  #     path: backend
+      
+  #     # Path to the dockerfile (relative to `path`)
+  #     dockerfile: Dockerfile
+      
+  #     # If enabled, will cache_from the latest version of the docker image.
+  #     cache: False
+    
+  #   secrets: 
+  #     DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  #     DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    
+  #   needs: backend-check
+
+  # deploy:
+  #   name: "Deploy"
+  #   uses: pennlabs/shared-actions/.github/workflows/deployment.yaml@v0.1.1g
+
+  #   with:
+  #     githubRef: ${{ github.ref }}
+  #     gitSha: ${{ github.sha }}
+
+  #   secrets:
+  #     AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  #     GH_AWS_ACCESS_KEY_ID: ${{ secrets.GH_AWS_ACCESS_KEY_ID }}
+  #     GH_AWS_SECRET_ACCESS_KEY: ${{ secrets.GH_AWS_SECRET_ACCESS_KEY }}
+    
+  #   needs: publish
