@@ -309,7 +309,7 @@ class OccurrenceViewTestCase(TestCase):
         response = self.client.get(
             "/api/occurrences/?course="
             + str(self.course.id)
-            + "&filter_start="b
+            + "&filter_start="
             + self.filter_start
             + "&filter_end="
             + self.filter_end

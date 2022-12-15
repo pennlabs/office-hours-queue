@@ -824,7 +824,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         membership = Membership.objects.get(course=self.kwargs["course_pk"], user=self.request.user)
-        
         if membership.kind == "TA":
             return Review.objects.filter(question=self.kwargs["question_pk"], question__responded_to_by=self.request.user)
         
