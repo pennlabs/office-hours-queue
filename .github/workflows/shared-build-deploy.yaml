@@ -1,3 +1,7 @@
+# ========================================
+# Note:  If you make changes to this CI/CD, please include someone from DevOps in the list of reviewers for the PR.
+# ========================================
+
 name: Build and Deploy OHQ
 
 on: push
@@ -5,7 +9,7 @@ on: push
 jobs:
   backend-check:
     name: "Backend Check"
-    uses: pennlabs/shared-actions/.github/workflows/django-check.yaml@v0.1.1-dj-wf
+    uses: pennlabs/shared-actions/.github/workflows/django-check.yaml@v0.1
     with:
       projectName: officehoursqueue
       path: backend
@@ -13,7 +17,7 @@ jobs:
       black: true
 
   publish-backend:
-    uses: pennlabs/shared-actions/.github/workflows/docker-publish.yaml@v0.1.1i
+    uses: pennlabs/shared-actions/.github/workflows/docker-publish.yaml@v0.1
     with:
       # Inputs
       imageName: "office-hours-queue-backend"
@@ -39,12 +43,12 @@ jobs:
 
   frontend-check:
     name: "Frontend Check"
-    uses: pennlabs/shared-actions/.github/workflows/react-check.yaml@v0.1.1i
+    uses: pennlabs/shared-actions/.github/workflows/react-check.yaml@v0.1
     with:
       path: frontend
 
   publish-frontend:
-    uses: pennlabs/shared-actions/.github/workflows/docker-publish.yaml@v0.1.1i
+    uses: pennlabs/shared-actions/.github/workflows/docker-publish.yaml@v0.1
     with:
       # Inputs
       imageName: "office-hours-queue-frontend"
@@ -68,7 +72,7 @@ jobs:
 
   deploy:
     name: "Deploy"
-    uses: pennlabs/shared-actions/.github/workflows/deployment.yaml@v0.1.1j
+    uses: pennlabs/shared-actions/.github/workflows/deployment.yaml@v0.1
 
     with:
       githubRef: ${{ github.ref }}
