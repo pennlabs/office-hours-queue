@@ -27,10 +27,9 @@ const semesterOptions = async (inputValue: string) => {
         )
         .sort((s1, s2) => {
             // Sort by most recent semester
-            if (s1.year === s2.year) {
-                return TERM_SORT_VALUES[s2.term] - TERM_SORT_VALUES[s1.term];
-            }
-            return s2.year - s1.year;
+            return s1.year === s2.year
+                ? TERM_SORT_VALUES[s2.term] - TERM_SORT_VALUES[s1.term]
+                : s2.year - s1.year;
         })
         .map((semester) => {
             return {
