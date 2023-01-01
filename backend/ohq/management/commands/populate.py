@@ -463,3 +463,5 @@ class Command(BaseCommand):
 
         call_command("queue_daily_stat", "--hist")
         call_command("queue_heatmap_stat", "--hist")
+        call_command("course_stat", "--hist")
+        call_command("membership_stat", "--hist")

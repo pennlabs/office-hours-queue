@@ -283,6 +283,9 @@ class Question(models.Model):
     tags = models.ManyToManyField(Tag, blank=True)
     student_descriptor = models.CharField(max_length=255, blank=True, null=True)
 
+    def __str__(self):
+        return f"{self.queue}: Asked by {self.asked_by}"
+
 
 class CourseStatistic(models.Model):
     """
@@ -319,6 +322,57 @@ class CourseStatistic(models.Model):
 
     def __str__(self):
         return f"{self.course}: {self.date}: {self.metric_to_pretty()}"
+
+
+class MembershipStatistic(models.Model):
+    """
+    Statistics related to students and instructors
+    """
+
+    # average statistics
+    METRIC_STUDENT_AVG_TIME_HELPED = "STUDENT_AVG_TIME_HELPED"
+    METRIC_STUDENT_AVG_TIME_WAITING = "STUDENT_AVG_TIME_WAITING"
+
+    METRIC_INSTR_AVG_TIME_HELPING = "INSTR_AVG_TIME_HELPING"
+
+    # total statistics
+    METRIC_STUDENT_TOTAL_TIME_HELPED = "STUDENT_TOTAL_TIME_HELPED"
+    METRIC_STUDENT_TOTAL_TIME_WAITING = "STUDENT_TOTAL_TIME_WAITING"
+    METRIC_STUDENT_TOTAL_QUESTIONS = "STUDENT_TOTAL_QUESTIONS"
+
+    METRIC_INSTR_TOTAL_TIME_HELPING = "INSTR_TOTAL_TIME_HELPING"
+    METRIC_INSTR_TOTAL_QUESTIONS = "INSTR_TOTAL_QUESTONS"
+
+    METRIC_CHOICES = [
+        (METRIC_STUDENT_AVG_TIME_HELPED, "Student: Average time being helped"),
+        (METRIC_STUDENT_AVG_TIME_WAITING, "Student: Average time waiting for help"),
+        (METRIC_INSTR_AVG_TIME_HELPING, "Instructor: Average time helping per question"),
+        (METRIC_STUDENT_TOTAL_TIME_HELPED, "Student: Total time being helped"),
+        (METRIC_STUDENT_TOTAL_TIME_WAITING, "Student: Total time waiting in queue"),
+        (METRIC_STUDENT_TOTAL_QUESTIONS, "Student: Total questions answered"),
+        (METRIC_INSTR_TOTAL_TIME_HELPING, "Instructor: Total time helping"),
+        (METRIC_INSTR_TOTAL_QUESTIONS, "Instructor: Total questions answered"),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    metric = models.CharField(max_length=256, choices=METRIC_CHOICES)
+    value = models.DecimalField(max_digits=16, decimal_places=8)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "course", "metric"], name="membership_statistic"
+            )
+        ]
+
+    def metric_to_pretty(self):
+        return [pretty for raw, pretty in MembershipStatistic.METRIC_CHOICES if raw == self.metric][
+            0
+        ]
+
+    def __str__(self):
+        return f"{self.course}: {self.user}: {self.metric_to_pretty()}"
 
 
 class QueueStatistic(models.Model):

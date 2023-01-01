@@ -3,10 +3,138 @@ from django.db.models import Avg, Case, Count, F, Sum, When
 from django.db.models.functions import TruncDate
 from django.utils import timezone
 
-from ohq.models import CourseStatistic, Question, QueueStatistic
+from ohq.models import CourseStatistic, MembershipStatistic, Question, QueueStatistic
 
 
 User = get_user_model()
+
+
+def membership_calculate_student_time_waiting(course):
+    calculated_statistics = (
+        Question.objects.filter(queue__course=course, status=Question.STATUS_ANSWERED)
+        .values("asked_by")
+        .annotate(avg_time_waiting=Avg(F("time_response_started") - F("time_asked")))
+    )
+
+    for statistic in calculated_statistics:
+        MembershipStatistic.objects.update_or_create(
+            user=User.objects.get(id=statistic["asked_by"]),
+            course=course,
+            metric=MembershipStatistic.METRIC_STUDENT_AVG_TIME_WAITING,
+            defaults={"value": statistic["avg_time_waiting"].seconds},
+        )
+
+
+def membership_calculate_student_time_helped(course):
+    calculated_statistics = (
+        Question.objects.filter(queue__course=course, status=Question.STATUS_ANSWERED)
+        .values("asked_by")
+        .annotate(avg_time_helped=Avg(F("time_responded_to") - F("time_response_started")))
+    )
+
+    for statistic in calculated_statistics:
+        MembershipStatistic.objects.update_or_create(
+            user=User.objects.get(id=statistic["asked_by"]),
+            course=course,
+            metric=MembershipStatistic.METRIC_STUDENT_AVG_TIME_HELPED,
+            defaults={"value": statistic["avg_time_helped"].seconds},
+        )
+
+
+def membership_calculate_instructor_time_helping(course):
+    calculated_statistics = (
+        Question.objects.filter(queue__course=course, status=Question.STATUS_ANSWERED)
+        .values("responded_to_by")
+        .annotate(avg_time_helping=Avg(F("time_responded_to") - F("time_response_started")))
+    )
+
+    for statistic in calculated_statistics:
+        MembershipStatistic.objects.update_or_create(
+            user=User.objects.get(id=statistic["responded_to_by"]),
+            course=course,
+            metric=MembershipStatistic.METRIC_INSTR_AVG_TIME_HELPING,
+            defaults={"value": statistic["avg_time_helping"].seconds},
+        )
+
+
+def membership_calculate_student_total_time_helped(course):
+    calculated_statistics = (
+        Question.objects.filter(queue__course=course, status=Question.STATUS_ANSWERED)
+        .values("asked_by")
+        .annotate(total_time_helped=Sum(F("time_responded_to") - F("time_response_started")))
+    )
+
+    for statistic in calculated_statistics:
+        MembershipStatistic.objects.update_or_create(
+            user=User.objects.get(id=statistic["asked_by"]),
+            course=course,
+            metric=MembershipStatistic.METRIC_STUDENT_TOTAL_TIME_HELPED,
+            defaults={"value": statistic["total_time_helped"].seconds},
+        )
+
+
+def membership_calculate_student_total_time_waiting(course):
+    calculated_statistics = (
+        Question.objects.filter(queue__course=course, status=Question.STATUS_ANSWERED)
+        .values("asked_by")
+        .annotate(total_time_waiting=Sum(F("time_response_started") - F("time_asked")))
+    )
+
+    for statistic in calculated_statistics:
+        MembershipStatistic.objects.update_or_create(
+            user=User.objects.get(id=statistic["asked_by"]),
+            course=course,
+            metric=MembershipStatistic.METRIC_STUDENT_TOTAL_TIME_WAITING,
+            defaults={"value": statistic["total_time_waiting"].seconds},
+        )
+
+
+def membership_calculate_student_total_questions(course):
+    calculated_statistics = (
+        Question.objects.filter(queue__course=course, status=Question.STATUS_ANSWERED)
+        .values("asked_by")
+        .annotate(question_count=Count(F("id")))
+    )
+
+    for statistic in calculated_statistics:
+        MembershipStatistic.objects.update_or_create(
+            user=User.objects.get(id=statistic["asked_by"]),
+            course=course,
+            metric=MembershipStatistic.METRIC_STUDENT_TOTAL_QUESTIONS,
+            defaults={"value": statistic["question_count"]},
+        )
+
+
+def membership_calculate_instructor_total_time_helping(course):
+    calculated_statistics = (
+        Question.objects.filter(queue__course=course, status=Question.STATUS_ANSWERED)
+        .values("responded_to_by")
+        .annotate(total_time_helping=Sum(F("time_responded_to") - F("time_response_started")))
+    )
+
+    for statistic in calculated_statistics:
+        MembershipStatistic.objects.update_or_create(
+            user=User.objects.get(id=statistic["responded_to_by"]),
+            course=course,
+            metric=MembershipStatistic.METRIC_INSTR_TOTAL_TIME_HELPING,
+            defaults={"value": statistic["total_time_helping"].seconds},
+        )
+
+
+def membership_calculate_instructor_total_questions(course):
+    calculated_statistics = (
+        Question.objects.filter(queue__course=course, status=Question.STATUS_ANSWERED)
+        .values("responded_to_by")
+        .annotate(question_count=Count(F("id")))
+    )
+
+    for statistic in calculated_statistics:
+        MembershipStatistic.objects.update_or_create(
+            user=User.objects.get(id=statistic["responded_to_by"]),
+            course=course,
+            metric=MembershipStatistic.METRIC_INSTR_TOTAL_QUESTIONS,
+            defaults={"value": statistic["question_count"]},
+        )
 
 
 def course_calculate_student_most_questions_asked(course, last_sunday):

@@ -32,7 +32,12 @@ from rest_framework.views import APIView
 from rest_live.mixins import RealtimeMixin
 from schedule.models import Event, EventRelationManager, Occurrence
 
-from ohq.filters import CourseStatisticFilter, QuestionSearchFilter, QueueStatisticFilter
+from ohq.filters import (
+    CourseStatisticFilter,
+    MembershipStatisticFilter,
+    QuestionSearchFilter,
+    QueueStatisticFilter,
+)
 from ohq.invite import parse_and_send_invites
 from ohq.models import (
     Announcement,
@@ -40,6 +45,7 @@ from ohq.models import (
     CourseStatistic,
     Membership,
     MembershipInvite,
+    MembershipStatistic,
     Question,
     Queue,
     QueueStatistic,
@@ -56,6 +62,7 @@ from ohq.permissions import (
     MassInvitePermission,
     MembershipInvitePermission,
     MembershipPermission,
+    MembershipStatisticPermission,
     OccurrencePermission,
     QuestionPermission,
     QuestionSearchPermission,
@@ -72,6 +79,7 @@ from ohq.serializers import (
     EventSerializer,
     MembershipInviteSerializer,
     MembershipSerializer,
+    MembershipStatisticSerializer,
     OccurrenceSerializer,
     Profile,
     QuestionSerializer,
@@ -598,6 +606,26 @@ class MassInviteView(APIView):
             },
             status=201,
         )
+
+
+class MembershipStatisticView(generics.ListAPIView):
+    serializer_class = MembershipStatisticSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = MembershipStatisticFilter
+    permission_classes = [MembershipStatisticPermission | IsSuperuser]
+
+    def get_queryset(self):
+        membership = Membership.objects.get(course=self.kwargs["course_pk"], user=self.request.user)
+
+        # students can only see their statistics, ta's can see all
+        if not membership.is_ta:
+            qs = MembershipStatistic.objects.filter(
+                course=self.kwargs["course_pk"], user=self.request.user
+            )
+        else:
+            qs = MembershipStatistic.objects.filter(course=self.kwargs["course_pk"])
+
+        return prefetch(qs, self.serializer_class)
 
 
 class CourseStatisticView(generics.ListAPIView):

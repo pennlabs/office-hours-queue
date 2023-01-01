@@ -8,6 +8,7 @@ from ohq.models import (
     CourseStatistic,
     Membership,
     MembershipInvite,
+    MembershipStatistic,
     Question,
     Queue,
     QueueStatistic,
@@ -130,13 +131,14 @@ class QuestionTestCase(TestCase):
         course = Course.objects.create(
             course_code="000", department="TEST", course_title="Title", semester=semester
         )
-        queue = Queue.objects.create(name="Queue", course=course)
-        user = User.objects.create(username="user", email="example@example.com")
-        self.question = Question.objects.create(text="Question?", queue=queue, asked_by=user)
+        self.queue = Queue.objects.create(name="Queue", course=course)
+        self.user = User.objects.create(username="user", email="example@example.com")
+        self.question = Question.objects.create(
+            text="Question?", queue=self.queue, asked_by=self.user
+        )
 
     def test_str(self):
-        # TODO: write this
-        pass
+        self.assertEqual(str(self.question), f"{self.queue}: Asked by {self.user}")
 
 
 class SemesterTestCase(TestCase):
@@ -306,4 +308,84 @@ class QueueStatisticTestCase(TestCase):
         self.assertEqual(
             str(self.avg_time_helping_queue_statistic),
             f"{self.queue}: {self.avg_time_helping_queue_statistic.get_metric_display()}",
+        )
+
+
+class MembershipStatisticTestCase(TestCase):
+    def setUp(self):
+        semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
+        self.course = Course.objects.create(
+            course_code="000", department="TEST", course_title="Title", semester=semester
+        )
+        self.user = User.objects.create_user("user", "user@a.com", "user")
+
+        self.student_avg_time_helped = MembershipStatistic.objects.create(
+            course=self.course,
+            user=self.user,
+            metric=MembershipStatistic.METRIC_STUDENT_AVG_TIME_HELPED,
+            value=100.00,
+        )
+
+        self.student_avg_time_waiting = MembershipStatistic.objects.create(
+            course=self.course,
+            user=self.user,
+            metric=MembershipStatistic.METRIC_STUDENT_AVG_TIME_WAITING,
+            value=100.00,
+        )
+
+        self.instructor_avg_time_helping = MembershipStatistic.objects.create(
+            course=self.course,
+            user=self.user,
+            metric=MembershipStatistic.METRIC_INSTR_AVG_TIME_HELPING,
+            value=100.00,
+        )
+
+        self.instructor_avg_students_per_hour = MembershipStatistic.objects.create(
+            course=self.course,
+            user=self.user,
+            metric=MembershipStatistic.METRIC_INSTR_AVG_STUDENTS_PER_HOUR,
+            value=100.00,
+        )
+
+    def test_metric_to_pretty(self):
+
+        self.assertEqual(
+            self.student_avg_time_helped.metric_to_pretty(), "Student: Average time being helped"
+        )
+
+        self.assertEqual(
+            self.student_avg_time_waiting.metric_to_pretty(),
+            "Student: Average time waiting for help",
+        )
+
+        self.assertEqual(
+            self.instructor_avg_time_helping.metric_to_pretty(),
+            "Instructor: Average time helping per question",
+        )
+
+        self.assertEqual(
+            self.instructor_avg_students_per_hour.metric_to_pretty(),
+            "Instructor: Average number of students helped per hour",
+        )
+
+    def test_str(self):
+
+        self.assertEqual(
+            str(self.student_avg_time_helped),
+            f"{self.course}: {self.user}: Student: Average time being helped",
+        )
+
+        self.assertEqual(
+            str(self.student_avg_time_waiting),
+            f"{self.course}: {self.user}: Student: Average time waiting for help",
+        )
+
+        self.assertEqual(
+            str(self.instructor_avg_time_helping),
+            f"{self.course}: {self.user}: Instructor: Average time helping per question",
+        )
+
+        self.assertEqual(
+            str(self.instructor_avg_students_per_hour),
+            f"{self.course}: {self.user}: Instructor: Average number of students helped per hour",
         )

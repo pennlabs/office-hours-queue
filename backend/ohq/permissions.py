@@ -332,6 +332,24 @@ class CourseStatisticPermission(permissions.BasePermission):
         return membership is not None
 
 
+class MembershipStatisticPermission(permissions.BasePermission):
+    """
+    Students+ can access course related statistics
+    """
+
+    def has_permission(self, request, view):
+        # Anonymous users can't do anything
+        if not request.user.is_authenticated:
+            return False
+
+        membership = Membership.objects.filter(
+            course=view.kwargs["course_pk"], user=request.user
+        ).first()
+
+        # anyone who is a member of the class can see course related membership statistics
+        return membership is not None
+
+
 class QueueStatisticPermission(permissions.BasePermission):
     """
     Students+ can access queue related statistics
