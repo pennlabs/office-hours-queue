@@ -74,7 +74,7 @@ const CreateCourseForm = (props: CreateCourseFormProps) => {
                     id="course-code"
                     name="courseCode"
                     onChange={changeFunc}
-                    placeholder="121"
+                    placeholder="1210"
                 />
             </Form.Field>
             <Form.Field required>
