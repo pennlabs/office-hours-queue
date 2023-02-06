@@ -46,7 +46,7 @@ export class MyChart extends PennLabsChart {
         replicas: 2,
       },
       domain: { host: domain, paths: ['/'] },
-      portEnv: '80',
+      port: 80,
     });
 
     new RedisApplication(this, 'redis', {});
