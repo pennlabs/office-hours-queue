@@ -6,7 +6,7 @@ kill_timeout = 5
 processes = []
 
 [env]
-  DOMAIN = "ohq.io"
+  DOMAIN = "office-hours-queue-react.fly.dev"
   PORT = 3000
 
 [experimental]
