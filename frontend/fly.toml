@@ -1,4 +1,4 @@
-# fly.toml file generated for office-hours-queue-react on 2023-02-06T22:37:23-05:00
+# fly.toml file generated for office-hours-queue-react on 2023-02-07T01:27:04-05:00
 
 app = "office-hours-queue-react"
 kill_signal = "SIGINT"
@@ -6,7 +6,7 @@ kill_timeout = 5
 processes = []
 
 [env]
-  DOMAIN = "ohq.io" # TODO: this doesn't work until we add certificates
+  DOMAIN = "ohq.io"
   PORT = 3000
 
 [experimental]
