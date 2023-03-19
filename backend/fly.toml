@@ -7,10 +7,11 @@ processes = []
 
 [env]
 # TODO: Populate this
-  #REDIS_URL = 
+  REDIS_HOST = "" #TODO: DO this
+  AWS_STORAGE_BUCKET_NAME = "ohq"
 
 [build]
-# TODO: GITSHA injection
+  # TODO: GITSHA injection
   dockerfile = "Dockerfile"
 
 [experimental]
@@ -18,7 +19,7 @@ processes = []
 
 [[services]]
   http_checks = []
-  internal_port = 8080
+  internal_port = 80
   processes = ["app"]
   protocol = "tcp"
   script_checks = []
