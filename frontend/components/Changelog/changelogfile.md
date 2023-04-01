@@ -1,3 +1,6 @@
+## 2023-04-01
+- Happy April Fools! Instructors, please keep in mind your most earlier students are at the bottom of the list for today, but you can answer questions in any order you choose to!
+
 ## 2022-04-03
 ### Added
 -   New analytics cards listing summary statistics for queues, specifically the number of questions answered, average wait time, number of students helped, and average time helping each student. 

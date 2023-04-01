@@ -184,7 +184,7 @@ const Queue = (props: QueueProps) => {
                         <Grid.Column>
                             <Message>
                                 <Message.Header>
-                                    A rate-limiting quota is set on this queue.
+                                    A rate-limiting quota is set on this stack.
                                 </Message.Header>
                                 <p>
                                     {`A quota of ${queue.rateLimitQuestions} question(s) per ${queue.rateLimitMinutes} minutes(s) ` +
@@ -230,7 +230,7 @@ const Queue = (props: QueueProps) => {
                     <Grid.Row columns="equal">
                         <Grid.Column textAlign="right" floated="right">
                             <Button
-                                content="Clear Queue"
+                                content="Clear Stack"
                                 fluid
                                 size="medium"
                                 basic
