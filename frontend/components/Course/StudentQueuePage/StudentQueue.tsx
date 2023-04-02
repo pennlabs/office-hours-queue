@@ -52,10 +52,10 @@ const MessageQuota = ({
         <Message color={queueLength >= rateLimitLength ? "red" : "green"}>
             <Message.Header>
                 {queueLength >= rateLimitLength ? "ACTIVE:" : "INACTIVE:"} A
-                rate-limiting quota is set on this stack.
+                rate-limiting quota is set on this queue.
             </Message.Header>
             <p>
-                {`The quota will activate when there are at least ${rateLimitLength} student(s) in the stack. ` +
+                {`The quota will activate when there are at least ${rateLimitLength} student(s) in the queue. ` +
                     `When activated, the quota will allow you to ask up to ${rateLimitQuestions} question(s) per ${rateLimitMinutes} minute(s)`}
                 {data && (
                     <>
@@ -143,7 +143,7 @@ const StudentQueue = (props: StudentQueueProps) => {
                                         queue.questionsAsked || 0
                                     } user${
                                         queue.questionsAsked === 1 ? "" : "s"
-                                    } in stack`}
+                                    } in queue`}
                                     color="blue"
                                     icon="users"
                                 />
@@ -216,10 +216,10 @@ const StudentQueue = (props: StudentQueueProps) => {
                         )}
                         {!queue.active && questions.length === 0 && (
                             <Message
-                                header="Stack Closed"
+                                header="Queue Closed"
                                 error
                                 icon="calendar times outline"
-                                content="This stack is currently closed. Contact course staff if you think this is an error."
+                                content="This queue is currently closed. Contact course staff if you think this is an error."
                             />
                         )}
                         {queue.active &&

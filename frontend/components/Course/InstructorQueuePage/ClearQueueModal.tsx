@@ -33,7 +33,7 @@ const ClearQueueModal = (props: ClearQueueModalProps) => {
 
     return (
         <Modal open={open}>
-            <Modal.Header content="Clear Stack" />
+            <Modal.Header content="Clear Queue" />
             <Modal.Content>
                 <div>
                     You are about to clear all remaining questions on{" "}

@@ -58,7 +58,7 @@ const Dashboard = () => {
     const [toastOpen, setToastOpen] = useState(false);
 
     const [logToast] = useState({
-        message: "View new changes to OHS.io",
+        message: "View new changes to OHQ.io",
         success: true,
     });
     const [logOpen, setLogOpen] = useState(false);
@@ -105,7 +105,7 @@ const Dashboard = () => {
                                             Fall 2022 courses have been archived
                                             in preparation for Spring 2023.
                                             <br />
-                                            Please contact us at contact@ohs.io
+                                            Please contact us at contact@ohq.io
                                             if this is an error.
                                         </>
                                     }

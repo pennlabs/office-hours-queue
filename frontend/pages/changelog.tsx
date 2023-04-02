@@ -7,7 +7,7 @@ const LandingPage = () => {
     return (
         <>
             <Head>
-                <title>OHS | Changelog</title>
+                <title>OHQ | Changelog</title>
             </Head>
             <Home>
                 <Changelog />
