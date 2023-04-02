@@ -84,8 +84,8 @@ const StudentQueues = (props: StudentQueuesProps) => {
                     {!currQueue && (
                         <Grid.Column width={16}>
                             <Message info>
-                                <Message.Header>No Stacks</Message.Header>
-                                This course currently has no stacks!
+                                <Message.Header>No Queues</Message.Header>
+                                This course currently has no queues!
                             </Message>
                         </Grid.Column>
                     )}

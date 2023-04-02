@@ -6,7 +6,7 @@ export const EnrollCourse = ({ ref }) => (
     <div ref={ref}>
         <Segment basic>
             <h3>Enrolling in a Course</h3>
-            <p>Courses on OHS are either invite-only or not invite-only.</p>
+            <p>Courses on OHQ are either invite-only or not invite-only.</p>
             <p>
                 If your course is invite-only, reach out to your course&apos;s
                 teaching team to request an invitation. All they need to invite
@@ -57,14 +57,14 @@ export const Notifications = ({ ref }) => (
                 enabling notifications when you reach the top of the line!
             </p>
             <p>
-                OHS will give you an audio notification ( you&apos;ll hear a
-                &quot;ding&quot;) when you reach the top of the stack. You can
+                OHQ will give you an audio notification ( you&apos;ll hear a
+                &quot;ding&quot;) when you reach the top of the queue. You can
                 also enable SMS notifications.
             </p>
             <p>To enable SMS notifications:</p>
             <List bulleted>
                 <List.Item>
-                    Navigate to the OHS home page, and on the left menu, click
+                    Navigate to the OHQ home page, and on the left menu, click
                     into &quot;Account Settings.&quot;
                 </List.Item>
                 <List.Item>
@@ -102,7 +102,7 @@ export const JoiningOfficeHours = ({ ref }) => (
             <h3>Joining Office Hours</h3>
             <p>
                 Once you click into your course, you can see if there are any
-                stacks open. If there is:
+                queues open. If there is:
             </p>
             <List bulleted>
                 <List.Item>
@@ -126,10 +126,10 @@ export const JoiningOfficeHours = ({ ref }) => (
 export const WhileInQueue = ({ ref }) => (
     <div ref={ref}>
         <Segment basic>
-            <h3>While in Stack...</h3>
+            <h3>While in Queue...</h3>
             <List bulleted>
                 <List.Item>
-                    While in the stack, you can see your position in the stack,
+                    While in the queue, you can see your position in the queue,
                     as well as far you are in line!
                 </List.Item>
                 <List.Item>
@@ -140,11 +140,11 @@ export const WhileInQueue = ({ ref }) => (
                 <List.Item>
                     To delete your question, click on the red
                     &quot;Withdraw&quot; button. You&apos;ll be automatically
-                    removed from the stack.
+                    removed from the queue.
                 </List.Item>
                 <CenteredImage
                     src="/while-in-queue-1.png"
-                    alt="Waiting in stack"
+                    alt="Waiting in queue"
                 />
             </List>
         </Segment>
@@ -157,7 +157,7 @@ export const Settings = ({ ref }) => (
             <h3>Settings</h3>
             <p>
                 To change your profile information and notification settings, go
-                to the OHS landing page and click &apos;Account Setting&apos; in
+                to the OHQ landing page and click &apos;Account Setting&apos; in
                 the left menu.
             </p>
         </Segment>
