@@ -33,7 +33,7 @@ const LandingPage = ({ signUpCourse }: LandingPageProps) => {
                 />
             )}
             <Head>
-                <title>OHS</title>
+                <title>OHQ</title>
             </Head>
             {user ? (
                 <Home>

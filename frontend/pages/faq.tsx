@@ -6,7 +6,7 @@ const GuidePage = () => {
     return (
         <>
             <Head>
-                <title>OHS | FAQ</title>
+                <title>OHQ | FAQ</title>
             </Head>
             <Home>
                 <Guide />
