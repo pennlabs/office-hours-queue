@@ -147,7 +147,7 @@ const CreateQueue = (props: CreateQueueProps) => {
         <Grid.Column width={16}>
             <Grid.Row>
                 <Segment basic>
-                    <Header as="h3">Create New Queue</Header>
+                    <Header as="h3">Create New Stack</Header>
                 </Segment>
             </Grid.Row>
             <Grid.Row>
@@ -188,7 +188,7 @@ const CreateQueue = (props: CreateQueueProps) => {
                             <Form.Checkbox
                                 name="rateLimitEnabled"
                                 defaultChecked={input.rateLimitEnabled}
-                                label="Enable queue rate-limiting"
+                                label="Enable stack rate-limiting"
                                 onChange={() =>
                                     setInput({
                                         ...input,
