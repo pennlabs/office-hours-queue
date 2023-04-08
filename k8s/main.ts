@@ -17,7 +17,7 @@ export class MyChart extends PennLabsChart {
       deployment: {
         image: backendImage,
         cmd: ['/usr/local/bin/asgi-run'],
-        replicas: 2,
+        replicas: 4,
         secret,
         env: [
           { name: 'REDIS_URL', value: 'redis://office-hours-queue-redis:6379' },
@@ -25,19 +25,6 @@ export class MyChart extends PennLabsChart {
       },
       djangoSettingsModule: 'officehoursqueue.settings.production',
       domains: [{ host: domain, paths: ['/api/ws'] }],
-    });
-
-    new DjangoApplication(this, 'django-wsgi', {
-      deployment: {
-        image: backendImage,
-        replicas: 2,
-        secret,
-        env: [
-          { name: 'REDIS_URL', value: 'redis://office-hours-queue-redis:6379' },
-        ],
-      },
-      djangoSettingsModule: 'officehoursqueue.settings.production',
-      domains: [{ host: domain, paths: ['/api', '/admin', '/assets'] }],
     });
 
     new ReactApplication(this, 'react', {
