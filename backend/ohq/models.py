@@ -1,3 +1,5 @@
+import os
+
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -411,3 +413,20 @@ class Announcement(models.Model):
     author = models.ForeignKey(User, related_name="announcements", on_delete=models.CASCADE)
     time_updated = models.DateTimeField(auto_now=True)
     course = models.ForeignKey(Course, related_name="announcements", on_delete=models.CASCADE)
+
+
+class QuestionFile(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    file = models.FileField(upload_to="question_files/")
+
+
+# Delete file on delete of QuestionFile object
+@receiver(models.signals.post_delete, sender=QuestionFile)
+def auto_delete_file_on_delete(sender, instance, **kwargs):
+    """
+    Deletes file from filesystem
+    when corresponding `QuestionFile` object is deleted.
+    """
+    if instance.file:
+        if os.path.isfile(instance.file.path):
+            os.remove(instance.file.path)

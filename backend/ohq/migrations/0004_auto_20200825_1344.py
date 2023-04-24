@@ -11,6 +11,8 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name="queue", name="estimated_wait_time", field=models.IntegerField(default=-1),
+            model_name="queue",
+            name="estimated_wait_time",
+            field=models.IntegerField(default=-1),
         ),
     ]

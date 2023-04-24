@@ -2,7 +2,7 @@ from django.db.models import Q
 from rest_framework import permissions
 from schedule.models import Event, EventRelation, Occurrence
 
-from ohq.models import Course, Membership, Question
+from ohq.models import Course, Membership, Question, QuestionFile
 
 
 # Hierarchy of permissions is usually:
@@ -130,11 +130,29 @@ class QuestionPermission(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         membership = Membership.objects.get(course=view.kwargs["course_pk"], user=request.user)
-
         # Students can get or modify their own question
         # TAs+ can get or modify any questions
-        if view.action in ["retrieve", "update", "partial_update", "position"]:
+        if view.action in [
+            "retrieve",
+            "update",
+            "partial_update",
+            "position",
+            "upload_file",
+            "delete_all_file",
+        ]:
             return obj.asked_by == request.user or membership.is_ta
+
+        if view.action in ["delete_file"]:
+            if not (obj.asked_by == request.user or membership.is_ta):
+                return False
+
+            # all file ids must correspond
+            attempted_ids = request.GET.getlist("ids")
+            available_ids = QuestionFile.objects.filter(question=obj).values_list("id", flat=True)
+            for attempt in attempted_ids:
+                if attempt not in available_ids:
+                    return False
+            return True
 
     def has_permission(self, request, view):
         # Anonymous users can't do anything
@@ -166,6 +184,10 @@ class QuestionPermission(permissions.BasePermission):
             ).first()
 
             return membership.kind == Membership.KIND_STUDENT and existing_question is None
+
+        if view.action in ["upload_file", "delete_file", "delete_all_file"]:
+            question = Question.objects.get(pk=view.kwargs["pk"])
+            return self.has_object_permission(request, view, question)
 
         # Students+ can get, list, or modify questions
         # With restrictions defined in has_object_permission

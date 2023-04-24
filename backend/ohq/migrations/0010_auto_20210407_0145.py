@@ -10,5 +10,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(model_name="announcement", name="content", field=models.TextField(),),
+        migrations.AlterField(
+            model_name="announcement",
+            name="content",
+            field=models.TextField(),
+        ),
     ]

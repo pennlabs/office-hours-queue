@@ -8,6 +8,7 @@ from ohq.models import (
     MembershipInvite,
     Profile,
     Question,
+    QuestionFile,
     Queue,
     QueueStatistic,
     Semester,
@@ -15,14 +16,24 @@ from ohq.models import (
 )
 
 
-admin.site.register(Course)
-admin.site.register(CourseStatistic)
-admin.site.register(Membership)
-admin.site.register(MembershipInvite)
-admin.site.register(Profile)
-admin.site.register(Question)
-admin.site.register(Queue)
-admin.site.register(Semester)
-admin.site.register(QueueStatistic)
-admin.site.register(Announcement)
-admin.site.register(Tag)
+class DisplayIdAdmin(admin.ModelAdmin):
+    readonly_fields = ("id",)
+
+    def get_list_display(self, request):
+        list_display = list(super().get_list_display(request))
+        list_display.insert(0, "id")
+        return list_display
+
+
+admin.site.register(Course, DisplayIdAdmin)
+admin.site.register(CourseStatistic, DisplayIdAdmin)
+admin.site.register(Membership, DisplayIdAdmin)
+admin.site.register(MembershipInvite, DisplayIdAdmin)
+admin.site.register(Profile, DisplayIdAdmin)
+admin.site.register(Question, DisplayIdAdmin)
+admin.site.register(Queue, DisplayIdAdmin)
+admin.site.register(Semester, DisplayIdAdmin)
+admin.site.register(QueueStatistic, DisplayIdAdmin)
+admin.site.register(Announcement, DisplayIdAdmin)
+admin.site.register(Tag, DisplayIdAdmin)
+admin.site.register(QuestionFile, DisplayIdAdmin)

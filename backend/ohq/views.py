@@ -33,6 +33,7 @@ from rest_live.mixins import RealtimeMixin
 from schedule.models import Event, EventRelationManager, Occurrence
 
 from ohq.filters import CourseStatisticFilter, QuestionSearchFilter, QueueStatisticFilter
+from ohq.forms import UploadFileForm
 from ohq.invite import parse_and_send_invites
 from ohq.models import (
     Announcement,
@@ -41,6 +42,7 @@ from ohq.models import (
     Membership,
     MembershipInvite,
     Question,
+    QuestionFile,
     Queue,
     QueueStatistic,
     Semester,
@@ -63,7 +65,7 @@ from ohq.permissions import (
     QueueStatisticPermission,
     TagPermission,
 )
-from ohq.schemas import EventSchema, MassInviteSchema, OccurrenceSchema
+from ohq.schemas import EventSchema, MassInviteSchema, OccurrenceSchema, QuestionSchema
 from ohq.serializers import (
     AnnouncementSerializer,
     CourseCreateSerializer,
@@ -205,6 +207,8 @@ class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
     permission_classes = [QuestionPermission | IsSuperuser]
     serializer_class = QuestionSerializer
     queryset = Question.objects.none()
+    form_class = UploadFileForm
+    schema = QuestionSchema()
 
     def get_queryset(self):
         position = (
@@ -225,7 +229,11 @@ class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
             )
             .annotate(
                 position=Case(
-                    When(status=Question.STATUS_ASKED, then=Subquery(position[:1]),), default=-1,
+                    When(
+                        status=Question.STATUS_ASKED,
+                        then=Subquery(position[:1]),
+                    ),
+                    default=-1,
                 )
             )
             .order_by("time_asked")
@@ -342,6 +350,57 @@ class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
         else:
             return JsonResponse({"detail": "queue does not have rate limit"}, status=405)
 
+    def handle_file_upload(self, uploaded_file, question):
+        question_file = QuestionFile(question=question, file=uploaded_file)
+        question_file.save()
+        return question_file
+
+    @action(detail=True, methods=["post"])
+    def upload_file(self, request, *args, **kwargs):
+        if request.method == "POST":
+            form = self.form_class(request.POST, request.FILES)
+            if form.is_valid():
+                question = Question.objects.filter(pk=self.kwargs["pk"]).first()
+                response = []
+
+                # projecting up total storage
+                current_storage = 0
+                current_qfiles = QuestionFile.objects.filter(question=question).all()
+                for qfile in current_qfiles:
+                    current_storage += qfile.file.size
+                for file in request.FILES.getlist("file"):
+                    current_storage += file.size
+                if current_storage > 5 * 1024 * 1024:  # if total storage exceeds 5MB
+                    return JsonResponse(
+                        {
+                            "detail": "files are too heavy. "
+                            + "total storage for this question exceed 5MB"
+                        },
+                        status=413,
+                    )
+
+                # creating files in storage
+                for file in request.FILES.getlist("file"):
+                    question_file = self.handle_file_upload(file, question)
+                    response.append({"id": question_file.id, "name": question_file.file.name})
+                return JsonResponse(response, status=200, safe=False)
+            else:
+                return JsonResponse({"detail": form.errors.as_text}, status=406)
+        return JsonResponse({"detail": "file upload should be POST"}, status=405)
+
+    @action(detail=True, methods=["delete"])
+    def delete_file(self, request, *args, **kwargs):
+        question_file_ids = request.GET.getlist("id")
+        QuestionFile.objects.filter(pk__in=question_file_ids).delete()
+        return JsonResponse({"detail": "Success"}, status=200)
+
+    @action(detail=True, methods=["delete"])
+    def delete_all_file(self, request, *args, **kwargs):
+        question = Question.objects.filter(pk=self.kwargs["pk"]).first()
+        question_files = QuestionFile.objects.filter(question=question)
+        question_files.delete()
+        return JsonResponse({"detail": "Success"}, status=200)
+
 
 class QuestionSearchView(XLSXFileMixin, generics.ListAPIView):
     filter_backends = [DjangoFilterBackend]
@@ -425,7 +484,9 @@ class QueueViewSet(viewsets.ModelViewSet):
             )
             .order_by()
             .values("course")
-            .annotate(count=Count("*", output_field=FloatField()),)
+            .annotate(
+                count=Count("*", output_field=FloatField()),
+            )
             .values("count")
         )
 

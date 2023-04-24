@@ -38,6 +38,36 @@ class MassInviteSchema(AutoSchema):
         return operation
 
 
+class QuestionSchema(AutoSchema):
+    def get_operation(self, path, method):
+        op = super().get_operation(path, method)
+        if op["operationId"] == "uploadFileQuestion":
+            op["requestBody"] = {
+                "content": {
+                    "multipart/form-data": {
+                        "schema": {
+                            "properties": {
+                                "file": {"type": "array of files"},
+                            }
+                        }
+                    }
+                }
+            }
+        elif op["operationId"] == "deleteFileQuestion":
+            op["parameters"].append(
+                {
+                    "name": "id",
+                    "in": "query",
+                    "required": False,
+                    "description": "A series of ids of files to be deleted <br>"
+                    + "e.g. /deleteFile/?id=1&id=2 "
+                    + "- where the numbers are the file pks",
+                    "schema": {"type": "string"},
+                }
+            )
+        return op
+
+
 class EventSchema(AutoSchema):
     def get_operation(self, path, method):
         op = super().get_operation(path, method)
@@ -47,7 +77,7 @@ class EventSchema(AutoSchema):
                     "name": "course",
                     "in": "query",
                     "required": True,
-                    "description": "A series of api/events/?course=1&course=2 "
+                    "description": "A series of /events/?course=1&course=2 "
                     + "- where the numbers are the course pks",
                     "schema": {"type": "string"},
                 }
@@ -64,7 +94,7 @@ class OccurrenceSchema(AutoSchema):
                     "name": "course",
                     "in": "query",
                     "required": True,
-                    "description": "A series of api/occurrences/?course=1&course=2 "
+                    "description": "A series of occurrences/?course=1&course=2 "
                     + "- where the numbers are the course pks",
                     "schema": {"type": "string"},
                 }

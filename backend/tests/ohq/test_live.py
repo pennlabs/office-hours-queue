@@ -38,7 +38,9 @@ class QuestionTestCase(TransactionTestCase):
             course=self.course, user=self.student2, kind=Membership.KIND_STUDENT
         )
         self.old_question = await db(Question.objects.create)(
-            queue=self.queue, asked_by=self.student1, text="Help me",
+            queue=self.queue,
+            asked_by=self.student1,
+            text="Help me",
         )
 
         headers = await get_headers_for_user(self.student2)

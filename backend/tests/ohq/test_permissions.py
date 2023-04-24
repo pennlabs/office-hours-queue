@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 import pytz
 from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
 from parameterized import parameterized
@@ -15,6 +16,7 @@ from ohq.models import (
     Membership,
     MembershipInvite,
     Question,
+    QuestionFile,
     Queue,
     Semester,
     Tag,
@@ -713,8 +715,47 @@ class QuestionSearchTestCase(TestCase):
     @parameterized.expand(users, name_func=get_test_name)
     def test_list(self, user):
         test(
-            self, user, "list", "get", reverse("ohq:questionsearch", args=[self.course.id]),
+            self,
+            user,
+            "list",
+            "get",
+            reverse("ohq:questionsearch", args=[self.course.id]),
         )
+
+
+class QuestionFileTestCase(TestCase):
+    def setUp(self):
+        setUp(self)
+        self.queue = Queue.objects.create(name="Queue", course=self.course)
+        self.question = Question.objects.create(queue=self.queue, asked_by=self.student)
+        self.question_other = Question.objects.create(queue=self.queue, asked_by=self.ta)
+        file = SimpleUploadedFile("file.txt", b"file_content")
+        self.question_file = QuestionFile(question=self.question, file=file)
+        self.question_file.save()
+        # Expected results
+        self.expected = {
+            "delete-file": {
+                "ta": 200,
+                "student": 403,
+            },
+        }
+
+    @parameterized.expand(["student", "ta"], name_func=get_test_name)
+    def test_delete_files(self, user):
+        # the question is asked by TA, so student can't delete
+        test(
+            self,
+            user,
+            "delete-file",
+            "delete",
+            reverse(
+                "ohq:question-delete-file",
+                args=[self.course.id, self.queue.id, self.question_other.id],
+            )
+            + "?id="
+            + str(self.question_file.id),
+        )
+        QuestionFile.objects.all().delete()
 
 
 class MembershipTestCase(TestCase):
@@ -977,7 +1018,11 @@ class CourseStatisticTestCase(TestCase):
     @parameterized.expand(users, name_func=get_test_name)
     def test_list(self, user):
         test(
-            self, user, "list", "get", reverse("ohq:course-statistic", args=[self.course.id]),
+            self,
+            user,
+            "list",
+            "get",
+            reverse("ohq:course-statistic", args=[self.course.id]),
         )
 
 
@@ -1196,7 +1241,11 @@ class EventTestCase(TestCase):
     @parameterized.expand(users, name_func=get_test_name)
     def test_retrieve(self, user):
         test(
-            self, user, "retrieve", "get", reverse("ohq:event-detail", args=[self.event.id]),
+            self,
+            user,
+            "retrieve",
+            "get",
+            reverse("ohq:event-detail", args=[self.event.id]),
         )
 
     @parameterized.expand(users, name_func=get_test_name)
