@@ -225,7 +225,11 @@ class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
             )
             .annotate(
                 position=Case(
-                    When(status=Question.STATUS_ASKED, then=Subquery(position[:1]),), default=-1,
+                    When(
+                        status=Question.STATUS_ASKED,
+                        then=Subquery(position[:1]),
+                    ),
+                    default=-1,
                 )
             )
             .order_by("time_asked")
@@ -425,7 +429,9 @@ class QueueViewSet(viewsets.ModelViewSet):
             )
             .order_by()
             .values("course")
-            .annotate(count=Count("*", output_field=FloatField()),)
+            .annotate(
+                count=Count("*", output_field=FloatField()),
+            )
             .values("count")
         )
 

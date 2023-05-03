@@ -31,22 +31,34 @@ class generateWaitTimesTestCase(TestCase):
 
         self.now = timezone.now()
         q1 = Question.objects.create(
-            queue=self.open_queue, asked_by=self.student, text="Q1", time_response_started=self.now,
+            queue=self.open_queue,
+            asked_by=self.student,
+            text="Q1",
+            time_response_started=self.now,
         )
         q1.time_asked = self.now - timedelta(minutes=3)
         q1.save()
         q2 = Question.objects.create(
-            queue=self.open_queue, asked_by=self.student, text="Q2", time_response_started=self.now,
+            queue=self.open_queue,
+            asked_by=self.student,
+            text="Q2",
+            time_response_started=self.now,
         )
         q2.time_asked = self.now - timedelta(minutes=3)
         q2.save()
         q3 = Question.objects.create(
-            queue=self.open_queue, asked_by=self.student, text="Q3", time_response_started=self.now,
+            queue=self.open_queue,
+            asked_by=self.student,
+            text="Q3",
+            time_response_started=self.now,
         )
         q3.time_asked = self.now - timedelta(minutes=4)
         q3.save()
         q4 = Question.objects.create(
-            queue=self.open_queue, asked_by=self.student, text="Q4", time_response_started=self.now,
+            queue=self.open_queue,
+            asked_by=self.student,
+            text="Q4",
+            time_response_started=self.now,
         )
         q4.time_asked = self.now - timedelta(minutes=6)
         q4.save()
