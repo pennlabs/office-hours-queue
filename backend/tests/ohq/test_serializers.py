@@ -53,7 +53,8 @@ class UserPrivateSerializerTestCase(TestCase):
         self.serializer.update(self.user, {"profile": {"phone_number": "+15555555555"}})
         with self.assertRaises(serializers.ValidationError):
             self.serializer.update(
-                self.user, {"profile": {"sms_verification_code": "ABC123"}},
+                self.user,
+                {"profile": {"sms_verification_code": "ABC123"}},
             )
 
     def test_verify_phone_number_time_expired(self):

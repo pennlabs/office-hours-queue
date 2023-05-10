@@ -17,7 +17,9 @@ class Command(BaseCommand):
         parser.add_argument("year", type=int)
         parser.add_argument("--emails", nargs="+", type=str)
         parser.add_argument(
-            "--roles", nargs="+", choices=[Membership.KIND_PROFESSOR, Membership.KIND_HEAD_TA],
+            "--roles",
+            nargs="+",
+            choices=[Membership.KIND_PROFESSOR, Membership.KIND_HEAD_TA],
         )
 
     def handle(self, *args, **kwargs):
