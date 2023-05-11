@@ -713,7 +713,11 @@ class QuestionSearchTestCase(TestCase):
     @parameterized.expand(users, name_func=get_test_name)
     def test_list(self, user):
         test(
-            self, user, "list", "get", reverse("ohq:questionsearch", args=[self.course.id]),
+            self,
+            user,
+            "list",
+            "get",
+            reverse("ohq:questionsearch", args=[self.course.id]),
         )
 
 
@@ -977,7 +981,11 @@ class CourseStatisticTestCase(TestCase):
     @parameterized.expand(users, name_func=get_test_name)
     def test_list(self, user):
         test(
-            self, user, "list", "get", reverse("ohq:course-statistic", args=[self.course.id]),
+            self,
+            user,
+            "list",
+            "get",
+            reverse("ohq:course-statistic", args=[self.course.id]),
         )
 
 
@@ -1196,7 +1204,11 @@ class EventTestCase(TestCase):
     @parameterized.expand(users, name_func=get_test_name)
     def test_retrieve(self, user):
         test(
-            self, user, "retrieve", "get", reverse("ohq:event-detail", args=[self.event.id]),
+            self,
+            user,
+            "retrieve",
+            "get",
+            reverse("ohq:event-detail", args=[self.event.id]),
         )
 
     @parameterized.expand(users, name_func=get_test_name)
