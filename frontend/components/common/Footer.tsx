@@ -37,10 +37,7 @@ export default function Footer({ showFeedback }: FooterProps) {
                 >
                     Friends
                 </span>{" "}
-                |{" "}
-                <Link href="/changelog">
-                    <a>Changelog</a>
-                </Link>
+                | <Link href="/changelog">Changelog</Link>
                 {showFeedback && (
                     <div role="button" style={{ marginTop: "8px" }}>
                         <Feedback />

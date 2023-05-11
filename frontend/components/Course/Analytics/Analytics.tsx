@@ -43,9 +43,7 @@ const Analytics = ({ course, queues }: AnalyticsProps) => {
                 ) : (
                     <Segment basic>
                         You have no queues. Create a queue on the{" "}
-                        <Link href={`/courses/${course.id}`}>
-                            <a>queue page</a>
-                        </Link>{" "}
+                        <Link href={`/courses/${course.id}`}>queue page</Link>{" "}
                         to see analytics.
                     </Segment>
                 )}
