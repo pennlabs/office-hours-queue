@@ -43,10 +43,10 @@ const Queue = (props: QueueProps) => {
     );
     const isMobile = useMediaQuery(`(max-width: ${MOBILE_BP})`);
 
-    const stringify = JSON.stringify(questions);
+    const stringified = JSON.stringify(questions);
     useEffect(() => {
         mutateQuestions();
-    }, [stringify]);
+    }, [stringified]);
 
     const filteredQuestions = useMemo(
         () =>
@@ -57,7 +57,7 @@ const Queue = (props: QueueProps) => {
                     q.tags.find((t) => filteredTags.includes(t.name)) !==
                         undefined
             ),
-        [filteredTags, stringify]
+        [filteredTags, stringified]
     );
 
     const [clearModalOpen, setClearModalOpen] = useState(false);
