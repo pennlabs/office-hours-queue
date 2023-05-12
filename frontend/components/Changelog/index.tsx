@@ -72,11 +72,9 @@ export default function Changelog() {
                                 padding: "1em",
                             }}
                         >
-                            <>
-                                {ReactHtmlParser(
-                                    processor.processSync(part.content)
-                                )}
-                            </>
+                            {ReactHtmlParser(
+                                processor.processSync(part.content)
+                            )}
                         </div>
                     ))}
                 </>
@@ -94,11 +92,9 @@ export default function Changelog() {
                                         padding: "1em",
                                     }}
                                 >
-                                    <>
-                                        {ReactHtmlParser(
-                                            processor.processSync(part.content)
-                                        )}
-                                    </>
+                                    {ReactHtmlParser(
+                                        processor.processSync(part.content)
+                                    )}
                                 </div>
                             )
                     )}

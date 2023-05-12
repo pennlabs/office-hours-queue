@@ -43,9 +43,10 @@ const Queue = (props: QueueProps) => {
     );
     const isMobile = useMediaQuery(`(max-width: ${MOBILE_BP})`);
 
+    const stringify = JSON.stringify(questions);
     useEffect(() => {
         mutateQuestions();
-    }, [JSON.stringify(questions)]);
+    }, [stringify, mutateQuestions]);
 
     const filteredQuestions = useMemo(
         () =>
@@ -56,7 +57,7 @@ const Queue = (props: QueueProps) => {
                     q.tags.find((t) => filteredTags.includes(t.name)) !==
                         undefined
             ),
-        [filteredTags, JSON.stringify(questions)]
+        [filteredTags, stringify]
     );
 
     const [clearModalOpen, setClearModalOpen] = useState(false);
@@ -82,177 +83,171 @@ const Queue = (props: QueueProps) => {
     };
 
     return queue && questions ? (
-        <>
-            <Grid>
-                <Grid.Row>
-                    <Grid.Column>
-                        <ClearQueueModal
-                            courseId={courseId}
-                            queueId={queueId}
-                            open={clearModalOpen}
-                            queue={queue}
-                            mutate={mutateQuestions}
-                            closeFunc={() => setClearModalOpen(false)}
-                        />
-                        <div
+        <Grid>
+            <Grid.Row>
+                <Grid.Column>
+                    <ClearQueueModal
+                        courseId={courseId}
+                        queueId={queueId}
+                        open={clearModalOpen}
+                        queue={queue}
+                        mutate={mutateQuestions}
+                        closeFunc={() => setClearModalOpen(false)}
+                    />
+                    <div
+                        style={{
+                            display: "flex",
+                            flexWrap: isMobile ? "wrap" : "nowrap",
+                            justifyContent: "space-between",
+                        }}
+                    >
+                        <Header
+                            as="h3"
                             style={{
-                                display: "flex",
-                                flexWrap: isMobile ? "wrap" : "nowrap",
-                                justifyContent: "space-between",
+                                marginBottom: "0rem",
+                                whiteSpace: "break-spaces",
+                                wordBreak: "break-word",
                             }}
                         >
-                            <Header
-                                as="h3"
-                                style={{
-                                    marginBottom: "0rem",
-                                    whiteSpace: "break-spaces",
-                                    wordBreak: "break-word",
-                                }}
-                            >
-                                {queue.name}
-                                <Header.Subheader>
-                                    {queue.description}
-                                </Header.Subheader>
-                            </Header>
-                            {queue.pinEnabled && active && (
-                                <QueuePin
-                                    courseId={courseId}
-                                    queue={queue}
-                                    mutate={mutate}
-                                />
-                            )}
-                        </div>
+                            {queue.name}
+                            <Header.Subheader>
+                                {queue.description}
+                            </Header.Subheader>
+                        </Header>
+                        {queue.pinEnabled && active && (
+                            <QueuePin
+                                courseId={courseId}
+                                queue={queue}
+                                mutate={mutate}
+                            />
+                        )}
+                    </div>
+                </Grid.Column>
+            </Grid.Row>
+            <Grid.Row columns="equal">
+                <Grid.Column>
+                    {questions.length !== 0 && (
+                        <Label
+                            content={`${questions.length} user${
+                                questions.length === 1 ? "" : "s"
+                            }`}
+                            color="blue"
+                            icon="user"
+                        />
+                    )}
+                    {/* TODO: make these checks more smart (users in queue) like student view */}
+                    {estimatedWaitTime !== -1 && (
+                        <Label
+                            content={`${estimatedWaitTime} minute wait`}
+                            color="blue"
+                            icon="clock"
+                        />
+                    )}
+                    {queue.active && (
+                        <Label
+                            content={`${queue.staffActive || 0} staff active`}
+                            icon={<Icon name="sync" loading={true} />}
+                        />
+                    )}
+                </Grid.Column>
+                <Grid.Column textAlign="right" floated="right">
+                    {leader && (
+                        <Button
+                            size="mini"
+                            content="Edit"
+                            icon="cog"
+                            onClick={editFunc}
+                        />
+                    )}
+                    <Button
+                        size="mini"
+                        content="Close"
+                        color={active ? "red" : undefined}
+                        disabled={!active}
+                        loading={false}
+                        onClick={onClose}
+                    />
+                    <Button
+                        size="mini"
+                        content="Open"
+                        color={active ? undefined : "green"}
+                        disabled={active}
+                        loading={false}
+                        onClick={onOpen}
+                    />
+                </Grid.Column>
+            </Grid.Row>
+            {queue.rateLimitEnabled && (
+                <Grid.Row>
+                    <Grid.Column>
+                        <Message>
+                            <Message.Header>
+                                A rate-limiting quota is set on this queue.
+                            </Message.Header>
+                            <p>
+                                {`A quota of ${queue.rateLimitQuestions} question(s) per ${queue.rateLimitMinutes} minutes(s) ` +
+                                    `per student is enforced when there are at least ${queue.rateLimitLength} student(s) in the queue.`}
+                            </p>
+                        </Message>
                     </Grid.Column>
                 </Grid.Row>
+            )}
+            {queue.questionsAsked >= 6 && !queue.rateLimitEnabled && (
+                <Grid.Row>
+                    <Grid.Column>
+                        <Message color="red">
+                            <Message.Header>Too much traffic?</Message.Header>
+                            Ask your Head TA or professor to turn on
+                            rate-limiting quotas for this queue!
+                        </Message>
+                    </Grid.Column>
+                </Grid.Row>
+            )}
+            <Grid.Row>
+                <Grid.Column>
+                    <Select
+                        id="tags-filter-select"
+                        name="tags-filter-select"
+                        isMulti
+                        options={tags.map((t) => ({
+                            label: t.name,
+                            value: t.name,
+                        }))}
+                        placeholder="Filter question by tags"
+                        onChange={handleTagChange}
+                        value={filteredTags.map((t) => ({
+                            label: t,
+                            value: t,
+                        }))}
+                    />
+                </Grid.Column>
+            </Grid.Row>
+            {!active && questions.length > 0 && (
                 <Grid.Row columns="equal">
-                    <Grid.Column>
-                        {questions.length !== 0 && (
-                            <Label
-                                content={`${questions.length} user${
-                                    questions.length === 1 ? "" : "s"
-                                }`}
-                                color="blue"
-                                icon="user"
-                            />
-                        )}
-                        {/* TODO: make these checks more smart (users in queue) like student view */}
-                        {estimatedWaitTime !== -1 && (
-                            <Label
-                                content={`${estimatedWaitTime} minute wait`}
-                                color="blue"
-                                icon="clock"
-                            />
-                        )}
-                        {queue.active && (
-                            <Label
-                                content={`${
-                                    queue.staffActive || 0
-                                } staff active`}
-                                icon={<Icon name="sync" loading={true} />}
-                            />
-                        )}
-                    </Grid.Column>
                     <Grid.Column textAlign="right" floated="right">
-                        {leader && (
-                            <Button
-                                size="mini"
-                                content="Edit"
-                                icon="cog"
-                                onClick={editFunc}
-                            />
-                        )}
                         <Button
-                            size="mini"
-                            content="Close"
-                            color={active ? "red" : undefined}
-                            disabled={!active}
-                            loading={false}
-                            onClick={onClose}
-                        />
-                        <Button
-                            size="mini"
-                            content="Open"
-                            color={active ? undefined : "green"}
-                            disabled={active}
-                            loading={false}
-                            onClick={onOpen}
+                            content="Clear Queue"
+                            fluid
+                            size="medium"
+                            basic
+                            color="red"
+                            onClick={() => setClearModalOpen(true)}
                         />
                     </Grid.Column>
                 </Grid.Row>
-                {queue.rateLimitEnabled && (
-                    <Grid.Row>
-                        <Grid.Column>
-                            <Message>
-                                <Message.Header>
-                                    A rate-limiting quota is set on this queue.
-                                </Message.Header>
-                                <p>
-                                    {`A quota of ${queue.rateLimitQuestions} question(s) per ${queue.rateLimitMinutes} minutes(s) ` +
-                                        `per student is enforced when there are at least ${queue.rateLimitLength} student(s) in the queue.`}
-                                </p>
-                            </Message>
-                        </Grid.Column>
-                    </Grid.Row>
-                )}
-                {queue.questionsAsked >= 6 && !queue.rateLimitEnabled && (
-                    <Grid.Row>
-                        <Grid.Column>
-                            <Message color="red">
-                                <Message.Header>
-                                    Too much traffic?
-                                </Message.Header>
-                                Ask your Head TA or professor to turn on
-                                rate-limiting quotas for this queue!
-                            </Message>
-                        </Grid.Column>
-                    </Grid.Row>
-                )}
-                <Grid.Row>
-                    <Grid.Column>
-                        <Select
-                            id="tags-filter-select"
-                            name="tags-filter-select"
-                            isMulti
-                            options={tags.map((t) => ({
-                                label: t.name,
-                                value: t.name,
-                            }))}
-                            placeholder="Filter question by tags"
-                            onChange={handleTagChange}
-                            value={filteredTags.map((t) => ({
-                                label: t,
-                                value: t,
-                            }))}
-                        />
-                    </Grid.Column>
-                </Grid.Row>
-                {!active && questions.length > 0 && (
-                    <Grid.Row columns="equal">
-                        <Grid.Column textAlign="right" floated="right">
-                            <Button
-                                content="Clear Queue"
-                                fluid
-                                size="medium"
-                                basic
-                                color="red"
-                                onClick={() => setClearModalOpen(true)}
-                            />
-                        </Grid.Column>
-                    </Grid.Row>
-                )}
-                <Grid.Row>
-                    <Grid.Column>
-                        <Questions
-                            questions={filteredQuestions}
-                            mutate={mutateQuestions}
-                            active={active}
-                            notifs={notifs}
-                            setNotifs={setNotifs}
-                        />
-                    </Grid.Column>
-                </Grid.Row>
-            </Grid>
-        </>
+            )}
+            <Grid.Row>
+                <Grid.Column>
+                    <Questions
+                        questions={filteredQuestions}
+                        mutate={mutateQuestions}
+                        active={active}
+                        notifs={notifs}
+                        setNotifs={setNotifs}
+                    />
+                </Grid.Column>
+            </Grid.Row>
+        </Grid>
     ) : null;
 };
 

@@ -24,31 +24,29 @@ const Analytics = ({ course, queues }: AnalyticsProps) => {
     });
 
     return (
-        <>
-            <Grid.Row>
-                {queueId ? (
-                    <>
-                        <Dropdown
-                            as="h3"
-                            inline
-                            options={queueOptions}
-                            defaultValue={queueId}
-                            onChange={(e, { value }) => {
-                                setQueueId(value as number);
-                            }}
-                        />
-                        <SummaryCards courseId={course.id} queueId={queueId} />
-                        <Averages courseId={course.id} queueId={queueId} />
-                    </>
-                ) : (
-                    <Segment basic>
-                        You have no queues. Create a queue on the{" "}
-                        <Link href={`/courses/${course.id}`}>queue page</Link>{" "}
-                        to see analytics.
-                    </Segment>
-                )}
-            </Grid.Row>
-        </>
+        <Grid.Row>
+            {queueId ? (
+                <>
+                    <Dropdown
+                        as="h3"
+                        inline
+                        options={queueOptions}
+                        defaultValue={queueId}
+                        onChange={(e, { value }) => {
+                            setQueueId(value as number);
+                        }}
+                    />
+                    <SummaryCards courseId={course.id} queueId={queueId} />
+                    <Averages courseId={course.id} queueId={queueId} />
+                </>
+            ) : (
+                <Segment basic>
+                    You have no queues. Create a queue on the{" "}
+                    <Link href={`/courses/${course.id}`}>queue page</Link> to
+                    see analytics.
+                </Segment>
+            )}
+        </Grid.Row>
     );
 };
 

@@ -23,8 +23,6 @@ const QuestionNotifier = ({
 }: {
     question: Question;
     play: NotificationProps;
-    courseId: number;
-    queue: Queue;
 }) => {
     useEffect(() => {
         if (
@@ -45,14 +43,8 @@ const QuestionNotifier = ({
 };
 
 export const QueueMenuItem = (props: QueueMenuItemProps) => {
-    const {
-        queue,
-        courseId,
-        initialQuestions,
-        active,
-        setActiveQueue,
-        play,
-    } = props;
+    const { queue, courseId, initialQuestions, active, setActiveQueue, play } =
+        props;
 
     const { data: questions } = useQuestions(
         courseId,
@@ -82,13 +74,7 @@ export const QueueMenuItem = (props: QueueMenuItemProps) => {
                 {queue.name}
             </Menu.Item>
             {questions!.map((q) => (
-                <QuestionNotifier
-                    question={q}
-                    play={play}
-                    courseId={courseId}
-                    queue={queue}
-                    key={q.id}
-                />
+                <QuestionNotifier question={q} play={play} key={q.id} />
             ))}
         </>
     );

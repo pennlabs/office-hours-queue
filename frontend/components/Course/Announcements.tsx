@@ -177,75 +177,71 @@ const AnnouncementMessage = ({
 }) => {
     const isMobile = useMediaQuery(`(max-width: ${MOBILE_BP})`);
     return (
-        <>
-            <Message icon>
-                {staff && (
-                    <Dropdown
-                        icon={
-                            <Icon
-                                name="ellipsis vertical"
-                                style={{
-                                    width: "auto",
-                                    margin: "0",
-                                    paddingLeft: "4px",
-                                }}
-                            />
-                        }
-                        direction="left"
-                        style={{
-                            position: "absolute",
-                            right: "1rem",
-                            top: "1rem",
-                        }}
-                    >
-                        <Dropdown.Menu>
-                            <Dropdown.Item
-                                onClick={() => {
-                                    setEditState({
-                                        isOpen: true,
-                                        announcement,
-                                    });
-                                }}
-                            >
-                                <Icon name="edit outline" />
-                                Edit
-                            </Dropdown.Item>
-                            <Dropdown.Item
-                                onClick={() =>
-                                    setDeleteState({
-                                        isOpen: true,
-                                        announcement,
-                                    })
-                                }
-                            >
-                                <Icon name="trash alternate" />
-                                Delete
-                            </Dropdown.Item>
-                        </Dropdown.Menu>
-                    </Dropdown>
-                )}
-                {!isMobile && <Icon name="comment alternate outline" />}
-                <Message.Content style={{ paddingBottom: "1rem" }}>
-                    <Message.Header>{`From ${announcement.author.firstName}`}</Message.Header>
-                    <p
-                        style={{
-                            whiteSpace: "break-spaces",
-                            wordBreak: "break-word",
-                            marginBottom: "0px",
-                        }}
-                    >
-                        <LinkedText text={announcement.content} />
-                    </p>
-                    <br />
-                    <p style={{ color: "#666666", marginTop: "0px" }}>
-                        Posted{" "}
-                        {new Date(announcement.timeUpdated).toLocaleString(
-                            "en-us"
-                        )}
-                    </p>
-                </Message.Content>
-            </Message>
-        </>
+        <Message icon>
+            {staff && (
+                <Dropdown
+                    icon={
+                        <Icon
+                            name="ellipsis vertical"
+                            style={{
+                                width: "auto",
+                                margin: "0",
+                                paddingLeft: "4px",
+                            }}
+                        />
+                    }
+                    direction="left"
+                    style={{
+                        position: "absolute",
+                        right: "1rem",
+                        top: "1rem",
+                    }}
+                >
+                    <Dropdown.Menu>
+                        <Dropdown.Item
+                            onClick={() => {
+                                setEditState({
+                                    isOpen: true,
+                                    announcement,
+                                });
+                            }}
+                        >
+                            <Icon name="edit outline" />
+                            Edit
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                            onClick={() =>
+                                setDeleteState({
+                                    isOpen: true,
+                                    announcement,
+                                })
+                            }
+                        >
+                            <Icon name="trash alternate" />
+                            Delete
+                        </Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
+            )}
+            {!isMobile && <Icon name="comment alternate outline" />}
+            <Message.Content style={{ paddingBottom: "1rem" }}>
+                <Message.Header>{`From ${announcement.author.firstName}`}</Message.Header>
+                <p
+                    style={{
+                        whiteSpace: "break-spaces",
+                        wordBreak: "break-word",
+                        marginBottom: "0px",
+                    }}
+                >
+                    <LinkedText text={announcement.content} />
+                </p>
+                <br />
+                <p style={{ color: "#666666", marginTop: "0px" }}>
+                    Posted{" "}
+                    {new Date(announcement.timeUpdated).toLocaleString("en-us")}
+                </p>
+            </Message.Content>
+        </Message>
     );
 };
 

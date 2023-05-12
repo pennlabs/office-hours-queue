@@ -20,10 +20,8 @@ export default function SummaryCards({ courseId, queueId }: SummaryCardsProps) {
         };
     });
 
-    const {
-        data: numAnsweredData,
-        isValidating: numAnsweredValidating,
-    } = useStatistic(courseId, queueId, Metric.NUM_ANSWERED, timeRange);
+    const { data: numAnsweredData, isValidating: numAnsweredValidating } =
+        useStatistic(courseId, queueId, Metric.NUM_ANSWERED, timeRange);
 
     const { data: avgWaitData, isValidating: avgWaitValidating } = useStatistic(
         courseId,
@@ -37,10 +35,8 @@ export default function SummaryCards({ courseId, queueId }: SummaryCardsProps) {
         // isValidating: studentsHelpedValidating,
     } = useStatistic(courseId, queueId, Metric.STUDENTS_HELPED, timeRange);
 
-    const {
-        data: avgTimeHelpingData,
-        isValidating: avgTimeHelpingValidating,
-    } = useStatistic(courseId, queueId, Metric.AVG_TIME_HELPING, timeRange);
+    const { data: avgTimeHelpingData, isValidating: avgTimeHelpingValidating } =
+        useStatistic(courseId, queueId, Metric.AVG_TIME_HELPING, timeRange);
 
     const sum = (data) => {
         return data.reduce((prev, cur) => prev + parseInt(cur.value, 10), 0);

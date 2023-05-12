@@ -169,9 +169,7 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                 )}
             </Grid.Column>
         </Grid.Row>
-    ) : (
-        <></>
-    );
+    ) : null;
 };
 
 export default CourseWrapper;

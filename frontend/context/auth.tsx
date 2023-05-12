@@ -19,9 +19,12 @@ export function withAuth<T>(
 ): GIPPage<T & AuthProps> {
     const AuthedComponent = ({ user, ...props }: T & AuthProps) => {
         return (
+            // eslint-disable-next-line react/jsx-no-constructed-context-values
             <AuthUserContext.Provider value={{ user }}>
-                {/* eslint-disable-next-line */}
+                {/* eslint-disable */}
+                {/* @ts-ignore */}
                 <WrappedComponent {...(props as T)} />
+                {/* eslint-enable */}
             </AuthUserContext.Provider>
         );
     };

@@ -1,7 +1,7 @@
 {
     "parser": "@typescript-eslint/parser",
     "plugins": ["prettier"],
-    "extends": ["airbnb", "react-app", "prettier", "prettier/react"],
+    "extends": ["airbnb", "react-app", "prettier"],
     "env": {
         "browser": true
     },
@@ -9,24 +9,33 @@
         "prettier/prettier": "error",
         "import/extensions": 0,
         "quotes": ["error", "double", "avoid-escape"],
-        "no-unused-vars": [
-            "error",
-            {
-                "args": "none"
-            }
-        ],
+//        "no-unused-vars": [
+//            "error",
+//            {
+//                "args": "none"
+//            }
+//        ],
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": "error",
+        "no-shadow": "off",
+        "@typescript-eslint/no-shadow": "error",
         "import/prefer-default-export": 0,
         "react/jsx-filename-extension": 0,
         "react/prop-types": 0,
         "react/react-in-jsx-scope": 0,
         "jsx-a11y/click-events-have-key-events": 0,
         "jsx-a11y/interactive-supports-focus": 0,
+        "jsx-a11y/accessible-emoji": 0,
+        "jsx-ally/anchor-is-valid": 0,
         "react/require-default-props": 0,
         "react/jsx-boolean-value": 0,
+        "react/destructuring-assignment": 0,
+        "react/function-component-definition": 0,
         "no-bitwise": "off",
         "no-await-in-loop": "warn",
         "no-else-return": 0,
         "global-require": 0,
+        "arrow-body-style": "off",
         "jsx-a11y/label-has-associated-control": [
             "error",
             {

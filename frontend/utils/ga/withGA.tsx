@@ -14,8 +14,10 @@ export default function withGA<T>(WrappedComponent: NextPage<T>) {
             }
             logPageView();
         }, []);
-        // eslint-disable-next-line
+        /* eslint-disable */
+        // @ts-ignore
         return <WrappedComponent {...props} />;
+        /* eslint-enable */
     };
 
     return GAComponent;

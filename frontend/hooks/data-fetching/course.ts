@@ -80,12 +80,10 @@ export function useStaff(courseId: number, initialUser: User) {
 }
 
 export function useLeadership(courseId: number, initialData: Membership[]) {
-    const {
-        data,
-        error,
-        isValidating,
-        mutate,
-    } = useResource(`/api/courses/${courseId}/members/`, { initialData });
+    const { data, error, isValidating, mutate } = useResource(
+        `/api/courses/${courseId}/members/`,
+        { initialData }
+    );
     const leadership: Membership[] = (data || []).filter((mem) =>
         isLeadershipRole(mem.kind)
     );
@@ -167,7 +165,7 @@ export const useQueueQuota = (courseId: number, queueId: number) => {
     // this revalidates the last question query whenever there is a websocket update
     useEffect(() => {
         mutate(undefined, { sendRequest: false });
-    }, [stringified]);
+    }, [stringified, mutate]);
 
     return { data };
 };
@@ -236,7 +234,7 @@ export const useLastQuestions = (courseId: number, queueId: number) => {
     // this revalidates the last question query whenever there is a websocket update
     useEffect(() => {
         mutate(-1, null);
-    }, [stringified]);
+    }, [stringified, mutate]);
 
     return { data, error, isValidating, mutate };
 };
