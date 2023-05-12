@@ -76,6 +76,7 @@ const MessageQuota = ({
 };
 
 const QuestionFormGuard: React.FunctionComponent<{
+    children: any;
     courseId: number;
     queueId: number;
 }> = ({ children, courseId, queueId }) => {
