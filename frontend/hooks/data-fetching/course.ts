@@ -165,7 +165,7 @@ export const useQueueQuota = (courseId: number, queueId: number) => {
     // this revalidates the last question query whenever there is a websocket update
     useEffect(() => {
         mutate(undefined, { sendRequest: false });
-    }, [stringified, mutate]);
+    }, [stringified]);
 
     return { data };
 };
@@ -234,7 +234,7 @@ export const useLastQuestions = (courseId: number, queueId: number) => {
     // this revalidates the last question query whenever there is a websocket update
     useEffect(() => {
         mutate(-1, null);
-    }, [stringified, mutate]);
+    }, [stringified]);
 
     return { data, error, isValidating, mutate };
 };

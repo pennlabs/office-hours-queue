@@ -46,7 +46,7 @@ const Queue = (props: QueueProps) => {
     const stringify = JSON.stringify(questions);
     useEffect(() => {
         mutateQuestions();
-    }, [stringify, mutateQuestions]);
+    }, [stringify]);
 
     const filteredQuestions = useMemo(
         () =>
