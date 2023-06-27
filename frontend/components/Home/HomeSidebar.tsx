@@ -19,7 +19,7 @@ const Sidebar = () => {
     return (
         <Grid.Column width={3}>
             <Segment basic>
-                <Link href="/" as="/">
+                <Link href="/" as="/" legacyBehavior>
                     <Image
                         src="../../../ohq.png"
                         size="tiny"
@@ -27,7 +27,7 @@ const Sidebar = () => {
                     />
                 </Link>
                 <Menu vertical secondary fluid>
-                    <Link href="/" as="/">
+                    <Link href="/" as="/" legacyBehavior>
                         <Menu.Item
                             style={{
                                 whiteSpace: "nowrap",
@@ -40,7 +40,7 @@ const Sidebar = () => {
                             color="blue"
                         />
                     </Link>
-                    <Link href="/settings" as="/settings">
+                    <Link href="/settings" as="/settings" legacyBehavior>
                         <Menu.Item
                             style={{
                                 whiteSpace: "nowrap",
@@ -53,7 +53,7 @@ const Sidebar = () => {
                             color="blue"
                         />
                     </Link>
-                    <Link href="/faq" as="/faq">
+                    <Link href="/faq" as="/faq" legacyBehavior>
                         <Menu.Item
                             style={{
                                 whiteSpace: "nowrap",

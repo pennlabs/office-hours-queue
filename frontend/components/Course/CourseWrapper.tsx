@@ -1,4 +1,4 @@
-import { useContext, MutableRefObject } from "react";
+import { useContext, useState, useEffect, MutableRefObject } from "react";
 import { Grid, Segment, Header, Icon, Popup } from "semantic-ui-react";
 import { useMediaQuery } from "@material-ui/core";
 import CourseSidebar from "./CourseSidebarNav";
@@ -42,6 +42,8 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
     const [notifs, setNotifs, play] = usePlayer(
         isAprilFirst ? aolAudio : bellAudio
     );
+    const [supportsNotifs, setSupportsNotifs] = useState(false);
+    useEffect(() => setSupportsNotifs(browserSupportsNotifications()), []);
 
     const toggleNotifs = () => {
         setNotifs(!notifs);
@@ -79,7 +81,7 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                             </Segment>
                         </Grid.Column>
 
-                        {browserSupportsNotifications() && (
+                        {supportsNotifs && (
                             <Grid.Column>
                                 <Segment basic>
                                     <div
@@ -167,9 +169,7 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
                 )}
             </Grid.Column>
         </Grid.Row>
-    ) : (
-        <></>
-    );
+    ) : null;
 };
 
 export default CourseWrapper;

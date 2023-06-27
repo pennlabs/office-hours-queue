@@ -29,14 +29,8 @@ interface QueuePageProps extends CoursePageProps {
 }
 
 const QueuePage = (props: QueuePageProps) => {
-    const {
-        course,
-        leadership,
-        queues,
-        questionmap,
-        tags,
-        announcements,
-    } = props;
+    const { course, leadership, queues, questionmap, tags, announcements } =
+        props;
     return (
         <WebsocketProvider
             url="/api/ws/subscribe/"
