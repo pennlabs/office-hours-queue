@@ -26,6 +26,8 @@ export const SPRING_2023_TRANSITION_MESSAGE_TOKEN =
     "__spring_2023_transition_message_shown";
 export const SUMMER_2023_TRANSITION_MESSAGE_TOKEN =
     "__summer_2023_transition_message_shown";
+export const FALL_2023_TRANSITION_MESSAGE_TOKEN =
+    "__fall_2023_transition_message_shown";
 export const CHANGELOG_TOKEN = "__changelog";
 
 export const MOBILE_BP = "766px";
