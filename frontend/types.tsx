@@ -200,20 +200,20 @@ export type NotificationProps = MutableRefObject<(string) => void>;
 
 export interface PartialEvent {
     title: string;
-    courseId: number;
+    course_id: number;
     description: string | null;
     start: string;
     end: string;
-    endRecurringPeriod: string | null;
+    end_recurring_period: string | null;
 }
 
 export interface CalendarEvent {
     title: string;
-    courseId: number;
+    course_id: number;
     description: string | null;
     start: Date;
     end: Date;
-    endRecurringPeriod: string | null;
+    end_recurring_period: string | null;
 }
 
 export interface Event extends PartialEvent {

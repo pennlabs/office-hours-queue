@@ -25,7 +25,7 @@ interface EditEventProps {
     event: Event;
 }
 const EditEventModal = ({ setModalState, mutate, event }: EditEventProps) => {
-    const { title, description, courseId } = event;
+    const { title, description, course_id } = event;
     const [inputTitle, setTitle] = useState(title);
     const [inputDescription, setDescription] = useState(description || "");
 
@@ -37,8 +37,8 @@ const EditEventModal = ({ setModalState, mutate, event }: EditEventProps) => {
             start: event.start,
             end: event.end,
             description: inputDescription,
-            courseId,
-            endRecurringPeriod: event.endRecurringPeriod,
+            course_id,
+            end_recurring_period: event.end_recurring_period,
         };
         mutate(event.id, newEvent);
 
@@ -158,8 +158,8 @@ const NewEventModal = ({
             start: startDate.toISOString(),
             end: endDate.toISOString(),
             description,
-            courseId,
-            endRecurringPeriod: null,
+            course_id: courseId,
+            end_recurring_period: null,
         };
         await createEvent(newEvent);
         mutate(undefined, undefined, { sendRequest: false });
@@ -240,12 +240,12 @@ const NewEventModal = ({
     );
 };
 
-type CaledarProps = {
+type CalendarProps = {
     courseId: number;
     events: Event[];
     mutate: mutateResourceListFunction<Event>;
 };
-export default function Calender(props: CaledarProps) {
+export default function Calender(props: CalendarProps) {
     const { courseId, events, mutate } = props;
     const [editEvent, setEditEvent] = useState<Event | null>(null);
 
