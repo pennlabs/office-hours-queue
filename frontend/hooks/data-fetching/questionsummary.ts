@@ -62,16 +62,11 @@ export const useQuestions = (
 ): QuestionsFilterResponse => {
     const baseUrl = `/api/courses/${courseId}/questions/`;
 
-    const {
-        data,
-        error,
-        isValidating,
-        filters,
-        updateFilter,
-    } = useFilteredResource(baseUrl, summaryFilterToQuery, initialQuestions, {
-        page: 1,
-        orderBy: SummaryOrderBy.TimeAskedDesc,
-    });
+    const { data, error, isValidating, filters, updateFilter } =
+        useFilteredResource(baseUrl, summaryFilterToQuery, initialQuestions, {
+            page: 1,
+            orderBy: SummaryOrderBy.TimeAskedDesc,
+        });
 
     const filterCopy = { ...filters };
     delete filterCopy.page;

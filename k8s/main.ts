@@ -17,7 +17,7 @@ export class MyChart extends PennLabsChart {
       deployment: {
         image: backendImage,
         cmd: ['/usr/local/bin/asgi-run'],
-        replicas: 6,
+        replicas: 1,
         secret,
         env: [
           { name: 'REDIS_URL', value: 'redis://office-hours-queue-redis:6379' },
@@ -30,7 +30,7 @@ export class MyChart extends PennLabsChart {
     new DjangoApplication(this, 'django-wsgi', {
       deployment: {
         image: backendImage,
-        replicas: 8,
+        replicas: 1,
         secret,
         env: [
           { name: 'REDIS_URL', value: 'redis://office-hours-queue-redis:6379' },
@@ -43,10 +43,10 @@ export class MyChart extends PennLabsChart {
     new ReactApplication(this, 'react', {
       deployment: {
         image: frontendImage,
-        replicas: 2,
+        replicas: 1,
       },
       domain: { host: domain, paths: ['/'] },
-      portEnv: '80',
+      port: 80,
     });
 
     new RedisApplication(this, 'redis', {});
@@ -93,6 +93,6 @@ export class MyChart extends PennLabsChart {
   }
 }
 
-const app = new App();
+const app = new App({recordConstructMetadata: false});
 new MyChart(app);
 app.synth();

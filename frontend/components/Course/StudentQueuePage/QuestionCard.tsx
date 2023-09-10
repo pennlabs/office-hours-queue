@@ -210,21 +210,17 @@ const QuestionCard = (props: QuestionCardProps) => {
                     </Grid.Row>
                 </Grid>
                 {question.note && !question.resolvedNote && (
-                    <>
-                        <Message info>
-                            <Message.Header style={{ fontSize: "1rem" }}>
-                                An instructor has messaged you, please update
-                                your question:
-                            </Message.Header>
-                            <Message.Content
-                                style={{ overflowWrap: "anywhere" }}
-                            >
-                                <p>
-                                    <LinkedText text={question.note} />
-                                </p>
-                            </Message.Content>
-                        </Message>
-                    </>
+                    <Message info>
+                        <Message.Header style={{ fontSize: "1rem" }}>
+                            An instructor has messaged you, please update your
+                            your question:
+                        </Message.Header>
+                        <Message.Content style={{ overflowWrap: "anywhere" }}>
+                            <p>
+                                <LinkedText text={question.note} />
+                            </p>
+                        </Message.Content>
+                    </Message>
                 )}
             </Segment>
         </div>

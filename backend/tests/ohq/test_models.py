@@ -198,7 +198,8 @@ class CourseStatisticTestCase(TestCase):
         )
 
         self.assertEqual(
-            self.student_time_being_helped.metric_to_pretty(), "Student: Time being helped",
+            self.student_time_being_helped.metric_to_pretty(),
+            "Student: Time being helped",
         )
 
         self.assertEqual(

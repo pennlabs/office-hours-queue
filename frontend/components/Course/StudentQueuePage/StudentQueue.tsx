@@ -76,10 +76,12 @@ const MessageQuota = ({
 };
 
 const QuestionFormGuard: React.FunctionComponent<{
+    children: any;
     courseId: number;
     queueId: number;
 }> = ({ children, courseId, queueId }) => {
     const { data } = useQueueQuota(courseId, queueId);
+    // eslint-disable-next-line react/jsx-no-useless-fragment
     return !data || data.wait_time_mins === 0 ? <>{children}</> : null;
 };
 
@@ -93,10 +95,8 @@ const StudentQueue = (props: StudentQueueProps) => {
         queue.id,
         rawQuestions
     );
-    const {
-        data: lastQuestions,
-        mutate: mutateLastQuestions,
-    } = useLastQuestions(course.id, queue.id);
+    const { data: lastQuestions, mutate: mutateLastQuestions } =
+        useLastQuestions(course.id, queue.id);
 
     if (!questions) {
         return (

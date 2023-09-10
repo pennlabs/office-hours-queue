@@ -23,8 +23,10 @@ const ResponsiveIconButton = ({
     const iconButton = <Button icon={icon} {...sharedProps} {...mobileProps} />;
     const iconTextButton = (
         <Button icon {...sharedProps} {...desktopProps}>
-            {icon}
-            {text}
+            <>
+                {icon}
+                {text}
+            </>
         </Button>
     );
 

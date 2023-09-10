@@ -66,7 +66,7 @@ const EventSidebar = (props: EventSidebarProps) => {
     const studentEvents = data.filter((event) =>
         memberships.find(
             (membership) =>
-                event.course_id === membership.course.id &&
+                event.courseId === membership.course.id &&
                 membership.kind === Kind.STUDENT
         )
     );
@@ -74,7 +74,7 @@ const EventSidebar = (props: EventSidebarProps) => {
     const instructorEvents = data.filter((event) =>
         memberships.find(
             (membership) =>
-                event.course_id === membership.course.id &&
+                event.courseId === membership.course.id &&
                 membership.kind !== Kind.STUDENT
         )
     );
@@ -104,7 +104,7 @@ const EventSidebar = (props: EventSidebarProps) => {
                             : instructorEvents.map((ele) => (
                                   <EventCard
                                       event={ele}
-                                      course={findCourse(ele.course_id)}
+                                      course={findCourse(ele.courseId)}
                                   />
                               ))}
                     </Grid.Row>

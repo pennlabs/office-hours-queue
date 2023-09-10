@@ -15,7 +15,7 @@ const LinkedText = ({ text }: LinkedTextProps) => {
             href={decoratedHref}
             key={key}
             target="_blank"
-            rel="noreferrer noope"
+            rel="noreferrer noopener"
         >
             {decoratedText}
         </a>

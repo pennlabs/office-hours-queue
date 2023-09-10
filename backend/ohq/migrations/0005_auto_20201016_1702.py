@@ -16,6 +16,8 @@ class Migration(migrations.Migration):
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
         migrations.AddField(
-            model_name="question", name="resolved_note", field=models.BooleanField(default=True),
+            model_name="question",
+            name="resolved_note",
+            field=models.BooleanField(default=True),
         ),
     ]

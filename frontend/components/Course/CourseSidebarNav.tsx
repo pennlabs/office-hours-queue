@@ -33,7 +33,7 @@ const CourseSidebarNav = (props: CourseSidebarProps) => {
 
     return (
         <Segment basic>
-            <Link href="/" as="/">
+            <Link href="/" as="/" legacyBehavior>
                 <Image
                     src="../../../ohq.png"
                     size="tiny"
@@ -42,7 +42,11 @@ const CourseSidebarNav = (props: CourseSidebarProps) => {
             </Link>
             <Menu vertical secondary fluid>
                 {!course.archived && (
-                    <Link href="/courses/[course]" as={`/courses/${courseId}`}>
+                    <Link
+                        href="/courses/[course]"
+                        as={`/courses/${courseId}`}
+                        legacyBehavior
+                    >
                         <Menu.Item
                             style={noWrapStyle}
                             name="Queues"
@@ -70,6 +74,7 @@ const CourseSidebarNav = (props: CourseSidebarProps) => {
                     <Link
                         href="/courses/[course]/roster"
                         as={`/courses/${courseId}/roster`}
+                        legacyBehavior
                     >
                         <Menu.Item
                             style={noWrapStyle}
@@ -84,6 +89,7 @@ const CourseSidebarNav = (props: CourseSidebarProps) => {
                     <Link
                         href="/courses/[course]/analytics"
                         as={`/courses/${courseId}/analytics`}
+                        legacyBehavior
                     >
                         <Menu.Item
                             style={noWrapStyle}
@@ -114,6 +120,7 @@ const CourseSidebarNav = (props: CourseSidebarProps) => {
                     <Link
                         href="/courses/[course]/summary"
                         as={`/courses/${courseId}/summary`}
+                        legacyBehavior
                     >
                         <Menu.Item
                             style={noWrapStyle}
@@ -128,6 +135,7 @@ const CourseSidebarNav = (props: CourseSidebarProps) => {
                     <Link
                         href="/courses/[course]/settings"
                         as={`/courses/${courseId}/settings`}
+                        legacyBehavior
                     >
                         <Menu.Item
                             style={noWrapStyle}

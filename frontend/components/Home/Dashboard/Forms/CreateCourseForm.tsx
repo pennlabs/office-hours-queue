@@ -7,8 +7,16 @@ import { Semester } from "../../../../types";
 import { getSemesters } from "../../../../hooks/data-fetching/course";
 import { COURSE_TITLE_CHAR_LIMIT } from "../../../../constants";
 
+const TERM_SORT_VALUES = {
+    FALL: 3,
+    SUMMER: 2,
+    SPRING: 1,
+    WINTER: 0,
+};
+
 const semesterOptions = async (inputValue: string) => {
     const semesters: Semester[] = await getSemesters();
+
     return semesters
         .filter(
             (semester) =>
@@ -17,6 +25,12 @@ const semesterOptions = async (inputValue: string) => {
                     .includes(inputValue.toLowerCase()) ||
                 inputValue.length === 0
         )
+        .sort((s1, s2) => {
+            // Sort by most recent semester
+            return s1.year === s2.year
+                ? TERM_SORT_VALUES[s2.term] - TERM_SORT_VALUES[s1.term]
+                : s2.year - s1.year;
+        })
         .map((semester) => {
             return {
                 label: semester.pretty,
@@ -60,7 +74,7 @@ const CreateCourseForm = (props: CreateCourseFormProps) => {
                     id="course-code"
                     name="courseCode"
                     onChange={changeFunc}
-                    placeholder="121"
+                    placeholder="1210"
                 />
             </Form.Field>
             <Form.Field required>

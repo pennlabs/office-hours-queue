@@ -42,56 +42,54 @@ const StudentQueues = (props: StudentQueuesProps) => {
     const isMobile = useMediaQuery(`(max-width: ${MOBILE_BP})`);
 
     return (
-        <>
-            {queues && (
-                <Grid.Row style={{ marginTop: "2rem" }} columns={2}>
-                    {currQueue && (
-                        <>
-                            <Grid.Column width={4}>
-                                <Menu
-                                    fluid
-                                    vertical
-                                    style={{
-                                        display: "flex",
-                                        minHeight: isMobile ? "0rem" : "20rem",
-                                    }}
-                                >
-                                    {dispQueues.map((q) => (
-                                        <QueueMenuItem
-                                            key={q.id}
-                                            queue={q}
-                                            courseId={course.id}
-                                            initialQuestions={questionmap[q.id]}
-                                            active={selQueue === q.id}
-                                            setActiveQueue={setSelQueue}
-                                            play={play}
-                                        />
-                                    ))}
-                                </Menu>
-                            </Grid.Column>
-                            <Grid.Column stretched width={12}>
-                                <StudentQueue
-                                    key={currQueue.id}
-                                    course={course}
-                                    queue={currQueue}
-                                    tags={tags}
-                                    queueMutate={queueMutate}
-                                    questions={questionmap[currQueue.id] || []}
-                                />
-                            </Grid.Column>
-                        </>
-                    )}
-                    {!currQueue && (
-                        <Grid.Column width={16}>
-                            <Message info>
-                                <Message.Header>No Queues</Message.Header>
-                                This course currently has no queues!
-                            </Message>
+        queues && (
+            <Grid.Row style={{ marginTop: "2rem" }} columns={2}>
+                {currQueue && (
+                    <>
+                        <Grid.Column width={4}>
+                            <Menu
+                                fluid
+                                vertical
+                                style={{
+                                    display: "flex",
+                                    minHeight: isMobile ? "0rem" : "20rem",
+                                }}
+                            >
+                                {dispQueues.map((q) => (
+                                    <QueueMenuItem
+                                        key={q.id}
+                                        queue={q}
+                                        courseId={course.id}
+                                        initialQuestions={questionmap[q.id]}
+                                        active={selQueue === q.id}
+                                        setActiveQueue={setSelQueue}
+                                        play={play}
+                                    />
+                                ))}
+                            </Menu>
                         </Grid.Column>
-                    )}
-                </Grid.Row>
-            )}
-        </>
+                        <Grid.Column stretched width={12}>
+                            <StudentQueue
+                                key={currQueue.id}
+                                course={course}
+                                queue={currQueue}
+                                tags={tags}
+                                queueMutate={queueMutate}
+                                questions={questionmap[currQueue.id] || []}
+                            />
+                        </Grid.Column>
+                    </>
+                )}
+                {!currQueue && (
+                    <Grid.Column width={16}>
+                        <Message info>
+                            <Message.Header>No Queues</Message.Header>
+                            This course currently has no queues!
+                        </Message>
+                    </Grid.Column>
+                )}
+            </Grid.Row>
+        )
     );
 };
 

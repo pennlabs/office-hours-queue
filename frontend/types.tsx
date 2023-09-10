@@ -125,6 +125,7 @@ export interface Question {
 export interface Semester {
     id: number;
     term: string;
+    year: number;
     pretty: string;
 }
 

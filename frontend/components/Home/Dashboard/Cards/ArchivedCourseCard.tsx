@@ -14,6 +14,7 @@ const ArchivedCourseCard = (props: ArchivedCourseCardProps) => {
             <Link
                 href="/courses/[course]/roster"
                 as={`/courses/${course.id}/roster`}
+                legacyBehavior
             >
                 <Segment.Group
                     style={{ cursor: "pointer" }}
