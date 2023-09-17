@@ -25,6 +25,8 @@ Navigate to `/backend`. Then,
   - b. `pipenv shell`
 1. `docker-compose up` (run this before doing any of the manage.py commands)
 2. Migration commands to ensure your installation works:
+
+If you are getting `FATAL: role "postgres" does not exist` see [this](https://stackoverflow.com/a/15309551). See the comments of the answer for your specific case.
   - a. `python manage.py migrate`
   - b. `python manage.py createsuperuser`
   - c. `python manage.py populate` to populate the database with dummy data
