@@ -10,11 +10,11 @@ import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import moment from "moment";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import { Modal, Form, Button } from "semantic-ui-react";
-import { TextField } from "@mui/material";
+import { Alert, TextField } from "@mui/material";
 import { TimePicker, DatePicker, LocalizationProvider } from "@mui/lab";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
-import { createEvent } from "../../hooks/data-fetching/calendar";
-import { PartialEvent, Event, CalendarEvent } from "../../types";
+import { createEvent } from "../../../hooks/data-fetching/calendar";
+import { PartialEvent, Event, CalendarEvent } from "../../../types";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
 const localizer = momentLocalizer(moment);
@@ -70,11 +70,11 @@ const EditEventModal = ({ setModalState, mutate, event }: EditEventProps) => {
                 />
 
                 <Form.Field>
-                    <label>Start</label>
+                    <label>Start Time</label>
                     <Form.Input value={event.start} />
                 </Form.Field>
                 <Form.Field>
-                    <label>End</label>
+                    <label>End Time</label>
                     <Form.Input value={event.end} />
                 </Form.Field>
             </Modal.Content>
@@ -126,7 +126,6 @@ const NewEventModal = ({
         setTime(start);
     }, [start]);
     useEffect(() => {
-        console.log("REWRITE");
         eSetDate(end);
         eSetTime(end);
     }, [end]);
@@ -149,10 +148,6 @@ const NewEventModal = ({
             eTime.getMinutes(),
             eTime.getSeconds()
         );
-        if (endDate < startDate) {
-            console.log("PROBLEMS");
-        }
-        console.log(startDate, endDate);
         const newEvent: PartialEvent = {
             title,
             start: startDate.toISOString(),
@@ -217,13 +212,16 @@ const NewEventModal = ({
                             onChange={(newValue) => {
                                 if (newValue != null) eSetDate(newValue);
                             }}
+                            minDate={date}
                             renderInput={(params) => <TextField {...params} />}
                         />
                         <TimePicker
                             value={eTime}
                             onChange={(newValue) => {
                                 if (newValue != null) eSetTime(newValue);
+                                console.log(eTime);
                             }}
+                            minTime={time}
                             renderInput={(params) => <TextField {...params} />}
                             minutesStep={15}
                         />

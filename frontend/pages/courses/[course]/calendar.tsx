@@ -2,7 +2,7 @@ import Head from "next/head";
 import { Grid } from "semantic-ui-react";
 import { NextPageContext } from "next";
 import CourseWrapper from "../../../components/Course/CourseWrapper";
-import Calender from "../../../components/Calender";
+import Calender from "../../../components/Course/Calender";
 import { doMultipleSuccessRequests } from "../../../utils/fetch";
 import { isLeadershipRole } from "../../../utils/enums";
 import { withAuth } from "../../../context/auth";

@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Segment, Menu, Image, Icon, Label } from "semantic-ui-react";
+import { Segment, Menu, Image, Icon } from "semantic-ui-react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
@@ -56,10 +56,11 @@ const CourseSidebarNav = (props: CourseSidebarProps) => {
                         />
                     </Link>
                 )}
-                {!course.archived && (
+                {staff && (
                     <Link
                         href="/courses/[course]/calendar"
                         as={`/courses/${courseId}/calendar`}
+                        legacyBehavior
                     >
                         <Menu.Item
                             style={noWrapStyle}
@@ -104,15 +105,6 @@ const CourseSidebarNav = (props: CourseSidebarProps) => {
                                 }}
                             />
                             Analytics
-                            <Label
-                                color="violet"
-                                content="Beta"
-                                size="tiny"
-                                style={{
-                                    float: "none",
-                                    verticalAlign: "bottom",
-                                }}
-                            />
                         </Menu.Item>
                     </Link>
                 )}
