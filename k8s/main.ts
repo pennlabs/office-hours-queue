@@ -23,6 +23,12 @@ export class MyChart extends PennLabsChart {
           { name: 'REDIS_URL', value: 'redis://office-hours-queue-redis:6379' },
         ],
       },
+      ingressProps: {
+        annotations: {
+          ["ingress.kubernetes.io/protocol"]: "https",
+          ["traefik.ingress.kubernetes.io/router.middlewares"]: "default-redict-http@kubernetescrd"
+        }
+      },
       djangoSettingsModule: 'officehoursqueue.settings.production',
       domains: [{ host: domain, paths: ['/api/ws'] }],
     });
@@ -35,6 +41,12 @@ export class MyChart extends PennLabsChart {
         env: [
           { name: 'REDIS_URL', value: 'redis://office-hours-queue-redis:6379' },
         ],
+      },
+      ingressProps: {
+        annotations: {
+          ["ingress.kubernetes.io/protocol"]: "https",
+          ["traefik.ingress.kubernetes.io/router.middlewares"]: "default-redict-http@kubernetescrd"
+        }
       },
       djangoSettingsModule: 'officehoursqueue.settings.production',
       domains: [{ host: domain, paths: ['/api', '/admin', '/assets'] }],
