@@ -50,10 +50,13 @@ const LastQuestionCard = ({ question }: { question: Question }) => {
                 {question.status === "REJECTED" && (
                     <div>
                         The following question you asked on{" "}
-                        <b>{timeString(question.timeAsked)}</b> was rejected
+                        <span>{timeString(question.timeAsked)}</span> was
+                        rejected
                         {question.respondedToBy && [
                             " by ",
                             <b>{getFullName(question.respondedToBy)}</b>,
+                            " on ",
+                            <span>{timeString(question.timeRespondedTo)}</span>,
                         ]}
                         :
                         <br />
@@ -65,10 +68,13 @@ const LastQuestionCard = ({ question }: { question: Question }) => {
                 {question.status === "ANSWERED" && (
                     <div>
                         The following question you asked on{" "}
-                        <b>{timeString(question.timeAsked)}</b> was answered
+                        <span>{timeString(question.timeAsked)}</span> was
+                        answered
                         {question.respondedToBy && [
                             " by ",
                             <b>{getFullName(question.respondedToBy)}</b>,
+                            " on ",
+                            <span>{timeString(question.timeRespondedTo)}</span>,
                         ]}
                         :
                         <br />
