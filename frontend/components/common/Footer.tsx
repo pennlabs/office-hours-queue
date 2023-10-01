@@ -3,13 +3,8 @@ import { useState } from "react";
 import { Container } from "semantic-ui-react";
 
 import AboutModal from "./AboutModal";
-import Feedback from "./Feedback";
 
-interface FooterProps {
-    showFeedback?: boolean;
-}
-
-export default function Footer({ showFeedback }: FooterProps) {
+export default function Footer() {
     const [showModal, setShowModal] = useState(false);
     return (
         <>
@@ -37,12 +32,14 @@ export default function Footer({ showFeedback }: FooterProps) {
                 >
                     Friends
                 </span>{" "}
-                | <Link href="/changelog">Changelog</Link>
-                {showFeedback && (
-                    <div role="button" style={{ marginTop: "8px" }}>
-                        <Feedback />
-                    </div>
-                )}
+                | <Link href="/changelog">Changelog</Link> |{" "}
+                <a
+                    href="https://airtable.com/appTHcLDue56TbPL4/shrIZxIjyAE3gOUSg"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Feedback
+                </a>
             </Container>
             <AboutModal
                 open={showModal}
