@@ -3,6 +3,7 @@ import { Grid, Header, Menu } from "semantic-ui-react";
 
 import InstructorGuide from "./InstructorGuide";
 import StudentGuide from "./StudentGuide";
+import Footer from "../common/Footer";
 
 enum Page {
     Instructor = "Instructor",
@@ -15,7 +16,14 @@ export default function Guide() {
     const handleClick = (e, { name }) => setTab(name);
 
     return (
-        <Grid.Column width={13} style={{ padding: "2rem" }}>
+        <Grid.Column
+            width={13}
+            style={{
+                padding: "2rem",
+                display: "flex",
+                flexDirection: "column",
+            }}
+        >
             <Grid.Row>
                 <Header as="h2">
                     <Header.Content>Frequently Asked Questions</Header.Content>
@@ -41,6 +49,7 @@ export default function Guide() {
                 {tab === Page.Instructor && <InstructorGuide />}
                 {tab === Page.Student && <StudentGuide />}
             </Grid.Row>
+            <Footer />
         </Grid.Column>
     );
 }
