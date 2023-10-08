@@ -30,17 +30,6 @@ export default function StudentGuide() {
     return (
         <>
             <Segment basic>
-                Hi there! 🎉
-                <br />
-                Welcome to OHQ, a centralized online office hours system that
-                helps instructors like you manage office hours easily and
-                intuitively, so you can focus on teaching and your students can
-                focus on learning in office hours. This guide will walk you
-                through using OHQ, so your experience holding office hours can
-                be as easy and straightforward as possible.
-            </Segment>
-
-            <Segment basic>
                 <b>Jump to:</b>
                 <List bulleted>
                     <EnrollCourseHeader />
