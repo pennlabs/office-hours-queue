@@ -7,11 +7,11 @@ from ohq.models import CourseStatistic, Question, QueueStatistic
 class QuestionSearchFilter(filters.FilterSet):
     # time_asked = filters.DateFilter(lookup_expr="icontains")
     search = filters.CharFilter(method="search_filter")
-    order_by = filters.OrderingFilter(fields=["time_asked"])
+    order_by = filters.OrderingFilter(fields=["time_asked", "time_responded_to"])
 
     class Meta:
         model = Question
-        fields = {"time_asked": ["gt", "lt"], "queue": ["exact"], "status": ["exact"]}
+        fields = {"time_asked": ["gt", "lt"], "queue": ["exact"], "status": ["exact"], "time_responded_to": ["gt", "lt"]}
 
     def search_filter(self, queryset, name, value):
         return queryset.filter(
