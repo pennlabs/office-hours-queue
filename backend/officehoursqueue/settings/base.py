@@ -175,6 +175,10 @@ TWILIO_SID = os.environ.get("TWILIO_SID", "")
 TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_TOKEN", "")
 TWILIO_NUMBER = os.environ.get("TWILIO_NUMBER", "")
 
+#OpenAI Settings
+
+OPENAI_API_KEY = "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" #os.environ.get("OPENAI_API_KEY", "")
+
 # Redis URL used for celery, channels and general caching.
 REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost")
 

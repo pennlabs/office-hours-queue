@@ -14,6 +14,7 @@ from ohq.models import (
     Announcement,
     Course,
     CourseStatistic,
+    LlmSetting,
     Membership,
     MembershipInvite,
     Profile,
@@ -234,6 +235,7 @@ class QuestionSerializer(QueueRouteMixin):
             "resolved_note",
             "position",
             "student_descriptor",
+            "llm_response"
         )
         read_only_fields = (
             "time_asked",
@@ -244,17 +246,23 @@ class QuestionSerializer(QueueRouteMixin):
             "should_send_up_soon_notification",
             "resolved_note",
             "position",
+            "llm_response"
         )
+    
 
     def update(self, instance, validated_data):
         """
         Students can update their question's text and video_chat_url or withdraw the question
         TAs+ can only modify the status of a question.
         """
+        print(self)
+        if "llm_response" in validated_data:
+            instance.llm_response = validated_data["llm_response"]
+            instance.save()
+            return instance
         user = self.context["request"].user
         membership = Membership.objects.get(course=instance.queue.course, user=user)
         queue_id = self.context["view"].kwargs["queue_pk"]
-
         if membership.is_ta:  # User is a TA+
             if "status" in validated_data:
                 status = validated_data["status"]
@@ -281,6 +289,8 @@ class QuestionSerializer(QueueRouteMixin):
             if "note" in validated_data:
                 instance.note = validated_data["note"]
                 instance.resolved_note = False
+        # elif membership.is_ai:
+        #     instance.llm_response = validated_data["llm-response"]
         else:  # User is a student
             if "status" in validated_data:
                 status = validated_data["status"]
@@ -574,3 +584,28 @@ class OccurrenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Occurrence
         fields = ("id", "title", "description", "start", "end", "cancelled", "event")
+
+class LlmPromptSerializer(serializers.ModelSerializer):
+    """
+    Serializer for llm prompts
+    """
+
+    class Meta:
+        model = LlmSetting
+        fields = ("id", "course", "llm_prompt", "temperature", "model_name")
+    
+    def update(self, instance, validated_data):
+        """
+        Professors and Hea) TAs can customize and modify the Llm prompt
+        """
+        user = self.context["request"].user
+        membership = Membership.objects.get(course=instance.course, user=user)
+
+        if membership.is_leadership:
+            if  "temperature" in validated_data:
+                instance.temperature = float(validated_data["temperature"])
+            if "llm_prompt" in validated_data:
+                instance.llm_prompt = validated_data["llm_prompt"]
+        instance.save()
+
+        return instance
