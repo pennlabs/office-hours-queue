@@ -1,9 +1,11 @@
-import { useEffect } from "react";
 import "semantic-ui-css/semantic.min.css";
 import "../styles/index.css";
-import { SWRConfig } from "swr";
+
+import { useEffect } from "react";
 // eslint-disable-next-line import/no-extraneous-dependencies -- weird, but eslint doesn't like this
 import { Announcement } from "@esinx/pennlabs-ui";
+import { SWRConfig } from "swr";
+
 import { doApiRequest } from "../utils/fetch";
 import withGA from "../utils/ga/withGA";
 import { askNotificationPermissions } from "../utils/notifications";
