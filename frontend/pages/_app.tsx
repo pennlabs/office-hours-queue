@@ -2,7 +2,6 @@ import "semantic-ui-css/semantic.min.css";
 import "../styles/index.css";
 
 import { useEffect } from "react";
-// eslint-disable-next-line import/no-extraneous-dependencies -- weird, but eslint doesn't like this
 import { Announcement } from "@esinx/pennlabs-ui";
 import { SWRConfig } from "swr";
 
