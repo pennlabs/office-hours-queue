@@ -23,7 +23,7 @@ const MyApp = ({ Component, pageProps }) => {
                 }}
             >
                 {/* This is necessary for generic HOC */}
-                {/* eslint-disable-next-line */}
+                {/* eslint-disable-next-line react/jsx-props-no-spreading */}
                 <Component {...pageProps} />
             </SWRConfig>
             <div
