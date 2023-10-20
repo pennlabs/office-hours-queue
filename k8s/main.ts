@@ -53,6 +53,7 @@ export class MyChart extends PennLabsChart {
         image: frontendImage,
         replicas: 1,
       },
+      ingressProps,
       domain: { host: domain, paths: ['/'] },
       port: 80,
     });

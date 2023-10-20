@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Grid, Header, Menu } from "semantic-ui-react";
+import { Segment, Header, Grid, Menu } from "semantic-ui-react";
 
 import InstructorGuide from "./InstructorGuide";
 import StudentGuide from "./StudentGuide";
@@ -25,29 +25,41 @@ export default function Guide() {
             }}
         >
             <Grid.Row>
-                <Header as="h2">
-                    <Header.Content>Frequently Asked Questions</Header.Content>
-                </Header>
-                <Menu>
-                    <Menu.Item
-                        name={Page.Instructor}
-                        active={tab === Page.Instructor}
-                        onClick={handleClick}
-                    >
-                        For Instructors
-                    </Menu.Item>
-                    <Menu.Item
-                        name={Page.Student}
-                        active={tab === Page.Student}
-                        onClick={handleClick}
-                    >
-                        For Students
-                    </Menu.Item>
-                </Menu>
-            </Grid.Row>
-            <Grid.Row style={{ marginTop: "2rem" }}>
-                {tab === Page.Instructor && <InstructorGuide />}
-                {tab === Page.Student && <StudentGuide />}
+                <Segment basic>
+                    <Header as="h2">Frequently Asked Questions</Header>
+                    <p>
+                        Hi there! 🎉
+                        <br />
+                        <br />
+                        Welcome to OHQ, a centralized online office hours system
+                        that helps instructors like you manage office hours
+                        easily and intuitively, so you can focus on teaching and
+                        your students can focus on learning in office hours.
+                        This guide will walk you through using OHQ, so your
+                        experience holding office hours can be as easy and
+                        straightforward as possible.
+                    </p>
+                    <Menu attached="top" tabular>
+                        <Menu.Item
+                            name={Page.Instructor}
+                            active={tab === Page.Instructor}
+                            onClick={handleClick}
+                        >
+                            For Instructors
+                        </Menu.Item>
+                        <Menu.Item
+                            name={Page.Student}
+                            active={tab === Page.Student}
+                            onClick={handleClick}
+                        >
+                            For Students
+                        </Menu.Item>
+                    </Menu>
+                    <Segment attached="bottom" basic>
+                        {tab === Page.Instructor && <InstructorGuide />}
+                        {tab === Page.Student && <StudentGuide />}
+                    </Segment>
+                </Segment>
             </Grid.Row>
             <Footer />
         </Grid.Column>

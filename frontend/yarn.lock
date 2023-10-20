@@ -1237,6 +1237,20 @@
   resolved "https://registry.yarnpkg.com/@emotion/memoize/-/memoize-0.8.1.tgz#c1ddb040429c6d21d38cc945fe75c818cfb68e17"
   integrity sha512-W2P2c/VRW1/1tLox0mVUalvnWXxavmv/Oum2aPsRcoDJuob75FC3Y8FbpfLwUegRcxINtGUMPq0tFCvYNTBXNA==
 
+"@emotion/react@^11.11.1":
+  version "11.11.1"
+  resolved "https://registry.yarnpkg.com/@emotion/react/-/react-11.11.1.tgz#b2c36afac95b184f73b08da8c214fdf861fa4157"
+  integrity sha512-5mlW1DquU5HaxjLkfkGN1GA/fvVGdyHURRiX/0FHl2cfIfRxSOfmxEH5YS43edp0OldZrZ+dkBKbngxcNCdZvA==
+  dependencies:
+    "@babel/runtime" "^7.18.3"
+    "@emotion/babel-plugin" "^11.11.0"
+    "@emotion/cache" "^11.11.0"
+    "@emotion/serialize" "^1.1.2"
+    "@emotion/use-insertion-effect-with-fallbacks" "^1.0.1"
+    "@emotion/utils" "^1.2.1"
+    "@emotion/weak-memoize" "^0.3.1"
+    hoist-non-react-statics "^3.3.1"
+
 "@emotion/react@^11.8.1":
   version "11.11.0"
   resolved "https://registry.yarnpkg.com/@emotion/react/-/react-11.11.0.tgz#408196b7ef8729d8ad08fc061b03b046d1460e02"
@@ -1322,6 +1336,15 @@
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/@emotion/weak-memoize/-/weak-memoize-0.3.1.tgz#d0fce5d07b0620caa282b5131c297bb60f9d87e6"
   integrity sha512-EsBwpc7hBUJWAsNPBmJy4hxWx12v6bshQsldrVmjxJoc3isbxhOrF2IcCpaXxfvq03NwkI7sbsOLXbYuqF/8Ww==
+
+"@esinx/pennlabs-ui@1.0.0-8":
+  version "1.0.0-8"
+  resolved "https://registry.yarnpkg.com/@esinx/pennlabs-ui/-/pennlabs-ui-1.0.0-8.tgz#8fb2356e2b89378b6c970bc831fe32d7ea4a457e"
+  integrity sha512-J5b8q5CBvTVn+u2XZ3OTad17keDYYo7riqj7/U0NzqlfPFMF2pyid+oaKyBlKsOBmDkKuRtzkIo0wp4GbqJIVw==
+  dependencies:
+    "@emotion/react" "^11.11.1"
+    react "^18.2.0"
+    react-dom "^18.2.0"
 
 "@eslint-community/eslint-utils@^4.2.0":
   version "4.4.0"

@@ -68,6 +68,26 @@ const Summary = (props: SummaryProps) => {
                                 >
                                     Time Asked
                                 </Table.HeaderCell>
+                                <Table.HeaderCell
+                                    width={2}
+                                    sorted={
+                                        filters.orderBy ===
+                                        SummaryOrderBy.TimeRespondedToAsc
+                                            ? "ascending"
+                                            : "descending"
+                                    }
+                                    onClick={() => {
+                                        updateFilter({
+                                            orderBy:
+                                                filters.orderBy ===
+                                                SummaryOrderBy.TimeRespondedToAsc
+                                                    ? SummaryOrderBy.TimeRespondedToDesc
+                                                    : SummaryOrderBy.TimeRespondedToAsc,
+                                        });
+                                    }}
+                                >
+                                    Time Answered
+                                </Table.HeaderCell>
                                 <Table.HeaderCell width={1}>
                                     State
                                 </Table.HeaderCell>
@@ -94,6 +114,16 @@ const Summary = (props: SummaryProps) => {
                                                 dateStyle: "short",
                                                 timeStyle: "short",
                                             })}
+                                        </Table.Cell>
+                                        <Table.Cell>
+                                            {qs.timeRespondedTo && [
+                                                new Date(
+                                                    qs.timeRespondedTo
+                                                ).toLocaleString("en-US", {
+                                                    dateStyle: "short",
+                                                    timeStyle: "short",
+                                                }),
+                                            ]}
                                         </Table.Cell>
                                         <Table.Cell>
                                             {prettifyQuestionState(qs.status)}
