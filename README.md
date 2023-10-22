@@ -19,9 +19,14 @@ Navigate to `/backend`. Then,
 
 0. (Initial setup)
   - a. `pipenv install --dev`  
-        NOTE: You might have to install openssl with Homebrew (`brew install openssl`) and set the following environment variable for the linker.  
-        `export LDFLAGS="-I/usr/local/opt/openssl/include -L/usr/local/opt/openssl/lib"`.<br>
-        If you run into `ERROR: Couldn't install package: psycopg2`, see [this](https://stackoverflow.com/questions/56796426/pipenv-consistently-failing-to-install-pyscopg2/57044429#57044429) post. If your problem is on M1, try the top 2 solutions [here](https://stackoverflow.com/questions/66888087/cannot-install-psycopg2-with-pip3-on-m1-mac).
+        NOTE: <br />
+        1. You might have to install openssl with Homebrew (`brew install openssl`) and set the following environment variable for the linker.  
+        `export LDFLAGS="-I/usr/local/opt/openssl/include -L/usr/local/opt/openssl/lib"`.<br />
+        If you run into `ERROR: Couldn't install package: psycopg2`, see [this](https://stackoverflow.com/questions/56796426/pipenv-consistently-failing-to-install-pyscopg2/57044429#57044429) post. If your problem is on M1, try the top 2 solutions [here](https://stackoverflow.com/questions/66888087/cannot-install-psycopg2-with-pip3-on-m1-mac). <br />
+        2. You might have to install postgresql via `brew install postgresql`. If you run into the error `psql: FATAL:  role "postgres" does not exist`, you also need to run: <br />
+        `createuser -s postgres` <br />
+        `brew services restart postgresql` <br />
+        3. If you run into the error where you cannot install `psycopg2` due to postgres errors, you can try running: `pip3 install psycopg2-binary --force-reinstall --no-cache-dir`
   - b. `pipenv shell`
 1. `docker-compose up` (run this before doing any of the manage.py commands)
 2. Migration commands to ensure your installation works:
