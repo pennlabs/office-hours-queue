@@ -61,8 +61,8 @@ const Dashboard = () => {
     const [logModal, setLogModal] = useState(false);
 
     const [messageDisp, setMessageDisp] = useState(false);
-
-    const [tipsIndex, setTipsIndex] = useState(0);
+   
+    const [tipCard, setTipCard] = useState({title: "", description: "", student: false});
 
     var tipsArr = tips;
 
@@ -70,13 +70,19 @@ const Dashboard = () => {
         
         //check membership
         if(!canCreateCourse) {
-           tipsArr = tips.filter( x => x.student == true );
+            //student
+            tipsArr = tips.filter( x => x.student == true );
+            const currentDate = new Date();
+            const index = (currentDate.getDate())  % tipsArr.length;
+            setTipCard(tipsArr[index]);
+        } else {
+            //instructor
+            const currentDate = new Date();
+            const index = (currentDate.getDate())  % tips.length;
+            setTipCard(tips[index]);
         }
 
         const currentDate = new Date();
-        const index = (currentDate.getDate())  % tipsArr.length;
-        setTipsIndex(index);
-
         const today = currentDate.toDateString();
         
         console.log(today);
@@ -121,8 +127,8 @@ const Dashboard = () => {
                                         setMessageDisp(false);
                                     }}
                                     size="mini"
-                                    header={"💡Tip of the Day: " + tipsArr[tipsIndex].title}
-                                    content={tips[tipsIndex].description}
+                                    header={"💡Tip of the Day: " + tipCard.title}
+                                    content={tipCard.description}
                                 />
                             </div>
                         )}
