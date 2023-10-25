@@ -17,6 +17,8 @@ import {
 } from "../../../constants";
 import ModalShowNewChanges from "./Modals/ModalShowNewChanges";
 import updatedMd from "../../Changelog/changelogfile.md";
+import tips from "./tips.json";
+import { transpileModule } from "typescript";
 
 // TODO: try to readd new user stuff, rip out loading stuff
 const Dashboard = () => {
@@ -24,11 +26,7 @@ const Dashboard = () => {
     if (initialUser === undefined) {
         throw new Error("Must be logged-in");
     }
-    const [messageDisp, setMessageDisp] = useState(false);
-    useEffect(() => {
-        const state = localStorage.getItem(FALL_2023_TRANSITION_MESSAGE_TOKEN);
-        setMessageDisp(state !== "true");
-    }, []);
+    
 
     const { memberships, mutate } = useMemberships(initialUser);
 
@@ -62,6 +60,34 @@ const Dashboard = () => {
     const [logOpen, setLogOpen] = useState(false);
     const [logModal, setLogModal] = useState(false);
 
+    const [messageDisp, setMessageDisp] = useState(false);
+
+    const [tipsIndex, setTipsIndex] = useState(0);
+
+    var tipsArr = tips;
+
+    useEffect(() => {
+        
+        //check membership
+        if(!canCreateCourse) {
+           tipsArr = tips.filter( x => x.student == true );
+        }
+
+        const currentDate = new Date();
+        const index = (currentDate.getDate())  % tipsArr.length;
+        setTipsIndex(index);
+
+        const today = currentDate.toDateString();
+        
+        console.log(today);
+        console.log(localStorage.getItem("lastSeenDate"));
+        if (!(today === localStorage.getItem("lastSeenDate"))) {
+            setMessageDisp(true);
+        } else {
+            setMessageDisp(false);
+        }
+    }, []);
+
     useEffect(() => {
         const savedMd = `${window.localStorage.getItem(CHANGELOG_TOKEN)}`;
         if (updatedMd !== savedMd) setLogOpen(true);
@@ -90,24 +116,13 @@ const Dashboard = () => {
                             >
                                 <Message
                                     onDismiss={() => {
+                                        const today = new Date().toDateString();
+                                        localStorage.setItem("lastSeenDate", today);
                                         setMessageDisp(false);
-                                        localStorage.setItem(
-                                            FALL_2023_TRANSITION_MESSAGE_TOKEN,
-                                            "true"
-                                        );
                                     }}
                                     size="mini"
-                                    header="Welcome back!"
-                                    content={
-                                        <>
-                                            Summer 2023 courses have been
-                                            archived in preparation for Fall
-                                            2023.
-                                            <br />
-                                            Please contact us at contact@ohq.io
-                                            if this is an error.
-                                        </>
-                                    }
+                                    header={"💡Tip of the Day: " + tipsArr[tipsIndex].title}
+                                    content={tips[tipsIndex].description}
                                 />
                             </div>
                         )}

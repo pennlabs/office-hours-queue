@@ -1,0 +1,27 @@
+[
+    {
+        "title": "Feedback",
+        "description": "Think something could be better? Tell us! Submit any thoughts/bugs/ideas to “Feedback”",
+        "student": true
+    },
+    {
+        "title": "SMS Notification",
+        "description": "Get notified when you’re almost through the queue! Find “Account Settings” < Enable SMS Notifications < Save",
+        "student": true
+    },
+    {
+        "title": "Changelog",
+        "description": "Take a look at new features and changes to the site! Find “Changelogs”",
+        "student": true
+    },
+    {
+        "title": "FAQ",
+        "description": "Have questions? Look through our “FAQ” tab on the sidebar!",
+        "student": true
+    },
+    {
+        "title": "[Instructor] View Past Questions",
+        "description": "Go to Question Summary to view past questions.",
+        "student": false
+    }
+]
