@@ -58,7 +58,9 @@ export class MyChart extends PennLabsChart {
       port: 80,
     });
 
-    new RedisApplication(this, 'redis', {});
+    new RedisApplication(this, 'redis', {
+      persistData: true,
+    });
 
     new DjangoApplication(this, 'celery', {
       deployment: {
