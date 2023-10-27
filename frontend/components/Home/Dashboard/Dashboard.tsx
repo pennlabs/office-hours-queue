@@ -10,15 +10,10 @@ import { AuthUserContext } from "../../../context/auth";
 import { Kind, UserMembership } from "../../../types";
 import { useMemberships } from "../../../hooks/data-fetching/dashboard";
 import { isLeadershipRole } from "../../../utils/enums";
-import {
-    CHANGELOG_TOKEN,
-    FALL_2023_TRANSITION_MESSAGE_TOKEN,
-    MOBILE_BP,
-} from "../../../constants";
+import { CHANGELOG_TOKEN, MOBILE_BP } from "../../../constants";
 import ModalShowNewChanges from "./Modals/ModalShowNewChanges";
 import updatedMd from "../../Changelog/changelogfile.md";
 import tips from "./tips.json";
-import { transpileModule } from "typescript";
 
 // TODO: try to readd new user stuff, rip out loading stuff
 const Dashboard = () => {
@@ -26,7 +21,6 @@ const Dashboard = () => {
     if (initialUser === undefined) {
         throw new Error("Must be logged-in");
     }
-    
 
     const { memberships, mutate } = useMemberships(initialUser);
 
@@ -60,38 +54,22 @@ const Dashboard = () => {
     const [logOpen, setLogOpen] = useState(false);
     const [logModal, setLogModal] = useState(false);
 
-    const [messageDisp, setMessageDisp] = useState(false);
-   
-    const [tipCard, setTipCard] = useState({title: "", description: "", student: false});
+    const [tipDisp, setTipDisp] = useState(false);
 
-    var tipsArr = tips;
+    const getTip = () => {
+        const filteredTips = canCreateCourse
+            ? tips
+            : tips.filter((x) => x.student === true);
+        const currentDate = new Date();
+        const index = currentDate.getDate() % filteredTips.length;
+        return filteredTips[index];
+    };
 
     useEffect(() => {
-        
-        //check membership
-        if(!canCreateCourse) {
-            //student
-            tipsArr = tips.filter( x => x.student == true );
-            const currentDate = new Date();
-            const index = (currentDate.getDate())  % tipsArr.length;
-            setTipCard(tipsArr[index]);
-        } else {
-            //instructor
-            const currentDate = new Date();
-            const index = (currentDate.getDate())  % tips.length;
-            setTipCard(tips[index]);
-        }
-
+        // Message display based on local storage
         const currentDate = new Date();
         const today = currentDate.toDateString();
-        
-        console.log(today);
-        console.log(localStorage.getItem("lastSeenDate"));
-        if (!(today === localStorage.getItem("lastSeenDate"))) {
-            setMessageDisp(true);
-        } else {
-            setMessageDisp(false);
-        }
+        setTipDisp(today !== localStorage.getItem("tipLastSeenDate"));
     }, []);
 
     useEffect(() => {
@@ -112,7 +90,7 @@ const Dashboard = () => {
                                 <Header as="h2">Student Courses</Header>
                             </Segment>
                         </Segment>
-                        {messageDisp && (
+                        {tipDisp && (
                             <div
                                 style={{
                                     position: "absolute",
@@ -123,12 +101,17 @@ const Dashboard = () => {
                                 <Message
                                     onDismiss={() => {
                                         const today = new Date().toDateString();
-                                        localStorage.setItem("lastSeenDate", today);
-                                        setMessageDisp(false);
+                                        localStorage.setItem(
+                                            "tipLastSeenDate",
+                                            today
+                                        );
+                                        setTipDisp(false);
                                     }}
                                     size="mini"
-                                    header={"💡Tip of the Day: " + tipCard.title}
-                                    content={tipCard.description}
+                                    header={`💡Tip of the Day: ${
+                                        getTip().title
+                                    }`}
+                                    content={getTip().description}
                                 />
                             </div>
                         )}
