@@ -9,7 +9,7 @@ import { AuthUserContext } from "../../../context/auth";
 import { Kind, UserMembership } from "../../../types";
 import { useMemberships } from "../../../hooks/data-fetching/dashboard";
 import { isLeadershipRole } from "../../../utils/enums";
-import { CHANGELOG_TOKEN, MOBILE_BP } from "../../../constants";
+import { CHANGELOG_TOKEN } from "../../../constants";
 import ModalShowNewChanges from "./Modals/ModalShowNewChanges";
 import updatedMd from "../../Changelog/changelogfile.md";
 import tips from "./tips.json";
