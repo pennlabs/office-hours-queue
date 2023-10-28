@@ -1,7 +1,9 @@
-import { useEffect } from "react";
 import "semantic-ui-css/semantic.min.css";
 import "../styles/index.css";
+
+import { useEffect } from "react";
 import { SWRConfig } from "swr";
+
 import { doApiRequest } from "../utils/fetch";
 import withGA from "../utils/ga/withGA";
 import { askNotificationPermissions } from "../utils/notifications";
@@ -19,7 +21,7 @@ const MyApp = ({ Component, pageProps }) => {
             }}
         >
             {/* This is necessary for generic HOC */}
-            {/* eslint-disable-next-line */}
+            {/* eslint-disable-next-line react/jsx-props-no-spreading */}
             <Component {...pageProps} />
         </SWRConfig>
     );

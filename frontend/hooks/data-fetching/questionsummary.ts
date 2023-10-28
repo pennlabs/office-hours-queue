@@ -4,6 +4,8 @@ import { QuestionStatus, Question } from "../../types";
 export enum SummaryOrderBy {
     TimeAskedAsc = "time_asked",
     TimeAskedDesc = "-time_asked",
+    TimeRespondedToAsc = "time_responded_to",
+    TimeRespondedToDesc = "-time_responded_to",
 }
 
 export interface QuestionSummaryFilters {

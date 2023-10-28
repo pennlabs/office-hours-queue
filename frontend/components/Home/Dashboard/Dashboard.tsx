@@ -2,7 +2,6 @@ import { useContext, useState, useEffect } from "react";
 import { Grid, Header, Segment, Message } from "semantic-ui-react";
 import Alert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
-import { useMediaQuery } from "@material-ui/core";
 import InstructorCourses from "./InstructorCourses";
 import StudentCourses from "./StudentCourses";
 import Footer from "../../common/Footer";
@@ -172,7 +171,7 @@ const Dashboard = () => {
                 </Alert>
             </Snackbar>
 
-            <Footer showFeedback={useMediaQuery(`(max-width: ${MOBILE_BP})`)} />
+            <Footer />
             <ModalShowNewChanges openModal={logModal} setOpen={setLogModal} />
         </Grid.Column>
     );

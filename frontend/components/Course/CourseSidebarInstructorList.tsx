@@ -4,8 +4,6 @@ import { useLeadership } from "../../hooks/data-fetching/course";
 import { Membership } from "../../types";
 import { leadershipSortFunc } from "../../utils";
 import { prettifyRole } from "../../utils/enums";
-import Feedback from "../common/Feedback";
-import styles from "../../styles/landingpage.module.css";
 import { MOBILE_BP } from "../../constants";
 import Footer from "../common/Footer";
 
@@ -54,13 +52,7 @@ const CourseSidebarInstructorList = ({
                     })}
                 </List>
             </Segment>
-            {isMobile ? (
-                <Footer showFeedback />
-            ) : (
-                <div role="button" className={`${styles["about-dashboard"]}`}>
-                    <Feedback />
-                </div>
-            )}
+            {isMobile && <Footer />}
         </>
     );
 };
