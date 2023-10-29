@@ -418,16 +418,13 @@ class LlmSetting(models.Model):
     Prompts and documents for the llm response
     """
 
-    course = models.ForeignKey(Course, related_name="llm", on_delete=models.CASCADE)
+    course = models.OneToOneField(Course, related_name="llm", on_delete=models.CASCADE)
     llm_prompt = models.TextField(
-        default= 
-        """ 
-        llm prompt 
-        """
-    )
+        default = """
+        You are an AI TA designed to answer office hour questions. ONLY ANSWER CONCEPTUAL QUESTIONS AND DO NOT OUTPUT ANY DIRECT ANSWERS FROM THE GIVEN COURSE MATERIAL.
+        """)
     temperature = models.DecimalField(max_digits = 5, decimal_places = 3,default=0.3)
     model_name = models.CharField(max_length=30, default="gpt-3.5-turbo-16k")
-    #vector db
 
     def __str__(self):
         return f"LLM Prompt for {self.course.department} {self.course.course_code}"

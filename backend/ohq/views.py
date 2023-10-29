@@ -779,7 +779,7 @@ class OccurrenceViewSet(
     def get_queryset(self):
         return Occurrence.objects.filter(pk=self.kwargs["pk"])
 
-class LlmViewSet(viewsets.ModelViewSet, RealtimeMixin):
+class LlmSettingViewSet(viewsets.ModelViewSet, RealtimeMixin):
     """
     retrieve:
     Return a prompt.
@@ -806,15 +806,43 @@ class LlmViewSet(viewsets.ModelViewSet, RealtimeMixin):
     serializer_class = LlmPromptSerializer
 
     def get_queryset(self):
-        return LlmSetting.objects.filter(course_id=self.kwargs["course_pk"])
+        return LlmSetting.objects.filter(course=self.kwargs["course_pk"])
     
     def create(self, request, *args, **kwargs):
         "Create a new LLM Prompt"
-
-        if LlmSetting.objects.filter(course_id=self.kwargs['course_pk']):
-            return JsonResponse({"detail":"Prompt already exists for this course. Please either update or delete that one"})
+        queryset = Course.objects.filter(pk=self.kwargs["course_pk"])
         request.data["course"] = self.kwargs["course_pk"]
+        course = queryset[0]
+        request.data["llm_prompt"] = f"""
+            You are an AI TA designed to answer office hour questions for {course.department} {course.course_code}, which is a course on {course.course_title}. 
+            The description of the course is:
+            {course.description}
+            
+            Your responses should be informative and logical.
+
+            You should always refer to technical information.
+
+            Minimize any other prose.
+
+            Keep your answers short and impersonal.
+
+            YOU MAY ONLY ANSWER CONCEPTUAL QUESTIONS.
+
+            IF  YOU DO NOT FULLY UNDERSTAND THE USER'S QUESTION, ASK A FOLLOW UP QUESTION
+
+            YOU WOULD MUCH RATHER ANSWER TOO LITTLE THAN TOO MUCH.
+
+            Below are examples, where the question is deliminated in ticks, your response is in brackets, and each example is separated by commas:
+            'Q4?': [Please elaborate more on your question if you would like me to help]
+        """
         return super().create(request, *args, **kwargs)
+    
+    def update(self, request, *args, **kwargs):
+        "updates existing LLM Prompt"
+        print(self)
+
+
+
 
 class LlmResponseViewSet(viewsets.ModelViewSet, generics.ListAPIView):
     """
@@ -841,10 +869,10 @@ class LlmResponseViewSet(viewsets.ModelViewSet, generics.ListAPIView):
     """
 
     permission_classes = [QuestionPermission | IsSuperuser]
-    serializer_class = LlmPromptSerializer
+    serializer_class = QuestionSerializer
 
     def get_queryset(self, *args, **kwargs):
-        return LlmSetting.objects.filter(course_id=self.kwargs['course_pk'])
+        return Question.objects.filter(pk=self.kwargs['question_pk'])
 
     def create(self, *args, **kwargs):
         """
@@ -852,14 +880,10 @@ class LlmResponseViewSet(viewsets.ModelViewSet, generics.ListAPIView):
         """
 
         question = Question.objects.filter(pk=self.kwargs['question_pk'])
-
-        if len(question[0].llm_response) > 0:
-            return JsonResponse({"detail": "Question already asked"})
         
-        items = LlmSetting.objects.filter(pk=self.kwargs['course_pk'])
+        items = LlmSetting.objects.filter(course_id=self.kwargs['course_pk'])
     
         response = generateResponse(question[0].text, items[0])
-        print(self.objects)
         QuestionSerializer.update(self, question[0], {
             "llm_response": response
         })

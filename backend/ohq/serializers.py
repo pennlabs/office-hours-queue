@@ -255,7 +255,6 @@ class QuestionSerializer(QueueRouteMixin):
         Students can update their question's text and video_chat_url or withdraw the question
         TAs+ can only modify the status of a question.
         """
-        print(self)
         if "llm_response" in validated_data:
             instance.llm_response = validated_data["llm_response"]
             instance.save()
@@ -596,7 +595,7 @@ class LlmPromptSerializer(serializers.ModelSerializer):
     
     def update(self, instance, validated_data):
         """
-        Professors and Hea) TAs can customize and modify the Llm prompt
+        Professors and Head TAs can customize and modify the Llm prompt
         """
         user = self.context["request"].user
         membership = Membership.objects.get(course=instance.course, user=user)
