@@ -9,12 +9,10 @@ import { AuthUserContext } from "../../../context/auth";
 import { Kind, UserMembership } from "../../../types";
 import { useMemberships } from "../../../hooks/data-fetching/dashboard";
 import { isLeadershipRole } from "../../../utils/enums";
-import {
-    CHANGELOG_TOKEN,
-    FALL_2023_TRANSITION_MESSAGE_TOKEN,
-} from "../../../constants";
+import { CHANGELOG_TOKEN } from "../../../constants";
 import ModalShowNewChanges from "./Modals/ModalShowNewChanges";
 import updatedMd from "../../Changelog/changelogfile.md";
+import tips from "./tips.json";
 
 // TODO: try to readd new user stuff, rip out loading stuff
 const Dashboard = () => {
@@ -22,11 +20,6 @@ const Dashboard = () => {
     if (initialUser === undefined) {
         throw new Error("Must be logged-in");
     }
-    const [messageDisp, setMessageDisp] = useState(false);
-    useEffect(() => {
-        const state = localStorage.getItem(FALL_2023_TRANSITION_MESSAGE_TOKEN);
-        setMessageDisp(state !== "true");
-    }, []);
 
     const { memberships, mutate } = useMemberships(initialUser);
 
@@ -60,6 +53,24 @@ const Dashboard = () => {
     const [logOpen, setLogOpen] = useState(false);
     const [logModal, setLogModal] = useState(false);
 
+    const [tipDisp, setTipDisp] = useState(false);
+
+    const getTip = () => {
+        const filteredTips = canCreateCourse
+            ? tips
+            : tips.filter((x) => x.student === true);
+        const currentDate = new Date();
+        const index = currentDate.getDate() % filteredTips.length;
+        return filteredTips[index];
+    };
+
+    useEffect(() => {
+        // Message display based on local storage
+        const currentDate = new Date();
+        const today = currentDate.toDateString();
+        setTipDisp(today !== localStorage.getItem("tipLastSeenDate"));
+    }, []);
+
     useEffect(() => {
         const savedMd = `${window.localStorage.getItem(CHANGELOG_TOKEN)}`;
         if (updatedMd !== savedMd) setLogOpen(true);
@@ -78,7 +89,7 @@ const Dashboard = () => {
                                 <Header as="h2">Student Courses</Header>
                             </Segment>
                         </Segment>
-                        {messageDisp && (
+                        {tipDisp && (
                             <div
                                 style={{
                                     position: "absolute",
@@ -88,24 +99,18 @@ const Dashboard = () => {
                             >
                                 <Message
                                     onDismiss={() => {
-                                        setMessageDisp(false);
+                                        const today = new Date().toDateString();
                                         localStorage.setItem(
-                                            FALL_2023_TRANSITION_MESSAGE_TOKEN,
-                                            "true"
+                                            "tipLastSeenDate",
+                                            today
                                         );
+                                        setTipDisp(false);
                                     }}
                                     size="mini"
-                                    header="Welcome back!"
-                                    content={
-                                        <>
-                                            Summer 2023 courses have been
-                                            archived in preparation for Fall
-                                            2023.
-                                            <br />
-                                            Please contact us at contact@ohq.io
-                                            if this is an error.
-                                        </>
-                                    }
+                                    header={`💡Tip of the Day: ${
+                                        getTip().title
+                                    }`}
+                                    content={getTip().description}
                                 />
                             </div>
                         )}
