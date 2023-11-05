@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { Segment, Header, Grid, Table } from "semantic-ui-react";
+import { Segment, Header, Grid, Table, Pagination } from "semantic-ui-react";
 import _ from "lodash";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
@@ -17,6 +17,7 @@ import {
     useStaff,
 } from "../../../hooks/data-fetching/course";
 
+const MAX_MEMBERS_PER_PAGE = 20;
 interface RosterProps {
     course: Course;
     memberships: Membership[];
@@ -53,6 +54,7 @@ const Roster = (props: RosterProps) => {
     const [filteredUsers, setFilteredUsers] = useState(memberships);
     const { data: invitedMembersData, mutate: invitedMutate } =
         useInvitedMembers(courseId, invites);
+    const [activePageState, setActivePageState] = useState(1);
 
     // invitedMembersData is non null because initialData is provided
     // and the key stays the same
@@ -139,6 +141,7 @@ const Roster = (props: RosterProps) => {
             );
         });
         setFilteredUsers(newFilteredUsers);
+        setActivePageState(1);
         setTableState({ direction: "ascending", column: "fullName" });
     };
 
@@ -399,7 +402,11 @@ const Roster = (props: RosterProps) => {
                             </Table.Header>
                             <Table.Body>
                                 {_.orderBy(
-                                    filteredUsers,
+                                    filteredUsers.slice(
+                                        (activePageState - 1) *
+                                            MAX_MEMBERS_PER_PAGE,
+                                        activePageState * MAX_MEMBERS_PER_PAGE
+                                    ),
                                     getFilter(tableState.column),
                                     [
                                         tableState.direction === "ascending"
@@ -464,6 +471,49 @@ const Roster = (props: RosterProps) => {
                                     </Table.Row>
                                 ))}
                             </Table.Body>
+                            <Table.Footer>
+                                {memberships && (
+                                    <Table.Row textAlign="right">
+                                        <Table.HeaderCell colSpan="6">
+                                            <Pagination
+                                                activePage={activePageState}
+                                                totalPages={Math.max(
+                                                    1,
+                                                    Math.ceil(
+                                                        filteredUsers.length /
+                                                            MAX_MEMBERS_PER_PAGE
+                                                    )
+                                                )}
+                                                onPageChange={(
+                                                    event,
+                                                    { activePage }
+                                                ) => {
+                                                    let parsedPage: number;
+                                                    if (
+                                                        typeof activePage ===
+                                                        "string"
+                                                    ) {
+                                                        parsedPage = parseInt(
+                                                            activePage,
+                                                            10
+                                                        );
+                                                    } else if (
+                                                        typeof activePage ===
+                                                        "number"
+                                                    ) {
+                                                        parsedPage = activePage;
+                                                    } else {
+                                                        parsedPage = 1;
+                                                    }
+                                                    setActivePageState(
+                                                        parsedPage
+                                                    );
+                                                }}
+                                            />
+                                        </Table.HeaderCell>
+                                    </Table.Row>
+                                )}
+                            </Table.Footer>
                         </Table>
                         <div>
                             {`${filteredUsers.length} user${
