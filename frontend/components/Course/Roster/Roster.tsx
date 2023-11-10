@@ -488,23 +488,14 @@ const Roster = (props: RosterProps) => {
                                                     event,
                                                     { activePage }
                                                 ) => {
-                                                    let parsedPage: number;
-                                                    if (
+                                                    const parsedPage: number =
                                                         typeof activePage ===
                                                         "string"
-                                                    ) {
-                                                        parsedPage = parseInt(
-                                                            activePage,
-                                                            10
-                                                        );
-                                                    } else if (
-                                                        typeof activePage ===
-                                                        "number"
-                                                    ) {
-                                                        parsedPage = activePage;
-                                                    } else {
-                                                        parsedPage = 1;
-                                                    }
+                                                            ? parseInt(
+                                                                  activePage,
+                                                                  10
+                                                              )
+                                                            : activePage ?? 1;
                                                     setActivePageState(
                                                         parsedPage
                                                     );
