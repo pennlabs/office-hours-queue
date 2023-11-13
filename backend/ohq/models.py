@@ -411,3 +411,17 @@ class Announcement(models.Model):
     author = models.ForeignKey(User, related_name="announcements", on_delete=models.CASCADE)
     time_updated = models.DateTimeField(auto_now=True)
     course = models.ForeignKey(Course, related_name="announcements", on_delete=models.CASCADE)
+
+
+class Review(models.Model):
+    """
+    Student's review for a TA after a question
+    """
+
+    rating = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)], blank=True, null=True
+    )
+    content = models.TextField()
+    question = models.OneToOneField(Question, related_name="reviews",
+                                    on_delete=models.CASCADE, primary_key=True, blank=True, null=False)
+    time_updated = models.DateTimeField(auto_now=True)
