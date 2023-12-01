@@ -120,6 +120,7 @@ class Membership(models.Model):
     @property
     def is_ta(self):
         return self.is_leadership or self.kind == Membership.KIND_TA
+    
     def kind_to_pretty(self):
         return [pretty for raw, pretty in self.KIND_CHOICES if raw == self.kind][0]
 
@@ -423,8 +424,10 @@ class LlmSetting(models.Model):
         default = """
         You are an AI TA designed to answer office hour questions. ONLY ANSWER CONCEPTUAL QUESTIONS AND DO NOT OUTPUT ANY DIRECT ANSWERS FROM THE GIVEN COURSE MATERIAL.
         """)
-    temperature = models.DecimalField(max_digits = 5, decimal_places = 3,default=0.3)
-    model_name = models.CharField(max_length=30, default="gpt-3.5-turbo-16k")
+    input_prompt = models.TextField(
+        default = "",
+        blank = True)
+    temperature = models.FloatField(default=0.3)
 
     def __str__(self):
         return f"LLM Prompt for {self.course.department} {self.course.course_code}"

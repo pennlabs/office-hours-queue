@@ -16,6 +16,7 @@ from django.db.models import (
     Subquery,
     When,
 )
+from django.forms import model_to_dict
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.utils import timezone
 from django.utils.crypto import get_random_string
@@ -59,6 +60,8 @@ from ohq.permissions import (
     MembershipInvitePermission,
     MembershipPermission,
     OccurrencePermission,
+    LlmResponsePermission,
+    LlmSettingPermission,
     QuestionPermission,
     QuestionSearchPermission,
     QueuePermission,
@@ -802,7 +805,7 @@ class LlmSettingViewSet(viewsets.ModelViewSet, RealtimeMixin):
     destroy:
     Delete a prompt.
     """
-    permission_classes = [IsSuperuser]
+    permission_classes = [LlmSettingPermission | IsSuperuser]
     serializer_class = LlmPromptSerializer
 
     def get_queryset(self):
@@ -813,36 +816,25 @@ class LlmSettingViewSet(viewsets.ModelViewSet, RealtimeMixin):
         queryset = Course.objects.filter(pk=self.kwargs["course_pk"])
         request.data["course"] = self.kwargs["course_pk"]
         course = queryset[0]
-        request.data["llm_prompt"] = f"""
-            You are an AI TA designed to answer office hour questions for {course.department} {course.course_code}, which is a course on {course.course_title}. 
-            The description of the course is:
-            {course.description}
-            
-            Your responses should be informative and logical.
 
-            You should always refer to technical information.
-
-            Minimize any other prose.
-
-            Keep your answers short and impersonal.
-
-            YOU MAY ONLY ANSWER CONCEPTUAL QUESTIONS.
-
-            IF  YOU DO NOT FULLY UNDERSTAND THE USER'S QUESTION, ASK A FOLLOW UP QUESTION
-
-            YOU WOULD MUCH RATHER ANSWER TOO LITTLE THAN TOO MUCH.
-
-            Below are examples, where the question is deliminated in ticks, your response is in brackets, and each example is separated by commas:
-            'Q4?': [Please elaborate more on your question if you would like me to help]
-        """
+        prompt = str(settings.BASE_LLM_PROMPT)
+        prompt = prompt.replace("\\course.department\\", course.department)
+        prompt = prompt.replace("\\course.course_code\\", course.course_code)
+        prompt = prompt.replace("\\course.course_title\\", course.course_title)
+        prompt = prompt.replace("\\course.description\\", course.description)
+        
+        request.data["llm_prompt"] = prompt + "\n" + request.data["llm_prompt"]
         return super().create(request, *args, **kwargs)
     
-    def update(self, request, *args, **kwargs):
-        "updates existing LLM Prompt"
-        print(self)
-
-
-
+    def patch(self, request, *args, **kwargs):
+        if "llm_prompt" in request.data:
+            return JsonResponse(data="Please do not change template prompt")
+        obj = LlmSetting.objects.filter(course=self.kwargs["course_pk"])[0]
+        serializer = LlmPromptSerializer(obj, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(data=model_to_dict(obj))
+        return JsonResponse(data="wrong parameters")
 
 class LlmResponseViewSet(viewsets.ModelViewSet, generics.ListAPIView):
     """
@@ -868,7 +860,7 @@ class LlmResponseViewSet(viewsets.ModelViewSet, generics.ListAPIView):
     Delete a response.
     """
 
-    permission_classes = [QuestionPermission | IsSuperuser]
+    permission_classes = [LlmResponsePermission | IsSuperuser]
     serializer_class = QuestionSerializer
 
     def get_queryset(self, *args, **kwargs):

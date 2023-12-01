@@ -591,20 +591,17 @@ class LlmPromptSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = LlmSetting
-        fields = ("id", "course", "llm_prompt", "temperature", "model_name")
+        fields = ("id", "course", "llm_prompt", "input_prompt", "temperature")
     
     def update(self, instance, validated_data):
         """
         Professors and Head TAs can customize and modify the Llm prompt
         """
-        user = self.context["request"].user
-        membership = Membership.objects.get(course=instance.course, user=user)
 
-        if membership.is_leadership:
-            if  "temperature" in validated_data:
-                instance.temperature = float(validated_data["temperature"])
-            if "llm_prompt" in validated_data:
-                instance.llm_prompt = validated_data["llm_prompt"]
+        if  "temperature" in validated_data:
+            instance.temperature = float(validated_data["temperature"])
+        if "input_prompt" in validated_data:
+            instance.input_prompt = validated_data["input_prompt"]
         instance.save()
 
         return instance
