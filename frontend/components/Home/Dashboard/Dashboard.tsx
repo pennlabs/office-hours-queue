@@ -11,13 +11,10 @@ import { AuthUserContext } from "../../../context/auth";
 import { Kind, UserMembership } from "../../../types";
 import { useMemberships } from "../../../hooks/data-fetching/dashboard";
 import { isLeadershipRole } from "../../../utils/enums";
-import {
-    CHANGELOG_TOKEN,
-    FALL_2023_TRANSITION_MESSAGE_TOKEN,
-    MOBILE_BP,
-} from "../../../constants";
+import { CHANGELOG_TOKEN, MOBILE_BP } from "../../../constants";
 import ModalShowNewChanges from "./Modals/ModalShowNewChanges";
 import updatedMd from "../../Changelog/changelogfile.md";
+import tips from "./Messages/tips.json";
 
 // TODO: try to readd new user stuff, rip out loading stuff
 const Dashboard = () => {
@@ -25,11 +22,6 @@ const Dashboard = () => {
     if (initialUser === undefined) {
         throw new Error("Must be logged-in");
     }
-    const [messageDisp, setMessageDisp] = useState(false);
-    useEffect(() => {
-        const state = localStorage.getItem(FALL_2023_TRANSITION_MESSAGE_TOKEN);
-        setMessageDisp(state !== "true");
-    }, []);
 
     const { memberships, mutate } = useMemberships(initialUser);
 
@@ -63,6 +55,24 @@ const Dashboard = () => {
     const [logOpen, setLogOpen] = useState(false);
     const [logModal, setLogModal] = useState(false);
 
+    const [tipDisp, setTipDisp] = useState(false);
+
+    const getTip = () => {
+        const filteredTips = canCreateCourse
+            ? tips
+            : tips.filter((x) => x.student === true);
+        const currentDate = new Date();
+        const index = currentDate.getDate() % filteredTips.length;
+        return filteredTips[index];
+    };
+
+    useEffect(() => {
+        // Message display based on local storage
+        const currentDate = new Date();
+        const today = currentDate.toDateString();
+        setTipDisp(today !== localStorage.getItem("tipLastSeenDate"));
+    }, []);
+
     useEffect(() => {
         const savedMd = `${window.localStorage.getItem(CHANGELOG_TOKEN)}`;
         if (updatedMd !== savedMd) setLogOpen(true);
@@ -89,39 +99,33 @@ const Dashboard = () => {
                                     <Header as="h2">Student Courses</Header>
                                 </Segment>
                             </Segment>
-                            {messageDisp && (
-                                <div
-                                    style={{
-                                        position: "absolute",
-                                        left: "50%",
-                                        transform: "translateX(-50%)",
-                                    }}
-                                >
-                                    <Message
-                                        onDismiss={() => {
-                                            setMessageDisp(false);
-                                            localStorage.setItem(
-                                                FALL_2023_TRANSITION_MESSAGE_TOKEN,
-                                                "true"
-                                            );
-                                        }}
-                                        size="mini"
-                                        header="Welcome back!"
-                                        content={
-                                            <>
-                                                Summer 2023 courses have been
-                                                archived in preparation for Fall
-                                                2023.
-                                                <br />
-                                                Please contact us at
-                                                contact@ohq.io if this is an
-                                                error.
-                                            </>
-                                        }
-                                    />
-                                </div>
-                            )}
                         </Grid.Row>
+                        {tipDisp && (
+                            <Segment
+                                basic
+                                style={{
+                                    position: "absolute",
+                                    left: "50%",
+                                    transform: "translateX(-50%)",
+                                }}
+                            >
+                                <Message
+                                    onDismiss={() => {
+                                        const today = new Date().toDateString();
+                                        localStorage.setItem(
+                                            "tipLastSeenDate",
+                                            today
+                                        );
+                                        setTipDisp(false);
+                                    }}
+                                    size="mini"
+                                    header={`💡Tip of the Day: ${
+                                        getTip().title
+                                    }`}
+                                    content={getTip().description}
+                                />
+                            </Segment>
+                        )}
                         <StudentCourses
                             memberships={getMemberships(true)}
                             mutate={mutate}
@@ -181,9 +185,7 @@ const Dashboard = () => {
                     </Alert>
                 </Snackbar>
 
-                <Footer
-                    showFeedback={useMediaQuery(`(max-width: ${MOBILE_BP})`)}
-                />
+                <Footer />
                 <ModalShowNewChanges
                     openModal={logModal}
                     setOpen={setLogModal}

@@ -68,6 +68,26 @@ const Summary = (props: SummaryProps) => {
                                 >
                                     Time Asked
                                 </Table.HeaderCell>
+                                <Table.HeaderCell
+                                    width={2}
+                                    sorted={
+                                        filters.orderBy ===
+                                        SummaryOrderBy.TimeRespondedToAsc
+                                            ? "ascending"
+                                            : "descending"
+                                    }
+                                    onClick={() => {
+                                        updateFilter({
+                                            orderBy:
+                                                filters.orderBy ===
+                                                SummaryOrderBy.TimeRespondedToAsc
+                                                    ? SummaryOrderBy.TimeRespondedToDesc
+                                                    : SummaryOrderBy.TimeRespondedToAsc,
+                                        });
+                                    }}
+                                >
+                                    Time Answered
+                                </Table.HeaderCell>
                                 <Table.HeaderCell width={1}>
                                     State
                                 </Table.HeaderCell>
@@ -96,6 +116,16 @@ const Summary = (props: SummaryProps) => {
                                             })}
                                         </Table.Cell>
                                         <Table.Cell>
+                                            {qs.timeRespondedTo && [
+                                                new Date(
+                                                    qs.timeRespondedTo
+                                                ).toLocaleString("en-US", {
+                                                    dateStyle: "short",
+                                                    timeStyle: "short",
+                                                }),
+                                            ]}
+                                        </Table.Cell>
+                                        <Table.Cell>
                                             {prettifyQuestionState(qs.status)}
                                         </Table.Cell>
                                     </Table.Row>
@@ -119,24 +149,14 @@ const Summary = (props: SummaryProps) => {
                                                 _,
                                                 { activePage }
                                             ) => {
-                                                let parsedPage: number;
-                                                if (
+                                                const parsedPage: number =
                                                     typeof activePage ===
                                                     "string"
-                                                ) {
-                                                    parsedPage = parseInt(
-                                                        activePage,
-                                                        10
-                                                    );
-                                                } else if (
-                                                    typeof activePage ===
-                                                    "number"
-                                                ) {
-                                                    parsedPage = activePage;
-                                                } else {
-                                                    // I'm not quite sure what would trigger this case though, so we fall back to 1
-                                                    parsedPage = 1;
-                                                }
+                                                        ? parseInt(
+                                                              activePage,
+                                                              10
+                                                          )
+                                                        : activePage ?? 1;
 
                                                 updateFilter({
                                                     page: parsedPage,

@@ -555,10 +555,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@pennlabs/kittyhawk@^1.1.7":
-  version "1.1.7"
-  resolved "https://registry.yarnpkg.com/@pennlabs/kittyhawk/-/kittyhawk-1.1.7.tgz#c83f03f4a9836199b3ac3729066bc8987262ab04"
-  integrity sha512-EuHMIWNOcmrow67hunUXF92QKXghR3+MNrYnqi/oN1bOAVuJ5N64mafSFmR7wW7wIFbqODRQcq74PwboFa1d1w==
+"@pennlabs/kittyhawk@^1.1.9":
+  version "1.1.9"
+  resolved "https://registry.yarnpkg.com/@pennlabs/kittyhawk/-/kittyhawk-1.1.9.tgz#843c72bf8a45a14c7017f67fade3859bb842933a"
+  integrity sha512-1kmxRuy5KPCD2/MLu2lKafWPT60RNDdQ4XYON/e0p5zB+nvWowzzdGY/O3udqGBewtwYMVRKd96Ys/m9Zyc8yw==
   dependencies:
     cdk8s "^2.2.59"
     cdk8s-cli "^1.0.143"
