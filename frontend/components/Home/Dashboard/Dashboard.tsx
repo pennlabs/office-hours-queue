@@ -68,127 +68,127 @@ const Dashboard = () => {
         if (updatedMd !== savedMd) setLogOpen(true);
     }, []);
 
+    const isMobile = useMediaQuery(`(max-width: ${MOBILE_BP})`);
+
     return (
-        <Grid.Column width={13}>
-            <Grid>
-                <Grid.Column
-                    width={13}
-                    style={{ display: "flex", flexDirection: "column" }}
-                >
-                    {memberships && (
-                        <Grid padded stackable container>
-                            <Grid.Row>
+        <Grid.Column
+            width={13}
+            style={{
+                display: "flex",
+                flexDirection: "row-reverse",
+                justifyContent: "space-between",
+            }}
+        >
+            {!isMobile && <EventSidebar memberships={memberships} />}
+            <div style={{ minWidth: 0 }}>
+                {memberships && (
+                    <Grid padded stackable container>
+                        <Grid.Row>
+                            <Segment basic>
                                 <Segment basic>
-                                    <Segment basic>
-                                        <Header as="h2">Student Courses</Header>
-                                    </Segment>
+                                    <Header as="h2">Student Courses</Header>
                                 </Segment>
-                                {messageDisp && (
-                                    <div
-                                        style={{
-                                            position: "absolute",
-                                            left: "50%",
-                                            transform: "translateX(-50%)",
+                            </Segment>
+                            {messageDisp && (
+                                <div
+                                    style={{
+                                        position: "absolute",
+                                        left: "50%",
+                                        transform: "translateX(-50%)",
+                                    }}
+                                >
+                                    <Message
+                                        onDismiss={() => {
+                                            setMessageDisp(false);
+                                            localStorage.setItem(
+                                                FALL_2023_TRANSITION_MESSAGE_TOKEN,
+                                                "true"
+                                            );
                                         }}
-                                    >
-                                        <Message
-                                            onDismiss={() => {
-                                                setMessageDisp(false);
-                                                localStorage.setItem(
-                                                    FALL_2023_TRANSITION_MESSAGE_TOKEN,
-                                                    "true"
-                                                );
-                                            }}
-                                            size="mini"
-                                            header="Welcome back!"
-                                            content={
-                                                <>
-                                                    Summer 2023 courses have
-                                                    been archived in preparation
-                                                    for Fall 2023.
-                                                    <br />
-                                                    Please contact us at
-                                                    contact@ohq.io if this is an
-                                                    error.
-                                                </>
-                                            }
-                                        />
-                                    </div>
-                                )}
-                            </Grid.Row>
-                            <StudentCourses
-                                memberships={getMemberships(true)}
-                                mutate={mutate}
-                            />
-                            {showInstructorCourses && (
-                                <>
-                                    <Grid.Row>
-                                        <Segment basic>
-                                            <Segment basic>
-                                                <Header as="h2">
-                                                    Instructor Courses
-                                                </Header>
-                                            </Segment>
-                                        </Segment>
-                                    </Grid.Row>
-                                    <InstructorCourses
-                                        memberships={getMemberships(false)}
-                                        mutate={mutate}
-                                        canCreateCourse={canCreateCourse}
+                                        size="mini"
+                                        header="Welcome back!"
+                                        content={
+                                            <>
+                                                Summer 2023 courses have been
+                                                archived in preparation for Fall
+                                                2023.
+                                                <br />
+                                                Please contact us at
+                                                contact@ohq.io if this is an
+                                                error.
+                                            </>
+                                        }
                                     />
-                                </>
+                                </div>
                             )}
-                        </Grid>
-                    )}
-                    <Snackbar
-                        open={toastOpen}
-                        autoHideDuration={6000}
+                        </Grid.Row>
+                        <StudentCourses
+                            memberships={getMemberships(true)}
+                            mutate={mutate}
+                        />
+                        {showInstructorCourses && (
+                            <>
+                                <Grid.Row>
+                                    <Segment basic>
+                                        <Segment basic>
+                                            <Header as="h2">
+                                                Instructor Courses
+                                            </Header>
+                                        </Segment>
+                                    </Segment>
+                                </Grid.Row>
+                                <InstructorCourses
+                                    memberships={getMemberships(false)}
+                                    mutate={mutate}
+                                    canCreateCourse={canCreateCourse}
+                                />
+                            </>
+                        )}
+                    </Grid>
+                )}
+                <Snackbar
+                    open={toastOpen}
+                    autoHideDuration={6000}
+                    onClose={() => setToastOpen(false)}
+                >
+                    <Alert
+                        severity={toast.success ? "success" : "error"}
                         onClose={() => setToastOpen(false)}
                     >
-                        <Alert
-                            severity={toast.success ? "success" : "error"}
-                            onClose={() => setToastOpen(false)}
-                        >
-                            {toast.message}
-                        </Alert>
-                    </Snackbar>
+                        {toast.message}
+                    </Alert>
+                </Snackbar>
 
-                    <Snackbar
-                        open={logOpen}
-                        autoHideDuration={10000}
+                <Snackbar
+                    open={logOpen}
+                    autoHideDuration={10000}
+                    onClose={() => setLogOpen(false)}
+                    anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "right",
+                    }}
+                >
+                    <Alert
+                        severity="info"
                         onClose={() => setLogOpen(false)}
-                        anchorOrigin={{
-                            vertical: "bottom",
-                            horizontal: "right",
+                        onClick={() => {
+                            setLogOpen(false);
+                            setLogModal(true);
                         }}
+                        style={{ cursor: "pointer" }}
                     >
-                        <Alert
-                            severity="info"
-                            onClose={() => setLogOpen(false)}
-                            onClick={() => {
-                                setLogOpen(false);
-                                setLogModal(true);
-                            }}
-                            style={{ cursor: "pointer" }}
-                        >
-                            {logToast.message}
-                        </Alert>
-                    </Snackbar>
+                        {logToast.message}
+                    </Alert>
+                </Snackbar>
 
-                    <Footer
-                        showFeedback={useMediaQuery(
-                            `(max-width: ${MOBILE_BP})`
-                        )}
-                    />
-                    <ModalShowNewChanges
-                        openModal={logModal}
-                        setOpen={setLogModal}
-                    />
-                </Grid.Column>
-                <Grid.Column width={3}>
-                    <EventSidebar memberships={memberships} />
-                </Grid.Column>
-            </Grid>
+                <Footer
+                    showFeedback={useMediaQuery(`(max-width: ${MOBILE_BP})`)}
+                />
+                <ModalShowNewChanges
+                    openModal={logModal}
+                    setOpen={setLogModal}
+                />
+            </div>
         </Grid.Column>
     );
 };

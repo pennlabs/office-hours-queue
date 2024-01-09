@@ -1,10 +1,11 @@
-import { Grid, Header, Segment } from "semantic-ui-react";
-import { Kind, UserMembership, Event, Course } from "../../../types";
+import { Grid, Header, Segment, SemanticCOLORS } from "semantic-ui-react";
+import { UserMembership, Event, Course } from "../../../types";
 import { useListEvents } from "../../../hooks/data-fetching/calendar";
 
 interface EventCardProps {
     event: Event;
     course: Course;
+    color: SemanticCOLORS;
 }
 
 interface EventSidebarProps {
@@ -12,10 +13,9 @@ interface EventSidebarProps {
 }
 
 const EventCard = (props: EventCardProps) => {
-    const { event, course } = props;
+    const { event, course, color } = props;
 
     const startDate = new Date(event.start);
-    // const endDate = new Date(event.end);
 
     const formatDate = (date: Date) =>
         date.toLocaleString("en-US", {
@@ -25,7 +25,7 @@ const EventCard = (props: EventCardProps) => {
         });
 
     return (
-        <Segment attached="top" color="blue">
+        <Segment attached="top" color={color as SemanticCOLORS}>
             <Grid>
                 <Grid.Column width={11}>
                     <Header
@@ -63,50 +63,58 @@ const EventSidebar = (props: EventSidebarProps) => {
         memberships.map((ele) => ele.course.id)
     );
 
-    const studentEvents = data.filter((event) =>
-        memberships.find(
-            (membership) =>
-                event.course_id === membership.course.id &&
-                membership.kind === Kind.STUDENT
-        )
+    const getMembershipIndex = (courseId) =>
+        memberships.findIndex(
+            (membership) => membership.course.id === courseId
+        );
+
+    const events = data.filter(
+        (event) => getMembershipIndex(event.course_id) !== -1
     );
 
-    const instructorEvents = data.filter((event) =>
-        memberships.find(
-            (membership) =>
-                event.course_id === membership.course.id &&
-                membership.kind !== Kind.STUDENT
-        )
-    );
-
-    const findCourse = (courseId) =>
-        memberships.find((ele) => ele.course.id === courseId)!.course;
+    const colors: SemanticCOLORS[] = [
+        "red",
+        "olive",
+        "blue",
+        "pink",
+        "orange",
+        "yellow",
+        "violet",
+        "brown",
+        "yellow",
+        "teal",
+        "purple",
+        "grey",
+    ];
 
     return (
-        <Segment basic>
+        <Segment basic style={{ width: "280px" }}>
             <Segment basic>
                 <Grid padded stackable container>
                     <Grid.Row>
-                        <Header as="h2">Student Events</Header>
+                        <Header as="h2">Today&apos;s Events</Header>
                         {isValidating
                             ? "Loading..."
-                            : studentEvents.map((ele) => (
-                                  <EventCard
-                                      event={ele}
-                                      course={findCourse(ele.course_id)}
-                                  />
-                              ))}
-                    </Grid.Row>
-                    <Grid.Row>
-                        <Header as="h2">Instructor Events</Header>
-                        {isValidating
-                            ? "Loading..."
-                            : instructorEvents.map((ele) => (
-                                  <EventCard
-                                      event={ele}
-                                      course={findCourse(ele.course_id)}
-                                  />
-                              ))}
+                            : events.map((ele) => {
+                                  const courseIndex = getMembershipIndex(
+                                      ele.course_id
+                                  );
+                                  if (
+                                      courseIndex === -1 ||
+                                      memberships[courseIndex].course.archived
+                                  )
+                                      return undefined;
+
+                                  return (
+                                      <EventCard
+                                          event={ele}
+                                          course={
+                                              memberships[courseIndex].course
+                                          }
+                                          color={colors[courseIndex]}
+                                      />
+                                  );
+                              })}
                     </Grid.Row>
                 </Grid>
             </Segment>
