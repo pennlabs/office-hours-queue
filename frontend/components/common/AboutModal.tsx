@@ -18,7 +18,7 @@ const AboutModal = (props: AboutModalProps) => {
                 <a
                     target="_blank"
                     rel="noopener noreferrer"
-                    href="https://airtable.com/shrIZxIjyAE3gOUSg"
+                    href="https://airtable.com/appFRa4NQvNMEbWsA/shrd8C3g0hUSdljKl"
                 >
                     form
                 </a>
