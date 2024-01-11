@@ -260,7 +260,10 @@ export const Analytics = ({ ref }) => (
             <p>
                 We are interested in learning what you might want to see on
                 OHQ&apos;s analytics page. Please fill out{" "}
-                <a href="https://airtable.com/appFRa4NQvNMEbWsA/shrd8C3g0hUSdljKl" rel="noopener">
+                <a
+                    href="https://airtable.com/appFRa4NQvNMEbWsA/shrd8C3g0hUSdljKl"
+                    rel="noopener"
+                >
                     this brief survey
                 </a>{" "}
                 to let us know!
