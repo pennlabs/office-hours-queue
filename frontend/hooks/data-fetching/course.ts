@@ -15,7 +15,7 @@ import {
     User,
     QuestionStatus,
 } from "../../types";
-import { isLeadershipRole } from "../../utils/enums";
+import { isLeadershipRole, isStaffRole } from "../../utils/enums";
 import { doApiRequest } from "../../utils/fetch";
 import {
     QUEUE_STATUS_POLL_INTERVAL,
@@ -80,14 +80,35 @@ export function useStaff(courseId: number, initialUser: User) {
 }
 
 export function useLeadership(courseId: number, initialData: Membership[]) {
-    const { data, error, isValidating, mutate } = useResource(
+    const { data, error, isValidating, mutate } = useResource<Membership[]>(
         `/api/courses/${courseId}/members/`,
-        { initialData }
+        {
+            revalidateOnFocus: false,
+            revalidateOnReconnect: false,
+        }
     );
+
     const leadership: Membership[] = (data || []).filter((mem) =>
         isLeadershipRole(mem.kind)
     );
+
     return { leadership, error, isValidating, mutate };
+}
+
+export function useTA(courseId: number, initialData: Membership[]) {
+    const { data, error, isValidating, mutate } = useResource<Membership[]>(
+        `/api/courses/${courseId}/members/`,
+        {
+            revalidateOnFocus: false,
+            revalidateOnReconnect: false,
+        }
+    );
+
+    const TAs: Membership[] = (data || []).filter((mem) =>
+        isStaffRole(mem.kind)
+    );
+
+    return { TAs, error, isValidating, mutate };
 }
 
 export async function sendMassInvites(

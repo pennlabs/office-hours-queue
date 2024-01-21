@@ -53,6 +53,11 @@ export function isLeadershipRole(role: Kind) {
     return ["PROFESSOR", "HEAD_TA"].indexOf(role) >= 0;
 }
 
+/* Is this redundant? Historically this has been replicated by filtering for user.kind != STUDENT */
+export function isStaffRole(role: Kind) {
+    return ["PROFESSOR", "HEAD_TA", "TA"].indexOf(role) >= 0;
+}
+
 export const questionStateOptions = [
     {
         key: 0,

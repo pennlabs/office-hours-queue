@@ -155,6 +155,13 @@ export interface CoursePageProps {
     leadership: Membership[];
 }
 
+export interface Review {
+    rating: number;
+    content: string;
+    question: Question;
+    timeUpdated: string;
+}
+
 export enum Metric {
     HEATMAP_WAIT = "HEATMAP_AVG_WAIT",
     HEATMAP_QUESTIONS = "HEATMAP_QUESTIONS_PER_TA",

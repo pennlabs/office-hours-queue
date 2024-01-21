@@ -1,4 +1,12 @@
-import { Segment, Message } from "semantic-ui-react";
+import { useState } from "react";
+import {
+    Segment,
+    Message,
+    Rating,
+    Form,
+    TextArea,
+    Button,
+} from "semantic-ui-react";
 import { Question } from "../../../types";
 import { getFullName } from "../../../utils";
 
@@ -40,6 +48,28 @@ const LastQuestionCard = ({ question }: { question: Question }) => {
         }
     };
 
+    /*
+        NEW STUFF FOR TA REVIEWS
+    */
+
+    const [textReview, setTextReview] = useState("");
+    const [submittedFeedback, setSubmittedFeedback] = useState(false);
+
+    const handleRate = (rating: number) => {
+        console.log(rating);
+        if (rating > 3) {
+            setTextReview("GOOD");
+        } else if (rating > 0) {
+            setTextReview("BAD");
+        } else {
+            setTextReview("");
+        }
+    };
+
+    const handleFeedback = () => {
+        setSubmittedFeedback(true);
+    };
+
     return (
         <Segment basic>
             <Segment
@@ -58,6 +88,10 @@ const LastQuestionCard = ({ question }: { question: Question }) => {
                             " on ",
                             <span>{timeString(question.timeRespondedTo)}</span>,
                         ]}
+                        <b>{timeString(question.timeAsked)}</b> was rejected by{" "}
+                        {question.respondedToBy && (
+                            <b>{getFullName(question.respondedToBy)}</b>
+                        )}
                         :
                         <br />
                         <Message error>{question.text}</Message>
@@ -90,13 +124,48 @@ const LastQuestionCard = ({ question }: { question: Question }) => {
                 )}
             </Segment>
             <Message
-                attached="bottom"
+                attached
                 error={question.status === "REJECTED"}
                 success={question.status === "ANSWERED"}
                 info={question.status === "WITHDRAWN"}
             >
                 If you believe this is an error, please contact course staff!
             </Message>
+            {submittedFeedback ? (
+                <Message attached>
+                    <b> Thank you for your feedback! </b>
+                </Message>
+            ) : (
+                <Message attached>
+                    <b>How was your overall experience with this TA?</b>{" "}
+                    <Rating
+                        icon="star"
+                        maxRating={5}
+                        onRate={(_, { rating, maxRating }) =>
+                            handleRate(Number(rating))
+                        }
+                        clearable
+                    />
+                    {textReview !== "" && (
+                        <Form>
+                            <br />
+                            <Form.Field
+                                control={TextArea}
+                                label={
+                                    textReview === "GOOD"
+                                        ? "What did you like about this TA's feedback?"
+                                        : "What could this TA have done better?"
+                                }
+                                placeholder="Feel free to elaborate!"
+                            />
+                            <Button onClick={handleFeedback}>
+                                {" "}
+                                Send Feedback{" "}
+                            </Button>
+                        </Form>
+                    )}
+                </Message>
+            )}
         </Segment>
     );
 };
