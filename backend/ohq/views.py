@@ -45,6 +45,7 @@ from ohq.models import (
     QueueStatistic,
     Semester,
     Tag,
+    Review
 )
 from ohq.pagination import QuestionSearchPagination
 from ohq.permissions import (
@@ -62,6 +63,7 @@ from ohq.permissions import (
     QueuePermission,
     QueueStatisticPermission,
     TagPermission,
+    ReviewPermission
 )
 from ohq.schemas import EventSchema, MassInviteSchema, OccurrenceSchema
 from ohq.serializers import (
@@ -80,6 +82,7 @@ from ohq.serializers import (
     SemesterSerializer,
     TagSerializer,
     UserPrivateSerializer,
+    ReviewSerializer
 )
 from ohq.sms import sendSMSVerification
 
@@ -774,3 +777,12 @@ class OccurrenceViewSet(
 
     def get_queryset(self):
         return Occurrence.objects.filter(pk=self.kwargs["pk"])
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    # permission_classes = [ReviewPermission | IsSuperuser]
+    serializer_class = ReviewSerializer
+    queryset = Review.objects.none()
+
+    def get_queryset(self):
+        return Review.objects.filter(question=self.kwargs["question_pk"])
