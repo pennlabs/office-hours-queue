@@ -24,7 +24,7 @@ def parse_and_send_invites(course, emails, kind):
 
     # Remove invitees already in class
     existing = Membership.objects.filter(
-        course=course, user__username__in=email_map.keys()
+        course=course, user__username__in=email_map.keys(), kind=kind
     ).values_list("user__username", flat=True)
     existing = [email_map[pennkey] for pennkey in existing]
 
