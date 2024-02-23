@@ -796,6 +796,7 @@ class DocumentCreateView(generics.CreateAPIView):
     serializer_class = DocumentSerializer
 
     def post(self, request, *args, **kwargs):
+
         file = request.FILES['file']
 
         file_name, file_extension = os.path.splitext(file.name)
@@ -847,7 +848,7 @@ class DocumentCreateView(generics.CreateAPIView):
 
 class DocumentViewSet(viewsets.ModelViewSet):
 
-    permission_classes = [DocumentPermission | IsSuperuser]
+    # permission_classes = [DocumentPermission | IsSuperuser]
     serializer_class = DocumentSerializer
 
     def get_queryset(self):
@@ -856,7 +857,7 @@ class DocumentViewSet(viewsets.ModelViewSet):
 
 class VectorSearchView(generics.ListAPIView):
 
-    permission_classes = [VectorSearchPermission | IsSuperuser]
+    # permission_classes = [VectorSearchPermission | IsSuperuser]
     serializer_class = VectorDBSerializer
 
     def get(self, request, course_pk=None):
@@ -888,7 +889,7 @@ class VectorSearchView(generics.ListAPIView):
 
 class VectorDBViewSet(viewsets.ModelViewSet):
 
-    permission_classes = [VectorDBPermission | IsSuperuser]
+    # permission_classes = [VectorDBPermission | IsSuperuser]
     serializer_class = VectorDBSerializer
 
     def get_queryset(self):

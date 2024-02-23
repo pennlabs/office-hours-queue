@@ -14,17 +14,6 @@ openai.api_key = settings.OPENAI_API_KEY
 pinecone.init(api_key=settings.PINECONE_API_KEY, environment='gcp-starter')
 index_name = 'ohq-test'
 
-if index_name not in pinecone.list_indexes():
-    # If does not exist, create index
-    pinecone.create_index(
-        index_name,
-        # Dimensionality of text-embedding-ada-002
-        dimension=1536,
-        metric='cosine'
-    )
-    # Wait for index to be initialized
-    time.sleep(1)
-
 index = pinecone.Index(index_name)
 
 """
@@ -75,7 +64,7 @@ def sanitize_to_ascii(text):
 def search_index(term, top_k=5):
     embedded_term = embed_vectors(term)
 
-    pinecone.init(api_key='2a81b230-ba5d-4290-a3ac-b60e6ad17a66', environment='gcp-starter')
+    pinecone.init(api_key=settings.PINECONE_API_KEY, environment='gcp-starter')
     index = pinecone.Index(index_name)
 
     query_response = index.query(vector=[embedded_term], top_k=top_k)
@@ -93,7 +82,7 @@ def search_index(term, top_k=5):
 def search_index_with_metadata(term, metadata, top_k=5):
     embedded_term = embed_vectors(term)
 
-    pinecone.init(api_key='2a81b230-ba5d-4290-a3ac-b60e6ad17a66', environment='gcp-starter')
+    pinecone.init(api_key=settings.PINECONE_API_KEY, environment='gcp-starter')
     index = pinecone.Index(index_name)
 
     metadata = json.loads(metadata)

@@ -513,16 +513,18 @@ class DocumentCreatePermission(permissions.BasePermission):
             course=view.kwargs["course_pk"], user=request.user
         ).first()
 
-        # Non-Students can't do anything
-        if membership is None:
-            return False
+        return membership.is_leadership
 
-        if view.action == "retrieve":
-            return membership.is_ta or membership.is_leadership
+        # # Non-Students can't do anything
+        # if membership is None:
+        #     return False
 
-        # Head TAs+ can make changes
-        if view.action in ["create", "destroy", "update", "partial_update"]:
-            return membership.is_leadership
+        # if view.action == "retrieve":
+        #     return membership.is_ta or membership.is_leadership
+
+        # # Head TAs+ can make changes
+        # if view.action in ["create", "destroy", "update", "partial_update"]:
+        #     return membership.is_leadership
 
 class DocumentPermission(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -565,16 +567,18 @@ class VectorSearchPermission(permissions.BasePermission):
             course=view.kwargs["course_pk"], user=request.user
         ).first()
 
-        # Non-Students can't do anything
-        if membership is None:
-            return False
+        return membership.is_ta or membership.is_leadership
 
-        if view.action == "retrieve":
-            return membership.is_ta or membership.is_leadership
+        # # Non-Students can't do anything
+        # if membership is None:
+        #     return False
 
-        # Head TAs+ can make changes
-        if view.action in ["create", "destroy", "update", "partial_update"]:
-            return membership.is_leadership
+        # if view.action == "retrieve":
+        #     return membership.is_ta or membership.is_leadership
+
+        # # Head TAs+ can make changes
+        # if view.action in ["create", "destroy", "update", "partial_update"]:
+        #     return membership.is_leadership
     
 class VectorDBPermission(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
