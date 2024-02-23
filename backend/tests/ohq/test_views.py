@@ -488,6 +488,7 @@ class LlmViewTestCase(TestCase):
     def test_response(self):
         self.client.force_authenticate(user=self.ta)
         response = self.client.post("/api/courses/" + str(self.course.pk) + "/queues/" + str(self.queue.pk )+ "/questions/" + str(self.question.pk) + "/llm_response/")
+        self.assertTrue(len(response) > 0)
         #print(response.content)
 
     def test_change_prompt(self):
