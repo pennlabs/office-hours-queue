@@ -7,6 +7,7 @@ import {
     HoldOfficeHours,
     Analytics,
     Settings,
+    Feedback,
 } from "./InstructorGuideContent";
 import { useSection } from "./utils";
 
@@ -32,6 +33,8 @@ export default function InstructorGuide() {
 
     const [SettingsHeader, SettingsBody] = useSection("Settings", Settings);
 
+    const [FeedbackHeader, FeedbackBody] = useSection("Feedback", Feedback);
+
     return (
         <>
             <Segment basic>
@@ -43,6 +46,7 @@ export default function InstructorGuide() {
                     <HoldOHHeader />
                     <AnalyticsHeader />
                     <SettingsHeader />
+                    <FeedbackHeader />
                 </List>
             </Segment>
 
@@ -52,10 +56,7 @@ export default function InstructorGuide() {
             <HoldOHBody />
             <AnalyticsBody />
             <SettingsBody />
-            <p>
-                Have any lingering questions? Please email us at contact@ohq.io
-                - we&apos;re happy to help!
-            </p>
+            <FeedbackBody />
         </>
     );
 }

@@ -1,4 +1,4 @@
-import { Segment, List } from "semantic-ui-react";
+import { Segment, List, Divider } from "semantic-ui-react";
 
 import { CenteredImage } from "./utils";
 
@@ -159,6 +159,26 @@ export const Settings = ({ ref }) => (
                 To change your profile information and notification settings, go
                 to the OHQ landing page and click &apos;Account Setting&apos; in
                 the left menu.
+            </p>
+        </Segment>
+    </div>
+);
+
+export const Feedback = ({ ref }) => (
+    <div ref={ref}>
+        <Segment basic>
+            <h3>Feedback</h3>
+            <Divider />
+            <p>
+                Have any lingering questions? Please email us at contact@ohq.io
+                or fill out{" "}
+                <a
+                    href="https://airtable.com/appFRa4NQvNMEbWsA/shrX0oFscDxpo1TnF"
+                    rel="noopener"
+                >
+                    this feedback form
+                </a>{" "}
+                - we&apos;re happy to help!
             </p>
         </Segment>
     </div>

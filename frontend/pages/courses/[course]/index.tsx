@@ -36,7 +36,7 @@ const QueuePage = (props: QueuePageProps) => {
             url="/api/ws/subscribe/"
             findOrigin={
                 process.env.NODE_ENV === "development"
-                    ? () => "ws://localhost:8000"
+                    ? () => "ws://127.0.0.1:8000"
                     : undefined
             }
         >
