@@ -6,6 +6,7 @@ import {
     JoiningOfficeHours,
     WhileInQueue,
     Settings,
+    Feedback,
 } from "./StudentGuideContent";
 import { useSection } from "./utils";
 
@@ -27,6 +28,8 @@ export default function StudentGuide() {
         WhileInQueue
     );
     const [SettingsHeader, SettingsBody] = useSection("Settings", Settings);
+    const [FeedbackHeader, FeedbackBody] = useSection("Feedback", Feedback);
+
     return (
         <>
             <Segment basic>
@@ -37,6 +40,7 @@ export default function StudentGuide() {
                     <JoiningOHHeader />
                     <WhileInQueueHeader />
                     <SettingsHeader />
+                    <FeedbackHeader />
                 </List>
             </Segment>
 
@@ -45,10 +49,7 @@ export default function StudentGuide() {
             <JoiningOHBody />
             <WhileInQueueBody />
             <SettingsBody />
-            <p>
-                Have any lingering questions? Please email us at contact@ohq.io
-                - we&apos;re happy to help!
-            </p>
+            <FeedbackBody />
         </>
     );
 }
