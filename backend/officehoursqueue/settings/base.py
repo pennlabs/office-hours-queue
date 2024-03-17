@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "accounts.apps.AccountsConfig",
     "ohq.apps.OhqConfig",
     "schedule",
+    "storages"
 ]
 
 MIDDLEWARE = [
@@ -185,3 +186,13 @@ MESSAGE_BROKER_URL = REDIS_URL
 # Default to in-memory Channel Layer for dev and CI.
 
 CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
+
+AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY") #NEEDS LABS SETUP
+AWS_SECRET_ACCESS_KEY =  os.environ.get("AWS_SAK") #NEEDS LABS SETUP
+AWS_STORAGE_BUCKET_NAME =  os.environ.get("AWS_BUCKET_NAME") #NEEDS LABS SETUP
+AWS_S3_REGION_NAME =  os.environ.get("AWS_S3_REGION") #us-east-1
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+AWS_S3_VERITY = True
+
+DEFAULT_FILE_STORAGE = "storages.backends.s3.S3Storage"

@@ -258,8 +258,13 @@ class Question(models.Model):
         (STATUS_REJECTED, "Rejected"),
         (STATUS_ANSWERED, "Answered"),
     ]
+
+    def get_course_upload_path(instance, filename):
+        return f"{instance.queue.course.__str__()}/{filename}"
+    
     text = models.TextField()
     queue = models.ForeignKey(Queue, on_delete=models.CASCADE)
+    image = models.FileField(upload_to=get_course_upload_path, blank=True)
     video_chat_url = models.URLField(blank=True, null=True)
 
     note = models.CharField(max_length=255, blank=True, null=True)
