@@ -1,5 +1,7 @@
 import { Review } from "../../types";
 import { useFilteredResource, FilteredResourceResponse } from "./resources";
+import { doApiRequest } from "../../utils/fetch";
+import { logException } from "../../utils/sentry";
 
 export enum ReviewsOrderBy {
     TimeAskedAsc = "time_asked",
@@ -53,9 +55,9 @@ interface ReviewsFilterResponse
 
 export const useReviews = (
     courseId: number,
-    initialReviews: ReviewListResult
+    initialReviews?: ReviewListResult
 ): ReviewsFilterResponse => {
-    const baseUrl = `/api/courses/${courseId}/questions/review`;
+    const baseUrl = `/api/courses/${courseId}/reviews`; // not implemented yet
 
     const { data, error, isValidating, filters, updateFilter } =
         useFilteredResource(baseUrl, summaryFilterToQuery, initialReviews, {
@@ -86,3 +88,24 @@ export const useReviews = (
         updateFilter,
     };
 };
+
+export async function createReview(
+    courseId: number,
+    queueId: number,
+    questionId: number,
+    payload: { rating: number; content: string }
+) {
+    const res = await doApiRequest(
+        `/api/courses/${courseId}/queues/${queueId}/questions/${questionId}/review/`,
+        {
+            method: "POST",
+            body: payload,
+        }
+    );
+    if (!res.ok) {
+        const error = await res.json();
+        const errorObj = Error(JSON.stringify(error));
+        logException(errorObj, JSON.stringify(payload));
+        throw errorObj;
+    }
+}

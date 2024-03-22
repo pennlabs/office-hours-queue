@@ -9,8 +9,17 @@ import {
 } from "semantic-ui-react";
 import { Question } from "../../../types";
 import { getFullName } from "../../../utils";
+import { createReview } from "../../../hooks/data-fetching/tareviews";
 
-const LastQuestionCard = ({ question }: { question: Question }) => {
+const LastQuestionCard = ({
+    question,
+    courseId,
+    queueId,
+}: {
+    question: Question;
+    courseId: number;
+    queueId: number;
+}) => {
     const timeString = (date) => {
         return new Date(date).toLocaleString("en-US", {
             // TODO: this isn't a good fix
@@ -48,25 +57,23 @@ const LastQuestionCard = ({ question }: { question: Question }) => {
         }
     };
 
-    /*
-        NEW STUFF FOR TA REVIEWS
-    */
-
-    const [textReview, setTextReview] = useState("");
+    const [reviewRating, setReviewRating] = useState(0);
+    const [reviewText, setReviewText] = useState("");
     const [submittedFeedback, setSubmittedFeedback] = useState(false);
 
     const handleRate = (rating: number) => {
-        console.log(rating);
-        if (rating > 3) {
-            setTextReview("GOOD");
-        } else if (rating > 0) {
-            setTextReview("BAD");
-        } else {
-            setTextReview("");
-        }
+        setReviewRating(rating);
     };
 
-    const handleFeedback = () => {
+    const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setReviewText(e.target.value);
+    };
+
+    const handleFeedback = async () => {
+        await createReview(courseId, queueId, question.id, {
+            rating: reviewRating,
+            content: reviewText,
+        });
         setSubmittedFeedback(true);
     };
 
@@ -131,41 +138,44 @@ const LastQuestionCard = ({ question }: { question: Question }) => {
             >
                 If you believe this is an error, please contact course staff!
             </Message>
-            {submittedFeedback ? (
-                <Message attached>
-                    <b> Thank you for your feedback! </b>
-                </Message>
-            ) : (
-                <Message attached>
-                    <b>How was your overall experience with this TA?</b>{" "}
-                    <Rating
-                        icon="star"
-                        maxRating={5}
-                        onRate={(_, { rating, maxRating }) =>
-                            handleRate(Number(rating))
-                        }
-                        clearable
-                    />
-                    {textReview !== "" && (
-                        <Form>
-                            <br />
-                            <Form.Field
-                                control={TextArea}
-                                label={
-                                    textReview === "GOOD"
-                                        ? "What did you like about this TA's feedback?"
-                                        : "What could this TA have done better?"
-                                }
-                                placeholder="Feel free to elaborate!"
-                            />
-                            <Button onClick={handleFeedback}>
-                                {" "}
-                                Send Feedback{" "}
-                            </Button>
-                        </Form>
-                    )}
-                </Message>
-            )}
+            {true && // TODO: change this to question.status !== "WITHDRAWN"
+                (submittedFeedback ? (
+                    <Message attached>
+                        <b> Thank you for your feedback! </b>
+                    </Message>
+                ) : (
+                    <Message attached>
+                        <b>How was your overall experience with this TA?</b>{" "}
+                        <Rating
+                            icon="star"
+                            maxRating={5}
+                            onRate={(_, { rating, maxRating }) =>
+                                handleRate(Number(rating))
+                            }
+                            clearable
+                        />
+                        {reviewRating !== 0 && (
+                            <Form>
+                                <br />
+                                <Form.Field
+                                    control={TextArea}
+                                    label={
+                                        reviewRating > 3
+                                            ? "What did you like about this TA's feedback?"
+                                            : "What could this TA have done better?"
+                                    }
+                                    value={reviewText}
+                                    onChange={handleTextChange}
+                                    placeholder="Feel free to elaborate!"
+                                />
+                                <Button onClick={handleFeedback}>
+                                    {" "}
+                                    Send Feedback{" "}
+                                </Button>
+                            </Form>
+                        )}
+                    </Message>
+                ))}
         </Segment>
     );
 };
