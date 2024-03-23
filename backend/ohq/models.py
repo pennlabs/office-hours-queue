@@ -1,3 +1,5 @@
+import os
+
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -264,7 +266,6 @@ class Question(models.Model):
     
     text = models.TextField()
     queue = models.ForeignKey(Queue, on_delete=models.CASCADE)
-    image = models.FileField(upload_to=get_course_upload_path, blank=True)
     video_chat_url = models.URLField(blank=True, null=True)
 
     note = models.CharField(max_length=255, blank=True, null=True)
@@ -288,6 +289,20 @@ class Question(models.Model):
     tags = models.ManyToManyField(Tag, blank=True)
     student_descriptor = models.CharField(max_length=255, blank=True, null=True)
 
+class QuestionFile(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    file = models.FileField(upload_to="question_files/")
+
+# Delete file on delete of QuestionFile object
+@receiver(models.signals.post_delete, sender=QuestionFile)
+def auto_delete_file_on_delete(sender, instance, **kwargs):
+    """
+    Deletes file from filesystem
+    when corresponding `QuestionFile` object is deleted.
+    """
+    if instance.file:
+        if os.path.isfile(instance.file.path):
+            os.remove(instance.file.path)
 
 class CourseStatistic(models.Model):
     """
