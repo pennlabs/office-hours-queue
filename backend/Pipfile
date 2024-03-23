@@ -45,6 +45,7 @@ drf-excel = "*"
 django-debug-toolbar = "*"
 django-storages = "*"
 boto3 = "*"
+backports.zoneinfo="*"
 
 [requires]
 python_version = "3"
