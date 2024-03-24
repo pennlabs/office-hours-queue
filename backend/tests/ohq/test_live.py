@@ -77,7 +77,7 @@ class QuestionTestCase(TransactionTestCase):
         question_position = 2
         response = await self.client.receive_json_from()
 
-        self.assertEquals(question_position, response["instance"]["position"])
+        self.assertEqual(question_position, response["instance"]["position"])
 
         retrieve_payload = {
             "type": "subscribe",
@@ -101,7 +101,7 @@ class QuestionTestCase(TransactionTestCase):
         question_position -= 1
 
         response = await self.client.receive_json_from()
-        self.assertEquals(question_position, response["instance"]["position"])
+        self.assertEqual(question_position, response["instance"]["position"])
 
 
 class AnnouncementTestCase(TransactionTestCase):

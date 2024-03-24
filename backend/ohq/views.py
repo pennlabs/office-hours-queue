@@ -104,7 +104,7 @@ class UserView(generics.RetrieveUpdateAPIView):
     Only updates fields that are passed to the server.
     """
 
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     serializer_class = UserPrivateSerializer
 
     def get_object(self):
@@ -181,7 +181,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         return prefetch(qs, self.get_serializer_class())
 
 
-class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin, FormView):
+class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
     """
     retrieve:
     Return a single question with all information fields present.
@@ -205,7 +205,7 @@ class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin, FormView):
     Delete a question.
     """
 
-    # permission_classes = [QuestionPermission | IsSuperuser]
+    permission_classes = [QuestionPermission | IsSuperuser]
     serializer_class = QuestionSerializer
     queryset = Question.objects.none()
     upload_file_form = UploadFileForm
@@ -406,7 +406,7 @@ class QuestionSearchView(XLSXFileMixin, generics.ListAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_class = QuestionSearchFilter
     pagination_class = QuestionSearchPagination
-    # permission_classes = [QuestionSearchPermission | IsSuperuser]
+    permission_classes = [QuestionSearchPermission | IsSuperuser]
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES + [XLSXRenderer]
     serializer_class = QuestionSerializer
     filename = "questions.xlsx"
@@ -454,7 +454,7 @@ class QueueViewSet(viewsets.ModelViewSet):
     Delete a queue.
     """
 
-    # permission_classes = [QueuePermission | IsSuperuser]
+    permission_classes = [QueuePermission | IsSuperuser]
     serializer_class = QueueSerializer
 
     def get_queryset(self):
