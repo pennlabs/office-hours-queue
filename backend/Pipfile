@@ -43,6 +43,8 @@ gunicorn = "*"
 django-scheduler = "*"
 typing-extensions = "*"
 drf-excel = "*"
+django-storages = "*"
+boto3 = "*"
 
 [requires]
 python_version = "3"
