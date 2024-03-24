@@ -50,8 +50,7 @@ INSTALLED_APPS = [
     "email_tools.apps.EmailToolsConfig",
     "accounts.apps.AccountsConfig",
     "ohq.apps.OhqConfig",
-    "schedule",
-    "storages"
+    "schedule"
 ]
 
 MIDDLEWARE = [
