@@ -26,7 +26,7 @@ pyyaml = "*"
 uritemplate = "*"
 uwsgi = "*"
 django-labs-accounts = "==0.7.1"
-django-phonenumber-field = {extras = ["phonenumbers"],version = "*"}
+django-phonenumber-field = {extras = ["phonenumbers"]}
 drf-nested-routers = "*"
 django-email-tools = "*"
 twilio = "*"
@@ -38,12 +38,12 @@ django-auto-prefetching = "*"
 django-rest-live = ">=0.7.0"
 channels = "<3"
 channels-redis = "*"
-uvicorn = {extras = ["standard"],version = "*"}
+uvicorn = {extras = ["standard"]}
 gunicorn = "*"
 django-scheduler = "*"
 typing-extensions = "*"
 drf-excel = "*"
-django-storages = "==1.10"
+django-storages = "*"
 
 [requires]
-python_version = "3"
+python_version = "3.8"
