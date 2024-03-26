@@ -188,11 +188,17 @@ MESSAGE_BROKER_URL = REDIS_URL
 CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
 
 AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY") #NEEDS SETUP
-AWS_SECRET_ACCESS_KEY =  os.environ.get("AWS_SAK") #NEEDS SETUP
+AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SAK") #NEEDS SETUP
 AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_BUCKET_NAME") #NEEDS SETUP
 AWS_S3_REGION_NAME =  "us-east-1"
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None
-AWS_S3_VERITY = True
 
-DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"
+    }
+}
+AWS_S3_FILE_OVERWRITE = False
+AWS_S3_VERITY = True

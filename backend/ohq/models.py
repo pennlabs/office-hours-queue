@@ -294,15 +294,17 @@ class QuestionFile(models.Model):
     file = models.FileField(upload_to="question_files/")
 
 # Delete file on delete of QuestionFile object
-@receiver(models.signals.post_delete, sender=QuestionFile)
+# @receiver(models.signals.post_delete, sender=QuestionFile)
 def auto_delete_file_on_delete(sender, instance, **kwargs):
     """
+    
     Deletes file from filesystem
     when corresponding `QuestionFile` object is deleted.
     """
-    if instance.file:
-        if os.path.isfile(instance.file.path):
-            os.remove(instance.file.path)
+    ...
+    # if instance.file:
+    #     if os.path.isfile(instance.file.path):
+    #         os.remove(instance.file.path)
 
 class CourseStatistic(models.Model):
     """
