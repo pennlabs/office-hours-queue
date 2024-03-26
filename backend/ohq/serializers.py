@@ -18,6 +18,7 @@ from ohq.models import (
     MembershipInvite,
     Profile,
     Question,
+    QuestionFile,
     Queue,
     QueueStatistic,
     Semester,
@@ -214,6 +215,7 @@ class QuestionSerializer(QueueRouteMixin):
     responded_to_by = UserSerializer(read_only=True)
     tags = TagSerializer(many=True)
     position = serializers.IntegerField(default=-1, read_only=True)
+    files = serializers.ListField(child=serializers.CharField(), read_only=True, required=False)
 
     class Meta:
         model = Question
@@ -234,6 +236,7 @@ class QuestionSerializer(QueueRouteMixin):
             "resolved_note",
             "position",
             "student_descriptor",
+            "files",
         )
         read_only_fields = (
             "time_asked",
@@ -244,6 +247,7 @@ class QuestionSerializer(QueueRouteMixin):
             "should_send_up_soon_notification",
             "resolved_note",
             "position",
+            "files"
         )
 
     def update(self, instance, validated_data):
@@ -294,6 +298,9 @@ class QuestionSerializer(QueueRouteMixin):
                     raise serializers.ValidationError(
                         detail={"detail": "Students can only withdraw a question"}
                     )
+            # if "file" in validated_data:
+            #     new_question_file = QuestionFile.objects.create(question=instance, file=validated_data["file"])
+            #     instance.file = new_question_file
             if "text" in validated_data:
                 instance.text = validated_data["text"]
             if "video_chat_url" in validated_data:
@@ -327,6 +334,7 @@ class QuestionSerializer(QueueRouteMixin):
 
     def create(self, validated_data):
         tags = validated_data.pop("tags")
+        file = validated_data.pop("file", None)
         queue = Queue.objects.get(pk=self.context["view"].kwargs["queue_pk"])
         questions_ahead = Question.objects.filter(
             queue=queue, status=Question.STATUS_ASKED, time_asked__lt=timezone.now()
@@ -335,6 +343,8 @@ class QuestionSerializer(QueueRouteMixin):
         validated_data["status"] = Question.STATUS_ASKED
         validated_data["asked_by"] = self.context["request"].user
         question = super().create(validated_data)
+        if file:
+            QuestionFile.objects.create(question=question, file=file)
         for tag_data in tags:
             try:
                 tag = Tag.objects.get(course=queue.course, **tag_data)
@@ -342,6 +352,13 @@ class QuestionSerializer(QueueRouteMixin):
             except ObjectDoesNotExist:
                 continue
         return question
+    
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        question_files = QuestionFile.objects.filter(question=instance).all()
+        question_file_ids = [question_file.id for question_file in question_files]
+        representation["files"] = question_file_ids
+        return representation
 
 
 class MembershipPrivateSerializer(CourseRouteMixin):

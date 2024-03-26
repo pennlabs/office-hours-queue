@@ -16,6 +16,7 @@ from django.db.models import (
     When,
 )
 from django.http import HttpResponseBadRequest, JsonResponse
+from django.views.generic.edit import FormView
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django_auto_prefetching import prefetch
@@ -41,6 +42,7 @@ from ohq.models import (
     Membership,
     MembershipInvite,
     Question,
+    QuestionFile,
     Queue,
     QueueStatistic,
     Semester,
@@ -82,6 +84,7 @@ from ohq.serializers import (
     UserPrivateSerializer,
 )
 from ohq.sms import sendSMSVerification
+from ohq.forms import UploadFileForm
 
 
 User = get_user_model()
@@ -205,6 +208,7 @@ class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
     permission_classes = [QuestionPermission | IsSuperuser]
     serializer_class = QuestionSerializer
     queryset = Question.objects.none()
+    upload_file_form = UploadFileForm
 
     def get_queryset(self):
         position = (
@@ -313,7 +317,7 @@ class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
                 return JsonResponse({"detail": "rate limited"}, status=429)
         if queue.pin_enabled and queue.pin != request.data.get("pin"):
             return JsonResponse({"detail": "incorrect pin"}, status=409)
-
+        
         return super().create(request, *args, **kwargs)
 
     @action(detail=False)
@@ -345,7 +349,58 @@ class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
             return JsonResponse({"count": count, "wait_time_mins": wait_time_mins})
         else:
             return JsonResponse({"detail": "queue does not have rate limit"}, status=405)
+        
 
+    def make_new_file(self, uploaded_file, question):
+            question_file = QuestionFile(question=question, file=uploaded_file)
+            question_file.save()
+            return question_file
+    
+    @action(detail=True, methods=["post"])
+    def upload_file(self, request, *args, **kwargs):
+        if request.method == "POST":
+            form = self.upload_file_form(request.POST, request.FILES)
+            if form.is_valid():
+                question = Question.objects.filter(pk=self.kwargs["pk"]).first()
+                response = []
+
+                # projecting up total storage
+                current_storage = 0
+                current_qfiles = QuestionFile.objects.filter(question=question).all()
+                for qfile in current_qfiles:
+                    current_storage += qfile.file.size
+                for file in request.FILES.getlist("file"):
+                    current_storage += file.size
+                if current_storage > 5 * 1024 * 1024:  # if total storage exceeds 5MB
+                    return JsonResponse(
+                        {
+                            "detail": "files are too heavy. "
+                            + "total storage for this question exceed 5MB"
+                        },
+                        status=413,
+                    )
+
+                # creating files in storage
+                for file in request.FILES.getlist("file"):
+                    question_file = self.make_new_file(file, question)
+                    response.append({"id": question_file.id, "name": question_file.file.name})
+                return JsonResponse(response, status=200, safe=False)
+            else:
+                return JsonResponse({"detail": form.errors.as_text()}, status=406)
+        return JsonResponse({"detail": "file upload should be POST"}, status=405)
+
+    @action(detail=True, methods=["delete"])
+    def delete_file(self, request, *args, **kwargs):
+        question_file_ids = request.GET.getlist("id")
+        QuestionFile.objects.filter(pk__in=question_file_ids).delete()
+        return JsonResponse({"detail": "Success"}, status=200)
+
+    @action(detail=True, methods=["delete"])
+    def delete_all_file(self, request, *args, **kwargs):
+        question = Question.objects.filter(pk=self.kwargs["pk"]).first()
+        question_files = QuestionFile.objects.filter(question=question)
+        question_files.delete()
+        return JsonResponse({"detail": "Success"}, status=200)
 
 class QuestionSearchView(XLSXFileMixin, generics.ListAPIView):
     filter_backends = [DjangoFilterBackend]

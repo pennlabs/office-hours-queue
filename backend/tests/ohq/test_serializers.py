@@ -205,7 +205,7 @@ class QueueSerializerTestCase(TestCase):
             reverse("ohq:queue-detail", args=[self.course.id, self.queue.id]), {"active": True}
         )
         self.queue.refresh_from_db()
-        self.assertEquals(old_pin, self.queue.pin)
+        self.assertEqual(old_pin, self.queue.pin)
 
         # queue with pin enabled generates new pin
         self.queue.pin_enabled = True
@@ -215,7 +215,7 @@ class QueueSerializerTestCase(TestCase):
             reverse("ohq:queue-detail", args=[self.course.id, self.queue.id]), {"active": True}
         )
         self.queue.refresh_from_db()
-        self.assertNotEquals(old_pin, self.queue.pin)
+        self.assertNotEqual(old_pin, self.queue.pin)
 
         self.queue.active = False
         self.queue.save()
@@ -225,7 +225,7 @@ class QueueSerializerTestCase(TestCase):
             reverse("ohq:queue-detail", args=[self.course.id, self.queue.id]), {"active": True}
         )
         self.queue.refresh_from_db()
-        self.assertNotEquals(old_pin, self.queue.pin)
+        self.assertNotEqual(old_pin, self.queue.pin)
 
         # TAs+ (but not student) can change pin
         self.queue.pin_enabled = True
@@ -237,7 +237,7 @@ class QueueSerializerTestCase(TestCase):
             {"pin": manual_update_pin},
         )
         self.queue.refresh_from_db()
-        self.assertEquals(manual_update_pin, self.queue.pin)
+        self.assertEqual(manual_update_pin, self.queue.pin)
 
         self.queue.pin = self.pin
         self.queue.save()
@@ -247,8 +247,8 @@ class QueueSerializerTestCase(TestCase):
             {"pin": manual_update_pin},
         )
         self.queue.refresh_from_db()
-        self.assertNotEquals(manual_update_pin, self.queue.pin)
-        self.assertEquals(self.pin, self.queue.pin)
+        self.assertNotEqual(manual_update_pin, self.queue.pin)
+        self.assertEqual(self.pin, self.queue.pin)
 
     def test_get_pin(self):
         """
@@ -268,7 +268,7 @@ class QueueSerializerTestCase(TestCase):
             reverse("ohq:queue-detail", args=[self.course.id, self.pin_queue.id])
         )
         content = json.loads(response.content)
-        self.assertEquals(content["pin"], self.pin)
+        self.assertEqual(content["pin"], self.pin)
 
 
 @patch("ohq.serializers.sendUpNextNotificationTask.delay")
@@ -650,8 +650,8 @@ class EventSerializerTestCase(TestCase):
             },
         )
         event = Event.objects.all().first()
-        self.assertEquals(event.title, self.new_title)
-        self.assertEquals(event.rule.frequency, "MONTHLY")
+        self.assertEqual(event.title, self.new_title)
+        self.assertEqual(event.rule.frequency, "MONTHLY")
         # student cannot make changes
         self.client.force_authenticate(user=self.student)
         self.client.patch(
@@ -660,8 +660,8 @@ class EventSerializerTestCase(TestCase):
         )
         event = Event.objects.all().first()
         # title has not changed
-        self.assertEquals(event.title, self.new_title)
-        self.assertEquals(event.rule.frequency, "MONTHLY")
+        self.assertEqual(event.title, self.new_title)
+        self.assertEqual(event.rule.frequency, "MONTHLY")
 
     def test_update_no_rule(self):
         """
@@ -686,7 +686,7 @@ class EventSerializerTestCase(TestCase):
             {"title": self.new_title, "courseId": self.course.id},
         )
         event = Event.objects.all().first()
-        self.assertEquals(event.title, self.new_title)
+        self.assertEqual(event.title, self.new_title)
 
     def test_list(self):
         """
@@ -721,6 +721,6 @@ class EventSerializerTestCase(TestCase):
             + str(self.course.id)
         )
         data = json.loads(response.content)
-        self.assertEquals(2, len(data))
-        self.assertEquals(self.course.id, data[0]["course_id"])
-        self.assertEquals(self.course.id, data[1]["course_id"])
+        self.assertEqual(2, len(data))
+        self.assertEqual(self.course.id, data[0]["course_id"])
+        self.assertEqual(self.course.id, data[1]["course_id"])
