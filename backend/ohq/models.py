@@ -411,3 +411,35 @@ class Announcement(models.Model):
     author = models.ForeignKey(User, related_name="announcements", on_delete=models.CASCADE)
     time_updated = models.DateTimeField(auto_now=True)
     course = models.ForeignKey(Course, related_name="announcements", on_delete=models.CASCADE)
+
+
+class UserStatistic(models.Model):
+    """
+    Statistics related to a user (student or TA) across many courses
+    """
+
+    METRIC_TOTAL_QUESTIONS_ASKED = "TOTAL_QUESTIONS_ASKED"
+    METRIC_TOTAL_QUESTIONS_ANSWERED = "TOTAL_QUESTIONS_ANSWERED"
+    METRIC_TOTAL_TIME_BEING_HELPED = "TOTAL_TIME_BEING_HELPED"
+    METRIC_TOTAL_TIME_HELPING = "TOTAL_TIME_HELPING"
+    METRIC_TOTAL_STUDENTS_HELPED = "TOTAL_STUDENTS_HELPED"
+
+    METRIC_CHOICES = [
+        (METRIC_TOTAL_QUESTIONS_ASKED, "Total questions asked"),
+        (METRIC_TOTAL_QUESTIONS_ANSWERED, "Total questions answered"),
+        (METRIC_TOTAL_TIME_BEING_HELPED, "Total time being helped"),
+        (METRIC_TOTAL_TIME_HELPING, "Total time helping"),
+        (METRIC_TOTAL_STUDENTS_HELPED, "Total students helped"),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    metric = models.CharField(max_length=256, choices=METRIC_CHOICES)
+    value = models.DecimalField(max_digits=16, decimal_places=8)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["user", "metric"], name="unique_user_statistic")
+        ]
+    
+
+
