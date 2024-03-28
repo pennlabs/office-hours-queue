@@ -43,9 +43,6 @@ gunicorn = "*"
 django-scheduler = "*"
 typing-extensions = "*"
 drf-excel = "*"
-django-extensions = "*"
-django-debug-toolbar = "*"
-parameterized = "*"
 
 [requires]
-python_version = "3.10.8"
+python_version = "3"

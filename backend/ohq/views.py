@@ -180,27 +180,6 @@ class CourseViewSet(viewsets.ModelViewSet):
         )
         return prefetch(qs, self.get_serializer_class())
 
-    @action(detail=True)
-    def reviews(self, request, pk):
-        membership = Membership.objects.get(course=pk, user=self.request.user)
-        
-        if membership.kind == "PROFESSOR" or membership.kind_to_pretty == "HEAD_TA" or self.request.user.is_superuser:
-            questions = Question.objects.select_related("review").filter(queue__in=Queue.objects.filter(course=pk))
-        
-        elif membership.kind == "TA":
-            questions = Question.objects.select_related("review").filter(queue__in=Queue.objects.filter(course=pk), responded_to_by=self.request.user)
-
-        elif membership.kind == "STUDENT":
-            questions = Question.objects.select_related("review").filter(queue__in=Queue.objects.filter(course=pk), asked_by=self.request.user)
-
-        reviews = []
-        serializer = ReviewSerializer(many=True)
-        for question in questions:
-            reviews.append(question.review)
-        serializer = ReviewSerializer(reviews, many=True)
-        return JsonResponse(serializer.data, safe=False)
-
-
 
 class QuestionViewSet(viewsets.ModelViewSet, RealtimeMixin):
     """
@@ -799,41 +778,11 @@ class OccurrenceViewSet(
     def get_queryset(self):
         return Occurrence.objects.filter(pk=self.kwargs["pk"])
 
+
 class ReviewViewSet(viewsets.ModelViewSet):
-    """
-    retrieve:
-    Return a review based on type of user. All reviews are anonymous.
-    Students can retrieve review made by themselves. 
-    TAs can retrieve reviews made for themselves. 
-    Head TAs/Professor can retrieve any review.
-
-    list:
-    Return a list of reviews based on type of user. All reviews are anonymous.
-    Students can retrieve reviews made by themselves. 
-    TAs can retrieve reviews made for themselves. 
-    Head TAs/Professor can retrieve anyreview.
-
-    update:
-    Update all fields in a review.
-    You must specify all of the fields or use a patch request.
-
-    partial_update:
-    Update certain fields in a review.
-    Only specify the fields that you want to change.
-
-    destroy:
-    Delete a review.
-    reviewId is required.
-    """
+    # permission_classes = [ReviewPermission | IsSuperuser]
     serializer_class = ReviewSerializer
-    permission_classes = [ReviewPermission | IsSuperuser]
+    queryset = Review.objects.none()
 
     def get_queryset(self):
-        membership = Membership.objects.get(course=self.kwargs["course_pk"], user=self.request.user)
-        if membership.kind == "TA":
-            return Review.objects.filter(question=self.kwargs["question_pk"], question__responded_to_by=self.request.user)
-        
-        if membership.kind == "STUDENT":
-            return Review.objects.filter(question=self.kwargs["question_pk"], question__asked_by=self.request.user)
-
         return Review.objects.filter(question=self.kwargs["question_pk"])
