@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.utils.crypto import get_random_string
+from django.http import JsonResponse
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 from rest_live.signals import save_handler
@@ -51,6 +52,41 @@ class QueueRouteMixin(serializers.ModelSerializer):
         self.validated_data["queue"] = Queue.objects.get(pk=self.context["view"].kwargs["queue_pk"])
         return super().save()
 
+class QuestionReviewRouteMixin(serializers.ModelSerializer):
+    """
+    Mixin for serializers that overrides the save method to
+    properly handle the URL parameter for questions.
+    """
+
+    def save(self):
+        self.validated_data["question"] = Question.objects.get(pk=self.context["view"].kwargs["question_pk"])
+        
+        if self.validated_data["question"].status != "ANSWERED":
+            return  JsonResponse({"detail": "This question has not been answered by a TA yet"})
+
+        if self.context["request"].method == "POST" and "rating" in self.validated_data:
+            if "rating" not in self.validated_data:
+                return JsonResponse({"detail": "A rating must be provided"})
+            if self.validated_data["question"].review != None:
+                return  JsonResponse({"detail": "This question is already reviewed."})
+            review = Review(content="", rating=self.validated_data["rating"])
+            if "content" in self.validated_data:
+                review.content = self.validated_data["content"]
+            review.save()
+            self.validated_data["question"].review = review 
+            self.validated_data["question"].save()
+            return JsonResponse({"detail": "Your review has been posted."})
+
+        if self.context["request"].method == "PATCH":
+            self.validated_data["review"] = Review.objects.get(pk=self.context["view"].kwargs["pk"])
+            if "rating" not in self.validated_data and "content" not in self.validated_data:
+                return JsonResponse({"detail": "Your review does not contain any content or rating."})
+            if "rating" in self.validated_data:
+                self.validated_data["review"].rating = self.validated_data["rating"]
+            if "content" in self.validated_data:
+                self.validated_data["review"].content = self.validated_data["content"]
+            self.validated_data["review"].save()
+            return JsonResponse({"detail": "Your review is updated"})
 
 class SemesterSerializer(serializers.ModelSerializer):
     pretty = serializers.SerializerMethodField()
@@ -210,11 +246,26 @@ class TagSerializer(CourseRouteMixin):
         fields = ("id", "name")
 
 
+class ReviewSerializer(QuestionReviewRouteMixin):
+    """
+    Serializer for review
+    """
+    question = serializers.ReadOnlyField(source="question.text")
+    ta_first_name = serializers.ReadOnlyField(source="question.responded_to_by.first_name")
+    ta_last_name = serializers.ReadOnlyField(source="question.responded_to_by.last_name")
+
+    class Meta:
+        model = Review
+        fields = ("id", "content", "rating", "question", "ta_first_name", "ta_last_name")
+        read_only_fields = ("question", "ta_first_name", "ta_last_name")
+
+
 class QuestionSerializer(QueueRouteMixin):
     asked_by = UserSerializer(read_only=True)
     responded_to_by = UserSerializer(read_only=True)
     tags = TagSerializer(many=True)
     position = serializers.IntegerField(default=-1, read_only=True)
+    review = ReviewSerializer(read_only=True)
 
     class Meta:
         model = Question
@@ -235,6 +286,7 @@ class QuestionSerializer(QueueRouteMixin):
             "resolved_note",
             "position",
             "student_descriptor",
+            "review",
         )
         read_only_fields = (
             "time_asked",
@@ -245,6 +297,7 @@ class QuestionSerializer(QueueRouteMixin):
             "should_send_up_soon_notification",
             "resolved_note",
             "position",
+            "review",
         )
 
     def update(self, instance, validated_data):
@@ -343,6 +396,11 @@ class QuestionSerializer(QueueRouteMixin):
             except ObjectDoesNotExist:
                 continue
         return question
+    
+    def get_review(self, obj):
+        review = Review.objects.get(question=obj)
+        serializer = ReviewSerializer(review)
+        return serializer.data
 
 
 class MembershipPrivateSerializer(CourseRouteMixin):

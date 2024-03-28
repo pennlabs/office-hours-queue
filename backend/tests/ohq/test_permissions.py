@@ -18,6 +18,7 @@ from ohq.models import (
     Queue,
     Semester,
     Tag,
+    Review,
 )
 
 
@@ -1282,6 +1283,108 @@ class OccurrenceTestCase(TestCase):
                 "head_ta": 200,
                 "ta": 200,
                 "student": 403,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+        }
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_list(self, user):
+        test(
+            self,
+            user,
+            "list",
+            "get",
+            "/api/occurrences/?course="
+            + str(self.course.id)
+            + "&filter_start="
+            + self.filter_start
+            + "&filter_end="
+            + self.filter_end,
+        )
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_retrieve(self, user):
+        test(
+            self,
+            user,
+            "retrieve",
+            "get",
+            reverse("ohq:occurrence-detail", args=[self.occurrence.id]),
+        )
+
+    @parameterized.expand(users, name_func=get_test_name)
+    def test_modify(self, user):
+        test(
+            self,
+            user,
+            "modify",
+            "patch",
+            reverse("ohq:occurrence-detail", args=[self.occurrence.id]),
+            {"title": self.new_title, "courseId": self.course.id},
+        )
+
+class ReviewTestCase(TestCase):
+    def setUp(self):
+        setUp(self)
+        self.semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
+        self.course = Course.objects.create(
+            course_code="000", department="Penn Labs", semester=self.semester
+        )
+        self.head_ta = User.objects.create(username="head_ta")
+        self.ta = User.objects.create(username="ta")
+        self.other_ta = User.objects.create(username="other_ta")
+        self.student = User.objects.create(username="student")
+        self.other_student = User.objects.create(username="other_student")
+        Membership.objects.create(
+            course=self.course, user=self.head_ta, kind=Membership.KIND_HEAD_TA
+        )
+        Membership.objects.create(course=self.course, user=self.ta, kind=Membership.KIND_TA)
+        Membership.objects.create(
+            course=self.course, user=self.student, kind=Membership.KIND_STUDENT
+        )
+        Membership.objects.create(
+            course=self.course, user=self.other_student, kind=Membership.KIND_STUDENT
+        )
+        self.queue = Queue.objects.create(name="Queue", course=self.course)
+        self.question_text = "This is a question"
+        self.question_1 = Question.objects.create(
+            queue=self.queue, asked_by=self.student, text=self.question_text, status="ANSWERED"
+        )
+        self.review_1 = Review.objects.create(content="TA was helpful", rating=5)
+        self.question_1.review = self.review_1
+        se;f.question_1.save()
+        self.question_2 = Question.objects.create(
+            queue=self.queue, asked_by=self.student, text=self.question_text, status="ANSWERED"
+        )
+        self.review_2 = Review.objects.create(content="TA was mid", rating=2)
+        self.question_2.review = self.review_2
+        se;f.question_2.save()
+        
+
+        # Expected results
+        self.expected = {
+            "list": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 200,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+            "retrieve": {
+                "professor": 200,
+                "head_ta": 200,
+                "ta": 200,
+                "student": 200,
+                "non_member": 403,
+                "anonymous": 403,
+            },
+            "modify": {
+                "professor": 403,
+                "head_ta": 403,
+                "ta": 403,
+                "student": 200,
                 "non_member": 403,
                 "anonymous": 403,
             },

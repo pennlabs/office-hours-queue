@@ -10,12 +10,13 @@ from rest_framework import serializers
 from rest_framework.test import APIClient
 from schedule.models import Event
 
-from ohq.models import Announcement, Course, Membership, Question, Queue, Semester, Tag
+from ohq.models import Announcement, Course, Membership, Question, Queue, Semester, Tag, Review
 from ohq.serializers import (
     CourseCreateSerializer,
     MembershipSerializer,
     SemesterSerializer,
     UserPrivateSerializer,
+    ReviewSerializer,
 )
 
 
@@ -303,7 +304,7 @@ class QuestionSerializerTestCase(TestCase):
 
     def test_create(self, mock_delay):
         self.client.force_authenticate(user=self.student2)
-        self.client.post(
+        response = self.client.post(
             reverse("ohq:question-list", args=[self.course.id, self.queue.id]),
             {"text": "Help me", "tags": [{"name": "Tag"}]},
         )
@@ -724,3 +725,205 @@ class EventSerializerTestCase(TestCase):
         self.assertEquals(2, len(data))
         self.assertEquals(self.course.id, data[0]["course_id"])
         self.assertEquals(self.course.id, data[1]["course_id"])
+
+class ReviewSerializerTestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
+        self.course = Course.objects.create(
+            course_code="000", department="Penn Labs", semester=self.semester
+        )
+        self.head_ta = User.objects.create(username="head_ta")
+        self.ta = User.objects.create(username="ta")
+        self.other_ta = User.objects.create(username="other_ta")
+        self.student = User.objects.create(username="student")
+        self.other_student = User.objects.create(username="other_student")
+        Membership.objects.create(
+            course=self.course, user=self.head_ta, kind=Membership.KIND_HEAD_TA
+        )
+        Membership.objects.create(course=self.course, user=self.ta, kind=Membership.KIND_TA)
+        Membership.objects.create(
+            course=self.course, user=self.student, kind=Membership.KIND_STUDENT
+        )
+        Membership.objects.create(
+            course=self.course, user=self.other_student, kind=Membership.KIND_STUDENT
+        )
+        self.queue = Queue.objects.create(name="Queue", course=self.course)
+        self.question_text = "This is a question"
+        self.question_1 = Question.objects.create(
+            queue=self.queue, asked_by=self.student, text=self.question_text, status="ANSWERED"
+        )
+        self.review_content_1 = "TA was helpful"
+        self.review_rating_1 = 5
+        self.question_2 = Question.objects.create(
+            queue=self.queue, asked_by=self.student, text=self.question_text, status="ANSWERED"
+        )
+        self.review_content_2 = "TA was mid"
+        self.review_rating_2 = 2
+        self.question_3 = Question.objects.create(
+            queue=self.queue, asked_by=self.student, text=self.question_text, status="ANSWERED"
+        )
+        self.review_content_3 = "TA was decent"
+        self.review_rating_3 = 4
+
+    def test_create(self):
+        """
+        Ensure students can create a review
+        """
+        self.client.force_authenticate(user=self.student)
+        self.client.post(
+            reverse("ohq:review-list", args=[self.course.id, self.queue.id, self.question_1.id]),
+            {
+                "content": self.review_content_1,
+                "rating": self.review_rating_1
+            },
+        )
+        self.assertEqual(1, Review.objects.all().count())
+
+        # Ensure only one review can be made for one question
+        self.client.post(
+            reverse("ohq:review-list", args=[self.course.id, self.queue.id, self.question_1.id]),
+            {
+                "content": self.review_content_2,
+                "rating": self.review_rating_2
+            },
+        )
+        self.assertEqual(1, Review.objects.all().count())
+
+        # Ensure review cannot be made to unanswered question
+        unanswered_question = Question.objects.create(
+            queue=self.queue, asked_by=self.student, text=self.question_text
+        )
+        self.client.post(
+            reverse("ohq:review-list", args=[self.course.id, self.queue.id, unanswered_question.id]),
+            {
+                "content": self.review_content_2,
+                "rating": self.review_rating_2
+            },
+        )
+        self.assertEqual(1, Review.objects.all().count())
+        
+        # Ensure TA cannot create a review
+        self.client.force_authenticate(user=self.ta)
+        self.client.post(
+            reverse("ohq:review-list", args=[self.course.id, self.queue.id, self.question_2.id]),
+            {
+                "content": self.review_content_2,
+                "rating": self.review_rating_2
+            },
+        )
+        self.assertEqual(1, Review.objects.all().count())
+
+        # Ensure creating a review without rating does not work
+        self.client.force_authenticate(user=self.student)
+        self.client.post(
+            reverse("ohq:review-list", args=[self.course.id, self.queue.id, self.question_2.id]),
+            {
+                "content": self.review_content_2,
+            },
+        )
+        self.assertEqual(1, Review.objects.all().count())
+
+        # Ensure creating a review without content does work
+        self.client.force_authenticate(user=self.student)
+        self.client.post(
+            reverse("ohq:review-list", args=[self.course.id, self.queue.id, self.question_2.id]),
+            {
+                "rating": self.review_rating_2,
+            },
+        )
+        self.assertEqual(2, Review.objects.all().count())
+
+        # Ensure creating a review of rating less than 1 or more than 5 does not work 
+        self.client.force_authenticate(user=self.student)
+        self.client.post(
+            reverse("ohq:review-list", args=[self.course.id, self.queue.id, self.question_3.id]),
+            {
+                "rating": 0,
+            },
+        )
+        self.client.post(
+            reverse("ohq:review-list", args=[self.course.id, self.queue.id, self.question_3.id]),
+            {
+                "rating": 6,
+            },
+        )
+        self.assertEqual(2, Review.objects.all().count())
+    
+    def test_list(self):
+        """
+        Ensure students can get a list of their own review
+        """
+        self.client.force_authenticate(user=self.student)
+        self.client.post(
+            reverse("ohq:review-list", args=[self.course.id, self.queue.id, self.question_1.id]),
+            {
+                "content": self.review_content_1,
+                "rating": self.review_rating_1
+            },
+        )
+        response = self.client.get("/api/courses/" +str( self.course.id)
+                                + "/queues/" + str(self.queue.id)
+                                + "/questions/" + str(self.question_1.id) + "/reviews/")
+        data = json.loads(response.content)
+        self.assertEqual(1, len(data))
+
+        # Student cannot get access to review made by other students
+        self.client.force_authenticate(user=self.other_student)
+        response = self.client.get("/api/courses/" + str( self.course.id)
+                                + "/queues/" + str(self.queue.id)
+                                + "/questions/" + str(self.question_1.id) + "/reviews/")
+        data = json.loads(response.content)
+        self.assertEqual(0, len(data))
+    
+    def test_update(self):
+        """
+        Ensure students can update reviews
+        """
+        self.client.force_authenticate(user=self.student)
+        self.client.post(
+            reverse("ohq:review-list", args=[self.course.id, self.queue.id, self.question_1.id]),
+            {
+                "content": self.review_content_1,
+                "rating": self.review_rating_1
+            },
+        )
+        review = Review.objects.first()
+        response = self.client.patch(
+            reverse("ohq:review-detail", args=[self.course.id, self.queue.id, self.question_1.id, review.id]),
+            {"content": "hello"},
+        )
+        review = Review.objects.first()
+        self.assertEqual("hello", review.content)
+        response = self.client.patch(
+            reverse("ohq:review-detail", args=[self.course.id, self.queue.id, self.question_1.id, review.id]),
+            {"rating": 2},
+        )
+        review = Review.objects.first()
+        self.assertEqual(2, review.rating)
+
+        # Updating reviews without appropriate key will not work
+        response = self.client.patch(
+            reverse("ohq:review-detail", args=[self.course.id, self.queue.id, self.question_1.id, review.id]),
+            {"something": 3},
+        )
+        self.assertEqual("hello", review.content)
+        self.assertEqual(2, review.rating)
+
+        # Ensure TAs cannot update reviews
+        self.client.force_authenticate(user=self.ta)
+        review = Review.objects.first()
+        response = self.client.patch(
+            reverse("ohq:review-detail", args=[self.course.id, self.queue.id, self.question_1.id, review.id]),
+            {"content": "The best ta ever", "rating": 5},
+        )
+        review = Review.objects.first()
+        self.assertEqual("hello", review.content)
+        self.assertEqual(2, review.rating)
+           
+
+
+
+
+
+
