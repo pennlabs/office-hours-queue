@@ -117,6 +117,21 @@ const CourseSidebarNav = (props: CourseSidebarProps) => {
                         />
                     </Link>
                 )}
+                {staff && (
+                    <Link
+                        href="/courses/[course]/reviews"
+                        as={`/courses/${courseId}/reviews`}
+                        legacyBehavior
+                    >
+                        <Menu.Item
+                            style={noWrapStyle}
+                            name="Student Reviews"
+                            icon="star outline"
+                            active={router.pathname.endsWith("reviews")}
+                            color="blue"
+                        />
+                    </Link>
+                )}
                 {!course.archived && leader && (
                     <Link
                         href="/courses/[course]/settings"

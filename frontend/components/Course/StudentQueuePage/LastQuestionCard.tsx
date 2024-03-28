@@ -1,8 +1,25 @@
-import { Segment, Message } from "semantic-ui-react";
+import { useState } from "react";
+import {
+    Segment,
+    Message,
+    Rating,
+    Form,
+    TextArea,
+    Button,
+} from "semantic-ui-react";
 import { Question } from "../../../types";
 import { getFullName } from "../../../utils";
+import { createReview } from "../../../hooks/data-fetching/tareviews";
 
-const LastQuestionCard = ({ question }: { question: Question }) => {
+const LastQuestionCard = ({
+    question,
+    courseId,
+    queueId,
+}: {
+    question: Question;
+    courseId: number;
+    queueId: number;
+}) => {
     const timeString = (date) => {
         return new Date(date).toLocaleString("en-US", {
             // TODO: this isn't a good fix
@@ -40,6 +57,27 @@ const LastQuestionCard = ({ question }: { question: Question }) => {
         }
     };
 
+    const [reviewRating, setReviewRating] = useState(0);
+    const [reviewText, setReviewText] = useState("");
+    const [submittedFeedback, setSubmittedFeedback] = useState(false);
+
+    const handleRate = (rating: number) => {
+        setReviewRating(rating);
+    };
+
+    const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setReviewText(e.target.value);
+    };
+
+    const handleFeedback = async () => {
+        await createReview(courseId, queueId, question.id, {
+            rating: reviewRating,
+            content: reviewText,
+            question: question.id,
+        });
+        setSubmittedFeedback(true);
+    };
+
     return (
         <Segment basic>
             <Segment
@@ -58,6 +96,10 @@ const LastQuestionCard = ({ question }: { question: Question }) => {
                             " on ",
                             <span>{timeString(question.timeRespondedTo)}</span>,
                         ]}
+                        <b>{timeString(question.timeAsked)}</b> was rejected by{" "}
+                        {question.respondedToBy && (
+                            <b>{getFullName(question.respondedToBy)}</b>
+                        )}
                         :
                         <br />
                         <Message error>{question.text}</Message>
@@ -90,13 +132,51 @@ const LastQuestionCard = ({ question }: { question: Question }) => {
                 )}
             </Segment>
             <Message
-                attached="bottom"
+                attached
                 error={question.status === "REJECTED"}
                 success={question.status === "ANSWERED"}
                 info={question.status === "WITHDRAWN"}
             >
                 If you believe this is an error, please contact course staff!
             </Message>
+            {true && // TODO: change this to question.status !== "WITHDRAWN"
+                (submittedFeedback ? (
+                    <Message attached>
+                        <b> Thank you for your feedback! </b>
+                    </Message>
+                ) : (
+                    <Message attached>
+                        <b>How was your overall experience with this TA?</b>{" "}
+                        <Rating
+                            icon="star"
+                            maxRating={5}
+                            onRate={(_, { rating, maxRating }) =>
+                                handleRate(Number(rating))
+                            }
+                            clearable
+                        />
+                        {reviewRating !== 0 && (
+                            <Form>
+                                <br />
+                                <Form.Field
+                                    control={TextArea}
+                                    label={
+                                        reviewRating > 3
+                                            ? "What did you like about this TA's feedback?"
+                                            : "What could this TA have done better?"
+                                    }
+                                    value={reviewText}
+                                    onChange={handleTextChange}
+                                    placeholder="Feel free to elaborate!"
+                                />
+                                <Button onClick={handleFeedback}>
+                                    {" "}
+                                    Send Feedback{" "}
+                                </Button>
+                            </Form>
+                        )}
+                    </Message>
+                ))}
         </Segment>
     );
 };

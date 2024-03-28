@@ -12,6 +12,7 @@ from ohq.models import (
     QueueStatistic,
     Semester,
     Tag,
+    Review
 )
 
 
@@ -26,3 +27,4 @@ admin.site.register(Semester)
 admin.site.register(QueueStatistic)
 admin.site.register(Announcement)
 admin.site.register(Tag)
+admin.site.register(Review)

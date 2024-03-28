@@ -22,6 +22,7 @@ from ohq.models import (
     QueueStatistic,
     Semester,
     Tag,
+    Review
 )
 from ohq.sms import sendSMSVerification
 from ohq.tasks import sendUpNextNotificationTask
@@ -574,3 +575,9 @@ class OccurrenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Occurrence
         fields = ("id", "title", "description", "start", "end", "cancelled", "event")
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = ("content", "rating", "question")
