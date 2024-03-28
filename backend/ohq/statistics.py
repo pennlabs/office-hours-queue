@@ -2,8 +2,9 @@ from django.contrib.auth import get_user_model
 from django.db.models import Avg, Case, Count, F, Sum, When
 from django.db.models.functions import TruncDate
 from django.utils import timezone
+from decimal import Decimal, ROUND_HALF_UP
 
-from ohq.models import CourseStatistic, Question, QueueStatistic
+from ohq.models import CourseStatistic, Question, QueueStatistic, UserStatistic
 
 
 User = get_user_model()
@@ -232,3 +233,69 @@ def queue_calculate_questions_per_ta_heatmap(queue, weekday, hour):
         hour=hour,
         defaults={"value": statistic if statistic else 0},
     )
+
+
+def user_calculate_questions_asked(user):
+    num_questions = Decimal(Question.objects.filter(asked_by=user).count())
+    UserStatistic.objects.update_or_create(
+        user=user,
+        metric=UserStatistic.METRIC_TOTAL_QUESTIONS_ASKED,
+        defaults={"value": num_questions},
+    )
+
+
+def user_calculate_questions_answered(user):
+    num_questions = Decimal(Question.objects.filter(responded_to_by=user).count())
+    UserStatistic.objects.update_or_create(
+        user=user,
+        metric=UserStatistic.METRIC_TOTAL_QUESTIONS_ANSWERED,
+        defaults={"value": num_questions},
+    )
+
+
+
+def user_calculate_time_helped(user):
+    user_time_helped = (
+        Question.objects.filter(asked_by=user)
+        .aggregate(time_helped=Sum(F("time_responded_to") - F("time_response_started")))
+    )
+    time = user_time_helped["time_helped"]
+
+    UserStatistic.objects.update_or_create(
+        user=user,
+        metric=UserStatistic.METRIC_TOTAL_TIME_BEING_HELPED,
+        defaults={"value": time.seconds if time else Decimal('0.00000000')},
+    )
+
+
+def user_calculate_time_helping(user):
+    user_time_helping = (
+        Question.objects.filter(responded_to_by=user)
+        .aggregate(time_answering=Sum(F("time_responded_to") - F("time_response_started")))
+    )
+    time = user_time_helping["time_answering"]
+
+    UserStatistic.objects.update_or_create(
+        user=user,
+        metric=UserStatistic.METRIC_TOTAL_TIME_HELPING,
+        defaults={"value": time.seconds if time else Decimal('0.00000000')},
+    )
+
+
+def user_calculate_students_helped(user): 
+    num_students = Decimal(
+        Question.objects.filter(
+            status=Question.STATUS_ANSWERED,
+            responded_to_by=user
+        )
+        .distinct("asked_by")
+        .count()
+    )
+    UserStatistic.objects.update_or_create(
+        user=user,
+        metric=UserStatistic.METRIC_TOTAL_STUDENTS_HELPED,
+        defaults={"value": num_students},
+    )
+
+
+
