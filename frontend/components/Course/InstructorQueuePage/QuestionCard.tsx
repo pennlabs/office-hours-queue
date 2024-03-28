@@ -60,11 +60,8 @@ const QuestionCard = (props: QuestionCardProps) => {
         await mutateQuestion(questionId, { status: QuestionStatus.ACTIVE });
     };
 
-    const onFinish = async () => {
-        if (
-            question.respondedToBy!.username === user.username ||
-            finishConfirmModalOpen
-        ) {
+    const handleFinish = async (forced?: boolean) => {
+        if (question.respondedToBy?.username === user.username || forced) {
             setNotifs(lastNotif); // resets notification preference when finished answering question
             await mutateQuestion(questionId, {
                 status: QuestionStatus.ANSWERED,
@@ -108,8 +105,8 @@ const QuestionCard = (props: QuestionCardProps) => {
             />
             <FinishConfirmModal
                 open={finishConfirmModalOpen}
-                finishFunc={onFinish}
-                closeFunc={() => setMessageModalOpen(false)}
+                onFinish={() => handleFinish(true)}
+                onClose={() => setMessageModalOpen(false)}
             />
             <Segment attached="top" color="blue" clearing>
                 <div
@@ -263,7 +260,7 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     color="green"
                                     content="Finish"
                                     disabled={isLoading()}
-                                    onClick={onFinish}
+                                    onClick={() => handleFinish()}
                                     loading={false}
                                 />
                             )}

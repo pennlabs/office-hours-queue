@@ -1,13 +1,13 @@
 import { Button, Modal } from "semantic-ui-react";
 
 interface FinishConfirmModalProps {
-    finishFunc: () => void;
-    closeFunc: () => void;
+    onFinish?: () => void;
+    onClose?: () => void;
     open: boolean;
 }
 
 const FinishConfirmModal = (props: FinishConfirmModalProps) => {
-    const { finishFunc, closeFunc, open } = props;
+    const { onFinish, onClose, open } = props;
 
     return (
         <Modal open={open}>
@@ -19,12 +19,12 @@ const FinishConfirmModal = (props: FinishConfirmModalProps) => {
                 </Modal.Description>
             </Modal.Content>
             <Modal.Actions>
-                <Button content="Cancel" onClick={closeFunc} />
+                <Button content="Cancel" onClick={onClose} />
                 <Button
                     content="Finish"
                     loading={false}
                     color="green"
-                    onClick={finishFunc}
+                    onClick={onFinish}
                 />
             </Modal.Actions>
         </Modal>
