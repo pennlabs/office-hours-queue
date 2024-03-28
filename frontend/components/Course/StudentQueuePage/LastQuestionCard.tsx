@@ -73,6 +73,7 @@ const LastQuestionCard = ({
         await createReview(courseId, queueId, question.id, {
             rating: reviewRating,
             content: reviewText,
+            question: question.id,
         });
         setSubmittedFeedback(true);
     };

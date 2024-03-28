@@ -45,7 +45,7 @@ from ohq.models import (
     QueueStatistic,
     Semester,
     Tag,
-    Review
+    Review,
 )
 from ohq.pagination import QuestionSearchPagination
 from ohq.permissions import (
@@ -63,7 +63,7 @@ from ohq.permissions import (
     QueuePermission,
     QueueStatisticPermission,
     TagPermission,
-    ReviewPermission
+    ReviewPermission,
 )
 from ohq.schemas import EventSchema, MassInviteSchema, OccurrenceSchema
 from ohq.serializers import (
@@ -82,7 +82,7 @@ from ohq.serializers import (
     SemesterSerializer,
     TagSerializer,
     UserPrivateSerializer,
-    ReviewSerializer
+    ReviewSerializer,
 )
 from ohq.sms import sendSMSVerification
 

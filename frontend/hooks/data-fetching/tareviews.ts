@@ -93,7 +93,7 @@ export async function createReview(
     courseId: number,
     queueId: number,
     questionId: number,
-    payload: { rating: number; content: string }
+    payload: { rating: number; content: string; question: number }
 ) {
     const res = await doApiRequest(
         `/api/courses/${courseId}/queues/${queueId}/questions/${questionId}/review/`,
