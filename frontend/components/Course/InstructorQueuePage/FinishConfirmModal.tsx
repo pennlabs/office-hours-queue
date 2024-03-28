@@ -1,8 +1,8 @@
 import { Button, Modal } from "semantic-ui-react";
 
 interface FinishConfirmModalProps {
-    onFinish: (forced?: boolean) => void;
-    onClose: () => void;
+    onFinish?: () => void;
+    onClose?: () => void;
     open: boolean;
 }
 
@@ -24,7 +24,7 @@ const FinishConfirmModal = (props: FinishConfirmModalProps) => {
                     content="Finish"
                     loading={false}
                     color="green"
-                    onClick={() => onFinish(true)}
+                    onClick={onFinish}
                 />
             </Modal.Actions>
         </Modal>
