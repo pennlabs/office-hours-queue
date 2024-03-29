@@ -106,7 +106,7 @@ const QuestionCard = (props: QuestionCardProps) => {
             <FinishConfirmModal
                 open={finishConfirmModalOpen}
                 onFinish={() => handleFinish(true)}
-                onClose={() => setMessageModalOpen(false)}
+                onClose={() => setFinishConfirmModalOpen(false)}
             />
             <Segment attached="top" color="blue" clearing>
                 <div

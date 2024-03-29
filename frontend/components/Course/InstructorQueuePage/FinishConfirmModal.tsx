@@ -10,7 +10,7 @@ const FinishConfirmModal = (props: FinishConfirmModalProps) => {
     const { onFinish, onClose, open } = props;
 
     return (
-        <Modal open={open}>
+        <Modal open={open} onClose={onClose}>
             <Modal.Header>Finish Confirmation</Modal.Header>
             <Modal.Content>
                 <Modal.Description>
