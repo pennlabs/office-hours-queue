@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from datetime import timedelta
-import logging
 
 from ohq.models import Profile, Course, Question
 from ohq.statistics import (
@@ -11,9 +10,9 @@ from ohq.statistics import (
     user_calculate_time_helping,
     user_calculate_students_helped,
 )
+from django.db.models import Q
 
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
+
 
 
 class Command(BaseCommand):
@@ -25,12 +24,9 @@ class Command(BaseCommand):
         active_users_today = set()
 
         for course in courses:
-            logger.debug("course here is", course)
-            if earliest_date:
-                date = earliest_date
-            else: 
+            if not earliest_date:
                 course_questions = Question.objects.filter(queue__course=course)
-                date = (
+                earliest_date = (
                     timezone.template_localtime(
                         course_questions.earliest("time_asked").time_asked
                     ).date()
@@ -38,18 +34,20 @@ class Command(BaseCommand):
                     else yesterday
                 )
 
-            course_questions = Question.objects.filter(queue__course=course, time_asked__gte=date)
-            for q in course_questions:
-                active_users_today.add(q.asked_by)
-                active_users_today.add(q.responded_to_by)
+            questions_queryset = Question.objects.filter(queue__course=course, time_asked__gte=earliest_date)
+            users_union = (
+                Profile.objects.filter(
+                    Q(id__in=questions_queryset.values_list("asked_by", flat=True)) |
+                    Q(id__in=questions_queryset.values_list("responded_to_by", flat=True))
+                )
+            )
 
-        for profile in profiles:
-            if profile.user in active_users_today:
-                user_calculate_questions_asked(profile.user)
-                user_calculate_questions_answered(profile.user)
-                user_calculate_time_helped(profile.user)
-                user_calculate_time_helping(profile.user)
-                user_calculate_students_helped(profile.user)
+            for user in users_union:
+                    user_calculate_questions_asked(user.user)
+                    user_calculate_questions_answered(user.user)
+                    user_calculate_time_helped(user.user)
+                    user_calculate_time_helping(user.user)
+                    user_calculate_students_helped(user.user)
 
 
     def handle(self, *args, **kwargs):
@@ -61,7 +59,7 @@ class Command(BaseCommand):
             courses = Course.objects.filter(archived=False)
             profiles = Profile.objects.all()
             earliest_date = timezone.now().date() - timedelta(days=1)
-        
+
         self.calculate_statistics(profiles, courses, earliest_date)
 
         

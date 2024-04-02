@@ -440,6 +440,9 @@ class UserStatistic(models.Model):
         constraints = [
             models.UniqueConstraint(fields=["user", "metric"], name="unique_user_statistic")
         ]
+
+    def __str__(self):
+        return f"{self.user}: {self.metric}"
     
 
 
