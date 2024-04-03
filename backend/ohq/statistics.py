@@ -239,7 +239,7 @@ def queue_calculate_questions_per_ta_heatmap(queue, weekday, hour):
 def user_calculate_questions_asked(user):
     num_questions = Question.objects.filter(asked_by=user).count()
 
-    if num_questions and not num_questions == 0:
+    if num_questions:
         UserStatistic.objects.update_or_create(
             user=user,
             metric=UserStatistic.METRIC_TOTAL_QUESTIONS_ASKED,
@@ -253,7 +253,7 @@ def user_calculate_questions_answered(user):
         status=Question.STATUS_ANSWERED
         ).count())
 
-    if num_questions and not num_questions == 0:
+    if num_questions:
         UserStatistic.objects.update_or_create(
             user=user,
             metric=UserStatistic.METRIC_TOTAL_QUESTIONS_ANSWERED,
@@ -288,7 +288,7 @@ def user_calculate_time_helping(user):
     )
     time = user_time_helping["time_answering"]
 
-    if time and not math.isclose(time.total_seconds(), 0, abs_tol=0.001): 
+    if time and not math.isclose(time.seconds, 0, abs_tol=0.001): 
         UserStatistic.objects.update_or_create(
             user=user,
             metric=UserStatistic.METRIC_TOTAL_TIME_HELPING,
@@ -305,7 +305,7 @@ def user_calculate_students_helped(user):
         .distinct("asked_by")
         .count()
     )
-    if num_students and not num_students == 0:
+    if num_students:
         UserStatistic.objects.update_or_create(
             user=user,
             metric=UserStatistic.METRIC_TOTAL_STUDENTS_HELPED,
