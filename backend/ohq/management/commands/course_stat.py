@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
+import datetime
 
 from ohq.models import Course, Question
 from ohq.statistics import (

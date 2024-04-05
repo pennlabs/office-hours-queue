@@ -101,6 +101,13 @@ export class MyChart extends PennLabsChart {
       secret: secret,
       cmd: ['python', 'manage.py', 'course_stat'],
     });
+
+    new CronJob(this, 'calculate-user-stat', {
+      schedule: cronTime.everyDayAt(8),
+      image: backendImage,
+      secret: secret,
+      cmd: ['python', 'manage.py', 'user_stat'],
+    });
   }
 }
 
