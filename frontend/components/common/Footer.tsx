@@ -34,7 +34,7 @@ export default function Footer() {
                 </span>{" "}
                 | <Link href="/changelog">Changelog</Link> |{" "}
                 <a
-                    href="https://airtable.com/appTHcLDue56TbPL4/shrIZxIjyAE3gOUSg"
+                    href="https://airtable.com/appFRa4NQvNMEbWsA/shrd8C3g0hUSdljKl"
                     target="_blank"
                     rel="noopener noreferrer"
                 >

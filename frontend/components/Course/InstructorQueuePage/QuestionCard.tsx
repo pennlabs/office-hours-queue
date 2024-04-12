@@ -14,6 +14,7 @@ import RejectQuestionModal from "./RejectQuestionModal";
 import { AuthUserContext } from "../../../context/auth";
 import { Question, QuestionStatus, User } from "../../../types";
 import MessageQuestionModal from "./MessageQuestionModal";
+import FinishConfirmModal from "./FinishConfirmModal";
 import LinkedText from "../../common/ui/LinkedText";
 
 export const fullName = (user: User) => `${user.firstName} ${user.lastName}`;
@@ -24,6 +25,7 @@ interface QuestionCardProps {
     notifs: boolean;
     setNotifs: (boolean) => void;
 }
+
 const QuestionCard = (props: QuestionCardProps) => {
     const { question, mutate: mutateQuestion, notifs, setNotifs } = props;
     const { id: questionId, askedBy } = question;
@@ -36,6 +38,7 @@ const QuestionCard = (props: QuestionCardProps) => {
 
     const [open, setOpen] = useState(false);
     const [messageModalOpen, setMessageModalOpen] = useState(false);
+    const [finishConfirmModalOpen, setFinishConfirmModalOpen] = useState(false);
 
     // save notification preference for when an instructor answers a question
     const [lastNotif, setLastNotif] = useState(notifs);
@@ -57,9 +60,15 @@ const QuestionCard = (props: QuestionCardProps) => {
         await mutateQuestion(questionId, { status: QuestionStatus.ACTIVE });
     };
 
-    const onFinish = async () => {
-        setNotifs(lastNotif); // resets notification preference when finished answering question
-        await mutateQuestion(questionId, { status: QuestionStatus.ANSWERED });
+    const handleFinish = async (forced?: boolean) => {
+        if (question.respondedToBy?.username === user.username || forced) {
+            setNotifs(lastNotif); // resets notification preference when finished answering question
+            await mutateQuestion(questionId, {
+                status: QuestionStatus.ANSWERED,
+            });
+        } else {
+            setFinishConfirmModalOpen(true);
+        }
     };
 
     const onUndo = async () => {
@@ -93,6 +102,11 @@ const QuestionCard = (props: QuestionCardProps) => {
                 question={question}
                 closeFunc={() => setMessageModalOpen(false)}
                 mutate={mutateQuestion}
+            />
+            <FinishConfirmModal
+                open={finishConfirmModalOpen}
+                onFinish={() => handleFinish(true)}
+                onClose={() => setFinishConfirmModalOpen(false)}
             />
             <Segment attached="top" color="blue" clearing>
                 <div
@@ -239,19 +253,17 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     />
                                 )}
                             {/* if response started, then some user responded */}
-                            {question.timeResponseStarted &&
-                                question.respondedToBy!.username ===
-                                    user.username && (
-                                    <Button
-                                        compact
-                                        size="mini"
-                                        color="green"
-                                        content="Finish"
-                                        disabled={isLoading()}
-                                        onClick={onFinish}
-                                        loading={false}
-                                    />
-                                )}
+                            {question.timeResponseStarted && (
+                                <Button
+                                    compact
+                                    size="mini"
+                                    color="green"
+                                    content="Finish"
+                                    disabled={isLoading()}
+                                    onClick={() => handleFinish()}
+                                    loading={false}
+                                />
+                            )}
                             {question.timeResponseStarted &&
                                 question.videoChatUrl && (
                                     <a
