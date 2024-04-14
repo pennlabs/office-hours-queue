@@ -17,6 +17,7 @@ from ohq.models import (
     Queue,
     QueueStatistic,
     Semester,
+    UserStatistic,
 )
 
 
@@ -1090,3 +1091,254 @@ class ArchiveCourseTestCase(TestCase):
         lastCourse = Course.objects.filter(archived=False).first()
         self.assertEqual(lastCourse.semester.year, 2022)
         self.assertEqual(lastCourse.semester.term, Semester.TERM_SPRING)
+
+
+class UserTotalQuestionsAskedTestCase(TestCase):
+    def setUp(self):
+        semester = Semester.objects.create(year=2024, term=Semester.TERM_SUMMER)
+        course = Course.objects.create(
+            course_code="000", department="TEST", course_title="Title", semester=semester
+        )
+        self.queue = Queue.objects.create(name="Queue", course=course)
+        self.user = User.objects.create_user("student", "student@example.com", "student-pass")
+
+        self.num_questions_asked = 5
+        for i in range(self.num_questions_asked):
+            Question.objects.create(
+                text=f"Question {i}",
+                asked_by=self.user,
+                queue=self.queue,
+                status=Question.STATUS_ANSWERED,
+            )
+
+    def test_user_total_questions_asked(self):
+        call_command("user_stat", "--hist")
+
+        expected = self.num_questions_asked
+        query = UserStatistic.objects.get(
+            user=self.user,
+            metric=UserStatistic.METRIC_TOTAL_QUESTIONS_ASKED,
+        )
+        actual = int(query.value)
+        self.assertEqual(expected, actual)
+
+
+class UserTotalQuestionsAnsweredTestCase(TestCase):
+    def setUp(self):
+        semester = Semester.objects.create(year=2024, term=Semester.TERM_SUMMER)
+        course = Course.objects.create(
+            course_code="000", department="TEST", course_title="Title", semester=semester
+        )
+        self.queue = Queue.objects.create(name="Queue", course=course)
+        self.ta = User.objects.create_user("ta", "ta@example.com", "ta-pass")
+        student1 = User.objects.create_user("student1", "student1@example.com", "student-pass")
+        student2 = User.objects.create_user("student2", "student2@example.com", "student-pass")
+        student3 = User.objects.create_user("student3", "student3@example.com", "student-pass")
+
+        self.num_questions_answered = 7
+
+        # creating questions asked by multiple students
+
+        for i in range(self.num_questions_answered - 1):
+            if i % 2 == 0:
+                Question.objects.create(
+                    text=f"Question {i}",
+                    asked_by=student1,
+                    responded_to_by=self.ta,
+                    queue=self.queue,
+                    status=Question.STATUS_ANSWERED,
+                )
+            else:
+                Question.objects.create(
+                    text=f"Question {i}",
+                    asked_by=student2,
+                    responded_to_by=self.ta,
+                    queue=self.queue,
+                    status=Question.STATUS_ANSWERED,
+                )
+        Question.objects.create(
+            text="Question 7",
+            asked_by=student3,
+            responded_to_by=self.ta,
+            queue=self.queue,
+            status=Question.STATUS_ANSWERED,
+        )
+
+    def test_user_total_questions_answered(self):
+        call_command("user_stat", "--hist")
+
+        expected = self.num_questions_answered
+        query = UserStatistic.objects.get(
+            user=self.ta,
+            metric=UserStatistic.METRIC_TOTAL_QUESTIONS_ANSWERED,
+        )
+        actual = int(query.value)
+        self.assertEqual(expected, actual)
+
+
+class UserTotalTimeHelpedTestCase(TestCase):
+    def setUp(self):
+        semester = Semester.objects.create(year=2024, term=Semester.TERM_SUMMER)
+        course = Course.objects.create(
+            course_code="000", department="TEST", course_title="Title", semester=semester
+        )
+        self.queue = Queue.objects.create(name="Queue", course=course)
+        student = User.objects.create_user("student", "student@a.com", "student")
+        ta1 = User.objects.create_user("ta1", "ta1@a.com", "ta1")
+        ta2 = User.objects.create_user("ta2", "ta2@a.com", "ta2")
+        ta3 = User.objects.create_user("ta3", "ta3@a.com", "ta3")
+        ta4 = User.objects.create_user("ta4", "ta4@a.com", "ta4")
+        ta5 = User.objects.create_user("ta5", "ta5@a.com", "ta5")
+        ta6 = User.objects.create_user("ta6", "ta6@a.com", "ta6")
+        ta7 = User.objects.create_user("ta7", "ta7@a.com", "ta7")
+        tas = [ta1, ta2, ta3, ta4, ta5, ta6, ta7]
+
+        self.question_date = datetime(2024, 3, 26)
+
+        self.num_questions_per_ta = {ta1: 12, ta2: 8, ta3: 14, ta4: 6, ta5: 31, ta6: 2, ta7: 9}
+        self.time_per_question_ta = {
+            ta1: 100,
+            ta2: 200,
+            ta3: 120,
+            ta4: 80,
+            ta5: 60,
+            ta6: 50,
+            ta7: 40,
+        }
+
+        for ta in tas:
+            for q in range(self.num_questions_per_ta[ta]):
+                Question.objects.create(
+                    text=f"Question {q}",
+                    asked_by=student,
+                    responded_to_by=ta,
+                    time_response_started=self.question_date,
+                    time_responded_to=self.question_date
+                    + timezone.timedelta(seconds=self.time_per_question_ta[ta]),
+                    queue=self.queue,
+                    status=Question.STATUS_ANSWERED,
+                )
+
+    def test_user_total_time_helped(self):
+        call_command("user_stat", "--hist")
+
+        total_time = {}
+        for ta, question_count in self.num_questions_per_ta.items():
+            total_time[ta] = question_count * self.time_per_question_ta[ta]
+            ta_statistic = UserStatistic.objects.get(
+                user=ta,
+                metric=UserStatistic.METRIC_TOTAL_TIME_HELPING,
+            )
+            self.assertEqual(total_time[ta], ta_statistic.value)
+
+
+class UserTotalTimeBeingHelpedTestCase(TestCase):
+    def setUp(self):
+        semester = Semester.objects.create(year=2024, term=Semester.TERM_SUMMER)
+        course = Course.objects.create(
+            course_code="000", department="TEST", course_title="Title", semester=semester
+        )
+        self.queue = Queue.objects.create(name="Queue", course=course)
+        ta = User.objects.create_user("ta1", "ta1@a.com", "ta1")
+
+        student1 = User.objects.create_user("student1", "stu@a.com", "student1")
+        student2 = User.objects.create_user("student2", "stu@a.com", "student2")
+        student3 = User.objects.create_user("student3", "stu@a.com", "student3")
+        student4 = User.objects.create_user("student4", "stu@a.com", "student4")
+        student5 = User.objects.create_user("student5", "stu@a.com", "student5")
+        student6 = User.objects.create_user("student6", "stu@a.com", "student6")
+        student7 = User.objects.create_user("student7", "stu@a.com", "student7")
+
+        students = [student1, student2, student3, student4, student5, student6, student7]
+
+        self.question_date = datetime(2024, 3, 26)
+
+        self.num_questions_per_student = {
+            student1: 1,
+            student2: 9,
+            student3: 10,
+            student4: 4,
+            student5: 48,
+            student6: 3,
+            student7: 7,
+        }
+        self.time_per_question_student = {
+            student1: 100,
+            student2: 200,
+            student3: 120,
+            student4: 80,
+            student5: 60,
+            student6: 50,
+            student7: 40,
+        }
+
+        for student in students:
+            for q in range(self.num_questions_per_student[student]):
+                Question.objects.create(
+                    text=f"Question {q}",
+                    asked_by=student,
+                    responded_to_by=ta,
+                    time_response_started=self.question_date,
+                    time_responded_to=self.question_date
+                    + timezone.timedelta(seconds=self.time_per_question_student[student]),
+                    queue=self.queue,
+                    status=Question.STATUS_ANSWERED,
+                )
+
+    def test_user_total_time_being_helped(self):
+        call_command("user_stat", "--hist")
+
+        total_time = {}
+        for student, question_count in self.num_questions_per_student.items():
+            total_time[student] = question_count * self.time_per_question_student[student]
+            student_statistic = UserStatistic.objects.get(
+                user=student,
+                metric=UserStatistic.METRIC_TOTAL_TIME_BEING_HELPED,
+            )
+            self.assertEqual(total_time[student], student_statistic.value)
+
+
+class UserTotalStudentsHelped(TestCase):
+    def setUp(self):
+        semester = Semester.objects.create(year=2024, term=Semester.TERM_SUMMER)
+        course = Course.objects.create(
+            course_code="000", department="TEST", course_title="Title", semester=semester
+        )
+        self.queue = Queue.objects.create(name="Queue", course=course)
+        ta1 = User.objects.create_user("ta1", "ta@a.com", "ta1")
+        ta2 = User.objects.create_user("ta2", " ta@a.com", "ta2")
+        student1 = User.objects.create_user("student1", "stu@a.com", "stu1")
+        student2 = User.objects.create_user("student2", "stu@a.com", "stu2")
+        student3 = User.objects.create_user("student3", "stu@a.com", "stu3")
+
+        questions = [
+            (ta1, student1),
+            (ta1, student1),
+            (ta1, student2),
+            (ta2, student2),
+            (ta2, student3),
+        ]
+
+        for ta, student in questions:
+            Question.objects.create(
+                text=f"Question by {student} for {ta}",
+                asked_by=student,
+                responded_to_by=ta,
+                queue=self.queue,
+                status=Question.STATUS_ANSWERED,
+            )
+
+    def test_user_total_students_helped(self):
+        call_command("user_stat", "--hist")
+
+        ta1_statistic = UserStatistic.objects.get(
+            user=User.objects.get(username="ta1"),
+            metric=UserStatistic.METRIC_TOTAL_STUDENTS_HELPED,
+        )
+        self.assertEqual(ta1_statistic.value, 2)
+
+        ta2_statistic = UserStatistic.objects.get(
+            user=User.objects.get(username="ta2"),
+            metric=UserStatistic.METRIC_TOTAL_STUDENTS_HELPED,
+        )
+        self.assertEqual(ta2_statistic.value, 2)
