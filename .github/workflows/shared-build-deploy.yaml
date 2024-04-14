@@ -13,6 +13,7 @@ jobs:
     with:
       projectName: officehoursqueue
       path: backend
+      pythonVersion: 3.11
       flake: true
       black: true
 
