@@ -1103,14 +1103,14 @@ class UserTotalQuestionsAskedTestCase(TestCase):
         self.user = User.objects.create_user("student", "student@example.com", "student-pass")
 
         self.num_questions_asked = 5
-        for i in range (self.num_questions_asked):
+        for i in range(self.num_questions_asked):
             Question.objects.create(
                 text=f"Question {i}",
                 asked_by=self.user,
                 queue=self.queue,
                 status=Question.STATUS_ANSWERED,
             )
-    
+
     def test_user_total_questions_asked(self):
         call_command("user_stat", "--hist")
 
@@ -1157,12 +1157,13 @@ class UserTotalQuestionsAnsweredTestCase(TestCase):
                     status=Question.STATUS_ANSWERED,
                 )
         Question.objects.create(
-                    text="Question 7",
-                    asked_by=student3,
-                    responded_to_by=self.ta,
-                    queue=self.queue,
-                    status=Question.STATUS_ANSWERED,
-                )
+            text="Question 7",
+            asked_by=student3,
+            responded_to_by=self.ta,
+            queue=self.queue,
+            status=Question.STATUS_ANSWERED,
+        )
+
     def test_user_total_questions_answered(self):
         call_command("user_stat", "--hist")
 
@@ -1217,7 +1218,7 @@ class UserTotalTimeHelpedTestCase(TestCase):
                     queue=self.queue,
                     status=Question.STATUS_ANSWERED,
                 )
-    
+
     def test_user_total_time_helped(self):
         call_command("user_stat", "--hist")
 
@@ -1229,6 +1230,7 @@ class UserTotalTimeHelpedTestCase(TestCase):
                 metric=UserStatistic.METRIC_TOTAL_TIME_HELPING,
             )
             self.assertEqual(total_time[ta], ta_statistic.value)
+
 
 class UserTotalTimeBeingHelpedTestCase(TestCase):
     def setUp(self):
@@ -1251,7 +1253,15 @@ class UserTotalTimeBeingHelpedTestCase(TestCase):
 
         self.question_date = datetime(2024, 3, 26)
 
-        self.num_questions_per_student = {student1: 1, student2: 9, student3: 10, student4: 4, student5: 48, student6: 3, student7: 7}
+        self.num_questions_per_student = {
+            student1: 1,
+            student2: 9,
+            student3: 10,
+            student4: 4,
+            student5: 48,
+            student6: 3,
+            student7: 7,
+        }
         self.time_per_question_student = {
             student1: 100,
             student2: 200,
@@ -1287,6 +1297,7 @@ class UserTotalTimeBeingHelpedTestCase(TestCase):
             )
             self.assertEqual(total_time[student], student_statistic.value)
 
+
 class UserTotalStudentsHelped(TestCase):
     def setUp(self):
         semester = Semester.objects.create(year=2024, term=Semester.TERM_SUMMER)
@@ -1301,8 +1312,11 @@ class UserTotalStudentsHelped(TestCase):
         student3 = User.objects.create_user("student3", "stu@a.com", "stu3")
 
         questions = [
-            (ta1, student1), (ta1, student1),
-            (ta1, student2), (ta2, student2), (ta2, student3),
+            (ta1, student1),
+            (ta1, student1),
+            (ta1, student2),
+            (ta2, student2),
+            (ta2, student3),
         ]
 
         for ta, student in questions:
@@ -1328,8 +1342,3 @@ class UserTotalStudentsHelped(TestCase):
             metric=UserStatistic.METRIC_TOTAL_STUDENTS_HELPED,
         )
         self.assertEqual(ta2_statistic.value, 2)
-
-
-
-
-            

@@ -10,9 +10,9 @@ from ohq.models import (
     Question,
     Queue,
     QueueStatistic,
-    UserStatistic,
     Semester,
     Tag,
+    UserStatistic,
 )
 
 
