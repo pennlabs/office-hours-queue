@@ -8,11 +8,12 @@ from django.test import TransactionTestCase
 from django.urls import reverse
 from djangorestframework_camel_case.util import camelize
 from rest_framework.test import APIClient
-from rest_live.testing import APICommunicator, async_test, get_headers_for_user
+from rest_live.testing import async_test, get_headers_for_user
 
 from ohq.models import Announcement, Course, Membership, Question, Queue, Semester
 from ohq.serializers import AnnouncementSerializer
 from ohq.urls import realtime_router
+from channels.testing import WebsocketCommunicator
 
 
 User = get_user_model()
@@ -44,9 +45,7 @@ class QuestionTestCase(TransactionTestCase):
         )
 
         headers = await get_headers_for_user(self.student2)
-        self.client = APICommunicator(
-            AuthMiddlewareStack(realtime_router.as_consumer()), "/api/ws/subscribe/", headers
-        )
+        self.client = WebsocketCommunicator(AuthMiddlewareStack(realtime_router.as_consumer().as_asgi()), "/ws/subscribe/", headers)
         connected, _ = await self.client.connect()
         self.assertTrue(connected)
 
@@ -120,9 +119,7 @@ class AnnouncementTestCase(TransactionTestCase):
         )
 
         headers = await get_headers_for_user(self.student)
-        self.client = APICommunicator(
-            AuthMiddlewareStack(realtime_router.as_consumer()), "/api/ws/subscribe/", headers
-        )
+        self.client = WebsocketCommunicator(AuthMiddlewareStack(realtime_router.as_consumer().as_asgi()), "/ws/subscribe/", headers)
         connected, _ = await self.client.connect()
         self.assertTrue(connected)
 
