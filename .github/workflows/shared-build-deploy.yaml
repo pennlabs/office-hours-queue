@@ -16,7 +16,6 @@ jobs:
       pythonVersion: 3.11
       flake: true
       black: true
-      ruff: true
 
   publish-backend:
     uses: pennlabs/shared-actions/.github/workflows/docker-publish.yaml@v0.1
