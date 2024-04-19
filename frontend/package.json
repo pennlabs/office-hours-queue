@@ -14,10 +14,11 @@
     },
     "dependencies": {
         "@emotion/react": "^11.11.1",
+        "@emotion/styled": "^11.11.5",
         "@material-ui/core": "^4.11.0",
         "@material-ui/lab": "^4.0.0-alpha.56",
-        "@mui/lab": "^5.0.0-alpha.75",
         "@mui/material": "^5.5.3",
+        "@mui/x-date-pickers": "^7.2.0",
         "@pennlabs/rest-hooks": "^0.1.8",
         "@pennlabs/rest-live-hooks": "^2.0.2-alpha.0",
         "@sentry/browser": "^5.21.4",

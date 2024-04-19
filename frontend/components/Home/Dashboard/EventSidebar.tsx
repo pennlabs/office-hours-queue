@@ -1,9 +1,20 @@
-import { Grid, Header, Segment, SemanticCOLORS } from "semantic-ui-react";
-import { UserMembership, Event, Course } from "../../../types";
-import { useListEvents } from "../../../hooks/data-fetching/calendar";
+import {
+    Grid,
+    Header,
+    Loader,
+    Segment,
+    SemanticCOLORS,
+} from "semantic-ui-react";
+import moment from "moment";
+import { useEffect } from "react";
+import { UserMembership, Course, Occurrence } from "../../../types";
+import {
+    apiOccurrenceToOccurrence,
+    useOccurrences,
+} from "../../../hooks/data-fetching/calendar";
 
 interface EventCardProps {
-    event: Event;
+    occurrence: Occurrence;
     course: Course;
     color: SemanticCOLORS;
 }
@@ -13,9 +24,10 @@ interface EventSidebarProps {
 }
 
 const EventCard = (props: EventCardProps) => {
-    const { event, course, color } = props;
+    const { occurrence, course, color } = props;
 
-    const startDate = new Date(event.start);
+    const startDate = new Date(occurrence.start);
+    const endDate = new Date(occurrence.end);
 
     const formatDate = (date: Date) =>
         date.toLocaleString("en-US", {
@@ -24,10 +36,11 @@ const EventCard = (props: EventCardProps) => {
             hour12: true,
         });
 
+    // @ts-ignore
     return (
         <Segment attached="top" color={color as SemanticCOLORS}>
             <Grid>
-                <Grid.Column width={11}>
+                <Grid.Column width={8}>
                     <Header
                         as="h4"
                         style={{
@@ -44,12 +57,16 @@ const EventCard = (props: EventCardProps) => {
                                 overflow: "hidden",
                             }}
                         >
-                            {event.title}
+                            {occurrence.title}
                         </Header.Subheader>
                     </Header>
                 </Grid.Column>
-                <Grid.Column width={5}>
-                    <Header as="h5">{formatDate(startDate)}</Header>
+                <Grid.Column width={8} textAlign="right">
+                    <Header as="h5">
+                        {formatDate(startDate)}
+                        <br />
+                        {formatDate(endDate)}
+                    </Header>
                 </Grid.Column>
             </Grid>
         </Segment>
@@ -59,18 +76,24 @@ const EventCard = (props: EventCardProps) => {
 const EventSidebar = (props: EventSidebarProps) => {
     const { memberships } = props;
 
-    const { data, isValidating } = useListEvents(
-        memberships.map((ele) => ele.course.id)
+    const { data, setFilter } = useOccurrences(
+        memberships.map((ele) => ele.course.id),
+        new Date(),
+        moment().endOf("day").toDate()
     );
+    const occurrences = (data || []).map(apiOccurrenceToOccurrence);
+
+    useEffect(() => {
+        setFilter({
+            start: new Date(),
+            end: moment().endOf("day").toDate(),
+        });
+    }, [moment().startOf("hour").toISOString()]);
 
     const getMembershipIndex = (courseId) =>
         memberships.findIndex(
             (membership) => membership.course.id === courseId
         );
-
-    const events = data.filter(
-        (event) => getMembershipIndex(event.course_id) !== -1
-    );
 
     const colors: SemanticCOLORS[] = [
         "red",
@@ -93,28 +116,40 @@ const EventSidebar = (props: EventSidebarProps) => {
                 <Grid padded stackable container>
                     <Grid.Row>
                         <Header as="h2">Today&apos;s Events</Header>
-                        {isValidating
-                            ? "Loading..."
-                            : events.map((ele) => {
-                                  const courseIndex = getMembershipIndex(
-                                      ele.course_id
-                                  );
-                                  if (
-                                      courseIndex === -1 ||
-                                      memberships[courseIndex].course.archived
-                                  )
-                                      return undefined;
+                    </Grid.Row>
+                    <Grid.Row>
+                        {data === undefined ? (
+                            <>
+                                <Segment basic />
+                                <Loader active />
+                            </>
+                        ) : (
+                            occurrences
+                                .sort(
+                                    (a, b) =>
+                                        a.start.getTime() - b.start.getTime()
+                                )
+                                .map((o) => {
+                                    const courseIndex = getMembershipIndex(
+                                        o.event.course_id
+                                    );
+                                    if (
+                                        courseIndex === -1 ||
+                                        memberships[courseIndex].course.archived
+                                    )
+                                        return undefined;
 
-                                  return (
-                                      <EventCard
-                                          event={ele}
-                                          course={
-                                              memberships[courseIndex].course
-                                          }
-                                          color={colors[courseIndex]}
-                                      />
-                                  );
-                              })}
+                                    return (
+                                        <EventCard
+                                            occurrence={o}
+                                            course={
+                                                memberships[courseIndex].course
+                                            }
+                                            color={colors[courseIndex]}
+                                        />
+                                    );
+                                })
+                        )}
                     </Grid.Row>
                 </Grid>
             </Segment>
