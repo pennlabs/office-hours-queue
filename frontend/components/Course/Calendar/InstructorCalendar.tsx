@@ -20,7 +20,7 @@ type CalendarProps = {
     courseId: number;
 };
 
-export default function Calender(props: CalendarProps) {
+export default function InstructorCalendar(props: CalendarProps) {
     const { courseId } = props;
 
     // Load whole month at a time to reduce revalidation and enable more optimistic updates.

@@ -2,7 +2,7 @@ import Head from "next/head";
 import { Grid } from "semantic-ui-react";
 import { NextPageContext } from "next";
 import CourseWrapper from "../../../components/Course/CourseWrapper";
-import Calender from "../../../components/Course/Calender/InstructorCalendar";
+import Calendar from "../../../components/Course/Calendar/InstructorCalendar";
 import { doMultipleSuccessRequests } from "../../../utils/fetch";
 import { isLeadershipRole } from "../../../utils/enums";
 import { withAuth } from "../../../context/auth";
@@ -22,7 +22,7 @@ const CalendarPage = (props: CoursePageProps) => {
                     course={course}
                     leadership={leadership}
                     render={() => {
-                        return <Calender courseId={course.id} />;
+                        return <Calendar courseId={course.id} />;
                     }}
                 />
             </Grid>
