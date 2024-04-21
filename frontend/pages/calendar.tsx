@@ -2,35 +2,29 @@ import Head from "next/head";
 import { Grid } from "semantic-ui-react";
 import { NextPageContext } from "next";
 import CourseWrapper from "../../../components/Course/CourseWrapper";
+import Calendar from "../../../components/Course/Calendar/InstructorCalendar";
 import { doMultipleSuccessRequests } from "../../../utils/fetch";
 import { isLeadershipRole } from "../../../utils/enums";
 import { withAuth } from "../../../context/auth";
 import { CoursePageProps, Course, Membership } from "../../../types";
 import nextRedirect from "../../../utils/redirect";
-import InstructorCalendar from "../../../components/Course/Calendar/InstructorCalendar";
 
-const InstructorCalendarPage = (props: CoursePageProps) => {
+const CalendarPage = (props: CoursePageProps) => {
     const { course, leadership } = props;
 
     return (
         <>
             <Head>
-                <title>{`OHQ | ${course.department} ${course.courseCode}`}</title>
+                <title>OHQ | Calendar</title>
             </Head>
             <Grid columns="equal" divided style={{ width: "100%" }} stackable>
-                <CourseWrapper
-                    course={course}
-                    leadership={leadership}
-                    render={() => {
-                        return <InstructorCalendar courseId={course.id} />;
-                    }}
-                />
+                <Calendar courseId={course.id} />
             </Grid>
         </>
     );
 };
 
-InstructorCalendarPage.getInitialProps = async (
+CalendarPage.getInitialProps = async (
     context: NextPageContext
 ): Promise<CoursePageProps> => {
     const { query, req } = context;
@@ -65,4 +59,4 @@ InstructorCalendarPage.getInitialProps = async (
     };
 };
 
-export default withAuth(InstructorCalendarPage);
+export default withAuth(CalendarPage);

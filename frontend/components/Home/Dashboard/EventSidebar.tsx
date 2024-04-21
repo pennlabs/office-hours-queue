@@ -12,6 +12,10 @@ import {
     apiOccurrenceToOccurrence,
     useOccurrences,
 } from "../../../hooks/data-fetching/calendar";
+import {
+    eventColors,
+    filterSortMemberships,
+} from "../../Calendar/calendarUtils";
 
 interface EventCardProps {
     occurrence: Occurrence;
@@ -74,7 +78,7 @@ const EventCard = (props: EventCardProps) => {
 };
 
 const EventSidebar = (props: EventSidebarProps) => {
-    const { memberships } = props;
+    const memberships = filterSortMemberships(props.memberships);
 
     const { data, setFilter } = useOccurrences(
         memberships.map((ele) => ele.course.id),
@@ -94,21 +98,6 @@ const EventSidebar = (props: EventSidebarProps) => {
         memberships.findIndex(
             (membership) => membership.course.id === courseId
         );
-
-    const colors: SemanticCOLORS[] = [
-        "red",
-        "olive",
-        "blue",
-        "pink",
-        "orange",
-        "yellow",
-        "violet",
-        "brown",
-        "yellow",
-        "teal",
-        "purple",
-        "grey",
-    ];
 
     return (
         <Segment basic style={{ width: "280px" }}>
@@ -133,11 +122,7 @@ const EventSidebar = (props: EventSidebarProps) => {
                                     const courseIndex = getMembershipIndex(
                                         o.event.course_id
                                     );
-                                    if (
-                                        courseIndex === -1 ||
-                                        memberships[courseIndex].course.archived
-                                    )
-                                        return undefined;
+                                    if (courseIndex === -1) return undefined;
 
                                     return (
                                         <EventCard
@@ -145,7 +130,12 @@ const EventSidebar = (props: EventSidebarProps) => {
                                             course={
                                                 memberships[courseIndex].course
                                             }
-                                            color={colors[courseIndex]}
+                                            color={
+                                                eventColors[
+                                                    courseIndex %
+                                                        eventColors.length
+                                                ]
+                                            }
                                         />
                                     );
                                 })
