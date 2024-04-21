@@ -616,7 +616,7 @@ class QueueQuestionsPerTAHeatmapTestCase(TestCase):
             day=(yesterday_weekday + 1) % 7 + 1,
             hour=8,
         ).value
-        
+
         self.assertEqual(expected_8, actual_8)
 
         expected_17 = (self.ta_1_questions_17 + self.ta_2_questions_17) / self.num_tas_17

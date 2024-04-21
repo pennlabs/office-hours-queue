@@ -11,7 +11,12 @@ class QuestionSearchFilter(filters.FilterSet):
 
     class Meta:
         model = Question
-        fields = {"time_asked": ["gt", "lt"], "queue": ["exact"], "status": ["exact"], "time_responded_to": ["gt", "lt"]}
+        fields = {
+            "time_asked": ["gt", "lt"],
+            "queue": ["exact"],
+            "status": ["exact"],
+            "time_responded_to": ["gt", "lt"],
+        }
 
     def search_filter(self, queryset, name, value):
         return queryset.filter(

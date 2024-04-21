@@ -315,7 +315,7 @@ class OccurrenceViewTestCase(TestCase):
             + self.filter_end
         )
         occurrences = json.loads(response.content)
-        self.assertEquals(2, len(occurrences))
+        self.assertEqual(2, len(occurrences))
 
     def test_cancel(self):
         self.client.force_authenticate(user=self.ta)
@@ -376,7 +376,7 @@ class OccurrenceViewTestCase(TestCase):
             + self.filter_end
         )
         occurrences = json.loads(response.content)
-        self.assertEquals(1, len(occurrences))
+        self.assertEqual(1, len(occurrences))
 
         # calling twice doesn't create more occurrences
         response = self.client.get(
@@ -388,9 +388,9 @@ class OccurrenceViewTestCase(TestCase):
             + self.filter_end
         )
         occurrences = json.loads(response.content)
-        self.assertEquals(1, len(occurrences))
+        self.assertEqual(1, len(occurrences))
         cnt = Occurrence.objects.all().count()
-        self.assertEquals(1, cnt)
+        self.assertEqual(1, cnt)
 
     def test_update_start(self):
         self.client.force_authenticate(user=self.ta)
@@ -416,8 +416,8 @@ class OccurrenceViewTestCase(TestCase):
             + filter_end
         )
         occurrences = json.loads(response.content)
-        self.assertEquals(2, len(occurrences))
-        self.assertEquals(occurrences[0]["start"], self.start_time)
+        self.assertEqual(2, len(occurrences))
+        self.assertEqual(occurrences[0]["start"], self.start_time)
         # update event's start day should update occurrences
         event = Event.objects.all().first()
         new_start_date = "2021-12-07T12:40:37Z"
@@ -432,7 +432,7 @@ class OccurrenceViewTestCase(TestCase):
             },
         )
         event = Event.objects.all().first()
-        self.assertEquals(event.title, "New TA Session")
+        self.assertEqual(event.title, "New TA Session")
         response = self.client.get(
             "/api/occurrences/?course="
             + str(self.course.id)
@@ -442,5 +442,5 @@ class OccurrenceViewTestCase(TestCase):
             + filter_end
         )
         occurrences = json.loads(response.content)
-        self.assertEquals(1, len(occurrences))
-        self.assertEquals(occurrences[0]["start"], new_start_date)
+        self.assertEqual(1, len(occurrences))
+        self.assertEqual(occurrences[0]["start"], new_start_date)

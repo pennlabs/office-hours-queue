@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.db.models import Avg, Case, Count, F, Sum, When, FloatField, ExpressionWrapper
+from django.db.models import Avg, Case, Count, ExpressionWrapper, F, FloatField, Sum, When
 from django.db.models.functions import TruncDate
 from django.utils import timezone
 
@@ -217,8 +217,11 @@ def queue_calculate_questions_per_ta_heatmap(queue, weekday, hour):
             questions=Count("date", distinct=False),
             tas=Count("responded_to_by", distinct=True),
         )
-       .annotate(
-            q_per_ta=Case(When(tas=0, then=ExpressionWrapper(F("questions"), output_field=FloatField())), default=1.0 * F("questions") / F("tas")),
+        .annotate(
+            q_per_ta=Case(
+                When(tas=0, then=ExpressionWrapper(F("questions"), output_field=FloatField())),
+                default=1.0 * F("questions") / F("tas"),
+            ),
         )
         .aggregate(avg=Avg(F("q_per_ta"), output_field=FloatField()))
     )

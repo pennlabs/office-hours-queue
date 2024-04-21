@@ -7,14 +7,17 @@ name: Build and Deploy OHQ
 on: push
 
 jobs:
-  # backend-check:
-  #   name: "Backend Check"
-  #   uses: pennlabs/shared-actions/.github/workflows/django-check.yaml@v0.1
-  #   with:
-  #     projectName: officehoursqueue
-  #     path: backend
-  #     flake: true
-  #     black: true
+  backend-check:
+    name: "Backend Check"
+    uses: pennlabs/shared-actions/.github/workflows/django.yaml@507f4cf1cc88259fc8625fb3a35bd3f18fc91cd5
+    secrets: inherit
+    with:
+      projectName: officehoursqueue
+      path: backend
+      pythonVersion: 3.11
+      flake: true
+      black: true
+      ruff: false
 
   publish-backend:
     uses: pennlabs/shared-actions/.github/workflows/docker-publish.yaml@v0.1
