@@ -13,6 +13,7 @@ import {
     EditEventModal,
     NewEventModal,
 } from "./InstructorCalendarModals";
+import { eventColorsHex } from "../../Calendar/calendarUtils";
 
 const localizer = momentLocalizer(moment);
 
@@ -102,7 +103,7 @@ export default function InstructorCalendar(props: CalendarProps) {
                     } else {
                         return {
                             style: {
-                                backgroundColor: "#2185D0",
+                                backgroundColor: eventColorsHex.blue,
                                 color: "white",
                                 borderRadius: "2",
                                 border: "none",

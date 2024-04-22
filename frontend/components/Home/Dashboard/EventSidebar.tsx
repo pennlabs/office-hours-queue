@@ -15,6 +15,7 @@ import {
 import {
     eventColors,
     filterSortMemberships,
+    getMembershipIndex,
 } from "../../Calendar/calendarUtils";
 
 interface EventCardProps {
@@ -94,11 +95,6 @@ const EventSidebar = (props: EventSidebarProps) => {
         });
     }, [moment().startOf("hour").toISOString()]);
 
-    const getMembershipIndex = (courseId) =>
-        memberships.findIndex(
-            (membership) => membership.course.id === courseId
-        );
-
     return (
         <Segment basic style={{ width: "280px" }}>
             <Segment basic>
@@ -120,6 +116,7 @@ const EventSidebar = (props: EventSidebarProps) => {
                                 )
                                 .map((o) => {
                                     const courseIndex = getMembershipIndex(
+                                        memberships,
                                         o.event.course_id
                                     );
                                     if (courseIndex === -1) return undefined;
