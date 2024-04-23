@@ -533,12 +533,21 @@ class EventSerializer(serializers.ModelSerializer):
                 validated_data.pop("rule")
             Occurrence.objects.filter(event=instance).delete()
 
+        if "rule" in validated_data:
+            validated_data.pop("rule")
         # can never change course_id, client should create a new event instead
         validated_data.pop("course_id")
+        print(validated_data)
         super().update(instance, validated_data)
 
         instance.rule = rule
         instance.save()
+
+        if "end_recurring_period" in validated_data:
+            validated_data.pop("end_recurring_period")
+
+        Occurrence.objects.filter(event=instance).update(**validated_data)
+
         return instance
 
     def create(self, validated_data):
