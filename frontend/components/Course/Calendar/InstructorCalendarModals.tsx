@@ -390,7 +390,6 @@ export const NewEventModal = (props: NewEventProps) => {
             size="small"
             open={show}
             as={Form}
-            onSubmit={handleCreateEvent}
             onClose={() => setModalState(false)}
         >
             <Modal.Header>New Event</Modal.Header>
@@ -420,7 +419,7 @@ export const NewEventModal = (props: NewEventProps) => {
             </Modal.Content>
             <Modal.Actions>
                 <Button onClick={() => setModalState(false)}>Cancel</Button>
-                <Button positive type="submit">
+                <Button onClick={handleCreateEvent} positive type="submit">
                     Create Event
                 </Button>
             </Modal.Actions>

@@ -87,9 +87,11 @@ export const useOccurrences = (courseIds: number[], start: Date, end: Date) => {
             }
         );
 
+    const filterStartString = filter.start.toISOString();
+    const filterEndString = filter.end.toISOString();
     useEffect(() => {
         mutate(undefined, undefined, { sendRequest: false });
-    }, [filter.start.toISOString(), filter.end.toISOString()]);
+    }, [filterStartString, filterEndString]);
 
     return {
         data,

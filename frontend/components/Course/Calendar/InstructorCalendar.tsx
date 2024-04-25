@@ -44,8 +44,8 @@ export default function InstructorCalendar(props: CalendarProps) {
 
     const handleSelectSlot = useCallback(async ({ start, end }) => {
         setNewEvent(true);
-        setStartField(new Date(start));
-        setEndField(new Date(end));
+        setStartField(start);
+        setEndField(end);
     }, []);
 
     return (

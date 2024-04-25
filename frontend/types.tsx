@@ -4,7 +4,7 @@ export interface Course {
     id: number;
     courseCode: string;
     department: string;
-    courseIdQueries: string;
+    courseTitle: string;
     description: string;
     semester: number;
     semesterPretty: string;
@@ -232,9 +232,6 @@ export interface ApiOccurrence {
     cancelled: boolean;
     event: ApiEvent;
 }
-
-// export interface ApiOccurrence extends ApiPartialOccurrence {
-// }
 
 export interface Occurrence {
     id: number;

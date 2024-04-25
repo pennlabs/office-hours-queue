@@ -88,12 +88,39 @@ const EventSidebar = (props: EventSidebarProps) => {
     );
     const occurrences = (data || []).map(apiOccurrenceToOccurrence);
 
+    const startOfHour = moment().startOf("hour").toISOString();
     useEffect(() => {
         setFilter({
             start: new Date(),
             end: moment().endOf("day").toDate(),
         });
-    }, [moment().startOf("hour").toISOString()]);
+    }, [startOfHour]);
+
+    const eventCards = occurrences
+        .filter((o) => !o.cancelled)
+        .sort((a, b) => a.start.getTime() - b.start.getTime())
+        .map((o) => {
+            const courseIndex = getMembershipIndex(
+                memberships,
+                o.event.course_id
+            );
+            if (courseIndex === -1) return undefined;
+
+            return (
+                <EventCard
+                    occurrence={o}
+                    course={memberships[courseIndex].course}
+                    color={eventColors[courseIndex % eventColors.length]}
+                />
+            );
+        });
+
+    const sidebarContent =
+        eventCards.length > 0 ? (
+            eventCards
+        ) : (
+            <div>You have no events today!</div>
+        );
 
     return (
         <Segment basic style={{ width: "280px" }}>
@@ -109,33 +136,7 @@ const EventSidebar = (props: EventSidebarProps) => {
                                 <Loader active />
                             </>
                         ) : (
-                            occurrences
-                                .sort(
-                                    (a, b) =>
-                                        a.start.getTime() - b.start.getTime()
-                                )
-                                .map((o) => {
-                                    const courseIndex = getMembershipIndex(
-                                        memberships,
-                                        o.event.course_id
-                                    );
-                                    if (courseIndex === -1) return undefined;
-
-                                    return (
-                                        <EventCard
-                                            occurrence={o}
-                                            course={
-                                                memberships[courseIndex].course
-                                            }
-                                            color={
-                                                eventColors[
-                                                    courseIndex %
-                                                        eventColors.length
-                                                ]
-                                            }
-                                        />
-                                    );
-                                })
+                            sidebarContent
                         )}
                     </Grid.Row>
                 </Grid>
