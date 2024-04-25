@@ -201,10 +201,10 @@ export type NotificationProps = MutableRefObject<(string) => void>;
 export interface ApiPartialEvent {
     title: string;
     course_id: number;
-    description: string | null;
+    description: string;
     start: string;
     end: string;
-    rule?: { frequency: string };
+    rule: { frequency: string, params: string } | null;
     end_recurring_period: string | null;
 }
 
@@ -216,17 +216,17 @@ export interface Event {
     id: number;
     title: string;
     course_id: number;
-    description: string | null;
+    description: string;
     start: Date;
     end: Date;
-    rule: { frequency: string } | null;
+    rule: { frequency: string, params: string } | null;
     end_recurring_period: Date | null;
 }
 
 export interface ApiOccurrence {
     id: number;
     title: string;
-    description: string | null;
+    description: string;
     start: string;
     end: string;
     cancelled: boolean;
@@ -239,7 +239,7 @@ export interface ApiOccurrence {
 export interface Occurrence {
     id: number;
     title: string;
-    description: string | null;
+    description: string;
     start: Date;
     end: Date;
     cancelled: boolean;
