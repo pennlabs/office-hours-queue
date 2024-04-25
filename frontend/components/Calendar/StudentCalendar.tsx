@@ -196,6 +196,7 @@ export default function StudentCalendar() {
                         <Modal.Content>
                             <Modal.Description>
                                 {selectedOccurrence?.description}
+                                <br />
                                 {selectedMembership?.kind === Kind.STUDENT ? (
                                     <a
                                         href={`/courses/${selectedOccurrence?.event.course_id}`}
