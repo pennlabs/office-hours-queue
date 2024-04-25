@@ -7,6 +7,7 @@ import {
     TimePicker,
 } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import moment from "moment";
 import {
     createEvent,
     dateToEventISO,
@@ -20,29 +21,15 @@ import {
     Occurrence,
 } from "../../../types";
 
-const changeDate = (oldDate: Date, newDate: Date | null) =>
-    newDate === null
-        ? oldDate
-        : new Date(
-              newDate.getFullYear(),
-              newDate.getMonth(),
-              newDate.getDate(),
-              oldDate.getHours(),
-              oldDate.getMinutes(),
-              oldDate.getSeconds()
-          );
-
-const changeTime = (oldTime: Date, newTime: Date | null) =>
-    newTime === null
-        ? oldTime
-        : new Date(
-              oldTime.getFullYear(),
-              oldTime.getMonth(),
-              oldTime.getDate(),
-              newTime.getHours(),
-              newTime.getMinutes(),
-              newTime.getSeconds()
-          );
+const combineDateTime = (date: Date, time: Date) =>
+    new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        time.getHours(),
+        time.getMinutes(),
+        time.getSeconds()
+    );
 
 const daysToParams = (days: number[]) =>
     days.length > 0
@@ -52,33 +39,18 @@ const daysToParams = (days: number[]) =>
               .slice(0, -1)
         : "";
 
-interface DayOfWeekSelectorProps {
-    days: number[];
-    handleToggle: (day: number) => void;
-}
+const paramsToDays = (params: string) =>
+    params
+        .substring(params.indexOf(":") + 1)
+        .split(",")
+        .map((s) => parseInt(s, 10));
 
-const DayOfWeekSelector = (props: DayOfWeekSelectorProps) => {
-    const { days, handleToggle } = props;
-
-    return (
-        <Form.Field>
-            {["S", "M", "T", "W", "T", "F", "S"].map((dayChar, dayNum) => (
-                <Button
-                    key={dayNum}
-                    circular
-                    active={days.includes(dayNum)}
-                    color={days.includes(dayNum) ? "blue" : undefined}
-                    onClick={(e) => {
-                        e.preventDefault();
-                        handleToggle(dayNum);
-                    }}
-                >
-                    {dayChar}
-                </Button>
-            ))}
-        </Form.Field>
-    );
-};
+const toggleDay = (day: number, days: number[]) =>
+    days.includes(day)
+        ? days
+              .slice(0, days.indexOf(day))
+              .concat(days.slice(days.indexOf(day) + 1, days.length))
+        : [...days, day];
 
 interface EditOccurrenceEventProps {
     editOccurrence: () => void;
@@ -166,24 +138,21 @@ interface EditEventProps {
 
 export const EditEventModal = (props: EditEventProps) => {
     const { setModalState, mutate, occurrences, occurrence } = props;
-    const [title, setTitle] = useState(occurrence.event.title);
-    const [description, setDescription] = useState(
-        occurrence.event.description
-    );
-    const [startField, setStartField] = useState(occurrence.start);
-    const [endField, setEndField] = useState(occurrence.end);
+    const [title, setTitle] = useState(occurrence.title);
+    const [description, setDescription] = useState(occurrence.description);
+    const [startDate, setStartDate] = useState(occurrence.start);
+    const [startTime, setStartTime] = useState(occurrence.start);
+    const [endDate, setEndDate] = useState(occurrence.end);
+    const [endTime, setEndTime] = useState(occurrence.end);
     const [isRecurring, setIsRecurring] = useState(
         occurrence.event.rule !== null
     );
     const [recurringDays, setRecurringDays] = useState(
         occurrence.event.rule === null
             ? []
-            : occurrence.event.rule.params
-                  .substring(occurrence.event.rule.params.indexOf(":") + 1)
-                  .split(",")
-                  .map((s) => parseInt(s, 10))
+            : paramsToDays(occurrence.event.rule.params)
     );
-    const [erpField, setErpField] = useState(
+    const [erpDate, setErpDate] = useState(
         occurrence.event.end_recurring_period ?? occurrence.end
     );
 
@@ -194,18 +163,17 @@ export const EditEventModal = (props: EditEventProps) => {
     useEffect(() => {
         setTitle(occurrence.title);
         setDescription(occurrence.description);
-        setStartField(occurrence.start);
-        setEndField(occurrence.end);
+        setStartDate(occurrence.start);
+        setStartTime(occurrence.start);
+        setEndDate(occurrence.end);
+        setEndTime(occurrence.end);
         setIsRecurring(occurrence.event.rule !== null);
         setRecurringDays(
             occurrence.event.rule === null
                 ? []
-                : occurrence.event.rule.params
-                      .slice(occurrence.event.rule.params.indexOf(":") + 1)
-                      .split(",")
-                      .map((s) => parseInt(s, 10))
+                : paramsToDays(occurrence.event.rule.params)
         );
-        setErpField(occurrence.event.end_recurring_period ?? occurrence.end);
+        setErpDate(occurrence.event.end_recurring_period ?? occurrence.end);
     }, [occurrence]);
 
     const handleEditOccurrence = () => {
@@ -221,9 +189,10 @@ export const EditEventModal = (props: EditEventProps) => {
     };
 
     const handleEditEvent = () => {
-        const timeDeltaStart =
-            startField.getTime() - occurrence.start.getTime();
-        const timeDeltaEnd = endField.getTime() - occurrence.end.getTime();
+        const start = combineDateTime(startDate, startTime);
+        const end = combineDateTime(endDate, endTime);
+        const timeDeltaStart = start.getTime() - occurrence.start.getTime();
+        const timeDeltaEnd = end.getTime() - occurrence.end.getTime();
         const { event } = occurrence;
         const editedEvent: ApiEvent = {
             id: event.id,
@@ -235,9 +204,11 @@ export const EditEventModal = (props: EditEventProps) => {
             description,
             course_id: event.course_id,
             rule: isRecurring
-                ? { frequency: "WEEKLY", params: "byweekday:4,5" }
+                ? { frequency: "WEEKLY", params: daysToParams(recurringDays) }
                 : null,
-            end_recurring_period: isRecurring ? dateToEventISO(erpField) : null,
+            end_recurring_period: isRecurring
+                ? dateToEventISO(moment(erpDate).endOf("day").toDate())
+                : null,
         };
         updateEvent(editedEvent);
         // Revalidate everything, since new event could have created many new occurrences.
@@ -280,123 +251,28 @@ export const EditEventModal = (props: EditEventProps) => {
             {confirmModal}
             <Modal.Header>Edit Event</Modal.Header>
             <Modal.Content>
-                <Form.Input
-                    label="Title"
-                    value={title}
-                    required
-                    onChange={(_, { value }) => setTitle(value as string)}
+                <EventFormFields
+                    title={title}
+                    setTitle={setTitle}
+                    description={description}
+                    setDescription={setDescription}
+                    startDate={startDate}
+                    setStartDate={setStartDate}
+                    startTime={startTime}
+                    setStartTime={setStartTime}
+                    endDate={endDate}
+                    setEndDate={setEndDate}
+                    endTime={endTime}
+                    setEndTime={setEndTime}
+                    isRecurring={isRecurring}
+                    toggleIsRecurring={() => setIsRecurring((old) => !old)}
+                    recurringDays={recurringDays}
+                    toggleRecurringDays={(day) =>
+                        setRecurringDays((days) => toggleDay(day, days))
+                    }
+                    erpDate={erpDate}
+                    setErpDate={setErpDate}
                 />
-                <Form.TextArea
-                    label="Description"
-                    style={{ height: "8rem" }}
-                    value={description}
-                    onChange={(_, { value }) => setDescription(value as string)}
-                />
-
-                <Form.Field required>
-                    <label htmlFor="edit-start-time-picker">Start Time</label>
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-                        <form id="edit-start-time-picker">
-                            <DatePicker
-                                value={startField}
-                                onChange={(newDate) =>
-                                    setStartField((oldDate) =>
-                                        changeDate(oldDate, newDate)
-                                    )
-                                }
-                            />
-                            <TimePicker
-                                value={startField}
-                                onChange={(newTime) =>
-                                    setStartField((oldTime) =>
-                                        changeTime(oldTime, newTime)
-                                    )
-                                }
-                                minutesStep={5}
-                            />
-                        </form>
-                    </LocalizationProvider>
-                </Form.Field>
-                <Form.Field required>
-                    <label htmlFor="edit-end-time-picker">End Time</label>
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-                        <form id="edit-end-time-picker">
-                            <DatePicker
-                                value={endField}
-                                onChange={(newDate) =>
-                                    setEndField((oldDate) =>
-                                        changeDate(oldDate, newDate)
-                                    )
-                                }
-                            />
-                            <TimePicker
-                                value={endField}
-                                onChange={(newTime) =>
-                                    setEndField((oldTime) =>
-                                        changeTime(oldTime, newTime)
-                                    )
-                                }
-                                minutesStep={5}
-                            />
-                        </form>
-                    </LocalizationProvider>
-                </Form.Field>
-                <Form.Field>
-                    <Form.Checkbox
-                        label="Recurring Event"
-                        checked={isRecurring}
-                        onChange={() =>
-                            setIsRecurring((oldIsRecurring) => !oldIsRecurring)
-                        }
-                    />
-                </Form.Field>
-                {isRecurring && (
-                    <>
-                        <DayOfWeekSelector
-                            days={recurringDays}
-                            handleToggle={(day) => {
-                                setRecurringDays((days) =>
-                                    days.includes(day)
-                                        ? days
-                                              .slice(0, days.indexOf(day))
-                                              .concat(
-                                                  days.slice(
-                                                      days.indexOf(day) + 1,
-                                                      days.length
-                                                  )
-                                              )
-                                        : [...days, day]
-                                );
-                            }}
-                        />
-                        <Form.Field required>
-                            <label htmlFor="edit-recurring-period-picker">
-                                Recurring Period End Time
-                            </label>
-                            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                <form id="edit-recurring-period-picker">
-                                    <DatePicker
-                                        value={erpField}
-                                        onChange={(newDate) =>
-                                            setErpField((oldDate) =>
-                                                changeDate(oldDate, newDate)
-                                            )
-                                        }
-                                    />
-                                    <TimePicker
-                                        value={erpField}
-                                        onChange={(newTime) =>
-                                            setErpField((oldTime) =>
-                                                changeTime(oldTime, newTime)
-                                            )
-                                        }
-                                        minutesStep={5}
-                                    />
-                                </form>
-                            </LocalizationProvider>
-                        </Form.Field>
-                    </>
-                )}
             </Modal.Content>
             <Modal.Actions>
                 <Button onClick={() => setModalState(null)}>Cancel</Button>
@@ -465,11 +341,13 @@ export const NewEventModal = (props: NewEventProps) => {
 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [startField, setStartField] = useState(start);
-    const [endField, setEndField] = useState(end);
+    const [startDate, setStartDate] = useState(start);
+    const [startTime, setStartTime] = useState(start);
+    const [endDate, setEndDate] = useState(end);
+    const [endTime, setEndTime] = useState(end);
     const [isRecurring, setIsRecurring] = useState(false);
     const [recurringDays, setRecurringDays] = useState([start.getDay()]);
-    const [erpField, setErpField] = useState(end);
+    const [erpDate, setErpDate] = useState(end);
     const [lastSubmittedErp, setLastSubmittedErp] = useState<Date | undefined>(
         undefined
     );
@@ -477,30 +355,33 @@ export const NewEventModal = (props: NewEventProps) => {
     useEffect(() => {
         setTitle("");
         setDescription("");
-        setStartField(start);
-        setEndField(end);
+        setStartDate(start);
+        setStartTime(start);
+        setEndDate(end);
+        setEndTime(end);
         setIsRecurring(false);
         setRecurringDays([start.getDay()]);
-        setErpField(lastSubmittedErp ?? end);
+        setErpDate(lastSubmittedErp ?? end);
     }, [show]);
 
     const handleCreateEvent = () => {
-        console.log(daysToParams(recurringDays));
         const newEvent: ApiPartialEvent = {
             title,
-            start: dateToEventISO(startField),
-            end: dateToEventISO(endField),
+            start: dateToEventISO(combineDateTime(startDate, startTime)),
+            end: dateToEventISO(combineDateTime(endDate, endTime)),
             description,
             course_id: courseId,
             rule: isRecurring
                 ? { frequency: "WEEKLY", params: daysToParams(recurringDays) }
+                : undefined,
+            end_recurring_period: isRecurring
+                ? dateToEventISO(moment(erpDate).endOf("day").toDate())
                 : null,
-            end_recurring_period: isRecurring ? dateToEventISO(erpField) : null,
         };
         createEvent(newEvent);
 
         mutate(undefined, undefined, { sendRequest: false });
-        if (isRecurring) setLastSubmittedErp(erpField);
+        if (isRecurring) setLastSubmittedErp(erpDate);
         setModalState(false);
     };
 
@@ -514,126 +395,28 @@ export const NewEventModal = (props: NewEventProps) => {
         >
             <Modal.Header>New Event</Modal.Header>
             <Modal.Content>
-                <Form.Input
-                    label="Title"
-                    value={title}
-                    required
-                    onChange={(_, { value }) => setTitle(value as string)}
+                <EventFormFields
+                    title={title}
+                    setTitle={setTitle}
+                    description={description}
+                    setDescription={setDescription}
+                    startDate={startDate}
+                    setStartDate={setStartDate}
+                    startTime={startTime}
+                    setStartTime={setStartTime}
+                    endDate={endDate}
+                    setEndDate={setEndDate}
+                    endTime={endTime}
+                    setEndTime={setEndTime}
+                    isRecurring={isRecurring}
+                    toggleIsRecurring={() => setIsRecurring((old) => !old)}
+                    recurringDays={recurringDays}
+                    toggleRecurringDays={(day) =>
+                        setRecurringDays((days) => toggleDay(day, days))
+                    }
+                    erpDate={erpDate}
+                    setErpDate={setErpDate}
                 />
-                <Form.TextArea
-                    label="Description"
-                    style={{ height: "8rem" }}
-                    value={description}
-                    onChange={(_, { value }) => setDescription(value as string)}
-                />
-
-                <Form.Field required>
-                    <label htmlFor="create-start-time-picker">Start Time</label>
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-                        <form id="create-start-time-picker">
-                            <DatePicker
-                                value={startField}
-                                onChange={(newDate) =>
-                                    setStartField((oldDate) =>
-                                        changeDate(oldDate, newDate)
-                                    )
-                                }
-                            />
-                            <TimePicker
-                                value={startField}
-                                onChange={(newTime) =>
-                                    setStartField((oldTime) =>
-                                        changeTime(oldTime, newTime)
-                                    )
-                                }
-                                minutesStep={5}
-                            />
-                        </form>
-                    </LocalizationProvider>
-                </Form.Field>
-                <Form.Field required>
-                    <label htmlFor="create-end-time-picker">End Time</label>
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-                        <form id="create-end-time-picker">
-                            <DatePicker
-                                value={endField}
-                                onChange={(newDate) =>
-                                    setEndField((oldDate) =>
-                                        changeDate(oldDate, newDate)
-                                    )
-                                }
-                            />
-                            <TimePicker
-                                value={endField}
-                                onChange={(newTime) =>
-                                    setEndField((oldTime) =>
-                                        changeTime(oldTime, newTime)
-                                    )
-                                }
-                                minutesStep={5}
-                            />
-                        </form>
-                    </LocalizationProvider>
-                </Form.Field>
-                <Form.Field>
-                    <label htmlFor="create-recurring-checkbox">
-                        Recurring Event
-                    </label>
-                    <Form.Checkbox
-                        id="create-recurring-checkbox"
-                        checked={isRecurring}
-                        onChange={(e) =>
-                            setIsRecurring((oldIsRecurring) => !oldIsRecurring)
-                        }
-                    />
-                </Form.Field>
-                {isRecurring && (
-                    <>
-                        <DayOfWeekSelector
-                            days={recurringDays}
-                            handleToggle={(day) => {
-                                setRecurringDays((days) =>
-                                    days.includes(day)
-                                        ? days
-                                              .slice(0, days.indexOf(day))
-                                              .concat(
-                                                  days.slice(
-                                                      days.indexOf(day) + 1,
-                                                      days.length
-                                                  )
-                                              )
-                                        : [...days, day]
-                                );
-                            }}
-                        />
-                        <Form.Field required>
-                            <label htmlFor="create-recurring-period-picker">
-                                Recurring Period End Time
-                            </label>
-                            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                <form id="create-recurring-period-picker">
-                                    <DatePicker
-                                        value={erpField}
-                                        onChange={(newDate) =>
-                                            setErpField((oldDate) =>
-                                                changeDate(oldDate, newDate)
-                                            )
-                                        }
-                                    />
-                                    <TimePicker
-                                        value={erpField}
-                                        onChange={(newTime) =>
-                                            setErpField((oldTime) =>
-                                                changeTime(oldTime, newTime)
-                                            )
-                                        }
-                                        minutesStep={5}
-                                    />
-                                </form>
-                            </LocalizationProvider>
-                        </Form.Field>
-                    </>
-                )}
             </Modal.Content>
             <Modal.Actions>
                 <Button onClick={() => setModalState(false)}>Cancel</Button>
@@ -642,5 +425,142 @@ export const NewEventModal = (props: NewEventProps) => {
                 </Button>
             </Modal.Actions>
         </Modal>
+    );
+};
+
+interface EventFormFieldsProps {
+    title: string;
+    setTitle: (title: string) => void;
+    description: string;
+    setDescription: (description: string) => void;
+    startDate: Date;
+    setStartDate: (start: Date) => void;
+    startTime: Date;
+    setStartTime: (start: Date) => void;
+    endDate: Date;
+    setEndDate: (start: Date) => void;
+    endTime: Date;
+    setEndTime: (start: Date) => void;
+    isRecurring: boolean;
+    toggleIsRecurring: () => void;
+    recurringDays: number[];
+    toggleRecurringDays: (day: number) => void;
+    erpDate: Date;
+    setErpDate: (erp: Date) => void;
+}
+
+const EventFormFields = (props: EventFormFieldsProps) => {
+    const {
+        title,
+        setTitle,
+        description,
+        setDescription,
+        startDate,
+        setStartDate,
+        startTime,
+        setStartTime,
+        endDate,
+        setEndDate,
+        endTime,
+        setEndTime,
+        isRecurring,
+        toggleIsRecurring,
+        recurringDays,
+        toggleRecurringDays,
+        erpDate,
+        setErpDate,
+    } = props;
+
+    return (
+        <>
+            <Form.Input
+                label="Title"
+                value={title}
+                required
+                onChange={(_, { value }) => setTitle(value as string)}
+            />
+            <Form.TextArea
+                label="Description"
+                style={{ height: "8rem" }}
+                value={description}
+                onChange={(_, { value }) => setDescription(value as string)}
+            />
+
+            <Form.Field required>
+                <label htmlFor="create-start-time-picker">Start Time</label>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <form id="create-start-time-picker">
+                        <DatePicker value={startDate} onChange={setStartDate} />
+                        <TimePicker
+                            value={startTime}
+                            onChange={setStartTime}
+                            minutesStep={5}
+                        />
+                    </form>
+                </LocalizationProvider>
+            </Form.Field>
+            <Form.Field required>
+                <label htmlFor="create-end-time-picker">End Time</label>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <form id="create-end-time-picker">
+                        <DatePicker value={endDate} onChange={setEndDate} />
+                        <TimePicker
+                            value={endTime}
+                            onChange={setEndTime}
+                            minutesStep={5}
+                        />
+                    </form>
+                </LocalizationProvider>
+            </Form.Field>
+            <Form.Field>
+                <label htmlFor="create-recurring-checkbox">
+                    Recurring Event
+                </label>
+                <Form.Checkbox
+                    id="create-recurring-checkbox"
+                    checked={isRecurring}
+                    onChange={toggleIsRecurring}
+                />
+            </Form.Field>
+            {isRecurring && (
+                <>
+                    <Form.Field>
+                        {["S", "M", "T", "W", "T", "F", "S"].map(
+                            (dayChar, dayNum) => (
+                                <Button
+                                    key={dayNum} // eslint-disable-line react/no-array-index-key
+                                    circular
+                                    active={recurringDays.includes(dayNum)}
+                                    color={
+                                        recurringDays.includes(dayNum)
+                                            ? "blue"
+                                            : undefined
+                                    }
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        toggleRecurringDays(dayNum);
+                                    }}
+                                >
+                                    {dayChar}
+                                </Button>
+                            )
+                        )}
+                    </Form.Field>
+                    <Form.Field required>
+                        <label htmlFor="create-recurring-period-picker">
+                            Recurring Period End Time
+                        </label>
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                            <form id="create-recurring-period-picker">
+                                <DatePicker
+                                    value={erpDate}
+                                    onChange={setErpDate}
+                                />
+                            </form>
+                        </LocalizationProvider>
+                    </Form.Field>
+                </>
+            )}
+        </>
     );
 };

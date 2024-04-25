@@ -204,7 +204,7 @@ export interface ApiPartialEvent {
     description: string;
     start: string;
     end: string;
-    rule: { frequency: string, params: string } | null;
+    rule?: { frequency: string; params: string } | null;
     end_recurring_period: string | null;
 }
 
@@ -219,7 +219,7 @@ export interface Event {
     description: string;
     start: Date;
     end: Date;
-    rule: { frequency: string, params: string } | null;
+    rule: { frequency: string; params: string } | null;
     end_recurring_period: Date | null;
 }
 
