@@ -1,4 +1,4 @@
-import { Grid, Header, Loader, Segment } from "semantic-ui-react";
+import { Grid, Header, Loader, Modal, Segment } from "semantic-ui-react";
 import React, { useContext, useState } from "react";
 import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import moment from "moment";
@@ -6,7 +6,7 @@ import {
     apiOccurrenceToOccurrence,
     useOccurrences,
 } from "../../hooks/data-fetching/calendar";
-import { Occurrence } from "../../types";
+import { Kind, Occurrence } from "../../types";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { AuthUserContext } from "../../context/auth";
 import { useMemberships } from "../../hooks/data-fetching/dashboard";
@@ -35,6 +35,16 @@ export default function StudentCalendar() {
         });
         return initialSelectedCourses;
     });
+
+    const [selectedOccurrence, setSelectedOccurrence] =
+        useState<Occurrence | null>(null);
+    const handleSelectOccurrence = (o) => {
+        setSelectedOccurrence(o);
+    };
+
+    const selectedMembership = membershipsSWR.memberships.find(
+        (m) => m.course.id === selectedOccurrence?.event.course_id
+    );
 
     const handleCheckboxChange = (courseId) => {
         setSelectedCourses({
@@ -92,11 +102,9 @@ export default function StudentCalendar() {
                     }}
                     tooltipAccessor="description"
                     style={{ height: 600 }}
-                    // onSelectEvent={(occurrence: Occurrence) =>
-                    // open modal with information of event + description
-                    // course queue if student
-                    // course calendar if instructor
-                    // }
+                    onSelectEvent={(occurrence: Occurrence) =>
+                        handleSelectOccurrence(occurrence)
+                    }
                     onRangeChange={(
                         range: Date[] | { start: Date; end: Date }
                     ) => {
@@ -164,6 +172,46 @@ export default function StudentCalendar() {
                             </label>
                         </div>
                     ))}
+
+                    <Modal
+                        size="mini"
+                        open={selectedOccurrence !== null}
+                        onClose={() => setSelectedOccurrence(null)}
+                    >
+                        <Modal.Header>
+                            {`${selectedMembership?.course.department} ${selectedMembership?.course.courseCode} – ${selectedOccurrence?.title}`}
+                            <button
+                                type="button"
+                                style={{
+                                    float: "right",
+                                    cursor: "pointer",
+                                    background: "none",
+                                    border: "none",
+                                }}
+                                onClick={() => setSelectedOccurrence(null)}
+                            >
+                                <i className="close icon" />
+                            </button>
+                        </Modal.Header>
+                        <Modal.Content>
+                            <Modal.Description>
+                                {selectedOccurrence?.description}
+                                {selectedMembership?.kind === Kind.STUDENT ? (
+                                    <a
+                                        href={`/courses/${selectedOccurrence?.event.course_id}`}
+                                    >
+                                        Join the queue
+                                    </a>
+                                ) : (
+                                    <a
+                                        href={`/courses/${selectedOccurrence?.event.course_id}/calendar`}
+                                    >
+                                        View the course calendar
+                                    </a>
+                                )}
+                            </Modal.Description>
+                        </Modal.Content>
+                    </Modal>
                 </div>
             </Segment>
         </Grid.Column>
