@@ -515,7 +515,6 @@ class EventSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         rule = instance.rule
-        print(validated_data)
         # if changing start, end, or update, delete all previous occurrences
         if (
             ("start" in validated_data and instance.start != validated_data["start"])
@@ -550,7 +549,6 @@ class EventSerializer(serializers.ModelSerializer):
         # can never change course_id, client should create a new event instead
         validated_data.pop("course_id")
 
-        print(validated_data)
         super().update(instance, validated_data)
 
         instance.rule = rule
@@ -564,12 +562,10 @@ class EventSerializer(serializers.ModelSerializer):
         return instance
 
     def create(self, validated_data):
-        print(validated_data)
         course = Course.objects.get(pk=validated_data["course_id"])
         rule = None
-        if "rule" in validated_data:
-            rule, _ = Rule.objects.get_or_create(frequency=validated_data["rule"]["frequency"])
-            print(rule)
+        if "rule" in validated_data and validated_data["rule"] is not None:
+            rule, _ = Rule.objects.get_or_create(frequency=validated_data["rule"]["frequency"], params = validated_data["rule"]["params"])
             validated_data.pop("rule")
 
         validated_data.pop("course_id")
