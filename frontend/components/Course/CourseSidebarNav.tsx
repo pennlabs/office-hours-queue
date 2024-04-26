@@ -65,7 +65,7 @@ const CourseSidebarNav = (props: CourseSidebarProps) => {
                         <Menu.Item
                             style={noWrapStyle}
                             name="Calendar"
-                            icon="calendar alternate outline"
+                            icon="calendar"
                             active={router.pathname.endsWith("calendar")}
                             color="blue"
                         />

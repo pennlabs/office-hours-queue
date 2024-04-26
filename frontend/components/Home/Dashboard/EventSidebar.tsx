@@ -6,7 +6,8 @@ import {
     SemanticCOLORS,
 } from "semantic-ui-react";
 import moment from "moment";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import { UserMembership, Course, Occurrence } from "../../../types";
 import {
     apiOccurrenceToOccurrence,
@@ -34,6 +35,8 @@ const EventCard = (props: EventCardProps) => {
     const startDate = new Date(occurrence.start);
     const endDate = new Date(occurrence.end);
 
+    const [hover, setHover] = useState(false);
+
     const formatDate = (date: Date) =>
         date.toLocaleString("en-US", {
             hour: "numeric",
@@ -41,40 +44,54 @@ const EventCard = (props: EventCardProps) => {
             hour12: true,
         });
 
-    // @ts-ignore
     return (
-        <Segment attached="top" color={color as SemanticCOLORS}>
-            <Grid>
-                <Grid.Column width={8}>
-                    <Header
-                        as="h4"
-                        style={{
-                            whiteSpace: "nowrap",
-                            textOverflow: "ellipsis",
-                            overflow: "hidden",
-                        }}
-                    >
-                        {`${course.department} ${course.courseCode}`}
-                        <Header.Subheader
+        <Link
+            href="/courses/[course]"
+            as={`/courses/${occurrence?.event.course_id}`}
+            legacyBehavior
+        >
+            <Segment
+                color={color as SemanticCOLORS}
+                style={{
+                    cursor: "pointer",
+                }}
+                raised={hover}
+                onMouseEnter={() => setHover(true)}
+                onMouseLeave={() => setHover(false)}
+            >
+                {/* TODO: get rid of hardcoded width */}
+                <Grid style={{ width: "240px" }}>
+                    <Grid.Column width={8}>
+                        <Header
+                            as="h4"
                             style={{
                                 whiteSpace: "nowrap",
                                 textOverflow: "ellipsis",
                                 overflow: "hidden",
                             }}
                         >
-                            {occurrence.title}
-                        </Header.Subheader>
-                    </Header>
-                </Grid.Column>
-                <Grid.Column width={8} textAlign="right">
-                    <Header as="h5">
-                        {formatDate(startDate)}
-                        <br />
-                        {formatDate(endDate)}
-                    </Header>
-                </Grid.Column>
-            </Grid>
-        </Segment>
+                            {`${course.department} ${course.courseCode}`}
+                            <Header.Subheader
+                                style={{
+                                    whiteSpace: "nowrap",
+                                    textOverflow: "ellipsis",
+                                    overflow: "hidden",
+                                }}
+                            >
+                                {occurrence.title}
+                            </Header.Subheader>
+                        </Header>
+                    </Grid.Column>
+                    <Grid.Column width={8} textAlign="right">
+                        <Header as="h5">
+                            {formatDate(startDate)}
+                            <br />
+                            {formatDate(endDate)}
+                        </Header>
+                    </Grid.Column>
+                </Grid>
+            </Segment>
+        </Link>
     );
 };
 

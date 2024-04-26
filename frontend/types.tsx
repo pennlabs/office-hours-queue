@@ -204,6 +204,7 @@ export interface ApiPartialEvent {
     description: string;
     start: string;
     end: string;
+    location: string;
     rule?: { frequency: string; params: string } | null;
     end_recurring_period: string | null;
 }
@@ -219,6 +220,7 @@ export interface Event {
     description: string;
     start: Date;
     end: Date;
+    location: string;
     rule: { frequency: string; params: string } | null;
     end_recurring_period: Date | null;
 }
@@ -229,6 +231,7 @@ export interface ApiOccurrence {
     description: string;
     start: string;
     end: string;
+    location: string;
     cancelled: boolean;
     event: ApiEvent;
 }
@@ -239,6 +242,7 @@ export interface Occurrence {
     description: string;
     start: Date;
     end: Date;
+    location: string;
     cancelled: boolean;
     event: Event;
 }

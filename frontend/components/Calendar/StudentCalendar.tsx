@@ -1,12 +1,22 @@
-import { Grid, Header, Loader, Modal, Segment } from "semantic-ui-react";
-import React, { useContext, useState } from "react";
+import {
+    Form,
+    Grid,
+    Header,
+    Icon,
+    Loader,
+    Modal,
+    Segment,
+    SemanticICONS,
+} from "semantic-ui-react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import moment from "moment";
+import Link from "next/link";
 import {
     apiOccurrenceToOccurrence,
     useOccurrences,
 } from "../../hooks/data-fetching/calendar";
-import { Kind, Occurrence } from "../../types";
+import { Occurrence } from "../../types";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { AuthUserContext } from "../../context/auth";
 import { useMemberships } from "../../hooks/data-fetching/dashboard";
@@ -19,6 +29,30 @@ import {
 
 const localizer = momentLocalizer(moment);
 
+const IconTextBlock = (props: {
+    iconName: SemanticICONS;
+    children: React.JSX.Element;
+}) => {
+    const { iconName, children } = props;
+
+    return (
+        <div
+            style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+            }}
+        >
+            <Icon
+                size="large"
+                name={iconName}
+                style={{ marginRight: "10px" }}
+            />
+            {children}
+        </div>
+    );
+};
+
 export default function StudentCalendar() {
     const { user: initialUser } = useContext(AuthUserContext);
     if (initialUser === undefined) {
@@ -28,30 +62,47 @@ export default function StudentCalendar() {
     const membershipsSWR = useMemberships(initialUser);
     const memberships = filterSortMemberships(membershipsSWR.memberships);
 
-    const [selectedCourses, setSelectedCourses] = useState(() => {
-        const initialSelectedCourses = {};
-        memberships.forEach((m) => {
-            initialSelectedCourses[m.course.id.toString()] = false;
-        });
-        return initialSelectedCourses;
-    });
+    const [selectedCourses, setSelectedCourses] = useState(
+        memberships.map((m) => m.course.id)
+    );
+    const mounted = useRef(false);
+    const selectedCoursesJSON = JSON.stringify(selectedCourses.sort());
+    useEffect(() => {
+        if (!mounted.current) {
+            const courseIds = memberships.map((m) => m.course.id);
+            const stored = localStorage.getItem(
+                "studentCalendarSelectedCourses"
+            );
+            if (stored === null) return;
+            const parsed = JSON.parse(stored);
+            if (Array.isArray(parsed))
+                setSelectedCourses(
+                    parsed.filter((courseId) => courseIds.includes(courseId))
+                );
+            mounted.current = true;
+        } else {
+            localStorage.setItem(
+                "studentCalendarSelectedCourses",
+                selectedCoursesJSON
+            );
+        }
+    }, [selectedCoursesJSON]);
 
     const [selectedOccurrence, setSelectedOccurrence] =
         useState<Occurrence | null>(null);
-    const handleSelectOccurrence = (o) => {
-        setSelectedOccurrence(o);
-    };
 
     const selectedMembership = membershipsSWR.memberships.find(
         (m) => m.course.id === selectedOccurrence?.event.course_id
     );
 
-    const handleCheckboxChange = (courseId) => {
-        setSelectedCourses({
-            ...selectedCourses,
-            [courseId]: !selectedCourses[courseId],
-        });
-    };
+    const toggleCourseSelection = (course: number, courses: number[]) =>
+        courses.includes(course)
+            ? courses
+                  .slice(0, courses.indexOf(course))
+                  .concat(
+                      courses.slice(courses.indexOf(course) + 1, courses.length)
+                  )
+            : [...courses, course];
 
     // Load whole month at a time to reduce revalidation and enable more optimistic updates.
     const { data, setFilter } = useOccurrences(
@@ -77,7 +128,8 @@ export default function StudentCalendar() {
                     showMultiDayTimes={true}
                     events={occurrences.filter(
                         (o: Occurrence) =>
-                            !o.cancelled && selectedCourses[o.event.course_id]
+                            !o.cancelled &&
+                            selectedCourses.includes(o.event.course_id)
                     )}
                     eventPropGetter={(o: Occurrence) => {
                         const courseIndex = getMembershipIndex(
@@ -103,7 +155,7 @@ export default function StudentCalendar() {
                     tooltipAccessor="description"
                     style={{ height: 600 }}
                     onSelectEvent={(occurrence: Occurrence) =>
-                        handleSelectOccurrence(occurrence)
+                        setSelectedOccurrence(occurrence)
                     }
                     onRangeChange={(
                         range: Date[] | { start: Date; end: Date }
@@ -127,7 +179,7 @@ export default function StudentCalendar() {
                         }
                     }}
                 />
-                <div
+                <Form
                     style={{
                         display: "flex",
                         flexDirection: "row",
@@ -136,85 +188,180 @@ export default function StudentCalendar() {
                 >
                     {/* separate instructor and student courses */}
                     {memberships.map((m) => (
-                        <div
-                            key={m.course.id}
+                        <Form.Field
                             style={{
-                                marginRight: "15px",
                                 display: "flex",
-                                alignItems: "center",
+                                marginRight: "20px",
                             }}
                         >
-                            <input
-                                type="checkbox"
+                            <Form.Button
                                 id={m.course.id.toString()}
-                                checked={
-                                    selectedCourses[m.course.id.toString()]
+                                checked={selectedCourses.includes(m.course.id)}
+                                color={
+                                    selectedCourses.includes(m.course.id)
+                                        ? eventColors[
+                                              getMembershipIndex(
+                                                  memberships,
+                                                  m.course.id
+                                              ) % eventColors.length
+                                          ]
+                                        : undefined
                                 }
-                                onChange={() =>
-                                    handleCheckboxChange(m.course.id.toString())
+                                icon={
+                                    selectedCourses.includes(m.course.id)
+                                        ? "checkmark"
+                                        : "blank"
                                 }
-                                style={{ marginRight: "3px" }}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setSelectedCourses((old) =>
+                                        toggleCourseSelection(m.course.id, old)
+                                    );
+                                }}
+                                size="tiny"
+                                style={{
+                                    padding: "5px",
+                                    marginRight: "10px",
+                                }}
+                                inline
                             />
                             <label
                                 htmlFor={m.course.id.toString()}
-                                style={{
-                                    color: eventColorsHex[
-                                        eventColors[
-                                            getMembershipIndex(
-                                                memberships,
-                                                m.course.id
-                                            ) % eventColors.length
-                                        ]
-                                    ],
-                                }}
+                                style={{ marginTop: "1px" }}
                             >
                                 {m.course.department} {m.course.courseCode}
                             </label>
-                        </div>
+                        </Form.Field>
                     ))}
-
-                    <Modal
-                        size="mini"
-                        open={selectedOccurrence !== null}
-                        onClose={() => setSelectedOccurrence(null)}
-                    >
-                        <Modal.Header>
-                            {`${selectedMembership?.course.department} ${selectedMembership?.course.courseCode} – ${selectedOccurrence?.title}`}
-                            <button
-                                type="button"
+                    {memberships.length > 0 && (
+                        <>
+                            <a
+                                role="button"
+                                onClick={() =>
+                                    setSelectedCourses(
+                                        memberships.map((m) => m.course.id)
+                                    )
+                                }
                                 style={{
-                                    float: "right",
+                                    marginTop: "2px",
+                                    marginRight: "20px",
                                     cursor: "pointer",
-                                    background: "none",
-                                    border: "none",
                                 }}
-                                onClick={() => setSelectedOccurrence(null)}
                             >
-                                <i className="close icon" />
-                            </button>
-                        </Modal.Header>
-                        <Modal.Content>
-                            <Modal.Description>
-                                {selectedOccurrence?.description}
-                                <br />
-                                {selectedMembership?.kind === Kind.STUDENT ? (
-                                    <a
-                                        href={`/courses/${selectedOccurrence?.event.course_id}`}
-                                    >
-                                        Join the queue
-                                    </a>
-                                ) : (
-                                    <a
-                                        href={`/courses/${selectedOccurrence?.event.course_id}/calendar`}
-                                    >
-                                        View the course calendar
-                                    </a>
-                                )}
-                            </Modal.Description>
-                        </Modal.Content>
-                    </Modal>
-                </div>
+                                Select All
+                            </a>
+                            <a
+                                role="button"
+                                onClick={() => setSelectedCourses([])}
+                                style={{
+                                    marginTop: "2px",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                Clear
+                            </a>
+                        </>
+                    )}
+                </Form>
             </Segment>
+
+            <Modal
+                size="tiny"
+                open={selectedOccurrence !== null}
+                onClose={() => setSelectedOccurrence(null)}
+            >
+                <Modal.Header>
+                    {`${selectedMembership?.course.department} ${selectedMembership?.course.courseCode} – ${selectedOccurrence?.title}`}
+                    <button
+                        type="button"
+                        style={{
+                            float: "right",
+                            cursor: "pointer",
+                            background: "none",
+                            border: "none",
+                        }}
+                        onClick={() => setSelectedOccurrence(null)}
+                    >
+                        <i className="close icon" />
+                    </button>
+                </Modal.Header>
+                <Modal.Content>
+                    <Modal.Description>
+                        <IconTextBlock iconName="clock outline">
+                            <span>
+                                {selectedOccurrence?.start.toLocaleDateString(
+                                    "en-US",
+                                    {
+                                        weekday: "long",
+                                        month: "long",
+                                        day: "numeric",
+                                        hour: "numeric",
+                                        minute: "numeric",
+                                    }
+                                )}{" "}
+                                -{" "}
+                                {selectedOccurrence?.start.toDateString() ===
+                                selectedOccurrence?.end.toDateString()
+                                    ? selectedOccurrence?.end.toLocaleTimeString(
+                                          "en-US",
+                                          {
+                                              hour: "numeric",
+                                              minute: "numeric",
+                                          }
+                                      )
+                                    : selectedOccurrence?.end.toLocaleDateString(
+                                          "en-US",
+                                          {
+                                              weekday: "long",
+                                              month: "long",
+                                              day: "numeric",
+                                              hour: "numeric",
+                                              minute: "numeric",
+                                          }
+                                      )}
+                                {selectedOccurrence?.event.rule && (
+                                    <>
+                                        <br />
+                                        Weekly on
+                                    </>
+                                )}
+                            </span>
+                        </IconTextBlock>
+                        {selectedOccurrence?.description && (
+                            <>
+                                <br />
+                                <IconTextBlock iconName="list">
+                                    <span style={{ whiteSpace: "pre-wrap" }}>
+                                        {selectedOccurrence.description}
+                                    </span>
+                                </IconTextBlock>
+                            </>
+                        )}
+                        {selectedOccurrence?.location && (
+                            <>
+                                <br />
+                                <IconTextBlock iconName="map marker alternate">
+                                    <span style={{ whiteSpace: "pre-wrap" }}>
+                                        {selectedOccurrence.location}
+                                    </span>
+                                </IconTextBlock>
+                            </>
+                        )}
+                        <>
+                            <br />
+                            <IconTextBlock iconName="linkify">
+                                <Link
+                                    href="/courses/[course]"
+                                    as={`/courses/${selectedOccurrence?.event.course_id}`}
+                                    legacyBehavior
+                                >
+                                    Go to queue
+                                </Link>
+                            </IconTextBlock>
+                        </>
+                    </Modal.Description>
+                </Modal.Content>
+            </Modal>
         </Grid.Column>
     );
 }

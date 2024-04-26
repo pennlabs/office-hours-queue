@@ -77,7 +77,6 @@ export default function InstructorCalendar(props: CalendarProps) {
                         };
                         mutate(editedOccurrence.id, editedOccurrence);
                     }
-                    setEditOccurrence(editCancelledOccurrence);
                     setEditCancelledOccurrence(null);
                 }}
             />

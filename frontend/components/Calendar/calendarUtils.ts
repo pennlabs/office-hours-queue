@@ -1,5 +1,5 @@
 import { SemanticCOLORS } from "semantic-ui-react";
-import { UserMembership } from "../../types";
+import { Kind, UserMembership } from "../../types";
 
 export const eventColors: SemanticCOLORS[] = [
     "red",
@@ -34,7 +34,14 @@ export const eventColorsHex = {
 export const filterSortMemberships = (memberships: UserMembership[]) =>
     memberships
         .filter((m) => !m.course.archived)
-        .sort((a, b) => a.course.id - b.course.id);
+        .sort((a, b) => {
+            if (a.kind === Kind.STUDENT && b.kind !== Kind.STUDENT) return -1;
+            else if (a.kind !== Kind.STUDENT && b.kind === Kind.STUDENT)
+                return 1;
+            return 0;
+        });
 
-export const getMembershipIndex = (memberships, courseId) =>
-    memberships.findIndex((membership) => membership.course.id === courseId);
+export const getMembershipIndex = (
+    memberships: UserMembership[],
+    courseId: number
+) => memberships.findIndex((membership) => membership.course.id === courseId);
