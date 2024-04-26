@@ -453,7 +453,9 @@ class EventPermission(permissions.BasePermission):
 
             course = Course.objects.get(pk=course_pk)
             membership = Membership.objects.filter(course=course, user=request.user).first()
+
             if membership is None:
+                print("a")
                 return False
             return membership.is_ta
 

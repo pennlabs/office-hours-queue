@@ -481,7 +481,7 @@ class RuleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Rule
-        fields = ("frequency",)
+        fields = ("frequency", "params")
 
 
 class EventSerializer(serializers.ModelSerializer):
@@ -491,7 +491,7 @@ class EventSerializer(serializers.ModelSerializer):
     All times are converted to UTC+0
     """
 
-    rule = RuleSerializer(required=False)
+    rule = RuleSerializer(allow_null=True, required=False)
     course_id = serializers.IntegerField(required=False)
 
     class Meta:
@@ -501,6 +501,7 @@ class EventSerializer(serializers.ModelSerializer):
             "start",
             "end",
             "title",
+            "location",
             "description",
             "rule",
             "end_recurring_period",
@@ -525,27 +526,43 @@ class EventSerializer(serializers.ModelSerializer):
             )
             or (
                 "rule" in validated_data
-                and (rule is None or rule.frequency != validated_data["rule"]["frequency"])
+                and (
+                    rule is None
+                    or validated_data["rule"] is None
+                    or rule.frequency != validated_data["rule"]["frequency"]
+                    or rule.params != validated_data["rule"]["params"]
+                )
             )
         ):
             if "rule" in validated_data:
-                rule, _ = Rule.objects.get_or_create(frequency=validated_data["rule"]["frequency"])
+                if validated_data["rule"] is None:
+                    rule = None
+                else:
+                    rule, _ = Rule.objects.get_or_create(
+                        frequency=validated_data["rule"]["frequency"],
+                        params=validated_data["rule"]["params"],
+                    )
                 validated_data.pop("rule")
-            Occurrence.objects.filter(event=instance).delete()
 
+        if "rule" in validated_data:
+            validated_data.pop("rule")
         # can never change course_id, client should create a new event instead
         validated_data.pop("course_id")
+
         super().update(instance, validated_data)
 
         instance.rule = rule
         instance.save()
+
+        Occurrence.objects.filter(event=instance).delete()
+
         return instance
 
     def create(self, validated_data):
         course = Course.objects.get(pk=validated_data["course_id"])
         rule = None
-        if "rule" in validated_data:
-            rule, _ = Rule.objects.get_or_create(frequency=validated_data["rule"]["frequency"])
+        if "rule" in validated_data and validated_data["rule"] is not None:
+            rule, _ = Rule.objects.get_or_create(frequency=validated_data["rule"]["frequency"], params = validated_data["rule"]["params"])
             validated_data.pop("rule")
 
         validated_data.pop("course_id")
@@ -573,4 +590,4 @@ class OccurrenceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Occurrence
-        fields = ("id", "title", "description", "start", "end", "cancelled", "event")
+        fields = ("id", "title", "description", "location", "start", "end", "cancelled", "event")

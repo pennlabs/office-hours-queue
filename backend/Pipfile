@@ -40,9 +40,10 @@ channels = "<3"
 channels-redis = "*"
 uvicorn = {extras = ["standard"],version = "*"}
 gunicorn = "*"
-django-scheduler = "*"
 typing-extensions = "*"
 drf-excel = "*"
+install = "*"
+django-scheduler = {git = "git+https://github.com/benjmnxu/django-scheduler.git#egg=django-scheduler"}
 
 [requires]
 python_version = "3"
