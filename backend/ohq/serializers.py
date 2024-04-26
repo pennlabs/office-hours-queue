@@ -501,6 +501,7 @@ class EventSerializer(serializers.ModelSerializer):
             "start",
             "end",
             "title",
+            "location",
             "description",
             "rule",
             "end_recurring_period",
@@ -542,7 +543,6 @@ class EventSerializer(serializers.ModelSerializer):
                         params=validated_data["rule"]["params"],
                     )
                 validated_data.pop("rule")
-            Occurrence.objects.filter(event=instance).delete()
 
         if "rule" in validated_data:
             validated_data.pop("rule")
@@ -554,10 +554,7 @@ class EventSerializer(serializers.ModelSerializer):
         instance.rule = rule
         instance.save()
 
-        if "end_recurring_period" in validated_data:
-            validated_data.pop("end_recurring_period")
-
-        Occurrence.objects.filter(event=instance).update(**validated_data)
+        Occurrence.objects.filter(event=instance).delete()
 
         return instance
 
@@ -593,4 +590,4 @@ class OccurrenceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Occurrence
-        fields = ("id", "title", "description", "start", "end", "cancelled", "event")
+        fields = ("id", "title", "description", "location", "start", "end", "cancelled", "event")
