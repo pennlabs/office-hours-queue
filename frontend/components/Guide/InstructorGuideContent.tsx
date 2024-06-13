@@ -292,3 +292,23 @@ export const Settings = ({ ref }) => (
         </Segment>
     </div>
 );
+
+export const Feedback = ({ ref }) => (
+    <div ref={ref}>
+        <Segment basic>
+            <h3>Feedback</h3>
+            <Divider />
+            <p>
+                Have any lingering questions? Please email us at contact@ohq.io
+                or fill out{" "}
+                <a
+                    href="https://airtable.com/appFRa4NQvNMEbWsA/shrX0oFscDxpo1TnF"
+                    rel="noopener"
+                >
+                    this feedback form
+                </a>{" "}
+                - we&apos;re happy to help!
+            </p>
+        </Segment>
+    </div>
+);
