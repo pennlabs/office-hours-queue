@@ -610,12 +610,14 @@ class QueueQuestionsPerTAHeatmapTestCase(TestCase):
             self.ta_1_questions_8_week_1 / self.num_tas_8
             + self.ta_1_questions_8_week_2 / self.num_tas_8
         ) / 2
+
         actual_8 = QueueStatistic.objects.get(
             queue=self.queue,
             metric=QueueStatistic.METRIC_HEATMAP_QUESTIONS_PER_TA,
             day=(yesterday_weekday + 1) % 7 + 1,
             hour=8,
         ).value
+        
         self.assertEqual(expected_8, actual_8)
 
         expected_17 = (self.ta_1_questions_17 + self.ta_2_questions_17) / self.num_tas_17

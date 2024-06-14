@@ -31,9 +31,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
+CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:3000", "https://ohq.io"]
 
 # Application definition
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "accounts.apps.AccountsConfig",
     "ohq.apps.OhqConfig",
     "schedule",
+    "storages"
 ]
 
 MIDDLEWARE = [
@@ -185,3 +186,19 @@ MESSAGE_BROKER_URL = REDIS_URL
 # Default to in-memory Channel Layer for dev and CI.
 
 CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
+
+AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY") #NEEDS SETUP
+AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SAK") #NEEDS SETUP
+AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_BUCKET_NAME") #NEEDS SETUP
+AWS_S3_REGION_NAME =  "us-east-1"
+
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"
+    }
+}
+AWS_S3_FILE_OVERWRITE = False
+AWS_S3_VERITY = True
