@@ -10,7 +10,7 @@ flake8 = "*"
 flake8-absolute-import = "*"
 flake8-isort = "*"
 flake8-quotes = "*"
-django-debug-toolbar = "*"
+django-debug-toolbar = "3.2.4"
 django-extensions = "*"
 parameterized = "*"
 tblib = "*"
@@ -42,8 +42,7 @@ uvicorn = {extras = ["standard"],version = "*"}
 gunicorn = "*"
 typing-extensions = "*"
 drf-excel = "*"
-install = "*"
-django-scheduler = {git = "git+https://github.com/benjmnxu/django-scheduler.git#egg=django-scheduler"}
+django-scheduler = {git = "git+https://github.com/benjmnxu/django-scheduler.git"}
 
 [requires]
 python_version = "3"
