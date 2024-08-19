@@ -29,7 +29,7 @@ django-labs-accounts = "==0.7.1"
 django-phonenumber-field = {extras = ["phonenumbers"],version = "*"}
 drf-nested-routers = "*"
 django-email-tools = "*"
-twilio = "*"
+twilio = "==8.1.0"
 djangorestframework-camel-case = "*"
 django-filter = "*"
 celery = "*"
