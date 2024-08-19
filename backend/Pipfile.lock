@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "e6f3830d53601c211a8353fe047753a8ea7e0b493261a8006c195e4a754e244f"
+            "sha256": "d5dfe9c542882304b9177f12c8bf8894a182b94b23f5e0d8c8e5701821cf2f94"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -391,14 +391,13 @@
             "markers": "python_version >= '3.7'",
             "version": "==0.7.0"
         },
-        "django-schedules-ohq": {
+        "django-scheduler": {
             "hashes": [
-                "sha256:c1b4070b3cdc4b8426db74e94b4cf5067fefe4fd8af457a79d353c3cf143d236",
-                "sha256:ee07c1c4f785cc30f61133afbddac8e2062b474db5dc49e76aed0b8d67d3437c"
+                "sha256:a4cdaaa30972ee04ae68ae201e215d98bc317ee18e58f254031186a586273858"
             ],
             "index": "pypi",
-            "markers": "python_version >= '3'",
-            "version": "==0.10.1.2"
+            "markers": "python_version >= '3.6'",
+            "version": "==0.9.6"
         },
         "djangorestframework": {
             "hashes": [
@@ -483,6 +482,14 @@
                 "sha256:e6b14c37ecb73e89c77d78cdb4c2cc8f3fb59a885c5b3f819ff4ed80f25af1b4"
             ],
             "version": "==21.0.0"
+        },
+        "icalendar": {
+            "hashes": [
+                "sha256:5ded5415e2e1edef5ab230024a75878a7a81d518a3b1ae4f34bf20b173c84dc2",
+                "sha256:92799fde8cce0b61daa8383593836d1e19136e504fa1671f471f98be9b029706"
+            ],
+            "markers": "python_version >= '3.7'",
+            "version": "==5.0.13"
         },
         "idna": {
             "hashes": [
