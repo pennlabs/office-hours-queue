@@ -18,7 +18,7 @@ tblib = "*"
 [packages]
 dj-database-url = "*"
 djangorestframework = "*"
-psycopg2 = "*"
+psycopg2 = "2.9.6"
 sentry-sdk = "*"
 django = "==3.1.7"
 django-cors-headers = "*"
@@ -43,6 +43,9 @@ gunicorn = "*"
 typing-extensions = "*"
 drf-excel = "*"
 django-schedules-ohq = "*"
+cffi = "==1.15.1"
+cryptography = "==40.0.2"
+watchfiles = "==0.23.0"
 
 [requires]
 python_version = "3"
