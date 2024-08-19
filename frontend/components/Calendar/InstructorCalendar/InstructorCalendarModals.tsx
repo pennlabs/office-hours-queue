@@ -20,22 +20,10 @@ import {
     ApiPartialEvent,
     Occurrence,
 } from "../../../types";
+import { daysToParams, paramsToDays } from "../calendarUtils";
 
-const daysToParams = (days: number[]) =>
-    days.length > 0
-        ? days
-              .sort()
-              .map((day) => (day + 6) % 7)
-              .reduce((acc, cur) => `${acc}${cur},`, "byweekday:")
-              .slice(0, -1)
-        : "";
-
-const paramsToDays = (params: string) =>
-    params
-        .substring(params.indexOf(":") + 1)
-        .split(",")
-        .map((s) => parseInt(s, 10))
-        .map((day) => (day + 1) % 7);
+const utcDayOffset = (date: Date) =>
+    date.getUTCDay() < date.getDay() ? 1 : date.getUTCDay() - date.getDay();
 
 interface EditOccurrenceEventProps {
     editOccurrence: () => void;
@@ -129,7 +117,10 @@ export const EditEventModal = (props: EditEventProps) => {
     const [recurringDays, setRecurringDays] = useState(
         occurrence.event.rule === null
             ? []
-            : paramsToDays(occurrence.event.rule.params)
+            : paramsToDays(
+                  occurrence.event.rule.params,
+                  utcDayOffset(occurrence.start)
+              )
     );
     const [erpDate, setErpDate] = useState(
         occurrence.event.end_recurring_period ?? occurrence.end
@@ -148,7 +139,10 @@ export const EditEventModal = (props: EditEventProps) => {
         setRecurringDays(
             occurrence.event.rule === null
                 ? []
-                : paramsToDays(occurrence.event.rule.params)
+                : paramsToDays(
+                      occurrence.event.rule.params,
+                      utcDayOffset(occurrence.start)
+                  )
         );
         setErpDate(occurrence.event.end_recurring_period ?? occurrence.end);
     }, [occurrence]);
@@ -158,6 +152,7 @@ export const EditEventModal = (props: EditEventProps) => {
             id: occurrence.id,
             title,
             description,
+            location,
             start: dateToEventISO(startDate),
             end: dateToEventISO(endDate),
         };
@@ -179,9 +174,18 @@ export const EditEventModal = (props: EditEventProps) => {
             ),
             end: dateToEventISO(new Date(event.end.getTime() + timeDeltaEnd)),
             description,
+            location,
             course_id: event.course_id,
             rule: isRecurring
-                ? { frequency: "WEEKLY", params: daysToParams(recurringDays) }
+                ? {
+                      frequency: "DAILY",
+                      params: daysToParams(
+                          recurringDays,
+                          utcDayOffset(
+                              new Date(event.start.getTime() + timeDeltaStart)
+                          )
+                      ),
+                  }
                 : null,
             end_recurring_period: isRecurring
                 ? dateToEventISO(moment(erpDate).endOf("day").toDate())
@@ -340,9 +344,16 @@ export const NewEventModal = (props: NewEventProps) => {
             start: dateToEventISO(startDate),
             end: dateToEventISO(endDate),
             description,
+            location,
             course_id: courseId,
             rule: isRecurring
-                ? { frequency: "WEEKLY", params: daysToParams(recurringDays) }
+                ? {
+                      frequency: "DAILY",
+                      params: daysToParams(
+                          recurringDays,
+                          utcDayOffset(startDate)
+                      ),
+                  }
                 : undefined,
             end_recurring_period: isRecurring
                 ? dateToEventISO(moment(erpDate).endOf("day").toDate())

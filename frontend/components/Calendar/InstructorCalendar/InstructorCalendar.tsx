@@ -13,7 +13,7 @@ import {
     EditEventModal,
     NewEventModal,
 } from "./InstructorCalendarModals";
-import { eventColorsHex } from "../../Calendar/calendarUtils";
+import { eventColorsHex } from "../calendarUtils";
 
 const localizer = momentLocalizer(moment);
 

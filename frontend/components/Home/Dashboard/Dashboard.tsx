@@ -5,7 +5,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import { useMediaQuery } from "@material-ui/core";
 import InstructorCourses from "./InstructorCourses";
 import StudentCourses from "./StudentCourses";
-import EventSidebar from "./EventSidebar";
+import EventSidebar from "../../Calendar/DashboardCalendar/EventSidebar";
 import Footer from "../../common/Footer";
 import { AuthUserContext } from "../../../context/auth";
 import { Kind, UserMembership } from "../../../types";

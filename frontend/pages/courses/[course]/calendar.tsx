@@ -7,7 +7,7 @@ import { isLeadershipRole } from "../../../utils/enums";
 import { withAuth } from "../../../context/auth";
 import { CoursePageProps, Course, Membership } from "../../../types";
 import nextRedirect from "../../../utils/redirect";
-import InstructorCalendar from "../../../components/Course/Calendar/InstructorCalendar";
+import InstructorCalendar from "../../../components/Calendar/InstructorCalendar/InstructorCalendar";
 
 const InstructorCalendarPage = (props: CoursePageProps) => {
     const { course, leadership } = props;

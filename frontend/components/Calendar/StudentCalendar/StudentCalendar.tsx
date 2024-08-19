@@ -1,57 +1,24 @@
-import {
-    Form,
-    Grid,
-    Header,
-    Icon,
-    Loader,
-    Modal,
-    Segment,
-    SemanticICONS,
-} from "semantic-ui-react";
+import { Form, Grid, Header, Loader, Segment } from "semantic-ui-react";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import moment from "moment";
-import Link from "next/link";
 import {
     apiOccurrenceToOccurrence,
     useOccurrences,
-} from "../../hooks/data-fetching/calendar";
-import { Occurrence } from "../../types";
+} from "../../../hooks/data-fetching/calendar";
+import { Occurrence } from "../../../types";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { AuthUserContext } from "../../context/auth";
-import { useMemberships } from "../../hooks/data-fetching/dashboard";
+import { AuthUserContext } from "../../../context/auth";
+import { useMemberships } from "../../../hooks/data-fetching/dashboard";
 import {
     eventColors,
     eventColorsHex,
     filterSortMemberships,
     getMembershipIndex,
-} from "./calendarUtils";
+} from "../calendarUtils";
+import { EventInfoModal } from "../CalendarCommon";
 
 const localizer = momentLocalizer(moment);
-
-const IconTextBlock = (props: {
-    iconName: SemanticICONS;
-    children: React.JSX.Element;
-}) => {
-    const { iconName, children } = props;
-
-    return (
-        <div
-            style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-            }}
-        >
-            <Icon
-                size="large"
-                name={iconName}
-                style={{ marginRight: "10px" }}
-            />
-            {children}
-        </div>
-    );
-};
 
 export default function StudentCalendar() {
     const { user: initialUser } = useContext(AuthUserContext);
@@ -265,103 +232,11 @@ export default function StudentCalendar() {
                 </Form>
             </Segment>
 
-            <Modal
-                size="tiny"
-                open={selectedOccurrence !== null}
-                onClose={() => setSelectedOccurrence(null)}
-            >
-                <Modal.Header>
-                    {`${selectedMembership?.course.department} ${selectedMembership?.course.courseCode} – ${selectedOccurrence?.title}`}
-                    <button
-                        type="button"
-                        style={{
-                            float: "right",
-                            cursor: "pointer",
-                            background: "none",
-                            border: "none",
-                        }}
-                        onClick={() => setSelectedOccurrence(null)}
-                    >
-                        <i className="close icon" />
-                    </button>
-                </Modal.Header>
-                <Modal.Content>
-                    <Modal.Description>
-                        <IconTextBlock iconName="clock outline">
-                            <span>
-                                {selectedOccurrence?.start.toLocaleDateString(
-                                    "en-US",
-                                    {
-                                        weekday: "long",
-                                        month: "long",
-                                        day: "numeric",
-                                        hour: "numeric",
-                                        minute: "numeric",
-                                    }
-                                )}{" "}
-                                -{" "}
-                                {selectedOccurrence?.start.toDateString() ===
-                                selectedOccurrence?.end.toDateString()
-                                    ? selectedOccurrence?.end.toLocaleTimeString(
-                                          "en-US",
-                                          {
-                                              hour: "numeric",
-                                              minute: "numeric",
-                                          }
-                                      )
-                                    : selectedOccurrence?.end.toLocaleDateString(
-                                          "en-US",
-                                          {
-                                              weekday: "long",
-                                              month: "long",
-                                              day: "numeric",
-                                              hour: "numeric",
-                                              minute: "numeric",
-                                          }
-                                      )}
-                                {selectedOccurrence?.event.rule && (
-                                    <>
-                                        <br />
-                                        Weekly on
-                                    </>
-                                )}
-                            </span>
-                        </IconTextBlock>
-                        {selectedOccurrence?.description && (
-                            <>
-                                <br />
-                                <IconTextBlock iconName="list">
-                                    <span style={{ whiteSpace: "pre-wrap" }}>
-                                        {selectedOccurrence.description}
-                                    </span>
-                                </IconTextBlock>
-                            </>
-                        )}
-                        {selectedOccurrence?.location && (
-                            <>
-                                <br />
-                                <IconTextBlock iconName="map marker alternate">
-                                    <span style={{ whiteSpace: "pre-wrap" }}>
-                                        {selectedOccurrence.location}
-                                    </span>
-                                </IconTextBlock>
-                            </>
-                        )}
-                        <>
-                            <br />
-                            <IconTextBlock iconName="linkify">
-                                <Link
-                                    href="/courses/[course]"
-                                    as={`/courses/${selectedOccurrence?.event.course_id}`}
-                                    legacyBehavior
-                                >
-                                    Go to queue
-                                </Link>
-                            </IconTextBlock>
-                        </>
-                    </Modal.Description>
-                </Modal.Content>
-            </Modal>
+            <EventInfoModal
+                occurrence={selectedOccurrence}
+                membership={selectedMembership}
+                setOccurrence={setSelectedOccurrence}
+            />
         </Grid.Column>
     );
 }

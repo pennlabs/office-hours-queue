@@ -31,6 +31,16 @@ export const eventColorsHex = {
     blue: "#2185D0",
 };
 
+export const dayNames = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+];
+
 export const filterSortMemberships = (memberships: UserMembership[]) =>
     memberships
         .filter((m) => !m.course.archived)
@@ -45,3 +55,20 @@ export const getMembershipIndex = (
     memberships: UserMembership[],
     courseId: number
 ) => memberships.findIndex((membership) => membership.course.id === courseId);
+
+// Note backend expects Monday=0.
+export const daysToParams = (days: number[], offset: number) =>
+    days.length > 0
+        ? days
+              .sort()
+              .map((day) => (day + 6 + offset) % 7)
+              .reduce((acc, cur) => `${acc}${cur},`, "byweekday:")
+              .slice(0, -1)
+        : "";
+
+export const paramsToDays = (params: string, offset: number) =>
+    params
+        .substring(params.indexOf(":") + 1)
+        .split(",")
+        .map((s) => parseInt(s, 10))
+        .map((day) => (day + 1 - offset) % 7);
