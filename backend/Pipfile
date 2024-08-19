@@ -42,7 +42,7 @@ uvicorn = {extras = ["standard"],version = "*"}
 gunicorn = "*"
 typing-extensions = "*"
 drf-excel = "*"
-django-scheduler = {git = "git+https://github.com/benjmnxu/django-scheduler.git"}
+django-schedules-ohq = "*"
 
 [requires]
 python_version = "3"
