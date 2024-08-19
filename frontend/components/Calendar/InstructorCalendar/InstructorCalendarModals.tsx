@@ -274,6 +274,12 @@ export const EditEventModal = (props: EditEventProps) => {
                             : handleEditEvent()
                     }
                     positive
+                    disabled={
+                        endDate <= startDate ||
+                        moment(erpDate).endOf("day").toDate() < endDate ||
+                        !title ||
+                        (isRecurring && recurringDays.length === 0)
+                    }
                 >
                     Edit Event
                 </Button>
@@ -313,7 +319,12 @@ export const NewEventModal = (props: NewEventProps) => {
         setEndDate(end);
         setIsRecurring(false);
         setRecurringDays([start.getDay()]);
-        setErpDate(lastSubmittedErp ?? end);
+        if (lastSubmittedErp && lastSubmittedErp < end) {
+            setLastSubmittedErp(undefined);
+            setErpDate(end);
+        } else {
+            setErpDate(lastSubmittedErp ?? end);
+        }
     }, [show]);
 
     const handleCreateEvent = () => {
@@ -375,7 +386,16 @@ export const NewEventModal = (props: NewEventProps) => {
             </Modal.Content>
             <Modal.Actions>
                 <Button onClick={() => setModalState(false)}>Cancel</Button>
-                <Button positive type="submit">
+                <Button
+                    positive
+                    type="submit"
+                    disabled={
+                        endDate <= startDate ||
+                        moment(erpDate).endOf("day").toDate() < endDate ||
+                        !title ||
+                        (isRecurring && recurringDays.length === 0)
+                    }
+                >
                     Create Event
                 </Button>
             </Modal.Actions>
@@ -526,7 +546,10 @@ const EventFormFields = (props: EventFormFieldsProps) => {
                             )
                         )}
                     </Form.Field>
-                    <Form.Field required>
+                    <Form.Field
+                        required
+                        error={moment(erpDate).endOf("day").toDate() < endDate}
+                    >
                         <label htmlFor="recurring-period-picker">Ends On</label>
                         <div id="recurring-period-picker">
                             <DatePicker value={erpDate} onChange={setErpDate} />

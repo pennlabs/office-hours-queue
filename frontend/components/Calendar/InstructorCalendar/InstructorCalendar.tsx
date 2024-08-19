@@ -36,11 +36,19 @@ export default function InstructorCalendar(props: CalendarProps) {
     const [startField, setStartField] = useState(new Date(1));
     const [endField, setEndField] = useState(new Date(1));
 
-    const handleSelectSlot = useCallback(async ({ start, end }) => {
-        setNewEvent(true);
-        setStartField(start);
-        setEndField(end);
-    }, []);
+    const handleSelectSlot = useCallback(
+        async ({ start, end }: { start: Date; end: Date }) => {
+            setNewEvent(true);
+            setStartField(start);
+            // Dragging to end of day gives invalid 11:59 end time, manually bump to next day.
+            if (end.getMinutes() === 59) {
+                setEndField(new Date(end.getTime() + 1000));
+            } else {
+                setEndField(end);
+            }
+        },
+        []
+    );
 
     return (
         <>
