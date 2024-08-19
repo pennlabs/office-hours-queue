@@ -10,6 +10,7 @@ import {
     eventColors,
     filterSortMemberships,
     getMembershipIndex,
+    readSelectedCourses,
 } from "../calendarUtils";
 import EventCard from "./EventCard";
 import { EventInfoModal } from "../CalendarCommon";
@@ -42,6 +43,17 @@ const EventSidebar = (props: EventSidebarProps) => {
         });
     }, [startOfHour]);
 
+    // Course filter.
+    const [selectedCourses, setSelectedCourses] = useState(
+        memberships.map((m) => m.course.id)
+    );
+    useEffect(() => {
+        const parsed = readSelectedCourses();
+        if (parsed) {
+            setSelectedCourses(parsed);
+        }
+    }, []);
+
     const eventCards = occurrences
         .filter((o) => !o.cancelled)
         .sort((a, b) => a.start.getTime() - b.start.getTime())
@@ -51,6 +63,7 @@ const EventSidebar = (props: EventSidebarProps) => {
                 o.event.course_id
             );
             if (courseIndex === -1) return undefined;
+            if (!selectedCourses.includes(o.event.course_id)) return undefined;
 
             return (
                 <EventCard
@@ -60,7 +73,8 @@ const EventSidebar = (props: EventSidebarProps) => {
                     onClick={() => setSelectedOccurrence(o)}
                 />
             );
-        });
+        })
+        .filter((o) => o);
 
     const sidebarContent =
         eventCards.length > 0 ? (

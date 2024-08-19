@@ -72,3 +72,14 @@ export const paramsToDays = (params: string, offset: number) =>
         .split(",")
         .map((s) => parseInt(s, 10))
         .map((day) => (day + 1 - offset) % 7);
+
+export const readSelectedCourses = () => {
+    const stored = localStorage.getItem("studentCalendarSelectedCourses");
+    if (stored === null) return null;
+    const parsed = JSON.parse(stored);
+    if (Array.isArray(parsed)) {
+        return parsed as number[];
+    } else {
+        return null;
+    }
+};

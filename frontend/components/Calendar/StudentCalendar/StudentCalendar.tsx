@@ -15,6 +15,7 @@ import {
     eventColorsHex,
     filterSortMemberships,
     getMembershipIndex,
+    readSelectedCourses,
 } from "../calendarUtils";
 import { EventInfoModal } from "../CalendarCommon";
 
@@ -37,15 +38,12 @@ export default function StudentCalendar() {
     useEffect(() => {
         if (!mounted.current) {
             const courseIds = memberships.map((m) => m.course.id);
-            const stored = localStorage.getItem(
-                "studentCalendarSelectedCourses"
-            );
-            if (stored === null) return;
-            const parsed = JSON.parse(stored);
-            if (Array.isArray(parsed))
+            const parsed = readSelectedCourses();
+            if (parsed) {
                 setSelectedCourses(
                     parsed.filter((courseId) => courseIds.includes(courseId))
                 );
+            }
             mounted.current = true;
         } else {
             localStorage.setItem(
