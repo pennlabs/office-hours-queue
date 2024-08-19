@@ -65,38 +65,6 @@ const EditEventConfirmationModal = (props: EditOccurrenceEventProps) => {
     );
 };
 
-interface EditCancelledOccurrenceProps {
-    occurrence: Occurrence | null;
-    onClose: () => void;
-    onSubmit: (occurrence: Occurrence, uncancel: boolean) => void;
-}
-
-export const EditCancelledOccurrenceModal = (
-    props: EditCancelledOccurrenceProps
-) => {
-    const { occurrence, onClose, onSubmit } = props;
-
-    return (
-        <Modal size="tiny" open={occurrence !== null} onClose={onClose}>
-            <Modal.Header>Cancelled Event</Modal.Header>
-            <Modal.Content>
-                <Modal.Description>
-                    This event has been marked as cancelled. Would you like to
-                    uncancel it?
-                </Modal.Description>
-            </Modal.Content>
-            <Modal.Actions>
-                <Button onClick={() => onSubmit(occurrence!, false)} negative>
-                    No
-                </Button>
-                <Button onClick={() => onSubmit(occurrence!, true)} positive>
-                    Yes
-                </Button>
-            </Modal.Actions>
-        </Modal>
-    );
-};
-
 interface EditEventProps {
     setModalState: Dispatch<SetStateAction<Occurrence | null>>;
     mutate: mutateResourceListFunction<ApiOccurrence>;
@@ -155,6 +123,7 @@ export const EditEventModal = (props: EditEventProps) => {
             location,
             start: dateToEventISO(startDate),
             end: dateToEventISO(endDate),
+            cancelled: false,
         };
         mutate(editedOccurrence.id, editedOccurrence);
         setModalState(null);
@@ -222,13 +191,22 @@ export const EditEventModal = (props: EditEventProps) => {
         setModalState(null);
     };
 
+    const handleClose = () => {
+        // If event is cancelled, uncancel (even if no edit).
+        if (occurrence.cancelled) {
+            const editedOccurrence: Partial<ApiOccurrence> = {
+                id: occurrence.id,
+                cancelled: false,
+            };
+            mutate(editedOccurrence.id, editedOccurrence);
+        }
+
+        // Close modal regardless.
+        setModalState(null);
+    };
+
     return (
-        <Modal
-            size="small"
-            open={true}
-            as={Form}
-            onClose={() => setModalState(null)}
-        >
+        <Modal size="small" open={true} as={Form} onClose={handleClose}>
             {confirmModal}
             <Modal.Header>Edit Event</Modal.Header>
             <Modal.Content>
@@ -252,7 +230,7 @@ export const EditEventModal = (props: EditEventProps) => {
                 />
             </Modal.Content>
             <Modal.Actions>
-                <Button onClick={() => setModalState(null)}>Cancel</Button>
+                <Button onClick={handleClose}>Cancel</Button>
                 <Button
                     onClick={() =>
                         setConfirmModal(

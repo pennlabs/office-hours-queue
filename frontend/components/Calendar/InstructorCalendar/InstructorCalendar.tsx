@@ -6,13 +6,9 @@ import {
     apiOccurrenceToOccurrence,
     useOccurrences,
 } from "../../../hooks/data-fetching/calendar";
-import { ApiOccurrence, Occurrence } from "../../../types";
+import { Occurrence } from "../../../types";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import {
-    EditCancelledOccurrenceModal,
-    EditEventModal,
-    NewEventModal,
-} from "./InstructorCalendarModals";
+import { EditEventModal, NewEventModal } from "./InstructorCalendarModals";
 import { eventColorsHex } from "../calendarUtils";
 
 const localizer = momentLocalizer(moment);
@@ -35,8 +31,6 @@ export default function InstructorCalendar(props: CalendarProps) {
     const [editOccurrence, setEditOccurrence] = useState<Occurrence | null>(
         null
     );
-    const [editCancelledOccurrence, setEditCancelledOccurrence] =
-        useState<Occurrence | null>(null);
 
     const [newEvent, setNewEvent] = useState(false);
     const [startField, setStartField] = useState(new Date(1));
@@ -66,20 +60,6 @@ export default function InstructorCalendar(props: CalendarProps) {
                     occurrence={editOccurrence}
                 />
             )}
-            <EditCancelledOccurrenceModal
-                occurrence={editCancelledOccurrence}
-                onClose={() => setEditCancelledOccurrence(null)}
-                onSubmit={(occurrence: Occurrence, uncancel: boolean) => {
-                    if (uncancel) {
-                        const editedOccurrence: Partial<ApiOccurrence> = {
-                            id: occurrence.id,
-                            cancelled: false,
-                        };
-                        mutate(editedOccurrence.id, editedOccurrence);
-                    }
-                    setEditCancelledOccurrence(null);
-                }}
-            />
             <Loader size="massive" active={data === undefined} />
             <Calendar
                 scrollToTime={new Date(0, 0, 0, 9, 0, 0)}
@@ -115,9 +95,7 @@ export default function InstructorCalendar(props: CalendarProps) {
                 onSelectSlot={handleSelectSlot}
                 selectable={true}
                 onSelectEvent={(occurrence: Occurrence) =>
-                    occurrence.cancelled
-                        ? setEditCancelledOccurrence(occurrence)
-                        : setEditOccurrence(occurrence)
+                    setEditOccurrence(occurrence)
                 }
                 onRangeChange={(range: Date[] | { start: Date; end: Date }) => {
                     if (Array.isArray(range)) {
