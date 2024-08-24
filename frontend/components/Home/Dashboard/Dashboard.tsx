@@ -2,19 +2,17 @@ import { useContext, useState, useEffect } from "react";
 import { Grid, Header, Segment, Message } from "semantic-ui-react";
 import Alert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
-import { useMediaQuery } from "@material-ui/core";
 import InstructorCourses from "./InstructorCourses";
 import StudentCourses from "./StudentCourses";
-import EventSidebar from "../../Calendar/DashboardCalendar/EventSidebar";
 import Footer from "../../common/Footer";
 import { AuthUserContext } from "../../../context/auth";
 import { Kind, UserMembership } from "../../../types";
 import { useMemberships } from "../../../hooks/data-fetching/dashboard";
 import { isLeadershipRole } from "../../../utils/enums";
-import { CHANGELOG_TOKEN, MOBILE_BP } from "../../../constants";
+import { CHANGELOG_TOKEN } from "../../../constants";
 import ModalShowNewChanges from "./Modals/ModalShowNewChanges";
 import updatedMd from "../../Changelog/changelogfile.md";
-import tips from "./Messages/tips.json";
+import tips from "./tips.json";
 
 // TODO: try to readd new user stuff, rip out loading stuff
 const Dashboard = () => {
@@ -78,31 +76,21 @@ const Dashboard = () => {
         if (updatedMd !== savedMd) setLogOpen(true);
     }, []);
 
-    const isMobile = useMediaQuery(`(max-width: ${MOBILE_BP})`);
-
     return (
         <Grid.Column
             width={13}
-            style={{
-                display: "flex",
-                flexDirection: "row-reverse",
-                justifyContent: "space-between",
-            }}
+            style={{ display: "flex", flexDirection: "column" }}
         >
-            {!isMobile && <EventSidebar memberships={memberships} />}
-            <div style={{ minWidth: 0 }}>
-                {memberships && (
-                    <Grid padded stackable container>
-                        <Grid.Row>
+            {memberships && (
+                <Grid padded stackable container>
+                    <Grid.Row>
+                        <Segment basic>
                             <Segment basic>
-                                <Segment basic>
-                                    <Header as="h2">Student Courses</Header>
-                                </Segment>
+                                <Header as="h2">Student Courses</Header>
                             </Segment>
-                        </Grid.Row>
+                        </Segment>
                         {tipDisp && (
-                            <Segment
-                                basic
+                            <div
                                 style={{
                                     position: "absolute",
                                     left: "50%",
@@ -124,73 +112,67 @@ const Dashboard = () => {
                                     }`}
                                     content={getTip().description}
                                 />
-                            </Segment>
+                            </div>
                         )}
-                        <StudentCourses
-                            memberships={getMemberships(true)}
-                            mutate={mutate}
-                        />
-                        {showInstructorCourses && (
-                            <>
-                                <Grid.Row>
+                    </Grid.Row>
+                    <StudentCourses
+                        memberships={getMemberships(true)}
+                        mutate={mutate}
+                    />
+                    {showInstructorCourses && (
+                        <>
+                            <Grid.Row>
+                                <Segment basic>
                                     <Segment basic>
-                                        <Segment basic>
-                                            <Header as="h2">
-                                                Instructor Courses
-                                            </Header>
-                                        </Segment>
+                                        <Header as="h2">
+                                            Instructor Courses
+                                        </Header>
                                     </Segment>
-                                </Grid.Row>
-                                <InstructorCourses
-                                    memberships={getMemberships(false)}
-                                    mutate={mutate}
-                                    canCreateCourse={canCreateCourse}
-                                />
-                            </>
-                        )}
-                    </Grid>
-                )}
-                <Snackbar
-                    open={toastOpen}
-                    autoHideDuration={6000}
+                                </Segment>
+                            </Grid.Row>
+                            <InstructorCourses
+                                memberships={getMemberships(false)}
+                                mutate={mutate}
+                                canCreateCourse={canCreateCourse}
+                            />
+                        </>
+                    )}
+                </Grid>
+            )}
+            <Snackbar
+                open={toastOpen}
+                autoHideDuration={6000}
+                onClose={() => setToastOpen(false)}
+            >
+                <Alert
+                    severity={toast.success ? "success" : "error"}
                     onClose={() => setToastOpen(false)}
                 >
-                    <Alert
-                        severity={toast.success ? "success" : "error"}
-                        onClose={() => setToastOpen(false)}
-                    >
-                        {toast.message}
-                    </Alert>
-                </Snackbar>
+                    {toast.message}
+                </Alert>
+            </Snackbar>
 
-                <Snackbar
-                    open={logOpen}
-                    autoHideDuration={10000}
+            <Snackbar
+                open={logOpen}
+                autoHideDuration={10000}
+                onClose={() => setLogOpen(false)}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            >
+                <Alert
+                    severity="info"
                     onClose={() => setLogOpen(false)}
-                    anchorOrigin={{
-                        vertical: "bottom",
-                        horizontal: "right",
+                    onClick={() => {
+                        setLogOpen(false);
+                        setLogModal(true);
                     }}
+                    style={{ cursor: "pointer" }}
                 >
-                    <Alert
-                        severity="info"
-                        onClose={() => setLogOpen(false)}
-                        onClick={() => {
-                            setLogOpen(false);
-                            setLogModal(true);
-                        }}
-                        style={{ cursor: "pointer" }}
-                    >
-                        {logToast.message}
-                    </Alert>
-                </Snackbar>
+                    {logToast.message}
+                </Alert>
+            </Snackbar>
 
-                <Footer />
-                <ModalShowNewChanges
-                    openModal={logModal}
-                    setOpen={setLogModal}
-                />
-            </div>
+            <Footer />
+            <ModalShowNewChanges openModal={logModal} setOpen={setLogModal} />
         </Grid.Column>
     );
 };

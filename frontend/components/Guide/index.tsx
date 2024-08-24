@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Divider, Segment, Header, Grid, Menu } from "semantic-ui-react";
+import { Segment, Header, Grid, Menu } from "semantic-ui-react";
 
 import InstructorGuide from "./InstructorGuide";
 import StudentGuide from "./StudentGuide";
@@ -58,16 +58,6 @@ export default function Guide() {
                     <Segment attached="bottom" basic>
                         {tab === Page.Instructor && <InstructorGuide />}
                         {tab === Page.Student && <StudentGuide />}
-                        <Divider />
-                        <Segment basic>
-                            <p>
-                                Have any lingering questions? Please email us at{" "}
-                                <a href="mailto:contact@ohq.io">
-                                    contact@ohq.io
-                                </a>{" "}
-                                - we&apos;re happy to help!
-                            </p>
-                        </Segment>
                     </Segment>
                 </Segment>
             </Grid.Row>
