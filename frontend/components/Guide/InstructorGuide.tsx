@@ -6,7 +6,6 @@ import {
     CreateQueue,
     HoldOfficeHours,
     Analytics,
-    Calendar,
     Settings,
 } from "./InstructorGuideContent";
 import { useSection } from "./utils";
@@ -23,10 +22,6 @@ export default function InstructorGuide() {
     const [CreateQueueHeader, CreateQueueBody] = useSection(
         "Create a Queue",
         CreateQueue
-    );
-    const [CalendarHeader, CalendarBody] = useSection(
-        "Editing a Course Calendar",
-        Calendar
     );
     const [HoldOHHeader, HoldOHBody] = useSection(
         "Hold Office Hours",
@@ -47,7 +42,6 @@ export default function InstructorGuide() {
                     <CreateQueueHeader />
                     <HoldOHHeader />
                     <AnalyticsHeader />
-                    <CalendarHeader />
                     <SettingsHeader />
                 </List>
             </Segment>
@@ -57,8 +51,11 @@ export default function InstructorGuide() {
             <CreateQueueBody />
             <HoldOHBody />
             <AnalyticsBody />
-            <CalendarBody />
             <SettingsBody />
+            <p>
+                Have any lingering questions? Please email us at contact@ohq.io
+                - we&apos;re happy to help!
+            </p>
         </>
     );
 }

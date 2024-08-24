@@ -1,7 +1,3 @@
-# 2024-08-19
-### Added
--   Courses may now add a calendar to schedule office hours and provide additional event information to students. Please visit the FAQ for more information.
-
 ## 2022-04-03
 ### Added
 -   New analytics cards listing summary statistics for queues, specifically the number of questions answered, average wait time, number of students helped, and average time helping each student. 
