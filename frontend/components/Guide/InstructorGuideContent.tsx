@@ -147,6 +147,34 @@ export const CreateQueue = ({ ref }) => (
     </div>
 );
 
+export const Calendar = ({ ref }) => (
+    <div ref={ref}>
+        <Segment basic>
+            <h3>Editing a Course Calendar</h3>
+            <p>
+                You can add events to your course calendar by visiting the
+                Calendar page on the Course page sidebar. Simply drag on the
+                Calendar to indicate the time of the event and fill in any
+                relevant information. You can only edit the course calendar via
+                the Calendar page reached from the course home page (the
+                instructor view).The Calendar linked from the dashboard is a
+                read-only view of all enrolled courses (the student view).
+            </p>
+            <p>
+                If the event is recurring, select so and make sure to indicate
+                the end date of the event! If you need to edit the event after
+                the fact, you can select whether to edit every event of the
+                recurrence or only the selected one (e.g. if a room changed).
+                You can also cancel a single occurrence of the evnet.
+            </p>
+            <p>
+                Note that the Calendar uses your local time as its time zone
+                (not Penn time).
+            </p>
+        </Segment>
+    </div>
+);
+
 export const HoldOfficeHours = ({ ref }) => (
     <div ref={ref}>
         <Segment basic>
@@ -251,22 +279,9 @@ export const Analytics = ({ ref }) => (
                 and assign TAs to match demand more effectively.
             </p>
             <p>
-                From your course, click &apos;Analytics&apos; on the left. Right
-                now, all you&apos;ll see is a banner that says: &quot;Work in
-                Progress: we&apos;re working on adding new analytics tools -
-                stay tuned!&quot; Our new analytics features will be released
-                over Fall 2020 and Spring 2021. So, stay tuned! 🎶
-            </p>
-            <p>
-                We are interested in learning what you might want to see on
-                OHQ&apos;s analytics page. Please fill out{" "}
-                <a
-                    href="https://airtable.com/appFRa4NQvNMEbWsA/shrX0oFscDxpo1TnF"
-                    rel="noopener"
-                >
-                    this brief survey
-                </a>{" "}
-                to let us know!
+                From your course, click &apos;Analytics&apos; on the left. From
+                here, you can see see both aggregate statistics and heat maps of
+                the most busy office hours sessions.
             </p>
         </Segment>
     </div>

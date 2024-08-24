@@ -2,6 +2,7 @@ import { Segment, List } from "semantic-ui-react";
 
 import {
     EnrollCourse,
+    Calendar,
     Notifications,
     JoiningOfficeHours,
     WhileInQueue,
@@ -26,6 +27,10 @@ export default function StudentGuide() {
         "While In Queue...",
         WhileInQueue
     );
+    const [CalendarHeader, CalendarBody] = useSection(
+        "Viewing your Calendar",
+        Calendar
+    );
     const [SettingsHeader, SettingsBody] = useSection("Settings", Settings);
     return (
         <>
@@ -36,6 +41,7 @@ export default function StudentGuide() {
                     <NotificationsHeader />
                     <JoiningOHHeader />
                     <WhileInQueueHeader />
+                    <CalendarHeader />
                     <SettingsHeader />
                 </List>
             </Segment>
@@ -44,11 +50,8 @@ export default function StudentGuide() {
             <NotificationsBody />
             <JoiningOHBody />
             <WhileInQueueBody />
+            <CalendarBody />
             <SettingsBody />
-            <p>
-                Have any lingering questions? Please email us at contact@ohq.io
-                - we&apos;re happy to help!
-            </p>
         </>
     );
 }

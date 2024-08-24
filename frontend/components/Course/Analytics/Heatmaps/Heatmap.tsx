@@ -53,7 +53,7 @@ export default function Heatmap({ series, chartTitle }: HeatmapProps) {
             fontFamily: "Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif",
         },
         xaxis: {
-            type: "category",
+            type: "category" as "category" | "datetime" | "numeric" | undefined,
             labels: {
                 formatter: toDisplayHour,
             },
