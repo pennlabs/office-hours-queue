@@ -158,8 +158,7 @@ export const Calendar = ({ ref }) => (
                 relevant information. You can only edit the course calendar via
                 the Calendar page reached from the course home page (the
                 instructor view).The Calendar linked from the dashboard is a
-                read-only view of all courses you are enrolled in (i.e. the
-                student view).
+                read-only view of all enrolled courses (the student view).
             </p>
             <p>
                 If the event is recurring, select so and make sure to indicate
