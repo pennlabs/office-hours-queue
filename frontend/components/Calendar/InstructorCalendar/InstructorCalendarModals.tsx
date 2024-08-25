@@ -241,7 +241,7 @@ export const EditEventModal = (props: EditEventProps) => {
                                 title={`Delete ${
                                     occurrence.event.rule ? "Recurring " : ""
                                 }Event`}
-                                occurrenceText="Delete This Event"
+                                occurrenceText="Cancel This Event"
                                 eventText={
                                     occurrence.event.rule
                                         ? "Delete All Events"
