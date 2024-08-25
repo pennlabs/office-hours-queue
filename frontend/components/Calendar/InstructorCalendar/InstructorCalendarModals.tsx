@@ -186,9 +186,9 @@ export const EditEventModal = (props: EditEventProps) => {
                     revalidate: false,
                 })
         );
+        setModalState(null);
         await deleteEvent(occurrence.event.id);
         mutate(undefined, undefined, { sendRequest: false });
-        setModalState(null);
     };
 
     const handleClose = () => {
