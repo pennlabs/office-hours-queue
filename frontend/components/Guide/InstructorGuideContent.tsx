@@ -155,7 +155,10 @@ export const Calendar = ({ ref }) => (
                 You can add events to your course calendar by visiting the
                 Calendar page on the Course page sidebar. Simply drag on the
                 Calendar to indicate the time of the event and fill in any
-                relevant information.
+                relevant information. You can only edit the course calendar via
+                the Calendar page reached from the course home page (the
+                instructor view).The Calendar linked from the dashboard is a
+                read-only view of all enrolled courses (the student view).
             </p>
             <p>
                 If the event is recurring, select so and make sure to indicate

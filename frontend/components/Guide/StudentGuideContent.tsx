@@ -55,9 +55,9 @@ export const Calendar = ({ ref }) => (
             <p>
                 Your instructor may have placed your office hours on the course
                 calendar. You can view the calendar either on the sidebar on the
-                home page or the Calendar page linked on the sidebar. You can
-                also see additional information such as event location by
-                clicking on the event.
+                Dashboard (on desktop ony) or the Calendar page linked on the
+                navbar. You can also see additional information such as event
+                location by clicking on the event card.
             </p>
             <p>
                 You can filter the courses that you see events for by visiting
