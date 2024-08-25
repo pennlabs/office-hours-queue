@@ -48,6 +48,30 @@ export const EnrollCourse = ({ ref }) => (
     </div>
 );
 
+export const Calendar = ({ ref }) => (
+    <div ref={ref}>
+        <Segment basic>
+            <h3>Viewing your Calendar</h3>
+            <p>
+                Your instructor may have placed your office hours on the course
+                calendar. You can view the calendar either on the sidebar on the
+                Dashboard (on desktop ony) or the Calendar page linked on the
+                navbar. You can also see additional information such as event
+                location by clicking on the event card.
+            </p>
+            <p>
+                You can filter the courses that you see events for by visiting
+                the Calendar page and selecting only the courses you are
+                interested in.
+            </p>
+            <p>
+                Note that the Calendar uses your local time as its time zone
+                (not Penn time).
+            </p>
+        </Segment>
+    </div>
+);
+
 export const Notifications = ({ ref }) => (
     <div ref={ref}>
         <Segment basic>

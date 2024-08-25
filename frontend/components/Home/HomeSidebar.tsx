@@ -35,6 +35,19 @@ const Sidebar = () => {
                             color="blue"
                         />
                     </Link>
+                    <Link href="/calendar" as="/calendar" legacyBehavior>
+                        <Menu.Item
+                            style={{
+                                whiteSpace: "nowrap",
+                                textOverflow: "ellipsis",
+                                overflow: "hidden",
+                            }}
+                            name="Calendar"
+                            icon="calendar"
+                            active={router.pathname === "/calendar"}
+                            color="blue"
+                        />
+                    </Link>
                     <Link href="/settings" as="/settings" legacyBehavior>
                         <Menu.Item
                             style={{
