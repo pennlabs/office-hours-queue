@@ -129,7 +129,7 @@ export const EditEventModal = (props: EditEventProps) => {
         setModalState(null);
     };
 
-    const handleEditEvent = () => {
+    const handleEditEvent = async () => {
         const start = startDate;
         const end = endDate;
         const timeDeltaStart = start.getTime() - occurrence.start.getTime();
@@ -160,7 +160,7 @@ export const EditEventModal = (props: EditEventProps) => {
                 ? dateToEventISO(moment(erpDate).endOf("day").toDate())
                 : null,
         };
-        updateEvent(editedEvent);
+        await updateEvent(editedEvent);
         // Revalidate everything, since new event could have created many new occurrences.
         mutate(undefined, undefined, { sendRequest: false });
         setModalState(null);
@@ -175,8 +175,7 @@ export const EditEventModal = (props: EditEventProps) => {
         setModalState(null);
     };
 
-    const handleDeleteEvent = () => {
-        deleteEvent(occurrence.event.id);
+    const handleDeleteEvent = async () => {
         // Optimistically delete all without revalidation, then revalidate all.
         occurrences.forEach(
             (o) =>
@@ -187,8 +186,9 @@ export const EditEventModal = (props: EditEventProps) => {
                     revalidate: false,
                 })
         );
-        mutate(undefined, undefined, { sendRequest: false });
         setModalState(null);
+        await deleteEvent(occurrence.event.id);
+        mutate(undefined, undefined, { sendRequest: false });
     };
 
     const handleClose = () => {
@@ -241,7 +241,7 @@ export const EditEventModal = (props: EditEventProps) => {
                                 title={`Delete ${
                                     occurrence.event.rule ? "Recurring " : ""
                                 }Event`}
-                                occurrenceText="Delete This Event"
+                                occurrenceText="Cancel This Event"
                                 eventText={
                                     occurrence.event.rule
                                         ? "Delete All Events"
@@ -327,7 +327,7 @@ export const NewEventModal = (props: NewEventProps) => {
         }
     }, [show]);
 
-    const handleCreateEvent = () => {
+    const handleCreateEvent = async () => {
         const newEvent: ApiPartialEvent = {
             title,
             start: dateToEventISO(startDate),
@@ -348,8 +348,7 @@ export const NewEventModal = (props: NewEventProps) => {
                 ? dateToEventISO(moment(erpDate).endOf("day").toDate())
                 : null,
         };
-        createEvent(newEvent);
-
+        await createEvent(newEvent);
         mutate(undefined, undefined, { sendRequest: false });
         if (isRecurring) setLastSubmittedErp(erpDate);
         setModalState(false);
