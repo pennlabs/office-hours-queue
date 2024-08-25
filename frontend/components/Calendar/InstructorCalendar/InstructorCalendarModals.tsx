@@ -276,8 +276,9 @@ export const EditEventModal = (props: EditEventProps) => {
                     positive
                     disabled={
                         endDate <= startDate ||
-                        moment(erpDate).endOf("day").toDate() < endDate ||
                         !title ||
+                        (isRecurring &&
+                            moment(erpDate).endOf("day").toDate() < endDate) ||
                         (isRecurring && recurringDays.length === 0)
                     }
                 >
@@ -390,8 +391,9 @@ export const NewEventModal = (props: NewEventProps) => {
                     type="submit"
                     disabled={
                         endDate <= startDate ||
-                        moment(erpDate).endOf("day").toDate() < endDate ||
                         !title ||
+                        (isRecurring &&
+                            moment(erpDate).endOf("day").toDate() < endDate) ||
                         (isRecurring && recurringDays.length === 0)
                     }
                 >
