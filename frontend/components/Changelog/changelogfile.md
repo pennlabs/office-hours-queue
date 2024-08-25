@@ -1,4 +1,4 @@
-# 2024-08-19
+# 2024-08-25
 ### Added
 -   Courses may now add a calendar to schedule office hours and provide additional event information to students. Please visit the FAQ for more information.
 
