@@ -40,9 +40,10 @@ channels = "==3.0.5"
 channels-redis = "*"
 uvicorn = {extras = ["standard"],version = "*"}
 gunicorn = "*"
-django-scheduler = "*"
+django-schedules-ohq = "*"
 typing-extensions = "*"
 drf-excel = "*"
+pytz = "*"
 
 [requires]
 python_version = "3.11"
