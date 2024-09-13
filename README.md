@@ -8,7 +8,7 @@ This repo contains an office hour queue.
 ## Setting up your development environment
 
 ### Prerequisites
-- Python 3.7 (`pyenv` is recommended)
+- Python 3.11 (`pyenv` is recommended)
 - `pipenv`
 - `docker` and `docker-compose`
 - Node (>)10 (`nvm` is recommended)
