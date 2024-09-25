@@ -22,13 +22,29 @@ def parse_and_send_invites(course, emails, kind):
     # Map of pennkey to invite email (which may be different from the user's email)
     email_map = {email.split("@")[0]: email for email in emails}
 
-    # Remove invitees already in class
-    existing = Membership.objects.filter(
-        course=course, user__username__in=email_map.keys()
-    ).values_list("user__username", flat=True)
-    existing = [email_map[pennkey] for pennkey in existing]
 
-    emails = list(set(emails) - set(existing))
+    # Remove invitees already in class
+    # existing = Membership.objects.filter(
+    #     course=course, user__username__in=email_map.keys()
+    # ).values_list("user__username", flat=True)
+    # existing = [email_map[pennkey] for pennkey in existing]
+
+
+    # Find invitees already in class
+    existing = Membership.objects.filter(
+        course=course, user__email__in=email_map.keys()
+    )
+
+    # Update existing memberships to the correct kind
+    for membership in existing:
+        if membership.kind != kind:
+            membership.kind = kind
+            membership.save()
+        del email_map[membership.user.username]
+
+    emails = list(email_map.values())
+
+    # emails = list(set(emails) - set(existing))
 
     # Remove users already invited
     existing = MembershipInvite.objects.filter(course=course, email__in=emails).values_list(
@@ -42,7 +58,10 @@ def parse_and_send_invites(course, emails, kind):
     # Directly add invitees with existing accounts
     users = User.objects.filter(Q(email__in=emails) | Q(username__in=email_map.keys())).distinct()
     for user in users:
-        membership = Membership.objects.create(course=course, user=user, kind=kind)
+        membership, created = Membership.objects.get_or_create(course=course, user=user)
+        if created or membership.kind != kind:
+            membership.kind = kind
+            membership.save()
         membership.send_email()
         del email_map[user.username]
 
