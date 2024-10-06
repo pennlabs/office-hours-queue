@@ -45,6 +45,7 @@ django-schedules-ohq = "*"
 typing-extensions = "*"
 drf-excel = "*"
 pytz = "*"
+inflection = "*"
 
 [requires]
 python_version = "3.11"
