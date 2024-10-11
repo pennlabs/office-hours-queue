@@ -24,12 +24,18 @@ interface QueueFormInput {
     rateLimitLength?: number;
     rateLimitQuestions?: number;
     rateLimitMinutes?: number;
+    questionTimerEnabled: boolean;
+    questionTimerStartTime?: number;
 }
 
 enum RateLimitFields {
     RATE_LIMIT_QUESTIONS = "rateLimitQuestions",
     RATE_LIMIT_MINUTES = "rateLimitMinutes",
     RATE_LIMIT_LENGTH = "rateLimitLength",
+}
+
+enum QuestionTimerFields {
+    QUESTION_TIMER_START_TIME = "questionTimerStartTime",
 }
 
 const castInt = (n: string): number | undefined => {
@@ -67,11 +73,16 @@ const QueueForm = (props: QueueFormProps) => {
         rateLimitQuestions: queue.rateLimitEnabled
             ? queue.rateLimitQuestions
             : undefined,
+        questionTimerEnabled: queue.questionTimerEnabled,
+        questionTimerStartTime: queue.questionTimerEnabled
+            ? queue.questionTimerStartTime
+            : undefined,
     });
     const [validQuestionRate, setValidQuestionRate] = useState(true);
     const [validMinsRate, setValidMinsRate] = useState(true);
     const [validLenRate, setValidLenRate] = useState(true);
 
+    const [validQuestionTime, setValidQuestionTime] = useState(true);
     const [nameCharCount, setNameCharCount] = useState(input.name.length);
     const [descCharCount, setDescCharCount] = useState(
         input.description.length
@@ -142,6 +153,11 @@ const QueueForm = (props: QueueFormProps) => {
         if (name === RateLimitFields.RATE_LIMIT_LENGTH) {
             input[name] = castInt(input[name]);
             setValidLenRate(input[name] >= 0);
+        }
+
+        if (name === QuestionTimerFields.QUESTION_TIMER_START_TIME) {
+            input[name] = castInt(input[name]);
+            setValidQuestionTime(input[name] > 0);
         }
 
         setInput({ ...input });
@@ -376,6 +392,46 @@ const QueueForm = (props: QueueFormProps) => {
                                 />
                             </Form.Group>
                         </Form.Field>
+                        <Form.Field>
+                            <label htmlFor="pin-radio">Question Timer</label>
+                            <Form.Checkbox
+                                name="questionTimerEnabled"
+                                defaultChecked={input.questionTimerEnabled}
+                                label="Enable a countdown for questions (Only shown to staff)"
+                                onChange={() =>
+                                    setInput({
+                                        ...input,
+                                        questionTimerEnabled:
+                                            !input.questionTimerEnabled,
+                                    })
+                                }
+                            />
+                        </Form.Field>
+
+                        {input.questionTimerEnabled && (
+                            <Form.Group style={{ alignItems: "center" }}>
+                                <label id="timer-questions">
+                                    Countdown from{" "}
+                                </label>
+                                <Form.Input
+                                    placeholder="10"
+                                    name={
+                                        QuestionTimerFields.QUESTION_TIMER_START_TIME
+                                    }
+                                    defaultValue={input.questionTimerStartTime}
+                                    onChange={handleInputChange}
+                                    width={2}
+                                    size="mini"
+                                    type="number"
+                                    min="1"
+                                    id="timer-questions"
+                                    error={!validQuestionTime}
+                                />
+                                <label htmlFor="timer-questions">
+                                    minutes per question
+                                </label>
+                            </Form.Group>
+                        )}
                     </Form.Field>
 
                     <Button
