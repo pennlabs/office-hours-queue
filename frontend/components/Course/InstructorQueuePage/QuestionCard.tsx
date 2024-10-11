@@ -12,7 +12,7 @@ import moment from "moment";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import RejectQuestionModal from "./RejectQuestionModal";
 import { AuthUserContext } from "../../../context/auth";
-import { Question, QuestionStatus, User } from "../../../types";
+import { Question, QuestionStatus, Queue, User } from "../../../types";
 import MessageQuestionModal from "./MessageQuestionModal";
 import FinishConfirmModal from "./FinishConfirmModal";
 import LinkedText from "../../common/ui/LinkedText";
@@ -22,13 +22,20 @@ export const fullName = (user: User) => `${user.firstName} ${user.lastName}`;
 
 interface QuestionCardProps {
     question: Question;
+    queue: Queue;
     mutate: mutateResourceListFunction<Question>;
     notifs: boolean;
     setNotifs: (boolean) => void;
 }
 
 const QuestionCard = (props: QuestionCardProps) => {
-    const { question, mutate: mutateQuestion, notifs, setNotifs } = props;
+    const {
+        question,
+        queue,
+        mutate: mutateQuestion,
+        notifs,
+        setNotifs,
+    } = props;
     const { id: questionId, askedBy } = question;
     const { user } = useContext(AuthUserContext);
     if (!user) {
@@ -191,7 +198,15 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     position="left center"
                                 />
                                 <QuestionTimer
-                                    startTime={question.timeResponseStarted}
+                                    questionStartTime={
+                                        question.timeResponseStarted ||
+                                        question.timeAsked
+                                    }
+                                    timerStartTime={
+                                        (queue.questionTimerEnabled &&
+                                            queue.questionTimerStartTime) ||
+                                        10
+                                    }
                                 />
                             </div>
                         </Header>

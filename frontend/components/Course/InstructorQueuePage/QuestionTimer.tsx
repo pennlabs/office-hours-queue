@@ -1,11 +1,18 @@
 import React from "react";
 import { Label } from "semantic-ui-react";
 
-const QuestionTimer = ({ startTime }) => {
+interface QuestionTimerProps {
+    questionStartTime: string;
+    timerStartTime: number;
+}
+const QuestionTimer = ({
+    questionStartTime,
+    timerStartTime,
+}: QuestionTimerProps) => {
     const now = Date.now();
-    const TATimerMaxTime = 10; // 10 minutes
     const diff =
-        TATimerMaxTime * 60 * 1000 - (now - new Date(startTime).getTime());
+        timerStartTime * 60 * 1000 -
+        (now - new Date(questionStartTime).getTime());
     const minutes = Math.floor(Math.abs(diff) / (1000 * 60));
     const seconds = Math.floor((Math.abs(diff) % (1000 * 60)) / 1000);
 
@@ -15,7 +22,7 @@ const QuestionTimer = ({ startTime }) => {
         .toString()
         .padStart(2, "0")}`;
 
-    if (!startTime) return null;
+    if (!questionStartTime) return null;
     return <Label color={diff < 0 ? "red" : "green"}>{formated}</Label>;
 };
 
