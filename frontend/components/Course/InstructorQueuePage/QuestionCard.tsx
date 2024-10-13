@@ -197,17 +197,19 @@ const QuestionCard = (props: QuestionCardProps) => {
                                     inverted
                                     position="left center"
                                 />
-                                <QuestionTimer
-                                    questionStartTime={
-                                        question.timeResponseStarted ||
-                                        question.timeAsked
-                                    }
-                                    timerStartTime={
-                                        (queue.questionTimerEnabled &&
-                                            queue.questionTimerStartTime) ||
-                                        10
-                                    }
-                                />
+                                {queue.questionTimerEnabled &&
+                                    question.timeResponseStarted && (
+                                        <QuestionTimer
+                                            questionStartTime={
+                                                question.timeResponseStarted
+                                            }
+                                            timerStartTime={
+                                                (queue.questionTimerEnabled &&
+                                                    queue.questionTimerStartTime) ||
+                                                10
+                                            }
+                                        />
+                                    )}
                             </div>
                         </Header>
                     </div>
