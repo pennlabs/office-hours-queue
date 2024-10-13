@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Form, Popup } from "semantic-ui-react";
+import { Form, Icon, Popup } from "semantic-ui-react";
 import { Queue, VideoChatSetting } from "../../../types";
 
 export interface QueueFormInput {
@@ -367,6 +367,10 @@ const QueueFormFields = ({
                                 htmlFor="timer-questions-group"
                             >
                                 Question Timer
+                                <Icon
+                                    name="question circle outline"
+                                    style={{ marginLeft: "0.5em" }}
+                                />
                             </label>
                         }
                         content="The countdown timer is only visable to staff"
