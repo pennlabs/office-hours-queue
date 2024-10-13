@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Label } from "semantic-ui-react";
 import timerAudio from "./timeupsound.mp3";
 import { usePlayer } from "../../../hooks/player";
+import { checkPermissions } from "../../../utils/notifications";
 
 interface QuestionTimerProps {
     questionStartTime: string;
@@ -14,7 +15,7 @@ const QuestionTimer = ({
     const [, , play] = usePlayer(timerAudio);
     const now = Date.now();
     const diff =
-        (timerStartTime / 10) * 60 * 1000 -
+        timerStartTime * 60 * 1000 -
         (now - new Date(questionStartTime).getTime());
     const minutes = Math.floor(Math.abs(diff) / (1000 * 60));
     const seconds = Math.floor((Math.abs(diff) % (1000 * 60)) / 1000);
@@ -23,9 +24,10 @@ const QuestionTimer = ({
     // Play a sound effect when hit zero (once)
     useEffect(() => {
         if (minutes + seconds === 0) {
-            play.current(
-                `Timer is up! You have answered this question for ${timerStartTime} minute(s).`
-            );
+            if (!checkPermissions())
+                play.current(
+                    `Timer is up! You have answered this question for ${timerStartTime} minute(s).`
+                );
         }
     }, [sign]);
     const formated = `${sign}${minutes.toString().padStart(2, "0")}:${seconds
