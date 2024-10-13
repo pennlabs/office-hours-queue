@@ -235,11 +235,15 @@ const QueueFormFields = ({
                     {`Characters: ${templCharCount}/${templCharLimit}`}
                 </div>
             </Form.Field>
-            <Form.Field required>
+            <Form.Field>
+                <label style={{ display: "inline-block" }} htmlFor="pin-toggle">
+                    Pin
+                </label>
                 <Form.Radio
                     label="Enable Pin"
                     checked={input.pinEnabled}
                     name="pinEnabled"
+                    id="pin-toggle"
                     toggle
                     disabled={loading}
                     onChange={handlePinInputChange}
@@ -247,8 +251,15 @@ const QueueFormFields = ({
             </Form.Field>
 
             <Form.Field>
+                <label
+                    style={{ display: "inline-block" }}
+                    htmlFor="rate-limit-toggle"
+                >
+                    Rate Limit
+                </label>
                 <Form.Radio
                     name="rateLimitEnabled"
+                    id="rate-limit-toggle"
                     toggle
                     defaultChecked={input.rateLimitEnabled}
                     label="Enable queue rate-limiting"
