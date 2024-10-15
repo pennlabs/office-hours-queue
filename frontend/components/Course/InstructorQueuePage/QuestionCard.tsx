@@ -12,22 +12,30 @@ import moment from "moment";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
 import RejectQuestionModal from "./RejectQuestionModal";
 import { AuthUserContext } from "../../../context/auth";
-import { Question, QuestionStatus, User } from "../../../types";
+import { Question, QuestionStatus, Queue, User } from "../../../types";
 import MessageQuestionModal from "./MessageQuestionModal";
 import FinishConfirmModal from "./FinishConfirmModal";
 import LinkedText from "../../common/ui/LinkedText";
+import QuestionTimer from "./QuestionTimer";
 
 export const fullName = (user: User) => `${user.firstName} ${user.lastName}`;
 
 interface QuestionCardProps {
     question: Question;
+    queue: Queue;
     mutate: mutateResourceListFunction<Question>;
     notifs: boolean;
     setNotifs: (boolean) => void;
 }
 
 const QuestionCard = (props: QuestionCardProps) => {
-    const { question, mutate: mutateQuestion, notifs, setNotifs } = props;
+    const {
+        question,
+        queue,
+        mutate: mutateQuestion,
+        notifs,
+        setNotifs,
+    } = props;
     const { id: questionId, askedBy } = question;
     const { user } = useContext(AuthUserContext);
     if (!user) {
@@ -80,12 +88,12 @@ const QuestionCard = (props: QuestionCardProps) => {
         return false; // todo: pass loading down props
     };
 
-    // Re-render timestamp every 5 seconds
+    // Re-render timestamp every 1 second
     const [, setTime] = useState(Date.now());
     useEffect(() => {
         const interval = setInterval(() => {
             setTime(Date.now());
-        }, 5000);
+        }, 1000);
         return () => clearInterval(interval);
     }, []);
 
@@ -137,48 +145,72 @@ const QuestionCard = (props: QuestionCardProps) => {
                     </div>
                     <div>
                         <Header as="h5" color="blue" textAlign="right">
-                            <Popup
-                                trigger={
-                                    question.timeResponseStarted === null ? (
-                                        <span>
-                                            Asked{" "}
-                                            {moment
-                                                .duration(
-                                                    moment().diff(
-                                                        moment(
-                                                            question.timeAsked
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    gap: "0.5em",
+                                }}
+                            >
+                                <Popup
+                                    trigger={
+                                        question.timeResponseStarted ===
+                                        null ? (
+                                            <span>
+                                                Asked{" "}
+                                                {moment
+                                                    .duration(
+                                                        moment().diff(
+                                                            moment(
+                                                                question.timeAsked
+                                                            )
                                                         )
                                                     )
-                                                )
-                                                .humanize()}{" "}
-                                            ago
-                                        </span>
-                                    ) : (
-                                        <span>
-                                            Started{" "}
-                                            {moment
-                                                .duration(
-                                                    moment().diff(
-                                                        moment(
-                                                            question.timeResponseStarted
+                                                    .humanize()}{" "}
+                                                ago
+                                            </span>
+                                        ) : (
+                                            <span>
+                                                Started{" "}
+                                                {moment
+                                                    .duration(
+                                                        moment().diff(
+                                                            moment(
+                                                                question.timeResponseStarted
+                                                            )
                                                         )
                                                     )
-                                                )
-                                                .humanize()}{" "}
-                                            ago
-                                        </span>
-                                    )
-                                }
-                                content={timeString(
-                                    question.timeResponseStarted
-                                        ? question.timeResponseStarted
-                                        : question.timeAsked,
-                                    false
-                                )}
-                                basic
-                                inverted
-                                position="left center"
-                            />
+                                                    .humanize()}{" "}
+                                                ago
+                                            </span>
+                                        )
+                                    }
+                                    content={timeString(
+                                        question.timeResponseStarted
+                                            ? question.timeResponseStarted
+                                            : question.timeAsked,
+                                        false
+                                    )}
+                                    basic
+                                    inverted
+                                    position="left center"
+                                />
+                                {queue.questionTimerEnabled &&
+                                    question.timeResponseStarted && (
+                                        <QuestionTimer
+                                            questionStartTime={
+                                                question.timeResponseStarted
+                                            }
+                                            timerStartTime={
+                                                (queue.questionTimerEnabled &&
+                                                    queue.questionTimerStartTime) ||
+                                                10
+                                            }
+                                        />
+                                    )}
+                            </div>
                         </Header>
                     </div>
                 </div>

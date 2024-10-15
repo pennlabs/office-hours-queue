@@ -81,14 +81,37 @@ export enum VideoChatSetting {
     DISABLED = "DISABLED",
 }
 
-export type Queue =
-    | (BaseQueue & { rateLimitEnabled: false })
-    | (BaseQueue & {
-          rateLimitEnabled: true;
-          rateLimitLength: number;
-          rateLimitQuestions: number;
-          rateLimitMinutes: number;
-      });
+/* 
+    Useful to scale the case where a property is only present when a flag is true for more than just "rateLimitEnabled"
+*/
+type ConditionalProperties<Flag extends string, Properties> =
+    | { [K in Flag]: false } // Flag is false, no properties
+    | ({ [K in Flag]: true } & Properties); // Flag is true, include properties
+
+export type Queue = BaseQueue &
+    ConditionalProperties<
+        "rateLimitEnabled", // Conditional Flag
+        {
+            rateLimitLength: number; // Conditional Properties present when rateLimitEnabled is true
+            rateLimitQuestions: number;
+            rateLimitMinutes: number;
+        }
+    > &
+    ConditionalProperties<
+        "questionTimerEnabled",
+        {
+            questionTimerStartTime: number;
+        }
+    >;
+
+// export type Queue =
+//     | (BaseQueue & { rateLimitEnabled: false })
+//     | (BaseQueue & {
+//           rateLimitEnabled: true;
+//           rateLimitLength: number;
+//           rateLimitQuestions: number;
+//           rateLimitMinutes: number;
+//       });
 
 // "ASKED" "WITHDRAWN" "ACTIVE" "REJECTED" "ANSWERED"
 export enum QuestionStatus {

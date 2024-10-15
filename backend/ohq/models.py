@@ -75,6 +75,7 @@ class Course(models.Model):
     invite_only = models.BooleanField(default=False)
     members = models.ManyToManyField(User, through="Membership", through_fields=("course", "user"))
 
+
     # MAX_NUMBER_COURSE_USERS = 1000
 
     class Meta:
@@ -214,6 +215,9 @@ class Queue(models.Model):
     rate_limit_length = models.IntegerField(blank=True, null=True)
     rate_limit_questions = models.IntegerField(blank=True, null=True)
     rate_limit_minutes = models.IntegerField(blank=True, null=True)
+
+    question_timer_enabled = models.BooleanField(default=False)
+    question_timer_start_time = models.IntegerField(blank=True, null=True)
 
     video_chat_setting = models.CharField(
         max_length=8, choices=VIDEO_CHOICES, default=VIDEO_OPTIONAL

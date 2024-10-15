@@ -240,6 +240,7 @@ const Queue = (props: QueueProps) => {
                 <Grid.Column>
                     <Questions
                         questions={filteredQuestions}
+                        queue={queue}
                         mutate={mutateQuestions}
                         active={active}
                         notifs={notifs}

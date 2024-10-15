@@ -157,6 +157,8 @@ class QueueSerializer(CourseRouteMixin):
             "rate_limit_length",
             "rate_limit_questions",
             "rate_limit_minutes",
+            "question_timer_enabled",
+            "question_timer_start_time",
             "video_chat_setting",
             "pin",
             "pin_enabled",
