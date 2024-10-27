@@ -6,7 +6,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import InstructorQueues from "./InstructorQueues";
 import Announcements from "../Announcements";
 import QueueSettings from "./QueueSettings/QueueSettings";
-import CreateQueue from "./CreateQueue/CreateQueue";
+import QueueCreate from "./QueueCreate/QueueCreate";
 import { AuthUserContext } from "../../../context/auth";
 import { useQueues, useStaff } from "../../../hooks/data-fetching/course";
 import {
@@ -143,7 +143,7 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
                 )}
                 {pageState.kind === PageStateEnum.CREATE && (
                     <Grid.Row style={{ marginTop: "1rem" }}>
-                        <CreateQueue
+                        <QueueCreate
                             courseId={courseId}
                             mutate={mutate}
                             successFunc={() => setSuccess(true)}

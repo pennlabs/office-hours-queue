@@ -7,7 +7,7 @@ import {
     Loader,
 } from "semantic-ui-react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
-import QueueForm from "./QueueForm";
+import UpdateQueueForm from "./QueueSettingsForm";
 import { Queue } from "../../../../types";
 
 interface QueueSettingsProps {
@@ -48,7 +48,7 @@ const QueueSettings = (props: QueueSettingsProps) => {
             </Grid.Row>
             <Grid.Row>
                 <Segment basic>
-                    <QueueForm
+                    <UpdateQueueForm
                         mutate={mutate}
                         queue={queue}
                         backFunc={backFunc}
