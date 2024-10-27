@@ -104,15 +104,6 @@ export type Queue = BaseQueue &
         }
     >;
 
-// export type Queue =
-//     | (BaseQueue & { rateLimitEnabled: false })
-//     | (BaseQueue & {
-//           rateLimitEnabled: true;
-//           rateLimitLength: number;
-//           rateLimitQuestions: number;
-//           rateLimitMinutes: number;
-//       });
-
 // "ASKED" "WITHDRAWN" "ACTIVE" "REJECTED" "ANSWERED"
 export enum QuestionStatus {
     ASKED = "ASKED",

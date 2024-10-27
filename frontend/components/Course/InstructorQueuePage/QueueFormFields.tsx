@@ -181,7 +181,7 @@ const QueueFormFields = ({
 
     return (
         <>
-            <Form.Field>
+            <Form.Field required>
                 <label htmlFor="form-name">Name</label>
                 <Form.Input
                     id="form-name"
@@ -199,7 +199,7 @@ const QueueFormFields = ({
                     {`Characters: ${nameCharCount}/100`}
                 </div>
             </Form.Field>
-            <Form.Field>
+            <Form.Field required>
                 <label htmlFor="form-desc">Description</label>
                 <Form.TextArea
                     id="form-desc"
@@ -410,6 +410,11 @@ const QueueFormFields = ({
                             width={2}
                             size="mini"
                             type="number"
+                            onKeyPress={(event) => {
+                                if (!/[0-9]/.test(event.key)) {
+                                    event.preventDefault();
+                                }
+                            }}
                             min="1"
                             id="timer-questions"
                             error={!validQuestionTime}

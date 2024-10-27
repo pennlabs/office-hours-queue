@@ -46,8 +46,9 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
     useEffect(() => setSupportsNotifs(browserSupportsNotifications()), []);
 
     const toggleNotifs = () => {
-        setNotifs(!notifs);
-        localStorage.setItem("notifs", !notifs ? "true" : "false");
+        const newNotifs = !notifs;
+        setNotifs(newNotifs);
+        localStorage.setItem("notifs", newNotifs ? "true" : "false");
         document.body.focus();
     };
 
