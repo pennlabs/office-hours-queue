@@ -324,7 +324,7 @@ const QueueFormFields = ({
                         <label htmlFor="rate-length">question(s)</label>
                     </Form.Group>
                 )}
-                <Form.Field required>
+                <Form.Field>
                     <label htmlFor="video-radio">Video Chat</label>
                     <Form.Group id="video-radio">
                         <Form.Radio
