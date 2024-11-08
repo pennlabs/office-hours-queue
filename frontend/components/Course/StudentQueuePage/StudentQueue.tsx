@@ -256,7 +256,10 @@ const StudentQueue = (props: StudentQueueProps) => {
                 {lastQuestions && lastQuestions.length !== 0 && (
                     <Grid.Row columns={1}>
                         <Grid.Column>
-                            <LastQuestionCard question={lastQuestions[0]} />
+                            <LastQuestionCard
+                                question={lastQuestions[0]}
+                                course={course}
+                            />
                         </Grid.Column>
                     </Grid.Row>
                 )}

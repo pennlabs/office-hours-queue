@@ -1,8 +1,17 @@
 import { Segment, Message } from "semantic-ui-react";
-import { Question } from "../../../types";
+import { useState } from "react";
+import { Course, Question } from "../../../types";
 import { getFullName } from "../../../utils";
+import QuestionReview from "./QuestionReview";
 
-const LastQuestionCard = ({ question }: { question: Question }) => {
+const LastQuestionCard = ({
+    question,
+    course,
+}: {
+    question: Question;
+    course: Course;
+}) => {
+    const [reviewed, setReviewed] = useState(false);
     const timeString = (date) => {
         return new Date(date).toLocaleString("en-US", {
             // TODO: this isn't a good fix
@@ -95,6 +104,21 @@ const LastQuestionCard = ({ question }: { question: Question }) => {
                 success={question.status === "ANSWERED"}
                 info={question.status === "WITHDRAWN"}
             >
+                {course.taReviews && reviewed ? (
+                    <div
+                        style={{
+                            padding: "0.5em 0",
+                        }}
+                    >
+                        Thank you for responding! Your feedback has been
+                        recieved.
+                    </div>
+                ) : (
+                    <>
+                        <QuestionReview setReviewed={setReviewed} />
+                        <br />
+                    </>
+                )}
                 If you believe this is an error, please contact course staff!
             </Message>
         </Segment>

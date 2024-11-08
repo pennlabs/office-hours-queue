@@ -29,7 +29,13 @@ const AnalyticsPage = (props: AnalyticsPageProps) => {
                     course={course}
                     leadership={leadership}
                     render={() => {
-                        return <Analytics course={course} queues={queues} />;
+                        return (
+                            <Analytics
+                                course={course}
+                                queues={queues}
+                                leadership={leadership}
+                            />
+                        );
                     }}
                 />
             </Grid>

@@ -10,6 +10,7 @@ export interface Course {
     semesterPretty: string;
     archived: boolean;
     inviteOnly: boolean;
+    taReviews: boolean;
     isMember: boolean;
 }
 

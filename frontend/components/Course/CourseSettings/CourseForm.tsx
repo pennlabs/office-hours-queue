@@ -51,6 +51,7 @@ const CourseForm = (props: CourseFormProps) => {
         courseCode: course.courseCode,
         courseTitle: course.courseTitle,
         semester: course.semester,
+        taReviews: course.taReviews,
     });
 
     const [oldTags, setOldTags] = useState<TagMap>(toTagMap(tags!));
@@ -79,6 +80,7 @@ const CourseForm = (props: CourseFormProps) => {
                 input.courseCode === course.courseCode &&
                 input.courseTitle === course.courseTitle &&
                 input.inviteOnly === course.inviteOnly &&
+                input.taReviews === course.taReviews &&
                 input.semester === course.semester &&
                 addedTags.length === 0 &&
                 deletedTags.length === 0),
@@ -101,6 +103,7 @@ const CourseForm = (props: CourseFormProps) => {
             setCourseTitleCharCount(value.length);
         }
         input[name] = name === "inviteOnly" ? !input[name] : value;
+        input[name] = name === "taReviews" ? !input[name] : value;
         setInput({ ...input });
     };
 
@@ -296,6 +299,17 @@ const CourseForm = (props: CourseFormProps) => {
                     id="invite-only"
                     defaultChecked={course.inviteOnly}
                     name="inviteOnly"
+                    disabled={loading}
+                    toggle
+                    onChange={handleInputChange}
+                />
+            </Form.Field>
+            <Form.Field required>
+                <label htmlFor="ta-reviews">TA Reviews?</label>
+                <Form.Checkbox
+                    id="ta-reviews"
+                    defaultChecked={course.taReviews}
+                    name="taReviews"
                     disabled={loading}
                     toggle
                     onChange={handleInputChange}
