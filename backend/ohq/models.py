@@ -74,7 +74,7 @@ class Course(models.Model):
     archived = models.BooleanField(default=False)
     invite_only = models.BooleanField(default=False)
     members = models.ManyToManyField(User, through="Membership", through_fields=("course", "user"))
-
+    allow_reviews = models.BooleanField(default=True)
 
     # MAX_NUMBER_COURSE_USERS = 1000
 
@@ -244,7 +244,6 @@ class Tag(models.Model):
     def __str__(self):
         return f"{self.course}: {self.name}"
 
-
 class Question(models.Model):
     """
     A question asked within a queue.
@@ -287,7 +286,26 @@ class Question(models.Model):
     tags = models.ManyToManyField(Tag, blank=True)
     student_descriptor = models.CharField(max_length=255, blank=True, null=True)
 
+class Review(models.Model):
+    """
+    TA reviews
+    """
+    RATING_ONE = 1
+    RATING_TWO = 2
+    RATING_THREE = 3
+    RATING_FOUR = 4
+    RATING_FIVE = 5
+    RATING_CHOICES = [
+        (RATING_ONE, "ONE"),
+        (RATING_TWO, "TWO"),
+        (RATING_THREE, "THREE"),
+        (RATING_FOUR, "FOUR"),
+        (RATING_FIVE, "FIVE")
+    ]
 
+    content = models.TextField(blank=True)
+    rating = models.IntegerField(choices=RATING_CHOICES)
+    question = models.OneToOneField(Question, on_delete=models.CASCADE, blank=True, null=True)
 class CourseStatistic(models.Model):
     """
     Most active students/TAs in the past week for a course

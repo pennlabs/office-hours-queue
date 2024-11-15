@@ -19,6 +19,7 @@ from ohq.views import (
     SemesterViewSet,
     TagViewSet,
     UserView,
+    ReviewViewSet,
 )
 
 
@@ -36,6 +37,7 @@ course_router.register("members", MembershipViewSet, basename="member")
 course_router.register("invites", MembershipInviteViewSet, basename="invite")
 course_router.register("announcements", AnnouncementViewSet, basename="announcement")
 course_router.register("tags", TagViewSet, basename="tag")
+course_router.register("reviews", ReviewViewSet, basename = "review")
 
 queue_router = routers.NestedSimpleRouter(course_router, "queues", lookup="queue")
 queue_router.register("questions", QuestionViewSet, basename="question")

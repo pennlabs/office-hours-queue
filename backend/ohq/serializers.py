@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.utils.crypto import get_random_string
+from django.http import JsonResponse
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 from rest_live.signals import save_handler
@@ -22,6 +23,7 @@ from ohq.models import (
     QueueStatistic,
     Semester,
     Tag,
+    Review
 )
 from ohq.sms import sendSMSVerification
 from ohq.tasks import sendUpNextNotificationTask
@@ -49,7 +51,6 @@ class QueueRouteMixin(serializers.ModelSerializer):
     def save(self):
         self.validated_data["queue"] = Queue.objects.get(pk=self.context["view"].kwargs["queue_pk"])
         return super().save()
-
 
 class SemesterSerializer(serializers.ModelSerializer):
     pretty = serializers.SerializerMethodField()
@@ -209,8 +210,6 @@ class TagSerializer(CourseRouteMixin):
     class Meta:
         model = Tag
         fields = ("id", "name")
-
-
 class QuestionSerializer(QueueRouteMixin):
     asked_by = UserSerializer(read_only=True)
     responded_to_by = UserSerializer(read_only=True)
@@ -246,6 +245,7 @@ class QuestionSerializer(QueueRouteMixin):
             "should_send_up_soon_notification",
             "resolved_note",
             "position",
+            "review"
         )
 
     def update(self, instance, validated_data):
@@ -344,6 +344,43 @@ class QuestionSerializer(QueueRouteMixin):
             except ObjectDoesNotExist:
                 continue
         return question
+
+    def get_review(self, obj):
+        review = Review.objects.get(question=obj)
+        serializer = ReviewSerializer(review)
+        return serializer.data
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    """
+    Serializer for review, allowing input of a question object via a nested serializer.
+    """
+    question = serializers.PrimaryKeyRelatedField(
+        queryset=Question.objects.none(),
+        write_only=True
+    )
+    class Meta:
+        model = Review
+        fields = ("id", "content", "rating", "question")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        course_pk = self.context.get('course_pk')
+        if course_pk:
+            course = Course.objects.filter(pk=course_pk).first()
+            self.fields['question'].queryset = Question.objects.filter(queue__course=course)
+
+    def create(self, validated_data):
+        # Extract the nested question data
+        question = validated_data.pop("question")
+        validated_data["question"] = question
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        # Handle question updates if applicable
+        question = validated_data.pop("question", None)
+        validated_data["question"] = question
+        return super().update(instance, validated_data)
 
 
 class MembershipPrivateSerializer(CourseRouteMixin):

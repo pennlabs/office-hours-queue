@@ -46,6 +46,7 @@ from ohq.models import (
     QueueStatistic,
     Semester,
     Tag,
+    Review,
 )
 from ohq.pagination import QuestionSearchPagination
 from ohq.permissions import (
@@ -63,6 +64,7 @@ from ohq.permissions import (
     QueuePermission,
     QueueStatisticPermission,
     TagPermission,
+    ReviewPermission
 )
 from ohq.schemas import EventSchema, MassInviteSchema, OccurrenceSchema
 from ohq.serializers import (
@@ -81,6 +83,7 @@ from ohq.serializers import (
     SemesterSerializer,
     TagSerializer,
     UserPrivateSerializer,
+    ReviewSerializer
 )
 from ohq.sms import sendSMSVerification
 
@@ -775,3 +778,88 @@ class OccurrenceViewSet(
 
     def get_queryset(self):
         return Occurrence.objects.filter(pk=self.kwargs["pk"])
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    """
+    retrieve:
+    Return a review based on the type of user. All reviews are anonymous.
+    Students can retrieve reviews made by themselves.
+    TAs cannot retrieve reviews.
+    Head TAs/Professors can retrieve any review.
+
+    list:
+    Return a list of reviews based on the type of user. All reviews are anonymous.
+    Students can retrieve reviews made by themselves.
+    TAs cannot retrieve reviews.
+    Head TAs/Professors can retrieve any review.
+
+    update:
+    Update all fields in a review.
+    You must specify all of the fields or use a patch request.
+
+    partial_update:
+    Update certain fields in a review.
+    Only specify the fields that you want to change.
+
+    destroy:
+    Delete a review.
+    """
+    serializer_class = ReviewSerializer
+    permission_classes = [ReviewPermission | IsSuperuser]
+
+    def get_serializer_context(self):
+        # Add course_pk to the serializer context
+        context = super().get_serializer_context()
+        context['course_pk'] = self.kwargs.get('course_pk')
+        return context
+
+    def create(self, request, *args, **kwargs):
+        # Retrieve course_pk from the URL
+        course_pk = self.kwargs.get("course_pk")
+
+        # Fetch the associated course to ensure it exists
+        try:
+            course = Course.objects.get(pk=course_pk)
+        except Course.DoesNotExist:
+            return JsonResponse({"detail": "Course not found."}, status=404)
+
+        # Retrieve the question from the request data
+        question_id = request.data.get("question")
+        if not question_id:
+            return JsonResponse({"detail": "Question ID is required."}, status=400)
+
+        # Fetch the associated question and ensure it belongs to the correct course
+        try:
+            question = Question.objects.get(pk=question_id, queue__course=course)
+        except Question.DoesNotExist:
+            return JsonResponse({"detail": "Question not found for the specified course."}, status=400)
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(question=question)
+
+        # Respond with the created Review data
+        return JsonResponse(serializer.data, status=201)
+
+
+
+    def get_queryset(self):
+        membership = Membership.objects.filter(course=self.kwargs["course_pk"], user=self.request.user).first()
+        if membership in [None, "TA"]:
+            return Review.objects.none()
+
+        course_pk = self.kwargs.get("course_pk", None)
+        course = Course.objects.filter(pk=course_pk).first()
+        # If the course does not exist or reviews are not allowed, return no reviews
+        if not course or not course.allow_reviews:
+            return Review.objects.none()
+
+        if membership.kind in ["HEAD_TA", "PROFESSOR"]:
+            # Head TAs and Professors can access all reviews
+            return Review.objects.filter(question__queue__course__pk=course_pk)
+        elif membership.kind == "STUDENT":
+            # Students can only access their own reviews
+            return Review.objects.filter(question__queue__course__pk=course_pk, question__asked_by=self.request.user)
+        # TAs and others cannot access any reviews
+        return Review.objects.none()
+        

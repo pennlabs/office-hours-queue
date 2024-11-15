@@ -504,3 +504,34 @@ class OccurrencePermission(permissions.BasePermission):
             return True
 
         return True
+    
+class ReviewPermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        # Anonymous users can't do anything
+        if not request.user.is_authenticated:
+            return False
+        
+        membership = Membership.objects.filter(
+            course=view.kwargs["course_pk"], user=request.user
+        ).first()
+        
+        # Non-Students can't do anything
+        if not membership or membership == "TA":
+            return False
+        
+        # Only students can create, modify and delete reviews
+        if membership.kind == "TA":
+            return False  # Deny access to TAs
+
+        # Allow access for Head TAs, Professors, and Students (additional checks can be added here if needed)
+        return membership.kind in ["HEAD_TA", "PROFESSOR", "STUDENT"]
+
+    def has_object_permission(self, request, view, obj):
+        membership = Membership.objects.filter(course=view.kwargs["course_pk"], user=request.user).first()
+        
+        if membership and membership.kind == "STUDENT":
+            # Students can only access their own questions
+            return obj.question.asked_by == request.user
+
+        # Allow access for Head TAs and Professors
+        return membership.kind in ["HEAD_TA", "PROFESSOR"]
