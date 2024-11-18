@@ -4,7 +4,11 @@ from django.db import models
 from django.dispatch import receiver
 from email_tools.emails import send_email
 from phonenumber_field.modelfields import PhoneNumberField
-
+from schedule.models import Event, Occurrence
+from django.utils.translation import gettext, gettext_lazy as _
+from django.template.defaultfilters import date
+from django.conf import settings as django_settings
+from django.urls import reverse
 
 User = settings.AUTH_USER_MODEL
 
@@ -447,3 +451,25 @@ class UserStatistic(models.Model):
 
     def __str__(self):
         return f"{self.user}: {self.metric}"
+
+class Booking(models.Model):
+    """
+    Booking within an occurrence
+    """
+
+    occurrence = models.ForeignKey(Occurrence, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    start = models.DateTimeField(_("start"), db_index=True, blank=True)
+    end = models.DateTimeField(_("end"), db_index=True, blank=True)
+
+    class Meta:
+        verbose_name = _("booking")
+        verbose_name_plural = _("bookings")
+        ordering = ["start"]
+        index_together = (("start", "end"),)
+
+    def __str__(self):
+        return gettext("%(start)s to %(end)s") % {
+            "start": date(self.start, django_settings.DATE_FORMAT),
+            "end": date(self.end, django_settings.DATE_FORMAT),
+        }
