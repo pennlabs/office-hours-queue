@@ -2,7 +2,7 @@ from django.db.models import Q
 from rest_framework import permissions
 from schedule.models import Event, EventRelation, Occurrence
 
-from ohq.models import Course, Membership, Question
+from ohq.models import Course, Membership, Question, Booking
 
 
 # Hierarchy of permissions is usually:
@@ -493,6 +493,72 @@ class OccurrencePermission(permissions.BasePermission):
     def has_permission(self, request, view):
         if not request.user.is_authenticated:
             return False
+
+        if view.action in ["list"]:
+            # if any member of the course in the list is not accessible, return false
+            course_ids = request.GET.getlist("course")
+            for course in course_ids:
+                membership = Membership.objects.filter(course=course, user=request.user).first()
+                if membership is None:
+                    return False
+            return True
+
+        return True
+
+class BookingPermission(permissions.BasePermission):
+    def get_membership_from_event(self, request, event):
+        event_course_relation = EventRelation.objects.filter(event=event).first()
+        membership = Membership.objects.filter(
+            course_id=event_course_relation.object_id, user=request.user
+        ).first()
+        return membership
+    
+    def has_object_permission(self, request, view, obj):
+        if view.action in ["retrieve"]:
+            booking = Booking.objects.filter(pk=view.kwargs["pk"]).first()
+            membership = self.get_membership_from_event(request=request, event=booking.occurrence.event)
+            return membership is not None
+
+        if view.action in ["update", "partial_update"]:
+            booking = Booking.objects.filter(pk=view.kwargs["pk"]).first()
+            membership = self.get_membership_from_event(request=request, event=booking.occurrence.event)
+
+            if membership is not None:
+                if membership.is_ta:
+                    return True
+                else:
+                    updated_fields = request.data.keys()
+                    restricted_student_fields = ["occurrence", "start", "end"] # allowed_student_field would be "user"
+
+                    for field in updated_fields:
+                        if field in restricted_student_fields:
+                            return False
+                    if "user" in updated_fields:
+                        if booking.user is not None: # Doesn’t allow a student to update user if someone already booked the slot
+                            return False
+                        else:
+                            return True
+            else:
+                return False    
+
+        return False
+    
+    def has_permission(self, request, view):
+        if not request.user.is_authenticated:
+            return False
+
+        # Anonymous users can't do anything
+        if view.action in ["create"]:
+            course_pk = request.data.get("course_id", None)
+            if course_pk is None:
+                return False
+
+            course = Course.objects.get(pk=course_pk)
+            membership = Membership.objects.filter(course=course, user=request.user).first()
+
+            if membership is None:
+                return False
+            return membership.is_ta
 
         if view.action in ["list"]:
             # if any member of the course in the list is not accessible, return false
