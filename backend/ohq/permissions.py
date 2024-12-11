@@ -534,10 +534,7 @@ class BookingPermission(permissions.BasePermission):
                         if field in restricted_student_fields:
                             return False
                     if "user" in updated_fields:
-                        if booking.user is not None: # Doesn’t allow a student to update user if someone already booked the slot
-                            return False
-                        else:
-                            return True
+                        return booking.user is None # Doesn’t allow a student to update user if someone already booked the slot
             else:
                 return False    
 

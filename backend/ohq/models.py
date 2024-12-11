@@ -5,10 +5,6 @@ from django.dispatch import receiver
 from email_tools.emails import send_email
 from phonenumber_field.modelfields import PhoneNumberField
 from schedule.models import Event, Occurrence
-from django.utils.translation import gettext, gettext_lazy as _
-from django.template.defaultfilters import date
-from django.conf import settings as django_settings
-from django.urls import reverse
 
 User = settings.AUTH_USER_MODEL
 
@@ -459,8 +455,8 @@ class Booking(models.Model):
 
     occurrence = models.ForeignKey(Occurrence, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    start = models.DateTimeField(_("start"), db_index=True, blank=True)
-    end = models.DateTimeField(_("end"), db_index=True, blank=True)
+    start = models.DateTimeField(_("start"), db_index=True)
+    end = models.DateTimeField(_("end"), db_index=True)
 
     class Meta:
         verbose_name = _("booking")
@@ -469,7 +465,6 @@ class Booking(models.Model):
         index_together = (("start", "end"),)
 
     def __str__(self):
-        return gettext("%(start)s to %(end)s") % {
-            "start": date(self.start, django_settings.DATE_FORMAT),
-            "end": date(self.end, django_settings.DATE_FORMAT),
-        }
+        start_str = self.start.strftime("%Y-%m-%d %H:%M:%S")
+        end_str = self.end.strftime("%Y-%m-%d %H:%M:%S")
+        return f"{start_str} to {end_str}"

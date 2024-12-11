@@ -19,8 +19,6 @@ from django.db.models import (
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.utils import timezone
 from django.utils.crypto import get_random_string
-from django.utils.translation import gettext_lazy as _
-from django.conf import settings as django_settings
 from django_auto_prefetching import prefetch
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_excel.mixins import XLSXFileMixin
