@@ -4,7 +4,7 @@ from django.db import models
 from django.dispatch import receiver
 from email_tools.emails import send_email
 from phonenumber_field.modelfields import PhoneNumberField
-
+from schedule.models import Event, Occurrence
 
 User = settings.AUTH_USER_MODEL
 
@@ -447,3 +447,24 @@ class UserStatistic(models.Model):
 
     def __str__(self):
         return f"{self.user}: {self.metric}"
+
+class Booking(models.Model):
+    """
+    Booking within an occurrence
+    """
+
+    occurrence = models.ForeignKey(Occurrence, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    start = models.DateTimeField("start", db_index=True)
+    end = models.DateTimeField("end", db_index=True)
+
+    class Meta:
+        verbose_name = ("booking")
+        verbose_name_plural = ("bookings")
+        ordering = ["start"]
+        index_together = (("start", "end"),)
+
+    def __str__(self):
+        start_str = self.start.strftime("%Y-%m-%d %H:%M:%S")
+        end_str = self.end.strftime("%Y-%m-%d %H:%M:%S")
+        return f"{start_str} to {end_str}"
