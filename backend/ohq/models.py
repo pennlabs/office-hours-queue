@@ -455,8 +455,8 @@ class Booking(models.Model):
 
     occurrence = models.ForeignKey(Occurrence, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    start = models.DateTimeField(_("start"), db_index=True)
-    end = models.DateTimeField(_("end"), db_index=True)
+    start = models.DateTimeField("start", db_index=True)
+    end = models.DateTimeField("end", db_index=True)
 
     class Meta:
         verbose_name = _("booking")
