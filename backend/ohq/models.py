@@ -459,8 +459,8 @@ class Booking(models.Model):
     end = models.DateTimeField("end", db_index=True)
 
     class Meta:
-        verbose_name = _("booking")
-        verbose_name_plural = _("bookings")
+        verbose_name = ("booking")
+        verbose_name_plural = ("bookings")
         ordering = ["start"]
         index_together = (("start", "end"),)
 
