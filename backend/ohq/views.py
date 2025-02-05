@@ -16,6 +16,7 @@ from django.db.models import (
     Subquery,
     When,
 )
+from django.views.generic import View
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.utils import timezone
 from django.utils.crypto import get_random_string
@@ -32,6 +33,7 @@ from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 from rest_live.mixins import RealtimeMixin
 from schedule.models import Event, EventRelationManager, Occurrence
+from http import HTTPStatus
 
 from ohq.filters import CourseStatisticFilter, QuestionSearchFilter, QueueStatisticFilter
 from ohq.invite import parse_and_send_invites
@@ -775,3 +777,22 @@ class OccurrenceViewSet(
 
     def get_queryset(self):
         return Occurrence.objects.filter(pk=self.kwargs["pk"])
+class HealthView(View):
+    def get(self, request):
+        """
+        Health check endpoint to confirm the backend is running.
+        ---
+        summary: Health Check
+        responses:
+            "200":
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                message:
+                                    type: string
+                                    enum: ["OK"]
+        ---
+        """
+        return JsonResponse({"message": "OK"}, status=HTTPStatus.OK) 
