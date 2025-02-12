@@ -8,7 +8,6 @@ from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 from rest_live.signals import save_handler
 from schedule.models import Calendar, Event, EventRelation, EventRelationManager, Rule
-from schedule.models.events import Occurrence
 
 from ohq.models import (
     Announcement,
@@ -22,6 +21,7 @@ from ohq.models import (
     QueueStatistic,
     Semester,
     Tag,
+    Occurrence,
     Booking,
 )
 from ohq.sms import sendSMSVerification

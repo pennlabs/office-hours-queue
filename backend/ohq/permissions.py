@@ -1,9 +1,13 @@
 from django.db.models import Q
 from rest_framework import permissions
-from schedule.models import Event, EventRelation, Occurrence
-
-from ohq.models import Course, Membership, Question, Booking
-
+from schedule.models import Event, EventRelation
+from ohq.models import (
+    Course, 
+    Membership, 
+    Question, 
+    Occurrence, 
+    Booking,
+)
 
 # Hierarchy of permissions is usually:
 # Professor > Head TA > TA > Student > User
@@ -543,27 +547,11 @@ class BookingPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         if not request.user.is_authenticated:
             return False
-
-        # Anonymous users can't do anything
-        if view.action in ["create"]:
-            course_pk = request.data.get("course_id", None)
-            if course_pk is None:
-                return False
-
-            course = Course.objects.get(pk=course_pk)
-            membership = Membership.objects.filter(course=course, user=request.user).first()
-
-            if membership is None:
-                return False
-            return membership.is_ta
-
+    
         if view.action in ["list"]:
-            # if any member of the course in the list is not accessible, return false
-            course_ids = request.GET.getlist("course")
-            for course in course_ids:
-                membership = Membership.objects.filter(course=course, user=request.user).first()
-                if membership is None:
-                    return False
-            return True
+            occurrence_id = request.GET.get("occurrence")
+            occurrence = Occurrence.objects.filter(id=occurrence_id).first()
+            membership = self.get_membership_from_event(request, occurrence.event)
+            return membership is not None
 
         return True

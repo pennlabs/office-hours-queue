@@ -775,30 +775,6 @@ class OccurrenceViewSet(
 
         serializer = OccurrenceSerializer(occurrences, many=True)
         return JsonResponse(serializer.data, safe=False)
-    
-    def update(self, request, *args, **kwargs):
-        occurrence = self.get_object()
-        old_start = occurrence.start
-        old_end = occurrence.end
-        occurrence.start = datetime.strptime(request.data.get("start"), "%Y-%m-%dT%H:%M:%SZ").replace(
-            tzinfo=utc
-        )
-        occurrence.end = datetime.strptime(request.data.get("end"), "%Y-%m-%dT%H:%M:%SZ").replace(
-            tzinfo=utc
-        )
-        start_delta = occurrence.start - old_start
-        end_delta = occurrence.end - old_end
-        occurrence.save()
-
-        bookings = Booking.objects.filter(occurrence=occurrence).order_by("start")
-
-        for booking in bookings:
-            booking.start += start_delta
-            booking.end += end_delta
-            booking.save()
-
-        serializer = OccurrenceSerializer(occurrence)
-        return JsonResponse(serializer.data, safe=False)
 
     def get_queryset(self):
         return Occurrence.objects.filter(pk=self.kwargs["pk"])
@@ -806,7 +782,6 @@ class OccurrenceViewSet(
 class BookingViewSet(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
-    mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
     viewsets.GenericViewSet,
 ):
@@ -818,10 +793,6 @@ class BookingViewSet(
     You should pass in an occurrence id, and all the bookings related to that occurrence will be returned to you.
     Return a list of bookings.
 
-    create:
-    Create a booking.
-    occurrenceId is required in body.
-
     update:
     Update all fields in a Booking.
     You must specify all of the fields or use a patch request.
@@ -832,46 +803,36 @@ class BookingViewSet(
 
     serializer_class = BookingSerializer
     permission_classes = [BookingPermission | IsSuperuser]
-
-    def create(self, request, *args, **kwargs):        
-        occurrence_id = request.data.get("occurrence")
-        occurrence = Occurrence.objects.get(id=occurrence_id) 
-        user = request.user
-        existing_bookings = Booking.objects.filter(occurrence=occurrence).order_by("start")
-
-        if existing_bookings.exists():
-            last_booking = existing_bookings.last()
-            start = last_booking.end
-        else:
-            start = occurrence.start
-        
-        end = start + occurrence.interval
-
-        if start < occurrence.start or end > occurrence.end:
-            raise ValidationError(_("Booking times must be within the occurrence's time range."))
-
-        booking = Booking(
-            occurrence=occurrence,
-            user=user,
-            start=start,
-            end=end,
-        )
-
-        booking.save()
-
-        serializer = BookingSerializer(booking)
-        return JsonResponse(serializer.data, safe=False)
     
     def list(self,request, *args, **kwargs):
         occurrence_id = request.GET.get("occurrence")
         if occurrence_id is None:
-            raise ValidationError(_(f"Occurrence id is required."))
-        
-        occurrence = Occurrence.objects.get(id=occurrence_id) 
+            raise ValidationError((f"Occurrence id is required."))
+    
+        try:
+            occurrence = Occurrence.objects.filter(id=occurrence_id).first()
+        except Occurrence.DoesNotExist:
+            return JsonResponse({"detail": "Occurrence not found."}, status=404)
+
         existing_bookings = Booking.objects.filter(occurrence=occurrence).order_by("start")
 
         serializer = BookingSerializer(existing_bookings, many=True)
         return JsonResponse(serializer.data, safe=False)
     
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        # Only the user field should be able to update
+        user = self.request.user
+        # Based on BookingPermission, you technically shouldn't be allowed to override another student if you're a student
+        self.user = user 
+
+        return JsonResponse(serializer.data, safe=False)
+        
+
     def get_queryset(self):
         return Booking.objects.filter(pk=self.kwargs["pk"])
