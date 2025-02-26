@@ -462,7 +462,7 @@ class Occurrence(models.Model):
     original_end = models.DateTimeField(("original end"))
     created_on = models.DateTimeField(("created on"), auto_now_add=True)
     updated_on = models.DateTimeField(("updated on"), auto_now=True)
-    interval = models.IntegerField(("interval"), blank=True, validators=[MinValueValidator(5), MaxValueValidator(60)])
+    interval = models.IntegerField(("interval"), blank=True, null=True)
 
     class Meta:
         verbose_name = ("occurrence")
@@ -482,21 +482,22 @@ class Occurrence(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
-        if self.pk: # If save is called on object update, not creation
-            self.bookings.all().delete()
+        if self.interval is not None:
+            if self.pk: # If save is called on object update, not creation
+                self.bookings.all().delete()
 
-        delta = self.end - self.start
-        delta_minutes = delta.total_seconds() / 60
-        booking_count = int(delta_minutes // self.interval)
-        for i in range(booking_count):
-            booking_start = self.start + timedelta(minutes=i * self.interval)
-            booking_end = booking_start + timedelta(minutes=self.interval)
-            Booking.objects.create(
-                occurrence=self,
-                user=None,
-                start=booking_start,
-                end = booking_end,
-            )
+            delta = self.end - self.start
+            delta_minutes = delta.total_seconds() / 60
+            booking_count = int(delta_minutes // self.interval)
+            for i in range(booking_count):
+                booking_start = self.start + timedelta(minutes=i * self.interval)
+                booking_end = booking_start + timedelta(minutes=self.interval)
+                Booking.objects.create(
+                    occurrence=self,
+                    user=None,
+                    start=booking_start,
+                    end = booking_end,
+                )
 
     def moved(self):
         return self.original_start != self.start or self.original_end != self.end
