@@ -58,3 +58,12 @@ Users from the populate script all have password `pennlabs`.
   - a. Navigate to `/frontend`
   - b. `yarn cypress open`
   - c. Click on `question.spec.ts`
+
+### Emulating the production server
+This will, as best as possible, emulate the production configuration described in `/k8s/main.ts`.
+
+1. Open a command prompt to `/backend`
+2. Run `docker compose --profile proddev up`
+3. To turn it off, use `CTRL+C` and then `docker compose --profile proddev down`
+
+Note this will reuse the postgres database stored in `/backend/postgres`. You may reset this database by turinging off the docker containers and deleting `/backend/postgres`
