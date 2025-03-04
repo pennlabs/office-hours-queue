@@ -15,3 +15,53 @@ services:
     image: redis:4.0
     ports:
       - "6379:6379"
+  proddev-backend-wsgi:
+    depends_on:
+      - db
+      - redis
+    profiles:
+      - proddev
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8001:80"
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
+      - DJANGO_SETTINGS_MODULE=officehoursqueue.settings.proddev
+    command: sh -c "python manage.py migrate && { DJANGO_SUPERUSER_PASSWORD=root python manage.py createsuperuser --no-input --username root --email root@pennlabs.org; /usr/local/bin/django-run; }"
+  proddev-backend-asgi:
+    depends_on:
+      - db
+      - redis
+    profiles:
+      - proddev
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8002:80"
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
+      - DJANGO_SETTINGS_MODULE=officehoursqueue.settings.proddev
+    command: sh -c "python manage.py migrate && { DJANGO_SUPERUSER_PASSWORD=root python manage.py createsuperuser --no-input --username root --email root@pennlabs.org; /usr/local/bin/asgi-run; }"
+  proddev-frontend:
+    profiles:
+      - proddev
+    build:
+      context: ../frontend
+      dockerfile: ../frontend/Dockerfile
+    ports:
+      - "8003:80"
+  nginx:
+    image: nginx:latest
+    depends_on:
+      - proddev-backend-wsgi
+      - proddev-backend-asgi
+      - proddev-frontend
+    profiles:
+      - proddev
+    ports:
+      - "8000:80"
+    volumes:
+      - ./nginx-proddev.conf:/etc/nginx/nginx.conf:ro
