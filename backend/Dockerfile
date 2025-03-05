@@ -32,9 +32,9 @@ RUN if [ "$DEPENDENCY_MANAGER" = "uv" ]; then uv sync --frozen --no-dev --no-ins
 # Make installed binaries available for POSIX compliant scripts
 ENV PATH="/app/.venv/bin:$PATH"
 # Patch for scripts that use a hard-coded path to uwsgi (django-run)
-RUN if [ "$DEPENDENCY_MANAGER" = "uv" ]; then  cp /app/.venv/bin/uwsgi /usr/local/bin/uwsgi; fi
+RUN if [ "$DEPENDENCY_MANAGER" = "uv" ]; then  mv /app/.venv/bin/uwsgi /usr/local/bin/uwsgi; fi
 # Patch for scripts that use a hard-coded path to gunicorn (asgi-run)
-RUN if [ "$DEPENDENCY_MANAGER" = "uv" ]; then  cp /app/.venv/bin/gunicorn /usr/local/bin/gunicorn; fi
+RUN if [ "$DEPENDENCY_MANAGER" = "uv" ]; then  mv /app/.venv/bin/gunicorn /usr/local/bin/gunicorn; fi
 # Patch for scripts that use a hard-coded path to python (django-run, asgi-run)
 ENV PYTHONPATH="/app/.venv/lib/python3.11/site-packages/:$PYTHONPATH"
 
