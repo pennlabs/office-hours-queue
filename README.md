@@ -64,6 +64,7 @@ This will, as best as possible, emulate the production configuration described i
 
 1. Open a command prompt to `/backend`
 2. Run `docker compose --profile proddev up`
-3. To turn it off, use `CTRL+C` and then `docker compose --profile proddev down`
+3. Connect via `http://127.0.0.1:8000`
+4. To turn it off, use `CTRL+C` and then `docker compose --profile proddev down`
 
 Note this will reuse the postgres database stored in `/backend/postgres`. You may reset this database by turinging off the docker containers and deleting `/backend/postgres`
