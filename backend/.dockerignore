@@ -15,3 +15,6 @@ LICENSE
 **/__pycache__/
 tests/
 postgres/
+
+# uv
+.venv
