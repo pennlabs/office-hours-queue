@@ -4,9 +4,6 @@ from officehoursqueue.settings.production import *
 
 import officehoursqueue.settings.base as base
 
-# Turning debug logs shouldn't introduce major differences, but will help with debugging
-DEBUG = True
-
 # No https on dev machines
 SECURE_PROXY_SSL_HEADER = ()
 
