@@ -17,7 +17,7 @@ jobs:
   #     black: true
 
   publish-backend:
-    uses: pennlabs/shared-actions/.github/workflows/docker-publish.yaml@v0.1
+    uses: pennlabs/shared-actions/.github/workflows/docker-publish.yaml@v0.1.6
     with:
       # Inputs
       imageName: "office-hours-queue-backend"
@@ -49,7 +49,7 @@ jobs:
       nodeVersion: 18.0.0
 
   publish-frontend:
-    uses: pennlabs/shared-actions/.github/workflows/docker-publish.yaml@v0.1
+    uses: pennlabs/shared-actions/.github/workflows/docker-publish.yaml@v0.1.6
     with:
       # Inputs
       imageName: "office-hours-queue-frontend"
