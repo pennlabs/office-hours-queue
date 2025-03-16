@@ -48,6 +48,8 @@ jobs:
       path: frontend
       nodeVersion: 18.0.0
       skipReactPublish: true
+      imageName: 'office-hours-queue-frontend'
+      githubRef: ${{ github.ref }}
 
   publish-frontend:
     uses: pennlabs/shared-actions/.github/workflows/docker-publish.yaml@v0.1.6
