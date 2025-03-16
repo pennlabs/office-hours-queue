@@ -51,6 +51,7 @@ jobs:
       imageName: 'office-hours-queue-frontend'
       githubRef: ${{ github.ref }}
       gitSha: ${{ github.sha }}
+      skipCodeCov: true
 
     secrets: 
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
