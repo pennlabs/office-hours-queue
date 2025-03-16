@@ -43,10 +43,11 @@ jobs:
 
   frontend-check:
     name: "Frontend Check"
-    uses: pennlabs/shared-actions/.github/workflows/react-check.yaml@v0.1.1
+    uses: pennlabs/shared-actions/.github/workflows/react.yaml@v0.1.6
     with:
       path: frontend
       nodeVersion: 18.0.0
+      skipReactPublish: true
 
   publish-frontend:
     uses: pennlabs/shared-actions/.github/workflows/docker-publish.yaml@v0.1.6
