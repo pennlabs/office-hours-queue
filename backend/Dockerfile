@@ -9,17 +9,18 @@ COPY --from=ghcr.io/astral-sh/uv@sha256:2381d6aa60c326b71fd40023f921a0a3b8f91b14
 # Copy project dependencies
 COPY Pipfile* pyproject.toml uv.lock /app/
 
-# Install project dependencies using pipenv if pipenv enabled
-RUN if [ "$DEPENDENCY_MANAGER" = "pipenv" ]; then pipenv install --system; fi
+# Install dependencies using uv or pipenv depending on DEPENDENCY_MANAGER arg
+RUN if [ "$DEPENDENCY_MANAGER" = "uv" ]; then \
+    uv sync --frozen --no-dev --no-install-project --python $(which python); \
+    mv /app/.venv/bin/uwsgi /usr/local/bin/uwsgi; \
+    mv /app/.venv/bin/gunicorn /usr/local/bin/gunicorn; \
+else \
+    pipenv install --system; \
+fi
 
-# Install project dependencies if using uv if uv enabled
-RUN if [ "$DEPENDENCY_MANAGER" = "uv" ]; then uv sync --frozen --no-dev --no-install-project --python $(which python); fi
 # Make installed binaries available for POSIX compliant scripts
 ENV PATH="/app/.venv/bin:$PATH"
-# Patch for scripts that use a hard-coded path to uwsgi (django-run)
-RUN if [ "$DEPENDENCY_MANAGER" = "uv" ]; then  mv /app/.venv/bin/uwsgi /usr/local/bin/uwsgi; fi
-# Patch for scripts that use a hard-coded path to gunicorn (asgi-run)
-RUN if [ "$DEPENDENCY_MANAGER" = "uv" ]; then  mv /app/.venv/bin/gunicorn /usr/local/bin/gunicorn; fi
+
 # Patch for scripts that use a hard-coded path to python (django-run, asgi-run)
 ENV PYTHONPATH="/app/.venv/lib/python3.11/site-packages/:$PYTHONPATH"
 
