@@ -3,21 +3,8 @@ ARG DEPENDENCY_MANAGER="pipenv"
 
 LABEL maintainer="Penn Labs"
 
-# Install build dependencies
-RUN apt-get update && apt-get install --no-install-recommends -y gcc libpq-dev libc-dev curl \
-    && rm -rf /var/lib/apt/lists/*
-
 # Install uv
-# Download the latest installer
-ADD https://astral.sh/uv/0.6.0/install.sh /uv-installer.sh
-
-RUN echo "5464b06094b6363861b99cd60a010892e52fc2a7503b7594419828e74afecfe6  /uv-installer.sh" | sha256sum -c
-
-# Run the installer then remove it
-RUN sh /uv-installer.sh && rm /uv-installer.sh
-
-# Ensure the installed binary is on the `PATH`
-ENV PATH="/root/.local/bin/:$PATH"
+COPY --from=ghcr.io/astral-sh/uv@sha256:2381d6aa60c326b71fd40023f921a0a3b8f91b14d5db6b90402e65a635053709 /uv /uvx /bin/
 
 # Copy project dependencies
 COPY Pipfile* /app/
