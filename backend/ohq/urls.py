@@ -67,6 +67,6 @@ additional_urls = [
         CourseStatisticView.as_view(),
         name="course-statistic",
     ),
-    ]
+]
 
 urlpatterns = router.urls + occurrence_router.urls + course_router.urls + queue_router.urls + additional_urls
