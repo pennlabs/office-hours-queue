@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from unittest.mock import patch
 
 import pytz
@@ -7,7 +7,7 @@ from django.test import TestCase
 from django.urls import reverse
 from parameterized import parameterized
 from rest_framework.test import APIClient
-from schedule.models import Calendar, Event, EventRelationManager
+from schedule.models import Calendar, Event, Occurrence, EventRelationManager
 
 from ohq.models import (
     Announcement,
@@ -18,7 +18,7 @@ from ohq.models import (
     Queue,
     Semester,
     Tag,
-    Occurrence,
+    Booking,
 )
 
 
@@ -1232,10 +1232,10 @@ class OccurrenceTestCase(TestCase):
     def setUp(self):
         setUp(self)
 
-        self.start_time = datetime.strptime("2021-12-05T12:41:37Z", "%Y-%m-%dT%H:%M:%SZ").replace(
+        self.start_time = datetime.strptime("2021-12-05T13:00:00Z", "%Y-%m-%dT%H:%M:%SZ").replace(
             tzinfo=pytz.utc
         )
-        self.end_time = datetime.strptime("2021-12-06T12:41:37Z", "%Y-%m-%dT%H:%M:%SZ").replace(
+        self.end_time = datetime.strptime("2021-12-06T13:00:00Z", "%Y-%m-%dT%H:%M:%SZ").replace(
             tzinfo=pytz.utc
         )
         self.title = "TA Session"
@@ -1328,10 +1328,10 @@ class BookingTestCase(TestCase):
     def setUp(self):
         setUp(self)
 
-        self.start_time = datetime.strptime("2021-12-05T12:41:37Z", "%Y-%m-%dT%H:%M:%SZ").replace(
+        self.start_time = datetime.strptime("2021-12-05T13:00:00Z", "%Y-%m-%dT%H:%M:%SZ").replace(
             tzinfo=pytz.utc
         )
-        self.end_time = datetime.strptime("2021-12-06T12:41:37Z", "%Y-%m-%dT%H:%M:%SZ").replace(
+        self.end_time = datetime.strptime("2021-12-06T13:00:00Z", "%Y-%m-%dT%H:%M:%SZ").replace(
             tzinfo=pytz.utc
         )
         self.default_calendar = Calendar.objects.create(name="DefaultCalendar")
@@ -1355,7 +1355,12 @@ class BookingTestCase(TestCase):
         )
         self.occurrence.save()
 
-        self.booking = self.occurrence.bookings.first()
+        self.booking = Booking.objects.create(
+            occurrence=self.occurrence,
+            user=self.student,
+            start=self.start_time,
+            end=self.start_time + timedelta(minutes=10),
+        )
 
         # Expected results
         self.expected = {
@@ -1392,7 +1397,7 @@ class BookingTestCase(TestCase):
             user,
             "list",
             "get",
-            reverse("ohq:booking-list") + f"?occurrence={self.occurrence.id}",
+            reverse("ohq:booking-create-list", args=[self.occurrence.id]),
         )
 
     @parameterized.expand(users, name_func=get_test_name)
@@ -1413,5 +1418,5 @@ class BookingTestCase(TestCase):
             "modify",
             "patch",
             reverse("ohq:booking-detail", args=[self.booking.id]),
-            {"user": self.student.id},
+            {"start": self.booking.start + timedelta(minutes=15), "end": self.booking.end + timedelta(minutes=15)},
         )

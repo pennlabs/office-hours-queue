@@ -1,9 +1,11 @@
 from datetime import datetime, timedelta
 from django.contrib.auth import get_user_model
 from django.core import mail
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils import timezone
-from schedule.models import Calendar, Event, EventRelationManager
+import pytz
+from schedule.models import Calendar, Event, Occurrence, EventRelationManager
 
 from ohq.models import (
     Course,
@@ -15,7 +17,7 @@ from ohq.models import (
     QueueStatistic,
     Semester,
     Tag,
-    Occurrence,
+    Booking,
 )
 
 
@@ -312,17 +314,19 @@ class QueueStatisticTestCase(TestCase):
             f"{self.queue}: {self.avg_time_helping_queue_statistic.get_metric_display()}",
         )
 
-class OccurrenceTestCase(TestCase):
+class BookingTestCase(TestCase):
     def setUp(self):
+        # Creating an Occurrence Object
+
         self.semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
         self.course = Course.objects.create(
         course_code="000", department="Penn Labs", semester=self.semester
     )
-        self.start_time = datetime.strptime("2021-12-05T12:41:37Z", "%Y-%m-%dT%H:%M:%SZ").replace(
-            tzinfo=timezone.utc
+        self.start_time = datetime.strptime("2021-12-05T12:00:00Z", "%Y-%m-%dT%H:%M:%SZ").replace(
+            tzinfo=pytz.utc
         )
-        self.end_time = datetime.strptime("2021-12-06T12:41:37Z", "%Y-%m-%dT%H:%M:%SZ").replace(
-            tzinfo=timezone.utc
+        self.end_time = datetime.strptime("2021-12-06T13:00:00Z", "%Y-%m-%dT%H:%M:%SZ").replace(
+            tzinfo=pytz.utc
         )
         self.default_calendar = Calendar.objects.create(name="DefaultCalendar")
         self.event = Event.objects.create(
@@ -344,29 +348,37 @@ class OccurrenceTestCase(TestCase):
             interval=10,
         )
         self.occurrence.save()
-
-        self.bookings = self.occurrence.bookings.all()
-
+        self.user = User.objects.create(username="user")
     
-    def test_occurrence_creates_bookings(self):
-        delta = self.end_time - self.start_time
-        delta_minutes = delta.total_seconds() / 60
-        booking_count = int(delta_minutes // self.occurrence.interval)
-        self.assertEqual(len(self.bookings), booking_count)
+    def test_booking_outside_occurrence(self):
+        with self.assertRaises(ValidationError):
+            Booking.objects.create(
+                occurrence=self.occurrence,
+                user=self.user,
+                start=self.start_time - timedelta(minutes=10),
+                end=self.start_time
+            ).clean()
 
-    def test_occurrence_update_recreates_bookings(self):
-        old_bookings_count = len(self.bookings)
-        old_first_booking = self.occurrence.bookings.first()
-        old_last_booking = self.occurrence.bookings.last()
+        with self.assertRaises(ValidationError):
+            Booking.objects.create(
+                occurrence=self.occurrence,
+                user=self.user,
+                start=self.end_time,
+                end=self.end_time + timedelta(minutes=10)
+            ).clean()
 
-        self.occurrence.start += timedelta(minutes=10)
-        self.occurrence.end += timedelta(minutes=30)
-        self.occurrence.save()
-        
-        new_bookings = self.occurrence.bookings.all()
-        new_first_booking = new_bookings.first()
-        new_last_booking = new_bookings.last()
+    def test_overlapping_bookings(self):
+        Booking.objects.create(
+            occurrence=self.occurrence,
+            user=self.user,
+            start=self.start_time,
+            end=self.start_time + timedelta(minutes=10)
+        )
 
-        self.assertNotEqual(old_bookings_count, len(new_bookings))
-        self.assertNotEqual(old_first_booking.start, new_first_booking.start)
-        self.assertNotEqual(old_last_booking.end, new_last_booking.end)
+        with self.assertRaises(ValidationError):
+            Booking.objects.create(
+                occurrence=self.occurrence,
+                user=self.user,
+                start=self.start_time + timedelta(minutes=5),
+                end=self.start_time + timedelta(minutes=15)
+            ).clean()
