@@ -825,7 +825,7 @@ class BookingListCreateViewSet(
 
     def get_queryset(self):
         occurrence_id = self.kwargs.get("occurrence_pk")
-        return Booking.objects.filter(occurrence=occurrence_id)    
+        return Booking.objects.filter(occurrence=occurrence_id).order_by("start")    
     
     def perform_create(self, serializer):
         occurrence_id = self.kwargs.get("occurrence_pk")
