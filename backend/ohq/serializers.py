@@ -7,7 +7,7 @@ from django.utils.crypto import get_random_string
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 from rest_live.signals import save_handler
-from schedule.models import Calendar, Event, EventRelation, EventRelationManager, Rule
+from schedule.models import Calendar, Event, Occurrence, EventRelation, EventRelationManager, Rule
 
 from ohq.models import (
     Announcement,
@@ -21,7 +21,6 @@ from ohq.models import (
     QueueStatistic,
     Semester,
     Tag,
-    Occurrence,
     Booking,
 )
 from ohq.sms import sendSMSVerification
@@ -565,7 +564,7 @@ class EventSerializer(serializers.ModelSerializer):
         course = Course.objects.get(pk=validated_data["course_id"])
         rule = None
         if "rule" in validated_data and validated_data["rule"] is not None:
-            rule, _ = Rule.objects.get_or_create(frequency=validated_data["rule"]["frequency"], params = validated_data["rule"]["params"])
+            rule, _ = Rule.objects.get_or_create(frequency=validated_data["rule"]["frequency"], params = validated_data["rule"].get("params", ""))
             validated_data.pop("rule")
 
         validated_data.pop("course_id")
