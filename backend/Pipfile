@@ -41,11 +41,11 @@ channels = "==3.0.5"
 channels-redis = "*"
 uvicorn = {extras = ["standard"],version = "*"}
 gunicorn = "*"
-django-schedules-ohq = "*"
 typing-extensions = "*"
 drf-excel = "*"
 pytz = "*"
 inflection = "*"
+django-scheduler = {git = "https://github.com/llazzaro/django-scheduler.git", ref = "8aa6f877f17e5b05f17d7c39e93d8e73625b0a65"}
 
 [requires]
 python_version = "3.11"
