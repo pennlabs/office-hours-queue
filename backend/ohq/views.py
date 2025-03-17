@@ -779,60 +779,55 @@ class OccurrenceViewSet(
     def get_queryset(self):
         return Occurrence.objects.filter(pk=self.kwargs["pk"])
 
-class BookingViewSet(
-    mixins.ListModelMixin,
+class BookingDetailViewSet(
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
     """
     retrieve:
-    Return a Booking.
-
-    list:
-    You should pass in an occurrence id, and all the bookings related to that occurrence will be returned to you.
-    Return a list of bookings.
+    Return a single booking.
 
     update:
-    Update all fields in a Booking.
+    Update all fields in the booking.
     You must specify all of the fields or use a patch request.
 
     partial_update:
-    Update certain fields in the Booking.
+    Update certain fields in the booking.
+    Only specify the fields that you want to change.
+
+    destroy:
+    Delete a booking.
     """
 
     serializer_class = BookingSerializer
     permission_classes = [BookingPermission | IsSuperuser]
-    
-    def list(self,request, *args, **kwargs):
-        occurrence_id = request.GET.get("occurrence")
-        if occurrence_id is None:
-            raise ValidationError((f"Occurrence id is required."))
-    
-        try:
-            occurrence = Occurrence.objects.filter(id=occurrence_id).first()
-        except Occurrence.DoesNotExist:
-            return JsonResponse({"detail": "Occurrence not found."}, status=404)
-
-        existing_bookings = Booking.objects.filter(occurrence=occurrence).order_by("start")
-
-        serializer = BookingSerializer(existing_bookings, many=True)
-        return JsonResponse(serializer.data, safe=False)
-    
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-
-        # Only the user field should be able to update
-        user = self.request.user
-        # Based on BookingPermission, you technically shouldn't be allowed to override another student if you're a student
-        self.user = user 
-
-        return JsonResponse(serializer.data, safe=False)
-        
 
     def get_queryset(self):
         return Booking.objects.filter(pk=self.kwargs["pk"])
+
+class BookingListCreateViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    viewsets.GenericViewSet,
+):
+    """
+    list:
+    Return a list of bookings for a specific occurrence.
+
+    create:
+    Create a booking for a specific occurrence.
+    """
+
+    serializer_class = BookingSerializer
+    permission_classes = [BookingPermission | IsSuperuser]
+
+    def get_queryset(self):
+        occurrence_id = self.kwargs.get("occurrence_pk")
+        return Booking.objects.filter(occurrence=occurrence_id)    
+    
+    def perform_create(self, serializer):
+        occurrence_id = self.kwargs.get("occurrence_pk")
+        occurrence = Occurrence.objects.get(pk=occurrence_id)
+        serializer.save(occurrence=occurrence, user=self.request.user)
