@@ -1,5 +1,5 @@
 FROM pennlabs/django-base:b269ea1613686b1ac6370154debbb741b012de1a-3.11
-ARG DEPENDENCY_MANAGER="pipenv"
+ARG DEPENDENCY_MANAGER="uv"
 
 LABEL maintainer="Penn Labs"
 
