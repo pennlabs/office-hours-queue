@@ -471,7 +471,7 @@ class Booking(models.Model):
             raise ValidationError('Start time must be before end time.')
         
         if self.start.minute % 5 != 0:
-            raise ValidationError('Start time must be on a 5-minute interval (e.g., :00, :05, :10, :15).')
+            raise ValidationError('Start time must be on a 5-minute interval (e.g., :00, :05, :10, :15, etc).')
         
         if self.start < self.occurrence.start or self.end > self.occurrence.end:
             raise ValidationError('Booking times must be within the occurrence\'s start and end times.')
