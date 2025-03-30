@@ -48,6 +48,7 @@ from ohq.models import (
     QueueStatistic,
     Semester,
     Tag,
+    Booking,
 )
 from ohq.pagination import QuestionSearchPagination
 from ohq.permissions import (
@@ -65,6 +66,7 @@ from ohq.permissions import (
     QueuePermission,
     QueueStatisticPermission,
     TagPermission,
+    BookingPermission,
 )
 from ohq.schemas import EventSchema, MassInviteSchema, OccurrenceSchema
 from ohq.serializers import (
@@ -83,6 +85,7 @@ from ohq.serializers import (
     SemesterSerializer,
     TagSerializer,
     UserPrivateSerializer,
+    BookingSerializer,
 )
 from ohq.sms import sendSMSVerification
 
@@ -743,7 +746,7 @@ class OccurrenceViewSet(
     You must specify all of the fields or use a patch request.
 
     partial_update:
-    Update certain fields in the Occurrece.
+    Update certain fields in the Occurrence.
     """
 
     serializer_class = OccurrenceSerializer
@@ -751,7 +754,7 @@ class OccurrenceViewSet(
     schema = OccurrenceSchema()
 
     def list(self, request, *args, **kwargs):
-        # ensure timezone consitency
+        # ensure timezone consistency
         course_ids = request.GET.getlist("course")
         filter_start = datetime.strptime(
             request.GET.get("filter_start"), "%Y-%m-%dT%H:%M:%SZ"
@@ -777,6 +780,60 @@ class OccurrenceViewSet(
 
     def get_queryset(self):
         return Occurrence.objects.filter(pk=self.kwargs["pk"])
+
+class BookingDetailViewSet(
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    """
+    retrieve:
+    Return a single booking.
+
+    update:
+    Update all fields in the booking.
+    You must specify all of the fields or use a patch request.
+
+    partial_update:
+    Update certain fields in the booking.
+    Only specify the fields that you want to change.
+
+    destroy:
+    Delete a booking.
+    """
+
+    serializer_class = BookingSerializer
+    permission_classes = [BookingPermission | IsSuperuser]
+
+    def get_queryset(self):
+        return Booking.objects.filter(pk=self.kwargs["pk"])
+
+class BookingListCreateViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    viewsets.GenericViewSet,
+):
+    """
+    list:
+    Return a list of bookings for a specific occurrence.
+
+    create:
+    Create a booking for a specific occurrence.
+    """
+
+    serializer_class = BookingSerializer
+    permission_classes = [BookingPermission | IsSuperuser]
+
+    def get_queryset(self):
+        occurrence_id = self.kwargs.get("occurrence_pk")
+        return Booking.objects.filter(occurrence=occurrence_id).order_by("start")    
+    
+    def perform_create(self, serializer):
+        occurrence_id = self.kwargs.get("occurrence_pk")
+        occurrence = Occurrence.objects.get(pk=occurrence_id)
+        serializer.save(occurrence=occurrence, user=self.request.user)
+        
 class HealthView(View):
     def get(self, request):
         """
