@@ -503,7 +503,7 @@ class Booking(models.Model):
     
 Event.add_to_class('location', models.CharField(max_length=255, blank=True))
 Occurrence.add_to_class('location', models.CharField(max_length=255, blank=True))
-Occurrence.add_to_class('interval', models.IntegerField(("interval"), blank=True, null=True))
+Occurrence.add_to_class('interval', models.IntegerField(blank=True, null=True))
 
 def new_occurrence_init(self, *args, **kwargs):
     super(Occurrence, self).__init__(*args, **kwargs)
