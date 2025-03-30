@@ -21,6 +21,7 @@ from ohq.views import (
     UserView,
     BookingDetailViewSet,
     BookingListCreateViewSet,
+    HealthView,
 )
 
 
@@ -51,6 +52,7 @@ realtime_router.register(QuestionViewSet)
 realtime_router.register(AnnouncementViewSet)
 
 additional_urls = [
+    path("health/", HealthView.as_view(), name="health"),
     path("accounts/me/", UserView.as_view(), name="me"),
     path("accounts/me/resend/", ResendNotificationView.as_view(), name="resend"),
     path("courses/<slug:course_pk>/mass-invite/", MassInviteView.as_view(), name="mass-invite"),

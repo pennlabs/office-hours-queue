@@ -17,7 +17,7 @@ jobs:
   #     black: true
 
   publish-backend:
-    uses: pennlabs/shared-actions/.github/workflows/docker-publish.yaml@v0.1
+    uses: pennlabs/shared-actions/.github/workflows/docker-publish.yaml@v0.1.9
     with:
       # Inputs
       imageName: "office-hours-queue-backend"
@@ -43,13 +43,22 @@ jobs:
 
   frontend-check:
     name: "Frontend Check"
-    uses: pennlabs/shared-actions/.github/workflows/react-check.yaml@v0.1.1
+    uses: pennlabs/shared-actions/.github/workflows/react.yaml@v0.1.9
     with:
       path: frontend
       nodeVersion: 18.0.0
+      skipReactPublish: true
+      imageName: 'office-hours-queue-frontend'
+      githubRef: ${{ github.ref }}
+      gitSha: ${{ github.sha }}
+      skipCodeCov: true
+
+    secrets: 
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
   publish-frontend:
-    uses: pennlabs/shared-actions/.github/workflows/docker-publish.yaml@v0.1
+    uses: pennlabs/shared-actions/.github/workflows/docker-publish.yaml@v0.1.9
     with:
       # Inputs
       imageName: "office-hours-queue-frontend"
@@ -73,7 +82,7 @@ jobs:
 
   deploy:
     name: "Deploy"
-    uses: pennlabs/shared-actions/.github/workflows/deployment.yaml@v0.1
+    uses: pennlabs/shared-actions/.github/workflows/deployment.yaml@v0.1.9
 
     with:
       githubRef: ${{ github.ref }}

@@ -1,2 +1,60 @@
+[project]
+name = ""
+version = "0.0.1"
+requires-python = "==3.11.4"
+dependencies = [
+    "dj-database-url==2.2.0",
+    "djangorestframework==3.15.2",
+    "psycopg2-binary==2.9.6",
+    "uvloop==0.17.0",
+    "sentry-sdk",
+    "django==5.0.3",
+    "django-cors-headers==4.4.0",
+    "pyyaml==6.0.2",
+    "uritemplate==4.1.1",
+    "uwsgi==2.0.27",
+    "django-labs-accounts==0.7.1",
+    "django-phonenumber-field[phonenumbers]==8.0.0",
+    "drf-nested-routers==0.94.1",
+    "django-email-tools==0.1.1",
+    "twilio==9.3.3",
+    "djangorestframework-camel-case==1.4.2",
+    "django-filter==24.3",
+    "celery==5.4.0",
+    "redis==5.1.1",
+    "django-auto-prefetching==0.2.12",
+    "django-rest-live==0.7.0",
+    "channels==3.0.5",
+    "channels-redis==4.2.0",
+    "uvicorn[standard]==0.31.0",
+    "gunicorn==23.0.0",
+    "django-schedules-ohq==0.10.1.4",
+    "typing-extensions==4.12.2",
+    "drf-excel==2.4.1",
+    "pytz==2024.2",
+    "inflection==0.5.1",
+]
+
 [tool.black]
 line-length = 100
+
+[dependency-groups]
+dev = [
+    "black==22.3.0",
+    "unittest-xml-reporting==3.2.0",
+    "flake8==7.1.1",
+    "flake8-absolute-import==1.0.0.2",
+    "flake8-isort==6.1.1",
+    "flake8-quotes==3.4.0",
+    "django-debug-toolbar==4.4.6",
+    "django-extensions==3.2.3",
+    "parameterized==0.9.0",
+    "tblib==3.0.0",
+]
+
+[tool.uv]
+package = false
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"

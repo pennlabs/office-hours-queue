@@ -172,12 +172,14 @@ const QueueFormFields = ({
         }
         setInput({ ...input });
     };
-
-    const handlePinInputChange = (e, { checked }) => {
-        input.pinEnabled = checked;
-        setInput({ ...input });
-    };
     /* PROPS UPDATE */
+    // Helper function to handle toggle changes
+    const handleToggleChange = (name: string) => {
+        setInput({
+            ...input,
+            [name]: !input[name],
+        });
+    };
 
     return (
         <>
@@ -246,7 +248,7 @@ const QueueFormFields = ({
                     id="pin-toggle"
                     toggle
                     disabled={loading}
-                    onChange={handlePinInputChange}
+                    onClick={() => handleToggleChange("pinEnabled")}
                 />
             </Form.Field>
 
@@ -261,14 +263,9 @@ const QueueFormFields = ({
                     name="rateLimitEnabled"
                     id="rate-limit-toggle"
                     toggle
-                    defaultChecked={input.rateLimitEnabled}
+                    checked={input.rateLimitEnabled}
                     label="Enable queue rate-limiting"
-                    onChange={() =>
-                        setInput({
-                            ...input,
-                            rateLimitEnabled: !input.rateLimitEnabled,
-                        })
-                    }
+                    onClick={() => handleToggleChange("rateLimitEnabled")}
                 />
 
                 {input.rateLimitEnabled && (
@@ -382,11 +379,7 @@ const QueueFormFields = ({
                         toggle
                         label="Enable a countdown for questions"
                         onChange={() =>
-                            setInput({
-                                ...input,
-                                questionTimerEnabled:
-                                    !input.questionTimerEnabled,
-                            })
+                            handleToggleChange("questionTimerEnabled")
                         }
                     />
                 </Form.Field>
