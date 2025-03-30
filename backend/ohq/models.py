@@ -451,7 +451,8 @@ class UserStatistic(models.Model):
     
 class Booking(models.Model):
     """
-    Booking within an occurrence
+    Booking within an occurrence.
+    Bookings can only be created at nice start times (i.e. :00, :15, :30, :45).
     """
 
     occurrence = models.ForeignKey(Occurrence, on_delete=models.CASCADE, related_name="bookings")
