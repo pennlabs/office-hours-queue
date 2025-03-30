@@ -452,7 +452,7 @@ class UserStatistic(models.Model):
 class Booking(models.Model):
     """
     Booking within an occurrence.
-    Bookings can only be created at nice start times (i.e. :00, :15, :30, :45).
+    Bookings can only be created with start times of 5-minute intervals.
     """
 
     occurrence = models.ForeignKey(Occurrence, on_delete=models.CASCADE, related_name="bookings")
@@ -470,8 +470,8 @@ class Booking(models.Model):
         if self.start >= self.end:
             raise ValidationError('Start time must be before end time.')
         
-        if self.start.minute % 15 != 0:
-            raise ValidationError('Start time must be on a 15-minute interval (e.g., :00, :15, :30, :45).')
+        if self.start.minute % 5 != 0:
+            raise ValidationError('Start time must be on a 5-minute interval (e.g., :00, :05, :10, :15).')
         
         if self.start < self.occurrence.start or self.end > self.occurrence.end:
             raise ValidationError('Booking times must be within the occurrence\'s start and end times.')
