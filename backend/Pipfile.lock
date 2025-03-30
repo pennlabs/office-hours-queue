@@ -567,10 +567,14 @@
             "markers": "python_version >= '3.7'",
             "version": "==0.7.0"
         },
-        "django-scheduler": {
-            "git": "https://github.com/llazzaro/django-scheduler.git",
+        "django-schedules-ohq": {
+            "hashes": [
+                "sha256:99e34adbc05da092254f3d3b93d4b100f239e988c55674da5c01bac957bfa0f5",
+                "sha256:a9c24cb43cef524e2f487837faa71e6695d6ae7ddffb60f9106a27550d19c40b"
+            ],
+            "index": "pypi",
             "markers": "python_version >= '3'",
-            "ref": "8aa6f877f17e5b05f17d7c39e93d8e73625b0a65"
+            "version": "==0.10.1.4"
         },
         "djangorestframework": {
             "hashes": [
