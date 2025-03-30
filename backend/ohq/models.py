@@ -1,11 +1,10 @@
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.dispatch import receiver
 from email_tools.emails import send_email
 from phonenumber_field.modelfields import PhoneNumberField
-from schedule.models import Event, Occurrence
+
 
 User = settings.AUTH_USER_MODEL
 
@@ -448,71 +447,3 @@ class UserStatistic(models.Model):
 
     def __str__(self):
         return f"{self.user}: {self.metric}"
-    
-class Booking(models.Model):
-    """
-    Booking within an occurrence.
-    Bookings can only be created with start times of 5-minute intervals.
-    """
-
-    occurrence = models.ForeignKey(Occurrence, on_delete=models.CASCADE, related_name="bookings")
-    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    start = models.DateTimeField("start", db_index=True)
-    end = models.DateTimeField("end", db_index=True)
-
-    class Meta:
-        verbose_name = ("booking")
-        verbose_name_plural = ("bookings")
-        ordering = ["start"]
-        index_together = (("start", "end"),)
-
-    def clean(self):
-        if self.start >= self.end:
-            raise ValidationError('Start time must be before end time.')
-        
-        if self.start.minute % 5 != 0:
-            raise ValidationError('Start time must be on a 5-minute interval (e.g., :00, :05, :10, :15, etc).')
-        
-        if self.start < self.occurrence.start or self.end > self.occurrence.end:
-            raise ValidationError('Booking times must be within the occurrence\'s start and end times.')
-
-        duration = self.end - self.start
-        duration_minutes = duration.total_seconds() / 60
-
-        if duration_minutes != self.occurrence.interval:
-            raise ValidationError(f'Booking duration must be {self.occurrence.interval} minutes.')
-        
-        overlapping_bookings = Booking.objects.filter(
-            occurrence=self.occurrence,
-            start__lt=self.end,
-            end__gt=self.start
-        ).exclude(id=self.id)
-        if overlapping_bookings.exists():
-            raise ValidationError('Booking times cannot overlap with existing bookings.')
-        
-        super().clean()
-
-    def save(self, *args, **kwargs):
-        self.clean()
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        start_str = self.start.strftime("%Y-%m-%d %H:%M:%S")
-        end_str = self.end.strftime("%Y-%m-%d %H:%M:%S")
-        return f"{start_str} to {end_str}"
-    
-Event.add_to_class('location', models.CharField(max_length=255, blank=True))
-Occurrence.add_to_class('location', models.CharField(max_length=255, blank=True))
-Occurrence.add_to_class('interval', models.IntegerField(("interval"), blank=True, null=True))
-
-def new_occurrence_init(self, *args, **kwargs):
-    super(Occurrence, self).__init__(*args, **kwargs)
-    event = kwargs.get("event", None)
-    if not self.title and event:
-        self.title = event.title
-    if not self.description and event:
-        self.description = event.description
-    if not self.location and event:
-        self.location = event.location
-
-Occurrence.__init__ = new_occurrence_init
