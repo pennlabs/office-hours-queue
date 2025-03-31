@@ -542,7 +542,7 @@ class EventSerializer(serializers.ModelSerializer):
                 else:
                     rule, _ = Rule.objects.get_or_create(
                         frequency=validated_data["rule"]["frequency"],
-                        params=validated_data["rule"]["params"],
+                        params=validated_data["rule"].get("params", ""),
                     )
                 validated_data.pop("rule")
 
