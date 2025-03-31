@@ -19,6 +19,8 @@ from ohq.views import (
     SemesterViewSet,
     TagViewSet,
     UserView,
+    BookingDetailViewSet,
+    BookingListCreateViewSet,
     HealthView,
 )
 
@@ -30,6 +32,10 @@ router.register("semesters", SemesterViewSet, basename="semester")
 router.register("courses", CourseViewSet, basename="course")
 router.register("events", EventViewSet, basename="event")
 router.register("occurrences", OccurrenceViewSet, basename="occurrence")
+router.register("bookings", BookingDetailViewSet, basename="booking")
+
+occurrence_router = routers.NestedSimpleRouter(router, "occurrences", lookup="occurrence")
+occurrence_router.register("bookings", BookingListCreateViewSet, basename="booking-create")
 
 course_router = routers.NestedSimpleRouter(router, "courses", lookup="course")
 course_router.register("queues", QueueViewSet, basename="queue")
@@ -65,4 +71,4 @@ additional_urls = [
     ),
 ]
 
-urlpatterns = router.urls + course_router.urls + queue_router.urls + additional_urls
+urlpatterns = router.urls + occurrence_router.urls + course_router.urls + queue_router.urls + additional_urls
