@@ -10,6 +10,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ("ohq", "0021_queue_question_timer_enabled_and_more"),
         ("schedule", "0031_occurrence_location"),
+        ("schedule", "0037_occurrence_interval"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
