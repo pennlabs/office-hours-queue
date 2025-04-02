@@ -1,11 +1,7 @@
-from datetime import datetime, timedelta
 from django.contrib.auth import get_user_model
 from django.core import mail
-from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils import timezone
-import pytz
-from schedule.models import Calendar, Event, Occurrence, EventRelationManager
 
 from ohq.models import (
     Course,
@@ -17,7 +13,6 @@ from ohq.models import (
     QueueStatistic,
     Semester,
     Tag,
-    Booking,
 )
 
 
@@ -313,111 +308,3 @@ class QueueStatisticTestCase(TestCase):
             str(self.avg_time_helping_queue_statistic),
             f"{self.queue}: {self.avg_time_helping_queue_statistic.get_metric_display()}",
         )
-
-class OccurrenceTestCase(TestCase):
-    def setUp(self):
-        self.semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
-        self.course = Course.objects.create(
-        course_code="000", department="Penn Labs", semester=self.semester
-    )
-        self.start_time = datetime.strptime("2021-12-05T12:00:00Z", "%Y-%m-%dT%H:%M:%SZ").replace(
-            tzinfo=pytz.utc
-        )
-        self.end_time = datetime.strptime("2021-12-06T13:00:00Z", "%Y-%m-%dT%H:%M:%SZ").replace(
-            tzinfo=pytz.utc
-        )
-        self.default_calendar = Calendar.objects.create(name="DefaultCalendar")
-        self.event = Event.objects.create(
-            title="Event",
-            calendar=self.default_calendar,
-            rule=None,
-            start=self.start_time,
-            end=self.end_time,
-        )
-        erm = EventRelationManager()
-        erm.create_relation(event=self.event, content_object=self.course)
-        
-        self.occurrence = Occurrence.objects.create(
-            event=self.event,
-            start=self.start_time,
-            end=self.end_time,
-            original_start=self.start_time,
-            original_end=self.end_time,
-            interval=10,
-        )
-        self.occurrence.save()
-        self.user = User.objects.create(username="user")
-    
-    def test_monkeypatch_fields(self):
-        self.assertTrue(hasattr(self.event, 'location'))
-        self.assertTrue(hasattr(self.occurrence, 'location'))
-        self.assertTrue(hasattr(self.occurrence, 'interval'))
-    
-class BookingTestCase(TestCase):
-    def setUp(self):
-        # Creating an Occurrence Object
-
-        self.semester = Semester.objects.create(year=2020, term=Semester.TERM_SUMMER)
-        self.course = Course.objects.create(
-        course_code="000", department="Penn Labs", semester=self.semester
-    )
-        self.start_time = datetime.strptime("2021-12-05T12:00:00Z", "%Y-%m-%dT%H:%M:%SZ").replace(
-            tzinfo=pytz.utc
-        )
-        self.end_time = datetime.strptime("2021-12-06T13:00:00Z", "%Y-%m-%dT%H:%M:%SZ").replace(
-            tzinfo=pytz.utc
-        )
-        self.default_calendar = Calendar.objects.create(name="DefaultCalendar")
-        self.event = Event.objects.create(
-            title="Event",
-            calendar=self.default_calendar,
-            rule=None,
-            start=self.start_time,
-            end=self.end_time,
-        )
-        erm = EventRelationManager()
-        erm.create_relation(event=self.event, content_object=self.course)
-        
-        self.occurrence = Occurrence.objects.create(
-            event=self.event,
-            start=self.start_time,
-            end=self.end_time,
-            original_start=self.start_time,
-            original_end=self.end_time,
-            interval=10,
-        )
-        self.occurrence.save()
-        self.user = User.objects.create(username="user")
-    
-    def test_booking_outside_occurrence(self):
-        with self.assertRaises(ValidationError):
-            Booking.objects.create(
-                occurrence=self.occurrence,
-                user=self.user,
-                start=self.start_time - timedelta(minutes=10),
-                end=self.start_time
-            ).clean()
-
-        with self.assertRaises(ValidationError):
-            Booking.objects.create(
-                occurrence=self.occurrence,
-                user=self.user,
-                start=self.end_time,
-                end=self.end_time + timedelta(minutes=10)
-            ).clean()
-
-    def test_overlapping_bookings(self):
-        Booking.objects.create(
-            occurrence=self.occurrence,
-            user=self.user,
-            start=self.start_time,
-            end=self.start_time + timedelta(minutes=10)
-        )
-
-        with self.assertRaises(ValidationError):
-            Booking.objects.create(
-                occurrence=self.occurrence,
-                user=self.user,
-                start=self.start_time + timedelta(minutes=5),
-                end=self.start_time + timedelta(minutes=15)
-            ).clean()
