@@ -13,7 +13,6 @@ from ohq.models import (
     Semester,
     Tag,
     UserStatistic,
-    Booking,
 )
 
 
@@ -29,4 +28,3 @@ admin.site.register(QueueStatistic)
 admin.site.register(Announcement)
 admin.site.register(Tag)
 admin.site.register(UserStatistic)
-admin.site.register(Booking)

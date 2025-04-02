@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from unittest.mock import patch
 
 import pytz
@@ -7,7 +7,7 @@ from django.test import TestCase
 from django.urls import reverse
 from parameterized import parameterized
 from rest_framework.test import APIClient
-from schedule.models import Calendar, Event, Occurrence, EventRelationManager
+from schedule.models import Calendar, Event, EventRelationManager
 
 from ohq.models import (
     Announcement,
@@ -18,7 +18,6 @@ from ohq.models import (
     Queue,
     Semester,
     Tag,
-    Booking,
 )
 
 
@@ -1232,10 +1231,10 @@ class OccurrenceTestCase(TestCase):
     def setUp(self):
         setUp(self)
 
-        self.start_time = datetime.strptime("2021-12-05T13:00:00Z", "%Y-%m-%dT%H:%M:%SZ").replace(
+        self.start_time = datetime.strptime("2021-12-05T12:41:37Z", "%Y-%m-%dT%H:%M:%SZ").replace(
             tzinfo=pytz.utc
         )
-        self.end_time = datetime.strptime("2021-12-06T13:00:00Z", "%Y-%m-%dT%H:%M:%SZ").replace(
+        self.end_time = datetime.strptime("2021-12-06T12:41:37Z", "%Y-%m-%dT%H:%M:%SZ").replace(
             tzinfo=pytz.utc
         )
         self.title = "TA Session"
@@ -1322,101 +1321,4 @@ class OccurrenceTestCase(TestCase):
             "patch",
             reverse("ohq:occurrence-detail", args=[self.occurrence.id]),
             {"title": self.new_title, "courseId": self.course.id},
-        )
-
-class BookingTestCase(TestCase):
-    def setUp(self):
-        setUp(self)
-
-        self.start_time = datetime.strptime("2021-12-05T13:00:00Z", "%Y-%m-%dT%H:%M:%SZ").replace(
-            tzinfo=pytz.utc
-        )
-        self.end_time = datetime.strptime("2021-12-06T13:00:00Z", "%Y-%m-%dT%H:%M:%SZ").replace(
-            tzinfo=pytz.utc
-        )
-        self.default_calendar = Calendar.objects.create(name="DefaultCalendar")
-        self.event = Event.objects.create(
-            title="Event",
-            calendar=self.default_calendar,
-            rule=None,
-            start=self.start_time,
-            end=self.end_time,
-        )
-        erm = EventRelationManager()
-        erm.create_relation(event=self.event, content_object=self.course)
-        
-        self.occurrence = Occurrence.objects.create(
-            event=self.event,
-            start=self.start_time,
-            end=self.end_time,
-            original_start=self.start_time,
-            original_end=self.end_time,
-            interval=10,
-        )
-        self.occurrence.save()
-
-        self.booking = Booking.objects.create(
-            occurrence=self.occurrence,
-            user=self.student,
-            start=self.start_time,
-            end=self.start_time + timedelta(minutes=10),
-        )
-
-        # Expected results
-        self.expected = {
-            "list": {
-                "professor": 200,
-                "head_ta": 200,
-                "ta": 200,
-                "student": 200,
-                "non_member": 403,
-                "anonymous": 403,
-            },
-            "retrieve": {
-                "professor": 200,
-                "head_ta": 200,
-                "ta": 200,
-                "student": 200,
-                "non_member": 403,
-                "anonymous": 403,
-            },
-            "modify": {
-                "professor": 200,
-                "head_ta": 200,
-                "ta": 200,
-                "student": 200,
-                "non_member": 403,
-                "anonymous": 403,
-            },
-        }
-
-    @parameterized.expand(users, name_func=get_test_name)
-    def test_list(self, user):
-        test(
-            self,
-            user,
-            "list",
-            "get",
-            reverse("ohq:booking-create-list", args=[self.occurrence.id]),
-        )
-
-    @parameterized.expand(users, name_func=get_test_name)
-    def test_retrieve(self, user):
-        test(
-            self,
-            user,
-            "retrieve",
-            "get",
-            reverse("ohq:booking-detail", args=[self.booking.id]),
-        )
-
-    @parameterized.expand(users, name_func=get_test_name)
-    def test_modify(self, user):
-        test(
-            self,
-            user,
-            "modify",
-            "patch",
-            reverse("ohq:booking-detail", args=[self.booking.id]),
-            {"start": self.booking.start + timedelta(minutes=15), "end": self.booking.end + timedelta(minutes=15)},
         )
