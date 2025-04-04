@@ -8,7 +8,8 @@ COPY --from=ghcr.io/astral-sh/uv@sha256:2381d6aa60c326b71fd40023f921a0a3b8f91b14
 # Copy project dependencies
 COPY pyproject.toml uv.lock /app/
 
-Run uv sync --frozen --no-dev --no-install-project --python $(which python); \
+# Install dependencies
+RUN uv sync --frozen --no-dev --no-install-project --python $(which python); \
     ln -s /app/.venv/bin/uwsgi /usr/local/bin/uwsgi; \
     ln -s /app/.venv/bin/gunicorn /usr/local/bin/gunicorn
 
