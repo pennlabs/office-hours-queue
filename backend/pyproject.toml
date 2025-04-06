@@ -58,3 +58,6 @@ package = true
 [[tool.uv.index]]
 name = "pypi"
 url = "https://pypi.org/simple"
+
+[tool.setuptools]
+packages = ["officehoursqueue", "ohq"]
