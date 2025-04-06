@@ -53,7 +53,7 @@ dev = [
 ]
 
 [tool.uv]
-package = false
+package = true
 
 [[tool.uv.index]]
 name = "pypi"
