@@ -14,7 +14,12 @@ DEBUG = False
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Allow production host headers
-ALLOWED_HOSTS = DOMAINS
+ALLOWED_HOSTS = DOMAINS + [
+    '*.modal.run',
+    '*.modal.live',
+    'localhost',
+    '127.0.0.1'
+]
 
 # Make sure SECRET_KEY is set to a secret in production
 SECRET_KEY = os.environ.get("SECRET_KEY", None)
@@ -40,3 +45,18 @@ CHANNEL_LAYERS = {
         "CONFIG": {"hosts": [REDIS_URL]},
     },
 }
+
+# CORS settings
+CORS_ALLOWED_ORIGINS = [
+    'https://*.modal.run',
+    'https://*.modal.live',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000'
+] + [f'https://{domain}' for domain in DOMAINS]
+
+# CSRF settings
+CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
+
+# Proxy settings
+USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_PORT = True 
