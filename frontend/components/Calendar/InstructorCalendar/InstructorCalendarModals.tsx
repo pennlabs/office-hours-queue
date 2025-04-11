@@ -1,18 +1,14 @@
 import { Button, ButtonProps, Form, Modal } from "semantic-ui-react";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
-import {
-    DatePicker,
-    LocalizationProvider,
-    TimePicker,
-} from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import moment from "moment";
 import {
     createEvent,
     dateToEventISO,
     deleteEvent,
     updateEvent,
+    updateOccurrence,
+    getEventOccurrences,
 } from "../../../hooks/data-fetching/calendar";
 import {
     ApiEvent,
@@ -21,49 +17,12 @@ import {
     Occurrence,
 } from "../../../types";
 import { daysToParams, paramsToDays } from "../calendarUtils";
+import BookableVisualizer from "./BookableVisualizer";
+import { EventFormFields } from "./EventFormFields";
+import { EditEventConfirmationModal } from "./EditEventConfirmationModal";
 
 const utcDayOffset = (date: Date) =>
     date.getUTCDay() < date.getDay() ? 1 : date.getUTCDay() - date.getDay();
-
-interface EditOccurrenceEventProps {
-    editOccurrence: () => void;
-    editEvent: () => void;
-    onClose: () => void;
-    title: string;
-    occurrenceText?: string;
-    eventText?: string;
-    occurrenceButtonProps?: ButtonProps;
-    eventButtonProps?: ButtonProps;
-}
-
-const EditEventConfirmationModal = (props: EditOccurrenceEventProps) => {
-    const {
-        editOccurrence,
-        editEvent,
-        onClose,
-        title,
-        occurrenceText,
-        eventText,
-        occurrenceButtonProps,
-        eventButtonProps,
-    } = props;
-    return (
-        <Modal size="tiny" open={true} as={Form} onClose={onClose}>
-            <Modal.Header>{title}</Modal.Header>
-            <Modal.Actions>
-                <Button onClick={onClose}>Cancel</Button>
-                {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-                <Button onClick={editOccurrence} {...occurrenceButtonProps}>
-                    {occurrenceText}
-                </Button>
-                {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-                <Button onClick={editEvent} {...eventButtonProps}>
-                    {eventText}
-                </Button>
-            </Modal.Actions>
-        </Modal>
-    );
-};
 
 interface EditEventProps {
     setModalState: Dispatch<SetStateAction<Occurrence | null>>;
@@ -81,6 +40,10 @@ export const EditEventModal = (props: EditEventProps) => {
     const [location, setLocation] = useState(occurrence.location);
     const [isRecurring, setIsRecurring] = useState(
         occurrence.event.rule !== null
+    );
+    const [isBookable, setIsBookable] = useState(occurrence.interval > 0);
+    const [interval, setInterval] = useState(
+        occurrence.interval > 0 ? occurrence.interval / 15 : 1
     );
     const [recurringDays, setRecurringDays] = useState(
         occurrence.event.rule === null
@@ -112,58 +75,53 @@ export const EditEventModal = (props: EditEventProps) => {
                       utcDayOffset(occurrence.start)
                   )
         );
+        setIsBookable(occurrence.interval > 0);
+        setInterval(occurrence.interval > 0 ? occurrence.interval / 15 : 1);
         setErpDate(occurrence.event.end_recurring_period ?? occurrence.end);
     }, [occurrence]);
 
-    const handleEditOccurrence = () => {
-        const editedOccurrence: Partial<ApiOccurrence> = {
+    const handleEditOccurrence = async () => {
+        if (!occurrence) return;
+
+        const editedOccurrence = {
             id: occurrence.id,
-            title,
-            description,
-            location,
-            start: dateToEventISO(startDate),
-            end: dateToEventISO(endDate),
-            cancelled: false,
+            cancelled: true,
         };
         mutate(editedOccurrence.id, editedOccurrence);
         setModalState(null);
     };
 
     const handleEditEvent = async () => {
-        const start = startDate;
-        const end = endDate;
-        const timeDeltaStart = start.getTime() - occurrence.start.getTime();
-        const timeDeltaEnd = end.getTime() - occurrence.end.getTime();
-        const { event } = occurrence;
-        const editedEvent: ApiEvent = {
-            id: event.id,
+        if (!occurrence.event) return;
+
+        const editedEvent = {
+            id: occurrence.event.id,
             title,
-            start: dateToEventISO(
-                new Date(event.start.getTime() + timeDeltaStart)
-            ),
-            end: dateToEventISO(new Date(event.end.getTime() + timeDeltaEnd)),
             description,
             location,
-            course_id: event.course_id,
+            start: startDate.toISOString(),
+            end: endDate.toISOString(),
             rule: isRecurring
                 ? {
                       frequency: "DAILY",
                       params: daysToParams(
                           recurringDays,
-                          utcDayOffset(
-                              new Date(event.start.getTime() + timeDeltaStart)
-                          )
+                          utcDayOffset(startDate)
                       ),
                   }
-                : null,
+                : undefined,
             end_recurring_period: isRecurring
-                ? dateToEventISO(moment(erpDate).endOf("day").toDate())
+                ? erpDate.toISOString() || null
                 : null,
+            course_id: occurrence.event.course_id,
         };
-        await updateEvent(editedEvent);
-        // Revalidate everything, since new event could have created many new occurrences.
-        mutate(undefined, undefined, { sendRequest: false });
-        setModalState(null);
+
+        try {
+            await updateEvent(editedEvent);
+            setModalState(null);
+        } catch (error) {
+            console.error("Error updating event:", error);
+        }
     };
 
     const handleCancelOccurrence = () => {
@@ -206,28 +164,59 @@ export const EditEventModal = (props: EditEventProps) => {
     };
 
     return (
-        <Modal size="small" open={true} as={Form} onClose={handleClose}>
+        <Modal size="fullscreen" open={true} as={Form} onClose={handleClose}>
             {confirmModal}
             <Modal.Header>Edit Event</Modal.Header>
             <Modal.Content>
-                <EventFormFields
-                    title={title}
-                    setTitle={setTitle}
-                    description={description}
-                    setDescription={setDescription}
-                    startDate={startDate}
-                    setStartDate={setStartDate}
-                    endDate={endDate}
-                    location={location}
-                    setLocation={setLocation}
-                    setEndDate={setEndDate}
-                    isRecurring={isRecurring}
-                    setIsRecurring={setIsRecurring}
-                    recurringDays={recurringDays}
-                    setRecurringDays={setRecurringDays}
-                    erpDate={erpDate}
-                    setErpDate={setErpDate}
-                />
+                <div style={{ display: "flex" }}>
+                    <div
+                        style={{
+                            width: "50%",
+                            borderRight: "1px solid #ddd",
+                            paddingRight: "20px",
+                            maxHeight: "70vh",
+                            overflowY: "auto",
+                        }}
+                    >
+                        <EventFormFields
+                            title={title}
+                            setTitle={setTitle}
+                            description={description}
+                            setDescription={setDescription}
+                            startDate={startDate}
+                            setStartDate={setStartDate}
+                            endDate={endDate}
+                            setEndDate={setEndDate}
+                            location={location}
+                            setLocation={setLocation}
+                            isRecurring={isRecurring}
+                            setIsRecurring={setIsRecurring}
+                            recurringDays={recurringDays}
+                            setRecurringDays={setRecurringDays}
+                            erpDate={erpDate}
+                            setErpDate={setErpDate}
+                            isBookable={isBookable}
+                            setIsBookable={setIsBookable}
+                            interval={interval}
+                            setInterval={setInterval}
+                        />
+                    </div>
+                    <div
+                        style={{
+                            width: "50%",
+                            paddingRight: "20px",
+                            minHeight: "300px",
+                        }}
+                    >
+                        <BookableVisualizer
+                            startDate={startDate}
+                            endDate={endDate}
+                            interval={interval}
+                            isBookable={isBookable}
+                            title={title}
+                        />
+                    </div>
+                </div>
             </Modal.Content>
             <Modal.Actions>
                 <Button onClick={handleClose}>Cancel</Button>
@@ -258,20 +247,26 @@ export const EditEventModal = (props: EditEventProps) => {
                 </Button>
                 <Button
                     onClick={() =>
-                        isRecurring && occurrence.event.rule
-                            ? setConfirmModal(
-                                  <EditEventConfirmationModal
-                                      editOccurrence={handleEditOccurrence}
-                                      editEvent={handleEditEvent}
-                                      onClose={() => setConfirmModal(undefined)}
-                                      title="Edit Recurring Event"
-                                      occurrenceText="Edit This Event"
-                                      eventText="Edit All Events"
-                                      occurrenceButtonProps={{ positive: true }}
-                                      eventButtonProps={{ positive: true }}
-                                  />
-                              )
-                            : handleEditEvent()
+                        setConfirmModal(
+                            <EditEventConfirmationModal
+                                editOccurrence={handleEditOccurrence}
+                                editEvent={handleEditEvent}
+                                onClose={() => setConfirmModal(undefined)}
+                                title={
+                                    isRecurring && occurrence.event.rule
+                                        ? "Edit Recurring Event"
+                                        : "Edit Event"
+                                }
+                                occurrenceText="Edit This Event"
+                                eventText={
+                                    isRecurring && occurrence.event.rule
+                                        ? "Edit All Events"
+                                        : "Edit This Event"
+                                }
+                                occurrenceButtonProps={{ positive: true }}
+                                eventButtonProps={{ positive: true }}
+                            />
+                        )
                     }
                     positive
                     disabled={
@@ -308,6 +303,8 @@ export const NewEventModal = (props: NewEventProps) => {
     const [location, setLocation] = useState("");
     const [isRecurring, setIsRecurring] = useState(false);
     const [recurringDays, setRecurringDays] = useState([start.getDay()]);
+    const [isBookable, setIsBookable] = useState(false);
+    const [interval, setInterval] = useState(1);
     const [erpDate, setErpDate] = useState(end);
     const [lastSubmittedErp, setLastSubmittedErp] = useState<Date | undefined>(
         undefined
@@ -320,6 +317,8 @@ export const NewEventModal = (props: NewEventProps) => {
         setEndDate(end);
         setIsRecurring(false);
         setRecurringDays([start.getDay()]);
+        setIsBookable(false);
+        setInterval(1);
         if (lastSubmittedErp && lastSubmittedErp < end) {
             setLastSubmittedErp(undefined);
             setErpDate(end);
@@ -329,6 +328,7 @@ export const NewEventModal = (props: NewEventProps) => {
     }, [show]);
 
     const handleCreateEvent = async () => {
+        console.log("Starting handleCreateEvent");
         const newEvent: ApiPartialEvent = {
             title,
             start: dateToEventISO(startDate),
@@ -348,8 +348,11 @@ export const NewEventModal = (props: NewEventProps) => {
             end_recurring_period: isRecurring
                 ? dateToEventISO(moment(erpDate).endOf("day").toDate())
                 : null,
+            interval: isBookable ? interval * 15 : undefined,
         };
+        console.log("Calling createEvent with payload:", newEvent);
         await createEvent(newEvent);
+        console.log("createEvent completed successfully");
         mutate(undefined, undefined, { sendRequest: false });
         if (isRecurring) setLastSubmittedErp(erpDate);
         setModalState(false);
@@ -357,32 +360,69 @@ export const NewEventModal = (props: NewEventProps) => {
 
     return (
         <Modal
-            size="small"
+            size="fullscreen"
             open={show}
             as={Form}
             onClose={() => setModalState(false)}
             onSubmit={handleCreateEvent}
         >
             <Modal.Header>New Event</Modal.Header>
-            <Modal.Content>
-                <EventFormFields
-                    title={title}
-                    setTitle={setTitle}
-                    description={description}
-                    setDescription={setDescription}
-                    startDate={startDate}
-                    setStartDate={setStartDate}
-                    endDate={endDate}
-                    setEndDate={setEndDate}
-                    location={location}
-                    setLocation={setLocation}
-                    isRecurring={isRecurring}
-                    setIsRecurring={setIsRecurring}
-                    recurringDays={recurringDays}
-                    setRecurringDays={setRecurringDays}
-                    erpDate={erpDate}
-                    setErpDate={setErpDate}
-                />
+            <Modal.Content style={{ height: "75vh" }}>
+                <div
+                    style={{
+                        display: "flex",
+                        height: "100%",
+                    }}
+                >
+                    <div
+                        style={{
+                            width: "50%",
+                            borderRight: "1px solid #ddd",
+                            paddingRight: "20px",
+                            height: "100%",
+                            overflowY: "auto",
+                        }}
+                    >
+                        <EventFormFields
+                            title={title}
+                            setTitle={setTitle}
+                            description={description}
+                            setDescription={setDescription}
+                            startDate={startDate}
+                            setStartDate={setStartDate}
+                            endDate={endDate}
+                            setEndDate={setEndDate}
+                            location={location}
+                            setLocation={setLocation}
+                            isRecurring={isRecurring}
+                            setIsRecurring={setIsRecurring}
+                            recurringDays={recurringDays}
+                            setRecurringDays={setRecurringDays}
+                            erpDate={erpDate}
+                            setErpDate={setErpDate}
+                            isBookable={isBookable}
+                            setIsBookable={setIsBookable}
+                            interval={interval}
+                            setInterval={setInterval}
+                        />
+                    </div>
+                    <div
+                        style={{
+                            width: "50%",
+                            paddingRight: "20px",
+                            minHeight: "300px",
+                            overflowY: "auto",
+                        }}
+                    >
+                        <BookableVisualizer
+                            startDate={startDate}
+                            endDate={endDate}
+                            interval={interval}
+                            isBookable={isBookable}
+                            title={title}
+                        />
+                    </div>
+                </div>
             </Modal.Content>
             <Modal.Actions>
                 <Button onClick={() => setModalState(false)}>Cancel</Button>
@@ -401,163 +441,5 @@ export const NewEventModal = (props: NewEventProps) => {
                 </Button>
             </Modal.Actions>
         </Modal>
-    );
-};
-
-interface EventFormFieldsProps {
-    title: string;
-    setTitle: (title: string) => void;
-    description: string;
-    setDescription: (description: string) => void;
-    startDate: Date;
-    setStartDate: (start: Date) => void;
-    endDate: Date;
-    setEndDate: (start: Date) => void;
-    location: string;
-    setLocation: (location: string) => void;
-    isRecurring: boolean;
-    setIsRecurring: (isRecurring: boolean | ((old: boolean) => void)) => void;
-    recurringDays: number[];
-    setRecurringDays: (days: number[] | ((old: number[]) => void)) => void;
-    erpDate: Date;
-    setErpDate: (erp: Date) => void;
-}
-
-const EventFormFields = (props: EventFormFieldsProps) => {
-    const {
-        title,
-        setTitle,
-        description,
-        setDescription,
-        startDate,
-        setStartDate,
-        endDate,
-        setEndDate,
-        location,
-        setLocation,
-        isRecurring,
-        setIsRecurring,
-        recurringDays,
-        setRecurringDays,
-        erpDate,
-        setErpDate,
-    } = props;
-
-    const toggleDay = (day: number, days: number[]) =>
-        days.includes(day)
-            ? days
-                  .slice(0, days.indexOf(day))
-                  .concat(days.slice(days.indexOf(day) + 1, days.length))
-            : [...days, day];
-
-    const stripTime = (day: Date) => new Date(day.toDateString());
-
-    const changeStartDate = (day: Date | null) => {
-        if (day === null) return;
-        if (stripTime(day).getTime() !== stripTime(startDate).getTime())
-            setRecurringDays([day.getDay()]);
-        const timeDelta = day.getTime() - startDate.getTime();
-        setStartDate(day);
-        if (endDate > startDate)
-            setEndDate(new Date(endDate.getTime() + timeDelta));
-    };
-
-    const changeEndDate = (day: Date | null) => {
-        if (day === null) return;
-        setEndDate(day);
-    };
-
-    return (
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <Form.Input
-                label="Title"
-                value={title}
-                required
-                onChange={(_, { value }) => setTitle(value as string)}
-            />
-            <Form.TextArea
-                label="Description"
-                style={{ height: "8rem" }}
-                value={description}
-                onChange={(_, { value }) => setDescription(value as string)}
-            />
-            <Form.Field required error={endDate <= startDate}>
-                <label htmlFor="start-date-picker">Start</label>
-                <div id="start-date-picker">
-                    <DatePicker value={startDate} onChange={changeStartDate} />
-                    <TimePicker
-                        value={startDate}
-                        onChange={changeStartDate}
-                        minutesStep={5}
-                    />
-                </div>
-            </Form.Field>
-            <Form.Field required error={endDate <= startDate}>
-                <label htmlFor="end-date-picker">End</label>
-                <div id="end-date-picker">
-                    <DatePicker value={endDate} onChange={changeEndDate} />
-                    <TimePicker
-                        value={endDate}
-                        onChange={changeEndDate}
-                        minutesStep={5}
-                    />
-                </div>
-            </Form.Field>
-            <Form.Input
-                label="Location"
-                value={location}
-                onChange={(_, { value }) => setLocation(value as string)}
-            />
-            <Form.Field style={{ display: "flex" }}>
-                <label
-                    htmlFor="recurring-checkbox"
-                    style={{ marginRight: "10px" }}
-                >
-                    Recurring Event
-                </label>
-                <Form.Checkbox
-                    id="recurring-checkbox"
-                    checked={isRecurring}
-                    onChange={() => setIsRecurring((old) => !old)}
-                />
-            </Form.Field>
-            {isRecurring && (
-                <>
-                    <Form.Field error={recurringDays.length === 0}>
-                        {["S", "M", "T", "W", "T", "F", "S"].map(
-                            (dayChar, dayNum) => (
-                                <Button
-                                    key={dayNum} // eslint-disable-line react/no-array-index-key
-                                    circular
-                                    active={recurringDays.includes(dayNum)}
-                                    color={
-                                        recurringDays.includes(dayNum)
-                                            ? "blue"
-                                            : undefined
-                                    }
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        setRecurringDays((old) =>
-                                            toggleDay(dayNum, old)
-                                        );
-                                    }}
-                                >
-                                    {dayChar}
-                                </Button>
-                            )
-                        )}
-                    </Form.Field>
-                    <Form.Field
-                        required
-                        error={moment(erpDate).endOf("day").toDate() < endDate}
-                    >
-                        <label htmlFor="recurring-period-picker">Ends On</label>
-                        <div id="recurring-period-picker">
-                            <DatePicker value={erpDate} onChange={setErpDate} />
-                        </div>
-                    </Form.Field>
-                </>
-            )}
-        </LocalizationProvider>
     );
 };
