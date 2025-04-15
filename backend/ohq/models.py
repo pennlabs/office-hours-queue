@@ -503,6 +503,6 @@ class Booking(models.Model):
         end_str = self.end.strftime("%Y-%m-%d %H:%M:%S")
         return f"{start_str} to {end_str}"
     
-OldEvent.add_to_class('location', models.CharField(max_length=255, blank=True))
-OldOccurrence.add_to_class('location', models.CharField(max_length=255, blank=True))
+# OldEvent.add_to_class('location', models.CharField(max_length=255, blank=True))
+# OldOccurrence.add_to_class('location', models.CharField(max_length=255, blank=True))
 OldOccurrence.add_to_class('interval', models.IntegerField(blank=True, null=True))

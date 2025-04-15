@@ -1,9 +1,11 @@
 import { useResourceList } from "@pennlabs/rest-hooks";
 import { useEffect, useState } from "react";
 import {
+    ApiBooking,
     ApiEvent,
     ApiOccurrence,
     ApiPartialEvent,
+    Booking,
     Event,
     Occurrence,
 } from "../../types";
@@ -45,7 +47,12 @@ export const apiOccurrenceToOccurrence = (
         ...apiOccurrence,
         start: new Date(apiOccurrence.start),
         end: new Date(apiOccurrence.end),
-        event: apiEventToEvent(apiOccurrence.event),
+        event:
+            typeof apiOccurrence.event === "object"
+                ? apiEventToEvent(apiOccurrence.event)
+                : apiEventToEvent({
+                      id: apiOccurrence.event,
+                  } as unknown as ApiEvent),
     };
 };
 
@@ -101,6 +108,33 @@ export const useOccurrences = (courseIds: number[], start: Date, end: Date) => {
         setFilter,
     };
 };
+
+export const useOccurrenceUpdate = (occurrenceId: number) => {
+    const { mutate } = useResourceList<ApiOccurrence>(
+        `/api/occurrences/${occurrenceId}/`,
+        (id) => `/api/occurrences/${id}/`,
+        {
+            revalidateOnFocus: false,
+        }
+    );
+    return mutate;
+};
+
+export async function updateOccurrence(
+    occurrenceId: number,
+    payload: Partial<ApiOccurrence>
+): Promise<ApiOccurrence> {
+    const res = await doApiRequest(`/api/occurrences/${occurrenceId}/`, {
+        method: "PATCH",
+        body: payload,
+    });
+    if (!res.ok) {
+        const errorObj = Error(JSON.stringify(await res.json()));
+        logException(errorObj, JSON.stringify(payload));
+        throw errorObj;
+    }
+    return res.json();
+}
 
 export async function createEvent(payload: ApiPartialEvent): Promise<ApiEvent> {
     const res = await doApiRequest("/api/events/", {
