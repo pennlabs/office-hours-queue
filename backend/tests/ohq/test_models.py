@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils import timezone
 import pytz
-from schedule.models import Calendar, Event, Occurrence, EventRelationManager
+from ohq_schedule.models import Calendar, Event, Occurrence, EventRelationManager
 
 from ohq.models import (
     Course,

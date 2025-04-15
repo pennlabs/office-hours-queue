@@ -32,7 +32,7 @@ from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 from rest_live.mixins import RealtimeMixin
-from schedule.models import Event, EventRelationManager, Occurrence
+from ohq_schedule.models import Event, EventRelationManager, Occurrence
 from http import HTTPStatus
 
 from ohq.filters import CourseStatisticFilter, QuestionSearchFilter, QueueStatisticFilter

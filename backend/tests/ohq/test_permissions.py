@@ -7,7 +7,7 @@ from django.test import TestCase
 from django.urls import reverse
 from parameterized import parameterized
 from rest_framework.test import APIClient
-from schedule.models import Calendar, Event, Occurrence, EventRelationManager
+from ohq_schedule.models import Calendar, Event, Occurrence, EventRelationManager
 
 from ohq.models import (
     Announcement,

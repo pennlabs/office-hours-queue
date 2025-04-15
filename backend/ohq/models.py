@@ -5,7 +5,9 @@ from django.db import models
 from django.dispatch import receiver
 from email_tools.emails import send_email
 from phonenumber_field.modelfields import PhoneNumberField
-from schedule.models import Event, Occurrence
+from ohq_schedule.models import Event, Occurrence
+from schedule.models import Event as OldEvent
+from schedule.models import Occurrence as OldOccurrence
 
 User = settings.AUTH_USER_MODEL
 
@@ -501,18 +503,6 @@ class Booking(models.Model):
         end_str = self.end.strftime("%Y-%m-%d %H:%M:%S")
         return f"{start_str} to {end_str}"
     
-Event.add_to_class('location', models.CharField(max_length=255, blank=True))
-Occurrence.add_to_class('location', models.CharField(max_length=255, blank=True))
-Occurrence.add_to_class('interval', models.IntegerField(blank=True, null=True))
-
-def new_occurrence_init(self, *args, **kwargs):
-    super(Occurrence, self).__init__(*args, **kwargs)
-    event = kwargs.get("event", None)
-    if not self.title and event:
-        self.title = event.title
-    if not self.description and event:
-        self.description = event.description
-    if not self.location and event:
-        self.location = event.location
-
-Occurrence.__init__ = new_occurrence_init
+OldEvent.add_to_class('location', models.CharField(max_length=255, blank=True))
+OldOccurrence.add_to_class('location', models.CharField(max_length=255, blank=True))
+OldOccurrence.add_to_class('interval', models.IntegerField(blank=True, null=True))

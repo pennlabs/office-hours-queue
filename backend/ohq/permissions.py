@@ -1,6 +1,6 @@
 from django.db.models import Q
 from rest_framework import permissions
-from schedule.models import Event, EventRelation, Occurrence
+from ohq_schedule.models import Event, EventRelation, Occurrence
 from ohq.models import (
     Course, 
     Membership, 

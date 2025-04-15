@@ -7,7 +7,7 @@ from django.utils.crypto import get_random_string
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 from rest_live.signals import save_handler
-from schedule.models import Calendar, Event, Occurrence, EventRelation, EventRelationManager, Rule
+from ohq_schedule.models import Calendar, Event, Occurrence, EventRelation, EventRelationManager, Rule
 
 from ohq.models import (
     Announcement,

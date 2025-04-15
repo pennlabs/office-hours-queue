@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.test import APIClient
-from schedule.models import Event
+from ohq_schedule.models import Event
 
 from ohq.models import Announcement, Course, Membership, Question, Queue, Semester, Tag
 from ohq.serializers import (
