@@ -21,7 +21,6 @@ from ohq.models import (
     QueueStatistic,
     Semester,
     Tag,
-    Booking,
 )
 from ohq.sms import sendSMSVerification
 from ohq.tasks import sendUpNextNotificationTask
@@ -542,7 +541,7 @@ class EventSerializer(serializers.ModelSerializer):
                 else:
                     rule, _ = Rule.objects.get_or_create(
                         frequency=validated_data["rule"]["frequency"],
-                        params=validated_data["rule"].get("params", ""),
+                        params=validated_data["rule"]["params"],
                     )
                 validated_data.pop("rule")
 
@@ -564,7 +563,7 @@ class EventSerializer(serializers.ModelSerializer):
         course = Course.objects.get(pk=validated_data["course_id"])
         rule = None
         if "rule" in validated_data and validated_data["rule"] is not None:
-            rule, _ = Rule.objects.get_or_create(frequency=validated_data["rule"]["frequency"], params = validated_data["rule"].get("params", ""))
+            rule, _ = Rule.objects.get_or_create(frequency=validated_data["rule"]["frequency"], params = validated_data["rule"]["params"])
             validated_data.pop("rule")
 
         validated_data.pop("course_id")
@@ -592,16 +591,4 @@ class OccurrenceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Occurrence
-        fields = ("id", "title", "description", "location", "start", "end", "cancelled", "event", "interval")
-
-class BookingSerializer(serializers.ModelSerializer):
-    """
-    Serializer for booking
-    """
-
-    occurrence = OccurrenceSerializer(read_only=True)
-
-    class Meta:
-        model = Booking
-        fields = ("id", "occurrence", "user", "start", "end")  
-
+        fields = ("id", "title", "description", "location", "start", "end", "cancelled", "event")

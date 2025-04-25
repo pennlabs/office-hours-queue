@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.dispatch import receiver
 from email_tools.emails import send_email
@@ -503,6 +502,18 @@ class Booking(models.Model):
         end_str = self.end.strftime("%Y-%m-%d %H:%M:%S")
         return f"{start_str} to {end_str}"
     
-OldEvent.add_to_class('location', models.CharField(max_length=255, blank=True))
-OldOccurrence.add_to_class('location', models.CharField(max_length=255, blank=True))
-OldOccurrence.add_to_class('interval', models.IntegerField(blank=True, null=True))
+Event.add_to_class('location', models.CharField(max_length=255, blank=True))
+Occurrence.add_to_class('location', models.CharField(max_length=255, blank=True))
+Occurrence.add_to_class('interval', models.IntegerField(blank=True, null=True))
+
+def new_occurrence_init(self, *args, **kwargs):
+    super(Occurrence, self).__init__(*args, **kwargs)
+    event = kwargs.get("event", None)
+    if not self.title and event:
+        self.title = event.title
+    if not self.description and event:
+        self.description = event.description
+    if not self.location and event:
+        self.location = event.location
+
+Occurrence.__init__ = new_occurrence_init
