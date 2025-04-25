@@ -113,6 +113,17 @@ class Event(models.Model):
             raise ValidationError({'bookable': _('Bookable events must have an interval set')})
 
     def save(self, *args, **kwargs):
+        if self.pk is not None:
+            original_event = Event.objects.get(pk=self.pk)
+
+            if original_event.interval != self.interval or original_event.bookable != self.bookable:
+                self.clean()
+                super().save(*args, **kwargs)
+                self.occurrence_set.all().update(
+                    interval=self.interval, 
+                    bookable=self.bookable
+                )
+                return
         self.clean()
         super().save(*args, **kwargs)
 
