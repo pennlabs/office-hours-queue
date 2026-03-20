@@ -14,6 +14,7 @@ const Document = () => {
             <body>
                 <Main />
                 <NextScript />
+                <script src="https://status.pennlabs.org/banner.js" defer></script>
             </body>
         </Html>
     );
