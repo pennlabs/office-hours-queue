@@ -14,7 +14,10 @@ const Document = () => {
             <body>
                 <Main />
                 <NextScript />
-                <script src="https://status.pennlabs.org/banner.js" defer></script>
+                <script
+                    src="https://status.pennlabs.org/banner.js"
+                    defer
+                />
             </body>
         </Html>
     );
