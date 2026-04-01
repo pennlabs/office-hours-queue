@@ -6,7 +6,7 @@ import Link from "next/link";
 import { AuthUserContext } from "../../context/auth";
 import { useStaff } from "../../hooks/data-fetching/course";
 import { Course } from "../../types";
-import { LOGO_SIDEBAR_PATH } from "../../utils/branding";
+import { LOGO_SIDEBAR_PATH, QUEUES_LABEL } from "../../utils/branding";
 
 interface CourseSidebarProps {
     course: Course;
@@ -50,7 +50,7 @@ const CourseSidebarNav = (props: CourseSidebarProps) => {
                     >
                         <Menu.Item
                             style={noWrapStyle}
-                            name="Queues"
+                            name={QUEUES_LABEL}
                             icon="hourglass one"
                             active={router.pathname.endsWith("[course]")}
                             color="blue"

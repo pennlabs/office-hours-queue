@@ -9,7 +9,7 @@ import QueueSettings from "./QueueSettings/QueueSettings";
 import QueueCreate from "./QueueCreate/QueueCreate";
 import { AuthUserContext } from "../../../context/auth";
 import { useQueues, useStaff } from "../../../hooks/data-fetching/course";
-import { SITE_NAME } from "../../../utils/branding";
+import { SITE_NAME, QUEUE_LABEL } from "../../../utils/branding";
 import {
     Announcement,
     Queue,
@@ -160,7 +160,7 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
                     onClose={() => setSuccess(false)}
                 >
                     <Alert severity="success" onClose={() => setSuccess(false)}>
-                        <span>Queue successfully created</span>
+                        <span>{QUEUE_LABEL} successfully created</span>
                     </Alert>
                 </Snackbar>
             </Grid>
