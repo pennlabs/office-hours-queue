@@ -13,6 +13,7 @@ import {
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 import { mutateResourceListFunction } from "@pennlabs/rest-hooks/dist/types";
+import { isAprilFools } from "../../../utils/branding";
 import QuestionForm from "./QuestionForm";
 import QuestionCard from "./QuestionCard";
 import { Queue, Course, Question, Tag } from "../../../types";
@@ -143,7 +144,7 @@ const StudentQueue = (props: StudentQueueProps) => {
                                         queue.questionsAsked || 0
                                     } user${
                                         queue.questionsAsked === 1 ? "" : "s"
-                                    } in queue`}
+                                    } in ${isAprilFools ? "stack" : "queue"}`}
                                     color="blue"
                                     icon="users"
                                 />
