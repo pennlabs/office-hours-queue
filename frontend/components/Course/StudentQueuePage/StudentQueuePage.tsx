@@ -47,7 +47,8 @@ const StudentQueuePage = (props: StudentQueuePageProps) => {
             {!isConnected && (
                 <div style={{ paddingTop: "1rem" }}>
                     <Message warning>
-                        You are not currently connected to {SITE_NAME}. Reconnecting...
+                        You are not currently connected to {SITE_NAME}.
+                        Reconnecting...
                     </Message>
                 </div>
             )}

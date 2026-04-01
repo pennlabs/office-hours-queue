@@ -183,7 +183,8 @@ const Queue = (props: QueueProps) => {
                     <Grid.Column>
                         <Message>
                             <Message.Header>
-                                A rate-limiting quota is set on this {queueLabel}.
+                                A rate-limiting quota is set on this{" "}
+                                {queueLabel}.
                             </Message.Header>
                             <p>
                                 {`A quota of ${queue.rateLimitQuestions} question(s) per ${queue.rateLimitMinutes} minutes(s) ` +

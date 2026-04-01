@@ -32,13 +32,13 @@ export default function Guide() {
                         Hi there! 🎉
                         <br />
                         <br />
-                        Welcome to {SITE_NAME}, a centralized online office hours system
-                        that helps instructors like you manage office hours
-                        easily and intuitively, so you can focus on teaching and
-                        your students can focus on learning in office hours.
-                        This guide will walk you through using {SITE_NAME}, so your
-                        experience holding office hours can be as easy and
-                        straightforward as possible.
+                        Welcome to {SITE_NAME}, a centralized online office
+                        hours system that helps instructors like you manage
+                        office hours easily and intuitively, so you can focus on
+                        teaching and your students can focus on learning in
+                        office hours. This guide will walk you through using{" "}
+                        {SITE_NAME}, so your experience holding office hours can
+                        be as easy and straightforward as possible.
                     </p>
                     <Menu attached="top" tabular>
                         <Menu.Item
