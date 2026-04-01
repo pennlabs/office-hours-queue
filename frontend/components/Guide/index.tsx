@@ -4,6 +4,7 @@ import { Divider, Segment, Header, Grid, Menu } from "semantic-ui-react";
 import InstructorGuide from "./InstructorGuide";
 import StudentGuide from "./StudentGuide";
 import Footer from "../common/Footer";
+import { SITE_NAME } from "../../utils/branding";
 
 enum Page {
     Instructor = "Instructor",
@@ -31,13 +32,13 @@ export default function Guide() {
                         Hi there! 🎉
                         <br />
                         <br />
-                        Welcome to OHQ, a centralized online office hours system
-                        that helps instructors like you manage office hours
-                        easily and intuitively, so you can focus on teaching and
-                        your students can focus on learning in office hours.
-                        This guide will walk you through using OHQ, so your
-                        experience holding office hours can be as easy and
-                        straightforward as possible.
+                        Welcome to {SITE_NAME}, a centralized online office
+                        hours system that helps instructors like you manage
+                        office hours easily and intuitively, so you can focus on
+                        teaching and your students can focus on learning in
+                        office hours. This guide will walk you through using{" "}
+                        {SITE_NAME}, so your experience holding office hours can
+                        be as easy and straightforward as possible.
                     </p>
                     <Menu attached="top" tabular>
                         <Menu.Item

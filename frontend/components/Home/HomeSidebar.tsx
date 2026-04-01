@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import SignOutButton from "../SignOut";
 import AboutModal from "../common/AboutModal";
+import { LOGO_SIDEBAR_PATH } from "../../utils/branding";
 
 const Sidebar = () => {
     const router = useRouter();
@@ -16,7 +17,7 @@ const Sidebar = () => {
             <Segment basic>
                 <Link href="/" as="/" legacyBehavior>
                     <Image
-                        src="../../../ohq.png"
+                        src={LOGO_SIDEBAR_PATH}
                         size="tiny"
                         style={{ marginTop: "10px", cursor: "pointer" }}
                     />

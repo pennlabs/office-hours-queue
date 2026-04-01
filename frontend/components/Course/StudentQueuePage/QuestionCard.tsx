@@ -13,6 +13,7 @@ import EditQuestionModal from "./EditQuestionModal";
 import DeleteQuestionModal from "./DeleteQuestionModal";
 import { Question, Course, Queue, Tag } from "../../../types";
 import { finishQuestion } from "../../../hooks/data-fetching/course";
+import { isAprilFools } from "../../../utils/branding";
 import LinkedText from "../../common/ui/LinkedText";
 
 interface QuestionCardProps {
@@ -89,7 +90,9 @@ const QuestionCard = (props: QuestionCardProps) => {
                                 }}
                             >
                                 {question.position !== -1 &&
-                                    `Position in Queue: #${question.position}`}
+                                    `Position in ${
+                                        isAprilFools ? "Stack" : "Queue"
+                                    }: #${question.position}`}
                             </Header>
                         </Grid.Column>
                         <Grid.Column width={6}>

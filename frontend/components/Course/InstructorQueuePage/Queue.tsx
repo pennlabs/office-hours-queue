@@ -9,6 +9,7 @@ import ClearQueueModal from "./ClearQueueModal";
 import { Queue as QueueType, Question, Tag } from "../../../types";
 import { useQuestions } from "../../../hooks/data-fetching/course";
 import { MOBILE_BP } from "../../../constants";
+import { queueLabel } from "../../../utils/branding";
 
 interface QueueProps {
     courseId: number;
@@ -182,11 +183,12 @@ const Queue = (props: QueueProps) => {
                     <Grid.Column>
                         <Message>
                             <Message.Header>
-                                A rate-limiting quota is set on this queue.
+                                A rate-limiting quota is set on this{" "}
+                                {queueLabel}.
                             </Message.Header>
                             <p>
                                 {`A quota of ${queue.rateLimitQuestions} question(s) per ${queue.rateLimitMinutes} minutes(s) ` +
-                                    `per student is enforced when there are at least ${queue.rateLimitLength} student(s) in the queue.`}
+                                    `per student is enforced when there are at least ${queue.rateLimitLength} student(s) in the ${queueLabel}.`}
                             </p>
                         </Message>
                     </Grid.Column>

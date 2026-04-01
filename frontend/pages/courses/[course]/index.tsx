@@ -20,6 +20,7 @@ import {
 } from "../../../types";
 import InstructorQueuePage from "../../../components/Course/InstructorQueuePage/InstructorQueuePage";
 import StudentQueuePage from "../../../components/Course/StudentQueuePage/StudentQueuePage";
+import { SITE_NAME } from "../../../utils/branding";
 
 interface QueuePageProps extends CoursePageProps {
     queues: Queue[];
@@ -41,7 +42,7 @@ const QueuePage = (props: QueuePageProps) => {
             }
         >
             <Head>
-                <title>{`OHQ | ${course.department} ${course.courseCode}`}</title>
+                <title>{`${SITE_NAME} | ${course.department} ${course.courseCode}`}</title>
             </Head>
             <Grid divided style={{ width: "100%" }} stackable>
                 <CourseWrapper

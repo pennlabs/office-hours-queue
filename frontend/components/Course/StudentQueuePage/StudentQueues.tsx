@@ -12,6 +12,7 @@ import {
 } from "../../../types";
 import { QueueMenuItem } from "./QueueMenuItem";
 import { MOBILE_BP } from "../../../constants";
+import { QUEUES_LABEL, queuesLabel } from "../../../utils/branding";
 
 interface StudentQueuesProps {
     queues: Queue[];
@@ -83,8 +84,8 @@ const StudentQueues = (props: StudentQueuesProps) => {
                 {!currQueue && (
                     <Grid.Column width={16}>
                         <Message info>
-                            <Message.Header>No Queues</Message.Header>
-                            This course currently has no queues!
+                            <Message.Header>No {QUEUES_LABEL}</Message.Header>
+                            This course currently has no {queuesLabel}!
                         </Message>
                     </Grid.Column>
                 )}

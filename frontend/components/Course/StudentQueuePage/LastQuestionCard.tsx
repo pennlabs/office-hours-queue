@@ -1,6 +1,7 @@
 import { Segment, Message } from "semantic-ui-react";
 import { Question } from "../../../types";
 import { getFullName } from "../../../utils";
+import { QUEUE_LABEL } from "../../../utils/branding";
 
 const LastQuestionCard = ({ question }: { question: Question }) => {
     const timeString = (date) => {
@@ -21,7 +22,7 @@ const LastQuestionCard = ({ question }: { question: Question }) => {
             case "NOT_SPECIFIC":
                 return "Not Specific";
             case "WRONG_QUEUE":
-                return "Wrong Queue";
+                return `Wrong ${QUEUE_LABEL}`;
             case "MISSING_TEMPLATE":
                 return "Didn't Follow Template";
             default:

@@ -3,6 +3,7 @@ import { Grid, Message } from "semantic-ui-react";
 import { WSContext } from "@pennlabs/rest-live-hooks";
 import StudentQueues from "./StudentQueues";
 import Announcements from "../Announcements";
+import { SITE_NAME } from "../../../utils/branding";
 
 import {
     useQueues,
@@ -46,7 +47,8 @@ const StudentQueuePage = (props: StudentQueuePageProps) => {
             {!isConnected && (
                 <div style={{ paddingTop: "1rem" }}>
                     <Message warning>
-                        You are not currently connected to OHQ. Reconnecting...
+                        You are not currently connected to {SITE_NAME}.
+                        Reconnecting...
                     </Message>
                 </div>
             )}

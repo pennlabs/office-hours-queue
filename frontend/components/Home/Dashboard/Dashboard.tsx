@@ -15,6 +15,7 @@ import { CHANGELOG_TOKEN, MOBILE_BP } from "../../../constants";
 import ModalShowNewChanges from "./Modals/ModalShowNewChanges";
 import updatedMd from "../../Changelog/changelogfile.md";
 import tips from "./Messages/tips.json";
+import { SITE_NAME } from "../../../utils/branding";
 
 // TODO: try to readd new user stuff, rip out loading stuff
 const Dashboard = () => {
@@ -49,7 +50,7 @@ const Dashboard = () => {
     const [toastOpen, setToastOpen] = useState(false);
 
     const [logToast] = useState({
-        message: "View new changes to OHQ.io",
+        message: `View new changes to ${SITE_NAME}.io`,
         success: true,
     });
     const [logOpen, setLogOpen] = useState(false);

@@ -1,6 +1,7 @@
 import { Segment, Divider, List } from "semantic-ui-react";
 
 import { CenteredImage } from "./utils";
+import { SITE_NAME } from "../../utils/branding";
 
 export const CreateCourse = ({ ref }) => (
     <div ref={ref}>
@@ -8,10 +9,10 @@ export const CreateCourse = ({ ref }) => (
             <h3>Create Your Course</h3>
             <Divider />
             <p>
-                Once you log in to OHQ, click &apos;Dashboard&apos; on the left,
-                and then &apos;Create Course&apos; under &apos;Instructor
-                Courses&apos;. If you do not see this option, please email
-                contact@ohq.io.
+                Once you log in to {SITE_NAME}, click &apos;Dashboard&apos; on
+                the left, and then &apos;Create Course&apos; under
+                &apos;Instructor Courses&apos;. If you do not see this option,
+                please email contact@ohq.io.
             </p>
             <CenteredImage src="/create-course-1.png" alt="Creating a course" />
             <br />
@@ -21,9 +22,9 @@ export const CreateCourse = ({ ref }) => (
                 creating the course.
             </p>
             <p>
-                OHQ currently supports Zoom, BlueJeans, Google Meet, and Whereby
-                meetings links. Please email us at contact@ohq.io to request
-                additional link support.
+                {SITE_NAME} currently supports Zoom, BlueJeans, Google Meet, and
+                Whereby meetings links. Please email us at contact@ohq.io to
+                request additional link support.
             </p>
             <CenteredImage
                 src="/create-course-2.png"
@@ -31,8 +32,9 @@ export const CreateCourse = ({ ref }) => (
             />
             <br />
             <p>
-                And that&apos;s it! You&apos;ve created your course on OHQ, and
-                you&apos;re ready to add students and instructors to the course.
+                And that&apos;s it! You&apos;ve created your course on{" "}
+                {SITE_NAME}, and you&apos;re ready to add students and
+                instructors to the course.
             </p>
         </Segment>
     </div>
@@ -66,8 +68,8 @@ export const InviteMembers = ({ ref }) => (
                                     with a Pennkey! For example:
                                     <b>agutmann@upenn.edu</b>. Students or
                                     instructors with alternative email address
-                                    formats will not be able to log in to OHQ.
-                                    🚨
+                                    formats will not be able to log in to{" "}
+                                    {SITE_NAME}. 🚨
                                 </List.Item>
                             </List.List>
                         </List.Item>
@@ -269,9 +271,9 @@ export const Analytics = ({ ref }) => (
             <h3>Analytics</h3>
             <Divider />
             <p>
-                As an instructor, you can use OHQ&apos;s analytics to learn what
-                your students are asking and assess how you&apos;re performing
-                in office hours.
+                As an instructor, you can use {SITE_NAME}&apos;s analytics to
+                learn what your students are asking and assess how you&apos;re
+                performing in office hours.
             </p>
             <p>
                 As a head TA or professor, analytics can help you predict demand
@@ -301,8 +303,8 @@ export const Settings = ({ ref }) => (
                 click &apos;Course Settings&apos; in the left menu.
             </p>
             <p>
-                To change your account settings, go to the OHQ landing page and
-                click &apos;Account Settings&apos; in the left menu.
+                To change your account settings, go to the {SITE_NAME} landing
+                page and click &apos;Account Settings&apos; in the left menu.
             </p>
         </Segment>
     </div>

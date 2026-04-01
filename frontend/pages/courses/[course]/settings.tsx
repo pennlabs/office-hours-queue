@@ -10,6 +10,7 @@ import { isLeadershipRole } from "../../../utils/enums";
 import CourseSettings from "../../../components/Course/CourseSettings/CourseSettings";
 import { CoursePageProps, Course, Membership, Tag } from "../../../types";
 import nextRedirect from "../../../utils/redirect";
+import { SITE_NAME } from "../../../utils/branding";
 
 interface SettingsPageProps extends CoursePageProps {
     tags: Tag[];
@@ -20,7 +21,7 @@ const SettingsPage = (props: SettingsPageProps) => {
     return (
         <>
             <Head>
-                <title>{`OHQ | ${course.department} ${course.courseCode}`}</title>
+                <title>{`${SITE_NAME} | ${course.department} ${course.courseCode}`}</title>
             </Head>
             <Grid columns="equal" divided style={{ width: "100%" }} stackable>
                 <CourseWrapper

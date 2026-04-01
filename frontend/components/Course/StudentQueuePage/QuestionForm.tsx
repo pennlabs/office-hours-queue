@@ -6,6 +6,7 @@ import { isValidVideoChatURL } from "../../../utils";
 import { createQuestion } from "../../../hooks/data-fetching/course";
 import { Question, Queue, Tag, VideoChatSetting } from "../../../types";
 import { STUD_DESC_CHAR_LIMIT, TEXT_CHAR_LIMIT } from "../../../constants";
+import { queueLabel } from "../../../utils/branding";
 
 interface QuestionFormProps {
     courseId: number;
@@ -90,7 +91,7 @@ const QuestionForm = (props: QuestionFormProps) => {
         let message: string;
         if (status) {
             if (status === 429) {
-                message = "Exceeded question quota for queue";
+                message = `Exceeded question quota for ${queueLabel}`;
             } else if (status === 409) {
                 message = "Incorrect pin";
             } else {
@@ -98,7 +99,7 @@ const QuestionForm = (props: QuestionFormProps) => {
             }
             props.toastFunc(null, message);
         } else {
-            message = "Question successfully added to queue";
+            message = `Question successfully added to ${queueLabel}`;
             props.toastFunc(message, null);
             await props.queueMutate(-1, null);
         }
