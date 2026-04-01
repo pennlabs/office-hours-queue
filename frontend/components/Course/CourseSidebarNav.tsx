@@ -6,6 +6,7 @@ import Link from "next/link";
 import { AuthUserContext } from "../../context/auth";
 import { useStaff } from "../../hooks/data-fetching/course";
 import { Course } from "../../types";
+import { LOGO_SIDEBAR_PATH } from "../../utils/branding";
 
 interface CourseSidebarProps {
     course: Course;
@@ -35,7 +36,7 @@ const CourseSidebarNav = (props: CourseSidebarProps) => {
         <Segment basic>
             <Link href="/" as="/" legacyBehavior>
                 <Image
-                    src="../../../ohq.png"
+                    src={LOGO_SIDEBAR_PATH}
                     size="tiny"
                     style={{ marginTop: "10px", cursor: "pointer" }}
                 />

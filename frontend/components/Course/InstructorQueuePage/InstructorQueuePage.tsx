@@ -9,6 +9,7 @@ import QueueSettings from "./QueueSettings/QueueSettings";
 import QueueCreate from "./QueueCreate/QueueCreate";
 import { AuthUserContext } from "../../../context/auth";
 import { useQueues, useStaff } from "../../../hooks/data-fetching/course";
+import { SITE_NAME } from "../../../utils/branding";
 import {
     Announcement,
     Queue,
@@ -104,7 +105,7 @@ const InstructorQueuePage = (props: InstructorQueuePageProps) => {
             {!isConnected && (
                 <div style={{ paddingTop: "1rem" }}>
                     <Message warning>
-                        You are not currently connected to OHQ. Reconnecting...
+                        You are not currently connected to {SITE_NAME}. Reconnecting...
                     </Message>
                 </div>
             )}

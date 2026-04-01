@@ -10,6 +10,7 @@ import Dashboard from "../components/Home/Dashboard/Dashboard";
 import ModalRedirectAddCourse from "../components/Home/Dashboard/Modals/ModalRedirectAddCourse";
 import { Course, Toast } from "../types";
 import { doApiRequest } from "../utils/fetch";
+import { SITE_NAME } from "../utils/branding";
 
 interface LandingPageProps {
     signUpCourse?: Course;
@@ -33,7 +34,7 @@ const LandingPage = ({ signUpCourse }: LandingPageProps) => {
                 />
             )}
             <Head>
-                <title>OHQ</title>
+                <title>{SITE_NAME}</title>
             </Head>
             {user ? (
                 <Home>

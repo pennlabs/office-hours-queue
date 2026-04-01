@@ -3,6 +3,7 @@ import { Grid, Button } from "semantic-ui-react";
 import { useRouter, NextRouter } from "next/router";
 import AboutModal from "../common/AboutModal";
 import styles from "../../styles/landingpage.module.css";
+import { LOGO_PATH, LOGO_LOGIN_PATH } from "../../utils/branding";
 
 const AuthPrompt = (): JSX.Element => {
     const [showAboutModal, setShowAboutModal] = useState(false);
@@ -20,7 +21,7 @@ const AuthPrompt = (): JSX.Element => {
             <Grid columns={1} textAlign="center">
                 <Grid.Row only="computer tablet">
                     <img
-                        src="ohq-login.png"
+                        src={LOGO_LOGIN_PATH}
                         width="600px"
                         height="107px"
                         alt="logo"
@@ -28,7 +29,7 @@ const AuthPrompt = (): JSX.Element => {
                 </Grid.Row>
                 <Grid.Row only="mobile">
                     <img
-                        src="ohq.png"
+                        src={LOGO_PATH}
                         width="217px"
                         height="107px"
                         alt="logo-mini"

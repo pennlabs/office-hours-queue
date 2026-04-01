@@ -1,4 +1,5 @@
 import { Button, Modal } from "semantic-ui-react";
+import { SITE_NAME } from "../../utils/branding";
 
 interface AboutModalProps {
     open: boolean;
@@ -9,7 +10,7 @@ const AboutModal = (props: AboutModalProps) => {
     return (
         <Modal open={open} style={{ width: "350px" }}>
             <Modal.Content>
-                OHQ is maintained by Penn Labs and was originally built by
+                {SITE_NAME} is maintained by Penn Labs and was originally built by
                 Steven Bursztyn, Chris Fischer, Monal Garg, Karen Shen, and
                 Marshall Vail
                 <br />

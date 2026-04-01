@@ -13,6 +13,7 @@ import { Course as CourseType, Membership } from "../../types";
 import CourseSidebarInstructorList from "./CourseSidebarInstructorList";
 import { MOBILE_BP } from "../../constants";
 import { browserSupportsNotifications } from "../../utils/notifications";
+import { isAprilFools } from "../../utils/branding";
 
 interface CourseProps {
     render: (
@@ -38,9 +39,8 @@ const CourseWrapper = ({ render, ...props }: CourseProps) => {
 
     const { staff } = useStaff(rawCourse.id, initialUser);
 
-    const isAprilFirst = false;
     const [notifs, setNotifs, play] = usePlayer(
-        isAprilFirst ? aolAudio : bellAudio
+        isAprilFools ? aolAudio : bellAudio
     );
     const [supportsNotifs, setSupportsNotifs] = useState(false);
     useEffect(() => setSupportsNotifs(browserSupportsNotifications()), []);

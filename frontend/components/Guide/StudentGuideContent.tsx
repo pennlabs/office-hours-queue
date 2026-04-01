@@ -1,12 +1,13 @@
 import { Segment, List } from "semantic-ui-react";
 
 import { CenteredImage } from "./utils";
+import { SITE_NAME } from "../../utils/branding";
 
 export const EnrollCourse = ({ ref }) => (
     <div ref={ref}>
         <Segment basic>
             <h3>Enrolling in a Course</h3>
-            <p>Courses on OHQ are either invite-only or not invite-only.</p>
+            <p>Courses on {SITE_NAME} are either invite-only or not invite-only.</p>
             <p>
                 If your course is invite-only, reach out to your course&apos;s
                 teaching team to request an invitation. All they need to invite
@@ -81,14 +82,14 @@ export const Notifications = ({ ref }) => (
                 enabling notifications when you reach the top of the line!
             </p>
             <p>
-                OHQ will give you an audio notification ( you&apos;ll hear a
+                {SITE_NAME} will give you an audio notification ( you&apos;ll hear a
                 &quot;ding&quot;) when you reach the top of the queue. You can
                 also enable SMS notifications.
             </p>
             <p>To enable SMS notifications:</p>
             <List bulleted>
                 <List.Item>
-                    Navigate to the OHQ home page, and on the left menu, click
+                    Navigate to the {SITE_NAME} home page, and on the left menu, click
                     into &quot;Account Settings.&quot;
                 </List.Item>
                 <List.Item>
@@ -181,7 +182,7 @@ export const Settings = ({ ref }) => (
             <h3>Settings</h3>
             <p>
                 To change your profile information and notification settings, go
-                to the OHQ landing page and click &apos;Account Setting&apos; in
+                to the {SITE_NAME} landing page and click &apos;Account Setting&apos; in
                 the left menu.
             </p>
         </Segment>
