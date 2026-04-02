@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.utils import timezone
 from djangorestframework_camel_case.util import camelize
 from rest_framework.test import APIClient
-from schedule.models import Event, Occurrence
+from ohq_schedule.models import Event, Occurrence
 
 from ohq.models import Course, Membership, MembershipInvite, Question, Queue, Semester
 from ohq.serializers import UserPrivateSerializer

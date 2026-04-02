@@ -1,9 +1,12 @@
 from django.db.models import Q
 from rest_framework import permissions
-from schedule.models import Event, EventRelation, Occurrence
-
-from ohq.models import Course, Membership, Question
-
+from ohq_schedule.models import Event, EventRelation, Occurrence
+from ohq.models import (
+    Course, 
+    Membership, 
+    Question, 
+    Booking,
+)
 
 # Hierarchy of permissions is usually:
 # Professor > Head TA > TA > Student > User

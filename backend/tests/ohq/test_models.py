@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from django.core import mail
 from django.test import TestCase
 from django.utils import timezone
+import pytz
+from ohq_schedule.models import Calendar, Event, Occurrence, EventRelationManager
 
 from ohq.models import (
     Course,
